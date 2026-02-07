@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+.next/
+
+# TypeScript
+*.tsbuildinfo
+
+# Storybook
+storybook-static/
+
+# Cache
+.cache/
+.vite/
+node_modules/.vite/
+node_modules/.cache/
+
+# Misc
+.DS_Store
+

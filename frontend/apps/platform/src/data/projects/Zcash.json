@@ -1,0 +1,3444 @@
+{
+  "projectDetails": {
+    "id": "32",
+    "name": "Zcash",
+    "ticker": "ZEC",
+    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/5e66710f-9d43-40a5-b2dc-13c027f5663c.PNG",
+    "rank": 31,
+    "description": "Zcash is a privacy-focused cryptocurrency that uses zero-knowledge proofs (zk-SNARKs) to enable shielded, confidential transactions on a public blockchain.",
+    "certification": {
+      "level": "Absent"
+    },
+    "chains": [
+      {
+        "name": "Near Protocol",
+        "logo": "https://coin-images.coingecko.com/asset_platforms/images/34/large/near.jpeg?1706870535"
+      }
+    ],
+    "category": "Private payments",
+    "tags": [
+      "Smart Contract Platform",
+      "Privacy Coins",
+      "Layer 1 (L1)",
+      "Near Protocol Ecosystem",
+      "Zero Knowledge (ZK)",
+      "Proof of Work (PoW)",
+      "Pantera Capital Portfolio",
+      "Made in USA",
+      "Coinbase 50 Index",
+      "Quantum-Resistant"
+    ],
+    "launchedAt": "2016-10-28",
+    "website": {
+      "url": "https://z.cash/"
+    },
+    "socials": [
+      {
+        "url": "https://twitter.com/zcash",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/94bc0489-8e36-44b9-9fc0-ecf89bedc92c.png"
+      },
+      {
+        "url": "https://www.linkedin.com/company/zcash-foundation/",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/d4ae6571-35c3-430a-b311-e13a3ad2ac79.png"
+      }
+    ],
+    "coingeckoId": "zcash",
+    "hasToken": true,
+    "projectBucket": "L1",
+    "disclosures": {
+      "whitepaper": {
+        "url": "http://zerocash-project.org/media/pdf/zerocash-extended-20140518.pdf"
+      },
+      "legal": {
+        "url": "https://forum.zcashcommunity.com/tos"
+      },
+      "audits": [
+        {
+          "auditor": {
+            "name": "security",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f3999ba1-769e-447c-899c-0fffa2ef0211.png"
+          },
+          "report": {
+            "url": "https://skynet.certik.com/third-party-audit-reports/jqfm0se0f03r/thirdparty-acae3505f7beb373a0eb73556da2e77d-pdf/2ed3366c203724a730423a77f5069e55/_dApp__Zcash___Snap___May2025"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Coinspect",
+            "logo": null
+          },
+          "report": {
+            "url": "https://www.coinspect.com/doc/Zcash2016v15.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "NCC Group",
+            "logo": null
+          },
+          "report": {
+            "url": "https://www.nccgroup.com/media/v1kkxeae/_ncc_group_zcash2018_public_report_2019-01-30_v13.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Least Authority",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/056d1b5d-d499-42ab-8742-25b43ab7a237.PNG"
+          },
+          "report": {
+            "url": "https://leastauthority.com/wp-content/uploads/2019/08/LeastAuthority-Zcash-Implementation-Analysis-and-Overwinter-Specification.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Least Authority",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/056d1b5d-d499-42ab-8742-25b43ab7a237.PNG"
+          },
+          "report": {
+            "url": "https://leastauthority.com/static/publications/LeastAuthority-Zcash-Overwinter%2BSapling-Specification-Final-Audit-Report.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Least Authority",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/056d1b5d-d499-42ab-8742-25b43ab7a237.PNG"
+          },
+          "report": {
+            "url": "https://leastauthority.com/static/publications/LeastAuthority-Zcash-Sapling-Implementation-RPC-Interface-Updated-Audit-Report.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "NCC Group",
+            "logo": null
+          },
+          "report": {
+            "url": "https://pentestreports.com/files/reports/nccgroup/NCC_Group_Zcash_NU3_Blossom_Report_2020-02-06_v1.1.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Trail of Bits",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/b22a667e-c82f-411f-bb86-5b3c5c3de111.PNG"
+          },
+          "report": {
+            "url": "https://github.com/trailofbits/publications/blob/master/reviews/Zcash.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Trail of Bits",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/b22a667e-c82f-411f-bb86-5b3c5c3de111.PNG"
+          },
+          "report": {
+            "url": "https://github.com/trailofbits/publications/blob/master/reviews/Zcash2.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "NCC Group",
+            "logo": null
+          },
+          "report": {
+            "url": "https://www.nccgroup.com/media/hzlftzlu/_ncc_group_zcash_nu5_publicreportfinal.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "NCC Group",
+            "logo": null
+          },
+          "report": {
+            "url": "https://www.nccgroup.com/media/bw3nq0vm/_ncc_group_zcashfoundation_e005955_report_2023-06-27_v10.pdf"
+          }
+        }
+      ]
+    }
+  },
+  "probabilityOfLoss": {
+    "score": {
+      "current": 53.58,
+      "min": 0,
+      "max": 100
+    },
+    "grade": {
+      "label": "CC",
+      "tier": "medium"
+    },
+    "confidence": "Moderate",
+    "change24h": 3,
+    "dataCoverage": {
+      "percentage": 85
+    },
+    "categories": [
+      {
+        "name": "Security",
+        "score": {
+          "current": 18.29,
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "name": "Financial",
+        "score": {
+          "current": 33.33,
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "name": "Operational",
+        "score": {
+          "current": 48,
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "name": "Reputational",
+        "score": {
+          "current": 68.5,
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "name": "Regulatory",
+        "score": {
+          "current": 50,
+          "min": 0,
+          "max": 100
+        }
+      }
+    ],
+    "dynamic": {
+      "window": "30d",
+      "score": {
+        "min": 0,
+        "max": 100
+      },
+      "points": [
+        {
+          "date": "2025-11-02",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-03",
+          "averagePolScore": 16
+        },
+        {
+          "date": "2025-11-04",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-05",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-06",
+          "averagePolScore": 13
+        },
+        {
+          "date": "2025-11-07",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-08",
+          "averagePolScore": 13
+        },
+        {
+          "date": "2025-11-09",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-10",
+          "averagePolScore": 14
+        },
+        {
+          "date": "2025-11-11",
+          "averagePolScore": 14
+        },
+        {
+          "date": "2025-11-12",
+          "averagePolScore": 12
+        },
+        {
+          "date": "2025-11-13",
+          "averagePolScore": 14
+        },
+        {
+          "date": "2025-11-14",
+          "averagePolScore": 13
+        },
+        {
+          "date": "2025-11-15",
+          "averagePolScore": 14
+        },
+        {
+          "date": "2025-11-16",
+          "averagePolScore": 13
+        },
+        {
+          "date": "2025-11-17",
+          "averagePolScore": 12
+        },
+        {
+          "date": "2025-11-18",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-19",
+          "averagePolScore": 14
+        },
+        {
+          "date": "2025-11-20",
+          "averagePolScore": 14
+        },
+        {
+          "date": "2025-11-21",
+          "averagePolScore": 13
+        },
+        {
+          "date": "2025-11-22",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-23",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-24",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-25",
+          "averagePolScore": 16
+        },
+        {
+          "date": "2025-11-26",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-27",
+          "averagePolScore": 14
+        },
+        {
+          "date": "2025-11-28",
+          "averagePolScore": 15
+        },
+        {
+          "date": "2025-11-29",
+          "averagePolScore": 13
+        },
+        {
+          "date": "2025-11-30",
+          "averagePolScore": 12
+        },
+        {
+          "date": "2025-12-01",
+          "averagePolScore": 14
+        },
+        {
+          "date": "2025-12-04",
+          "averagePolScore": 53.58
+        }
+      ]
+    }
+  },
+  "newsFeed": {
+    "topRisks": [
+      {
+        "date": "2025-11-22",
+        "content": "Not using a third‑party Bug Bounty platform limits independent testing coverage, increasing the chance that serious flaws persist."
+      },
+      {
+        "date": "2025-11-22",
+        "content": "Lack of continuous on-chain monitoring lets abnormal fund flows go undetected, increasing the risk of delayed incident response."
+      },
+      {
+        "date": "2025-11-22",
+        "content": "Missing CCSS certification leaves crypto custody controls unvalidated, increasing the risk of undetected security gaps."
+      }
+    ],
+    "recentChanges": [
+      {
+        "date": "2023-11-22",
+        "content": "The recently completed product-related audit with a full relevancy score strengthens assurance over key controls."
+      },
+      {
+        "date": "2023-11-22",
+        "content": "Inflation metrics have continued to follow the same trend as last month."
+      },
+      {
+        "date": "2023-11-22",
+        "content": "There is a slight decrease in Github weekly commits compared to last week’s findings."
+      }
+    ]
+  },
+  "probabilityOfLossCategoriesDynamic": {
+    "score": {
+      "min": 0,
+      "max": 100
+    },
+    "points": [
+      {
+        "date": "2025-09-04",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.1
+          },
+          {
+            "name": "Financial",
+            "score": 35.1
+          },
+          {
+            "name": "Operational",
+            "score": 34.8
+          },
+          {
+            "name": "Reputational",
+            "score": 66.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 49.7
+          }
+        ]
+      },
+      {
+        "date": "2025-09-05",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.2
+          },
+          {
+            "name": "Financial",
+            "score": 34
+          },
+          {
+            "name": "Operational",
+            "score": 34.1
+          },
+          {
+            "name": "Reputational",
+            "score": 67
+          },
+          {
+            "name": "Regulatory",
+            "score": 48.3
+          }
+        ]
+      },
+      {
+        "date": "2025-09-06",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21.1
+          },
+          {
+            "name": "Financial",
+            "score": 33
+          },
+          {
+            "name": "Operational",
+            "score": 35.9
+          },
+          {
+            "name": "Reputational",
+            "score": 64.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 48
+          }
+        ]
+      },
+      {
+        "date": "2025-09-07",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 22.4
+          },
+          {
+            "name": "Financial",
+            "score": 34.7
+          },
+          {
+            "name": "Operational",
+            "score": 34.8
+          },
+          {
+            "name": "Reputational",
+            "score": 66.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 47.9
+          }
+        ]
+      },
+      {
+        "date": "2025-09-08",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21
+          },
+          {
+            "name": "Financial",
+            "score": 33.3
+          },
+          {
+            "name": "Operational",
+            "score": 33
+          },
+          {
+            "name": "Reputational",
+            "score": 65.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 48.3
+          }
+        ]
+      },
+      {
+        "date": "2025-09-09",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.2
+          },
+          {
+            "name": "Financial",
+            "score": 31.7
+          },
+          {
+            "name": "Operational",
+            "score": 31.2
+          },
+          {
+            "name": "Reputational",
+            "score": 67
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.9
+          }
+        ]
+      },
+      {
+        "date": "2025-09-10",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21.1
+          },
+          {
+            "name": "Financial",
+            "score": 32.3
+          },
+          {
+            "name": "Operational",
+            "score": 32.8
+          },
+          {
+            "name": "Reputational",
+            "score": 68.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.9
+          }
+        ]
+      },
+      {
+        "date": "2025-09-11",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.2
+          },
+          {
+            "name": "Financial",
+            "score": 34.1
+          },
+          {
+            "name": "Operational",
+            "score": 32.5
+          },
+          {
+            "name": "Reputational",
+            "score": 71.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.5
+          }
+        ]
+      },
+      {
+        "date": "2025-09-12",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.7
+          },
+          {
+            "name": "Financial",
+            "score": 34.5
+          },
+          {
+            "name": "Operational",
+            "score": 33.3
+          },
+          {
+            "name": "Reputational",
+            "score": 73.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.5
+          }
+        ]
+      },
+      {
+        "date": "2025-09-13",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18.9
+          },
+          {
+            "name": "Financial",
+            "score": 35.6
+          },
+          {
+            "name": "Operational",
+            "score": 33.6
+          },
+          {
+            "name": "Reputational",
+            "score": 71.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 44.8
+          }
+        ]
+      },
+      {
+        "date": "2025-09-14",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.1
+          },
+          {
+            "name": "Financial",
+            "score": 35.6
+          },
+          {
+            "name": "Operational",
+            "score": 34
+          },
+          {
+            "name": "Reputational",
+            "score": 69
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.7
+          }
+        ]
+      },
+      {
+        "date": "2025-09-15",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.6
+          },
+          {
+            "name": "Financial",
+            "score": 35.6
+          },
+          {
+            "name": "Operational",
+            "score": 33.1
+          },
+          {
+            "name": "Reputational",
+            "score": 67
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.6
+          }
+        ]
+      },
+      {
+        "date": "2025-09-16",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21.1
+          },
+          {
+            "name": "Financial",
+            "score": 34.3
+          },
+          {
+            "name": "Operational",
+            "score": 33.7
+          },
+          {
+            "name": "Reputational",
+            "score": 65.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.8
+          }
+        ]
+      },
+      {
+        "date": "2025-09-17",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.8
+          },
+          {
+            "name": "Financial",
+            "score": 34.7
+          },
+          {
+            "name": "Operational",
+            "score": 33.7
+          },
+          {
+            "name": "Reputational",
+            "score": 63.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.1
+          }
+        ]
+      },
+      {
+        "date": "2025-09-18",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.6
+          },
+          {
+            "name": "Financial",
+            "score": 35.2
+          },
+          {
+            "name": "Operational",
+            "score": 35.6
+          },
+          {
+            "name": "Reputational",
+            "score": 65.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 47.3
+          }
+        ]
+      },
+      {
+        "date": "2025-09-19",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 22.5
+          },
+          {
+            "name": "Financial",
+            "score": 35.2
+          },
+          {
+            "name": "Operational",
+            "score": 37.2
+          },
+          {
+            "name": "Reputational",
+            "score": 67.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 46
+          }
+        ]
+      },
+      {
+        "date": "2025-09-20",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21.2
+          },
+          {
+            "name": "Financial",
+            "score": 34.6
+          },
+          {
+            "name": "Operational",
+            "score": 35.9
+          },
+          {
+            "name": "Reputational",
+            "score": 69.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 44.6
+          }
+        ]
+      },
+      {
+        "date": "2025-09-21",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21.9
+          },
+          {
+            "name": "Financial",
+            "score": 35.7
+          },
+          {
+            "name": "Operational",
+            "score": 34
+          },
+          {
+            "name": "Reputational",
+            "score": 71.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.4
+          }
+        ]
+      },
+      {
+        "date": "2025-09-22",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 23.3
+          },
+          {
+            "name": "Financial",
+            "score": 33.8
+          },
+          {
+            "name": "Operational",
+            "score": 35.3
+          },
+          {
+            "name": "Reputational",
+            "score": 72.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.4
+          }
+        ]
+      },
+      {
+        "date": "2025-09-23",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21.5
+          },
+          {
+            "name": "Financial",
+            "score": 32.2
+          },
+          {
+            "name": "Operational",
+            "score": 33.5
+          },
+          {
+            "name": "Reputational",
+            "score": 73.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.4
+          }
+        ]
+      },
+      {
+        "date": "2025-09-24",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 22.6
+          },
+          {
+            "name": "Financial",
+            "score": 32.2
+          },
+          {
+            "name": "Operational",
+            "score": 35.4
+          },
+          {
+            "name": "Reputational",
+            "score": 74.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.4
+          }
+        ]
+      },
+      {
+        "date": "2025-09-25",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 22.2
+          },
+          {
+            "name": "Financial",
+            "score": 32.5
+          },
+          {
+            "name": "Operational",
+            "score": 33.9
+          },
+          {
+            "name": "Reputational",
+            "score": 76.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 44.9
+          }
+        ]
+      },
+      {
+        "date": "2025-09-26",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.4
+          },
+          {
+            "name": "Financial",
+            "score": 33.6
+          },
+          {
+            "name": "Operational",
+            "score": 34.3
+          },
+          {
+            "name": "Reputational",
+            "score": 76.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.5
+          }
+        ]
+      },
+      {
+        "date": "2025-09-27",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21
+          },
+          {
+            "name": "Financial",
+            "score": 32.8
+          },
+          {
+            "name": "Operational",
+            "score": 32.7
+          },
+          {
+            "name": "Reputational",
+            "score": 78.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.5
+          }
+        ]
+      },
+      {
+        "date": "2025-09-28",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.5
+          },
+          {
+            "name": "Financial",
+            "score": 34.2
+          },
+          {
+            "name": "Operational",
+            "score": 31
+          },
+          {
+            "name": "Reputational",
+            "score": 77.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.3
+          }
+        ]
+      },
+      {
+        "date": "2025-09-29",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18.8
+          },
+          {
+            "name": "Financial",
+            "score": 33.6
+          },
+          {
+            "name": "Operational",
+            "score": 30.7
+          },
+          {
+            "name": "Reputational",
+            "score": 75.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 46
+          }
+        ]
+      },
+      {
+        "date": "2025-09-30",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18
+          },
+          {
+            "name": "Financial",
+            "score": 32.1
+          },
+          {
+            "name": "Operational",
+            "score": 30.4
+          },
+          {
+            "name": "Reputational",
+            "score": 76.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.1
+          }
+        ]
+      },
+      {
+        "date": "2025-10-01",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18.7
+          },
+          {
+            "name": "Financial",
+            "score": 32.4
+          },
+          {
+            "name": "Operational",
+            "score": 30
+          },
+          {
+            "name": "Reputational",
+            "score": 78.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 47.2
+          }
+        ]
+      },
+      {
+        "date": "2025-10-02",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.8
+          },
+          {
+            "name": "Financial",
+            "score": 33.1
+          },
+          {
+            "name": "Operational",
+            "score": 31.1
+          },
+          {
+            "name": "Reputational",
+            "score": 78.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 47.2
+          }
+        ]
+      },
+      {
+        "date": "2025-10-03",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.8
+          },
+          {
+            "name": "Financial",
+            "score": 32.6
+          },
+          {
+            "name": "Operational",
+            "score": 32.8
+          },
+          {
+            "name": "Reputational",
+            "score": 77.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 47.7
+          }
+        ]
+      },
+      {
+        "date": "2025-10-04",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.9
+          },
+          {
+            "name": "Financial",
+            "score": 33.3
+          },
+          {
+            "name": "Operational",
+            "score": 32.1
+          },
+          {
+            "name": "Reputational",
+            "score": 77.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 48.1
+          }
+        ]
+      },
+      {
+        "date": "2025-10-05",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 22.2
+          },
+          {
+            "name": "Financial",
+            "score": 34.2
+          },
+          {
+            "name": "Operational",
+            "score": 32.6
+          },
+          {
+            "name": "Reputational",
+            "score": 76.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.7
+          }
+        ]
+      },
+      {
+        "date": "2025-10-06",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.4
+          },
+          {
+            "name": "Financial",
+            "score": 33.6
+          },
+          {
+            "name": "Operational",
+            "score": 32.3
+          },
+          {
+            "name": "Reputational",
+            "score": 78.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 48
+          }
+        ]
+      },
+      {
+        "date": "2025-10-07",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.8
+          },
+          {
+            "name": "Financial",
+            "score": 33.7
+          },
+          {
+            "name": "Operational",
+            "score": 33.2
+          },
+          {
+            "name": "Reputational",
+            "score": 81
+          },
+          {
+            "name": "Regulatory",
+            "score": 49.2
+          }
+        ]
+      },
+      {
+        "date": "2025-10-08",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.2
+          },
+          {
+            "name": "Financial",
+            "score": 34.8
+          },
+          {
+            "name": "Operational",
+            "score": 34.2
+          },
+          {
+            "name": "Reputational",
+            "score": 79.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 47.7
+          }
+        ]
+      },
+      {
+        "date": "2025-10-09",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18.6
+          },
+          {
+            "name": "Financial",
+            "score": 34.6
+          },
+          {
+            "name": "Operational",
+            "score": 33.1
+          },
+          {
+            "name": "Reputational",
+            "score": 79
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-10",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.8
+          },
+          {
+            "name": "Financial",
+            "score": 33.8
+          },
+          {
+            "name": "Operational",
+            "score": 33.9
+          },
+          {
+            "name": "Reputational",
+            "score": 80.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-11",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21
+          },
+          {
+            "name": "Financial",
+            "score": 35.5
+          },
+          {
+            "name": "Operational",
+            "score": 31.9
+          },
+          {
+            "name": "Reputational",
+            "score": 79.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 46.9
+          }
+        ]
+      },
+      {
+        "date": "2025-10-12",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.9
+          },
+          {
+            "name": "Financial",
+            "score": 35.1
+          },
+          {
+            "name": "Operational",
+            "score": 32.3
+          },
+          {
+            "name": "Reputational",
+            "score": 76.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 45.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-13",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20
+          },
+          {
+            "name": "Financial",
+            "score": 35.7
+          },
+          {
+            "name": "Operational",
+            "score": 30.6
+          },
+          {
+            "name": "Reputational",
+            "score": 77
+          },
+          {
+            "name": "Regulatory",
+            "score": 44.6
+          }
+        ]
+      },
+      {
+        "date": "2025-10-14",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18.4
+          },
+          {
+            "name": "Financial",
+            "score": 33.8
+          },
+          {
+            "name": "Operational",
+            "score": 30.8
+          },
+          {
+            "name": "Reputational",
+            "score": 76.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 43.7
+          }
+        ]
+      },
+      {
+        "date": "2025-10-15",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.4
+          },
+          {
+            "name": "Financial",
+            "score": 32.3
+          },
+          {
+            "name": "Operational",
+            "score": 31.6
+          },
+          {
+            "name": "Reputational",
+            "score": 75.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 43.6
+          }
+        ]
+      },
+      {
+        "date": "2025-10-16",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.7
+          },
+          {
+            "name": "Financial",
+            "score": 33.6
+          },
+          {
+            "name": "Operational",
+            "score": 31.7
+          },
+          {
+            "name": "Reputational",
+            "score": 76.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 43.6
+          }
+        ]
+      },
+      {
+        "date": "2025-10-17",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 21.6
+          },
+          {
+            "name": "Financial",
+            "score": 32.1
+          },
+          {
+            "name": "Operational",
+            "score": 32.7
+          },
+          {
+            "name": "Reputational",
+            "score": 74.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 42.4
+          }
+        ]
+      },
+      {
+        "date": "2025-10-18",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19.8
+          },
+          {
+            "name": "Financial",
+            "score": 31.9
+          },
+          {
+            "name": "Operational",
+            "score": 32.7
+          },
+          {
+            "name": "Reputational",
+            "score": 73.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 41.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-19",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.3
+          },
+          {
+            "name": "Financial",
+            "score": 33.8
+          },
+          {
+            "name": "Operational",
+            "score": 34.5
+          },
+          {
+            "name": "Reputational",
+            "score": 71.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 40.4
+          }
+        ]
+      },
+      {
+        "date": "2025-10-20",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.2
+          },
+          {
+            "name": "Financial",
+            "score": 33.3
+          },
+          {
+            "name": "Operational",
+            "score": 33.1
+          },
+          {
+            "name": "Reputational",
+            "score": 70.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 39.7
+          }
+        ]
+      },
+      {
+        "date": "2025-10-21",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.3
+          },
+          {
+            "name": "Financial",
+            "score": 33.2
+          },
+          {
+            "name": "Operational",
+            "score": 32.6
+          },
+          {
+            "name": "Reputational",
+            "score": 69.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 41.1
+          }
+        ]
+      },
+      {
+        "date": "2025-10-22",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 22.2
+          },
+          {
+            "name": "Financial",
+            "score": 33.4
+          },
+          {
+            "name": "Operational",
+            "score": 34.1
+          },
+          {
+            "name": "Reputational",
+            "score": 68.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 40.3
+          }
+        ]
+      },
+      {
+        "date": "2025-10-23",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 20.8
+          },
+          {
+            "name": "Financial",
+            "score": 32.1
+          },
+          {
+            "name": "Operational",
+            "score": 34.5
+          },
+          {
+            "name": "Reputational",
+            "score": 68.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 40.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-24",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 19
+          },
+          {
+            "name": "Financial",
+            "score": 31.5
+          },
+          {
+            "name": "Operational",
+            "score": 35.2
+          },
+          {
+            "name": "Reputational",
+            "score": 68.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 39.4
+          }
+        ]
+      },
+      {
+        "date": "2025-10-25",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 17.2
+          },
+          {
+            "name": "Financial",
+            "score": 29.7
+          },
+          {
+            "name": "Operational",
+            "score": 36.9
+          },
+          {
+            "name": "Reputational",
+            "score": 70.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.6
+          }
+        ]
+      },
+      {
+        "date": "2025-10-26",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 15.3
+          },
+          {
+            "name": "Financial",
+            "score": 29.3
+          },
+          {
+            "name": "Operational",
+            "score": 36.5
+          },
+          {
+            "name": "Reputational",
+            "score": 68.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.3
+          }
+        ]
+      },
+      {
+        "date": "2025-10-27",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 13.7
+          },
+          {
+            "name": "Financial",
+            "score": 28.6
+          },
+          {
+            "name": "Operational",
+            "score": 37.7
+          },
+          {
+            "name": "Reputational",
+            "score": 70.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.1
+          }
+        ]
+      },
+      {
+        "date": "2025-10-28",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 14.4
+          },
+          {
+            "name": "Financial",
+            "score": 28.3
+          },
+          {
+            "name": "Operational",
+            "score": 39.3
+          },
+          {
+            "name": "Reputational",
+            "score": 68.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.3
+          }
+        ]
+      },
+      {
+        "date": "2025-10-29",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 13.3
+          },
+          {
+            "name": "Financial",
+            "score": 28.3
+          },
+          {
+            "name": "Operational",
+            "score": 40
+          },
+          {
+            "name": "Reputational",
+            "score": 66
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.4
+          }
+        ]
+      },
+      {
+        "date": "2025-10-30",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 12.1
+          },
+          {
+            "name": "Financial",
+            "score": 26.5
+          },
+          {
+            "name": "Operational",
+            "score": 39.2
+          },
+          {
+            "name": "Reputational",
+            "score": 64.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.6
+          }
+        ]
+      },
+      {
+        "date": "2025-10-31",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 11.1
+          },
+          {
+            "name": "Financial",
+            "score": 25.5
+          },
+          {
+            "name": "Operational",
+            "score": 39.4
+          },
+          {
+            "name": "Reputational",
+            "score": 64.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.1
+          }
+        ]
+      },
+      {
+        "date": "2025-11-01",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 11.1
+          },
+          {
+            "name": "Financial",
+            "score": 24.6
+          },
+          {
+            "name": "Operational",
+            "score": 38
+          },
+          {
+            "name": "Reputational",
+            "score": 62.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-02",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 10.6
+          },
+          {
+            "name": "Financial",
+            "score": 24.6
+          },
+          {
+            "name": "Operational",
+            "score": 39.3
+          },
+          {
+            "name": "Reputational",
+            "score": 62.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.2
+          }
+        ]
+      },
+      {
+        "date": "2025-11-03",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 11.8
+          },
+          {
+            "name": "Financial",
+            "score": 23.9
+          },
+          {
+            "name": "Operational",
+            "score": 38.1
+          },
+          {
+            "name": "Reputational",
+            "score": 63.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.1
+          }
+        ]
+      },
+      {
+        "date": "2025-11-04",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 9.9
+          },
+          {
+            "name": "Financial",
+            "score": 23
+          },
+          {
+            "name": "Operational",
+            "score": 36.7
+          },
+          {
+            "name": "Reputational",
+            "score": 63.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.3
+          }
+        ]
+      },
+      {
+        "date": "2025-11-05",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 10.2
+          },
+          {
+            "name": "Financial",
+            "score": 24.3
+          },
+          {
+            "name": "Operational",
+            "score": 35.4
+          },
+          {
+            "name": "Reputational",
+            "score": 65.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.6
+          }
+        ]
+      },
+      {
+        "date": "2025-11-06",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 10.2
+          },
+          {
+            "name": "Financial",
+            "score": 23.4
+          },
+          {
+            "name": "Operational",
+            "score": 34.9
+          },
+          {
+            "name": "Reputational",
+            "score": 66.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.9
+          }
+        ]
+      },
+      {
+        "date": "2025-11-07",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 9.6
+          },
+          {
+            "name": "Financial",
+            "score": 22.1
+          },
+          {
+            "name": "Operational",
+            "score": 36.6
+          },
+          {
+            "name": "Reputational",
+            "score": 66.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.4
+          }
+        ]
+      },
+      {
+        "date": "2025-11-08",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 11.4
+          },
+          {
+            "name": "Financial",
+            "score": 23.3
+          },
+          {
+            "name": "Operational",
+            "score": 35
+          },
+          {
+            "name": "Reputational",
+            "score": 65
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.8
+          }
+        ]
+      },
+      {
+        "date": "2025-11-09",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 9.6
+          },
+          {
+            "name": "Financial",
+            "score": 21.8
+          },
+          {
+            "name": "Operational",
+            "score": 36.7
+          },
+          {
+            "name": "Reputational",
+            "score": 65
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.2
+          }
+        ]
+      },
+      {
+        "date": "2025-11-10",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 10.8
+          },
+          {
+            "name": "Financial",
+            "score": 21.2
+          },
+          {
+            "name": "Operational",
+            "score": 37.2
+          },
+          {
+            "name": "Reputational",
+            "score": 64
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.4
+          }
+        ]
+      },
+      {
+        "date": "2025-11-11",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 12.4
+          },
+          {
+            "name": "Financial",
+            "score": 22.5
+          },
+          {
+            "name": "Operational",
+            "score": 36
+          },
+          {
+            "name": "Reputational",
+            "score": 64.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.8
+          }
+        ]
+      },
+      {
+        "date": "2025-11-12",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 11.3
+          },
+          {
+            "name": "Financial",
+            "score": 24.3
+          },
+          {
+            "name": "Operational",
+            "score": 34
+          },
+          {
+            "name": "Reputational",
+            "score": 64.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 39.2
+          }
+        ]
+      },
+      {
+        "date": "2025-11-13",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 12.9
+          },
+          {
+            "name": "Financial",
+            "score": 23.9
+          },
+          {
+            "name": "Operational",
+            "score": 33.7
+          },
+          {
+            "name": "Reputational",
+            "score": 62.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-14",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 14.2
+          },
+          {
+            "name": "Financial",
+            "score": 23.6
+          },
+          {
+            "name": "Operational",
+            "score": 33
+          },
+          {
+            "name": "Reputational",
+            "score": 64.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 38
+          }
+        ]
+      },
+      {
+        "date": "2025-11-15",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 12.2
+          },
+          {
+            "name": "Financial",
+            "score": 25.4
+          },
+          {
+            "name": "Operational",
+            "score": 33.5
+          },
+          {
+            "name": "Reputational",
+            "score": 63
+          },
+          {
+            "name": "Regulatory",
+            "score": 38
+          }
+        ]
+      },
+      {
+        "date": "2025-11-16",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 11.1
+          },
+          {
+            "name": "Financial",
+            "score": 26.3
+          },
+          {
+            "name": "Operational",
+            "score": 35.1
+          },
+          {
+            "name": "Reputational",
+            "score": 63.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.6
+          }
+        ]
+      },
+      {
+        "date": "2025-11-17",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 9.2
+          },
+          {
+            "name": "Financial",
+            "score": 25.9
+          },
+          {
+            "name": "Operational",
+            "score": 36.3
+          },
+          {
+            "name": "Reputational",
+            "score": 61.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-18",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 10
+          },
+          {
+            "name": "Financial",
+            "score": 24.5
+          },
+          {
+            "name": "Operational",
+            "score": 37.9
+          },
+          {
+            "name": "Reputational",
+            "score": 62.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 38
+          }
+        ]
+      },
+      {
+        "date": "2025-11-19",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 9.6
+          },
+          {
+            "name": "Financial",
+            "score": 24.2
+          },
+          {
+            "name": "Operational",
+            "score": 39.4
+          },
+          {
+            "name": "Reputational",
+            "score": 62.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.4
+          }
+        ]
+      },
+      {
+        "date": "2025-11-20",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 9.3
+          },
+          {
+            "name": "Financial",
+            "score": 24.7
+          },
+          {
+            "name": "Operational",
+            "score": 39.6
+          },
+          {
+            "name": "Reputational",
+            "score": 65.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 39.2
+          }
+        ]
+      },
+      {
+        "date": "2025-11-21",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 8.2
+          },
+          {
+            "name": "Financial",
+            "score": 23.3
+          },
+          {
+            "name": "Operational",
+            "score": 38.3
+          },
+          {
+            "name": "Reputational",
+            "score": 63.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.3
+          }
+        ]
+      },
+      {
+        "date": "2025-11-22",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 6.4
+          },
+          {
+            "name": "Financial",
+            "score": 21.3
+          },
+          {
+            "name": "Operational",
+            "score": 40.2
+          },
+          {
+            "name": "Reputational",
+            "score": 62
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.2
+          }
+        ]
+      },
+      {
+        "date": "2025-11-23",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 5.6
+          },
+          {
+            "name": "Financial",
+            "score": 20.7
+          },
+          {
+            "name": "Operational",
+            "score": 39.1
+          },
+          {
+            "name": "Reputational",
+            "score": 63.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-24",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 6.8
+          },
+          {
+            "name": "Financial",
+            "score": 18.7
+          },
+          {
+            "name": "Operational",
+            "score": 37.2
+          },
+          {
+            "name": "Reputational",
+            "score": 62.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.9
+          }
+        ]
+      },
+      {
+        "date": "2025-11-25",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 5.7
+          },
+          {
+            "name": "Financial",
+            "score": 17.9
+          },
+          {
+            "name": "Operational",
+            "score": 35.7
+          },
+          {
+            "name": "Reputational",
+            "score": 61
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.3
+          }
+        ]
+      },
+      {
+        "date": "2025-11-26",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 7.2
+          },
+          {
+            "name": "Financial",
+            "score": 17.3
+          },
+          {
+            "name": "Operational",
+            "score": 37
+          },
+          {
+            "name": "Reputational",
+            "score": 58.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 37
+          }
+        ]
+      },
+      {
+        "date": "2025-11-27",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 5.8
+          },
+          {
+            "name": "Financial",
+            "score": 17.3
+          },
+          {
+            "name": "Operational",
+            "score": 35.9
+          },
+          {
+            "name": "Reputational",
+            "score": 59.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.4
+          }
+        ]
+      },
+      {
+        "date": "2025-11-28",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 5
+          },
+          {
+            "name": "Financial",
+            "score": 16.9
+          },
+          {
+            "name": "Operational",
+            "score": 36.6
+          },
+          {
+            "name": "Reputational",
+            "score": 59.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.4
+          }
+        ]
+      },
+      {
+        "date": "2025-11-29",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 5
+          },
+          {
+            "name": "Financial",
+            "score": 16.8
+          },
+          {
+            "name": "Operational",
+            "score": 37.2
+          },
+          {
+            "name": "Reputational",
+            "score": 58.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.5
+          }
+        ]
+      },
+      {
+        "date": "2025-11-30",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 5
+          },
+          {
+            "name": "Financial",
+            "score": 17
+          },
+          {
+            "name": "Operational",
+            "score": 35.4
+          },
+          {
+            "name": "Reputational",
+            "score": 56.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.4
+          }
+        ]
+      },
+      {
+        "date": "2025-12-01",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18.29
+          },
+          {
+            "name": "Financial",
+            "score": 33.33
+          },
+          {
+            "name": "Operational",
+            "score": 35.5
+          },
+          {
+            "name": "Reputational",
+            "score": 68.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 50
+          }
+        ]
+      },
+      {
+        "date": "2025-12-02",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 6.3
+          },
+          {
+            "name": "Financial",
+            "score": 17.5
+          },
+          {
+            "name": "Operational",
+            "score": 37.2
+          },
+          {
+            "name": "Reputational",
+            "score": 59.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.2
+          }
+        ]
+      },
+      {
+        "date": "2025-12-03",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18.3
+          },
+          {
+            "name": "Financial",
+            "score": 33.3
+          },
+          {
+            "name": "Operational",
+            "score": 35.5
+          },
+          {
+            "name": "Reputational",
+            "score": 68.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 50
+          }
+        ]
+      },
+      {
+        "date": "2025-12-04",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 18.29
+          },
+          {
+            "name": "Financial",
+            "score": 33.33
+          },
+          {
+            "name": "Operational",
+            "score": 48
+          },
+          {
+            "name": "Reputational",
+            "score": 68.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 50
+          }
+        ]
+      }
+    ]
+  },
+  "security": {
+    "score": {
+      "current": 18.29,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "audits": {
+      "token": [],
+      "product": [
+        {
+          "report": {
+            "url": "https://skynet.certik.com/third-party-audit-reports/jqfm0se0f03r/thirdparty-acae3505f7beb373a0eb73556da2e77d-pdf/2ed3366c203724a730423a77f5069e55/_dApp__Zcash___Snap___May2025"
+          },
+          "auditor": {
+            "name": "security",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f3999ba1-769e-447c-899c-0fffa2ef0211.png"
+          },
+          "date": "2025-05-19",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://www.coinspect.com/doc/Zcash2016v15.pdf"
+          },
+          "auditor": {
+            "name": "Coinspect",
+            "logo": null
+          },
+          "date": "2016-10-01",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://www.nccgroup.com/media/v1kkxeae/_ncc_group_zcash2018_public_report_2019-01-30_v13.pdf"
+          },
+          "auditor": {
+            "name": "NCC Group",
+            "logo": null
+          },
+          "date": "2019-01-30",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://leastauthority.com/wp-content/uploads/2019/08/LeastAuthority-Zcash-Implementation-Analysis-and-Overwinter-Specification.pdf"
+          },
+          "auditor": {
+            "name": "Least Authority",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/056d1b5d-d499-42ab-8742-25b43ab7a237.PNG"
+          },
+          "date": "2018-05-29",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://leastauthority.com/static/publications/LeastAuthority-Zcash-Overwinter%2BSapling-Specification-Final-Audit-Report.pdf"
+          },
+          "auditor": {
+            "name": "Least Authority",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/056d1b5d-d499-42ab-8742-25b43ab7a237.PNG"
+          },
+          "date": "2018-08-17",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://leastauthority.com/static/publications/LeastAuthority-Zcash-Sapling-Implementation-RPC-Interface-Updated-Audit-Report.pdf"
+          },
+          "auditor": {
+            "name": "Least Authority",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/056d1b5d-d499-42ab-8742-25b43ab7a237.PNG"
+          },
+          "date": "2019-01-30",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://pentestreports.com/files/reports/nccgroup/NCC_Group_Zcash_NU3_Blossom_Report_2020-02-06_v1.1.pdf"
+          },
+          "auditor": {
+            "name": "NCC Group",
+            "logo": null
+          },
+          "date": "2020-02-06",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/trailofbits/publications/blob/master/reviews/Zcash.pdf"
+          },
+          "auditor": {
+            "name": "Trail of Bits",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/b22a667e-c82f-411f-bb86-5b3c5c3de111.PNG"
+          },
+          "date": "2019-12-04",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/trailofbits/publications/blob/master/reviews/Zcash2.pdf"
+          },
+          "auditor": {
+            "name": "Trail of Bits",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/b22a667e-c82f-411f-bb86-5b3c5c3de111.PNG"
+          },
+          "date": "2020-04-29",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://www.nccgroup.com/media/hzlftzlu/_ncc_group_zcash_nu5_publicreportfinal.pdf"
+          },
+          "auditor": {
+            "name": "NCC Group",
+            "logo": null
+          },
+          "date": "2021-11-01",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://www.nccgroup.com/media/bw3nq0vm/_ncc_group_zcashfoundation_e005955_report_2023-06-27_v10.pdf"
+          },
+          "auditor": {
+            "name": "NCC Group",
+            "logo": null
+          },
+          "date": "2023-06-27",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        }
+      ]
+    },
+    "tokenContracts": {
+      "isVerifiedOnChain": true,
+      "isAudited": false
+    },
+    "thirdPartyMonitoring": {
+      "label": null,
+      "severity": null
+    }
+  },
+  "financial": {
+    "score": {
+      "current": 33.33,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "inflation": {
+      "window": "3m",
+      "points": [
+        {
+          "date": "2023-01-01",
+          "percentage": -20.4311
+        },
+        {
+          "date": "2023-04-01",
+          "percentage": -18.6938
+        },
+        {
+          "date": "2023-07-01",
+          "percentage": -7.694
+        },
+        {
+          "date": "2023-10-01",
+          "percentage": 85.7926
+        },
+        {
+          "date": "2024-01-01",
+          "percentage": 1.898
+        },
+        {
+          "date": "2024-04-01",
+          "percentage": 1.3453
+        },
+        {
+          "date": "2024-07-01",
+          "percentage": 0.1137
+        },
+        {
+          "date": "2024-10-01",
+          "percentage": 4.4642
+        },
+        {
+          "date": "2025-01-01",
+          "percentage": 1.2753
+        },
+        {
+          "date": "2025-04-01",
+          "percentage": 1.0874
+        },
+        {
+          "date": "2025-07-01",
+          "percentage": 0.9874
+        }
+      ]
+    },
+    "revenueSources": [
+      {
+        "label": "Validator Rewards (native)"
+      }
+    ],
+    "treasuryQuality": {
+      "topTierAssetsShare": "unknown",
+      "trend": {
+        "label": null,
+        "severity": "high"
+      },
+      "isSpikesPresent": false,
+      "assetDistribution": [
+        {
+          "label": "Stable"
+        },
+        {
+          "label": "Native"
+        },
+        {
+          "label": "Project"
+        }
+      ]
+    },
+    "circularSupplyAnalysis": {
+      "matchesDeclared": "Cross-chain",
+      "isLessThanTotalSupply": true,
+      "deviation": null
+    },
+    "lockersAnalysis": {
+      "type": "Unknown"
+    }
+  },
+  "operational": {
+    "score": {
+      "current": 48,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "githubActivity": {
+      "heatmap": {
+        "intensities": [
+          0,
+          25,
+          50,
+          75,
+          100
+        ],
+        "points": [
+          {
+            "date": "2024-11-29",
+            "intensity": 18
+          },
+          {
+            "date": "2024-12-06",
+            "intensity": 51
+          },
+          {
+            "date": "2024-12-13",
+            "intensity": 100
+          },
+          {
+            "date": "2024-12-20",
+            "intensity": 9
+          },
+          {
+            "date": "2024-12-27",
+            "intensity": 17
+          },
+          {
+            "date": "2025-01-03",
+            "intensity": 9
+          },
+          {
+            "date": "2025-01-10",
+            "intensity": 3
+          },
+          {
+            "date": "2025-01-17",
+            "intensity": 8
+          },
+          {
+            "date": "2025-01-24",
+            "intensity": 39
+          },
+          {
+            "date": "2025-01-31",
+            "intensity": 22
+          },
+          {
+            "date": "2025-02-07",
+            "intensity": 36
+          },
+          {
+            "date": "2025-02-14",
+            "intensity": 36
+          },
+          {
+            "date": "2025-02-21",
+            "intensity": 39
+          },
+          {
+            "date": "2025-02-28",
+            "intensity": 32
+          },
+          {
+            "date": "2025-03-07",
+            "intensity": 15
+          },
+          {
+            "date": "2025-03-14",
+            "intensity": 30
+          },
+          {
+            "date": "2025-03-21",
+            "intensity": 34
+          },
+          {
+            "date": "2025-03-28",
+            "intensity": 32
+          },
+          {
+            "date": "2025-04-04",
+            "intensity": 52
+          },
+          {
+            "date": "2025-04-11",
+            "intensity": 29
+          },
+          {
+            "date": "2025-04-18",
+            "intensity": 32
+          },
+          {
+            "date": "2025-04-25",
+            "intensity": 48
+          },
+          {
+            "date": "2025-05-02",
+            "intensity": 41
+          },
+          {
+            "date": "2025-05-09",
+            "intensity": 62
+          },
+          {
+            "date": "2025-05-16",
+            "intensity": 36
+          },
+          {
+            "date": "2025-05-23",
+            "intensity": 14
+          },
+          {
+            "date": "2025-05-30",
+            "intensity": 35
+          },
+          {
+            "date": "2025-06-06",
+            "intensity": 30
+          },
+          {
+            "date": "2025-06-13",
+            "intensity": 24
+          },
+          {
+            "date": "2025-06-20",
+            "intensity": 25
+          },
+          {
+            "date": "2025-06-27",
+            "intensity": 11
+          },
+          {
+            "date": "2025-07-04",
+            "intensity": 8
+          },
+          {
+            "date": "2025-07-11",
+            "intensity": 37
+          },
+          {
+            "date": "2025-07-18",
+            "intensity": 39
+          },
+          {
+            "date": "2025-07-25",
+            "intensity": 49
+          },
+          {
+            "date": "2025-08-01",
+            "intensity": 20
+          },
+          {
+            "date": "2025-08-08",
+            "intensity": 35
+          },
+          {
+            "date": "2025-08-15",
+            "intensity": 33
+          },
+          {
+            "date": "2025-08-22",
+            "intensity": 33
+          },
+          {
+            "date": "2025-08-29",
+            "intensity": 41
+          },
+          {
+            "date": "2025-09-05",
+            "intensity": 44
+          },
+          {
+            "date": "2025-09-12",
+            "intensity": 57
+          },
+          {
+            "date": "2025-09-19",
+            "intensity": 21
+          },
+          {
+            "date": "2025-09-26",
+            "intensity": 37
+          },
+          {
+            "date": "2025-10-03",
+            "intensity": 20
+          },
+          {
+            "date": "2025-10-10",
+            "intensity": 40
+          },
+          {
+            "date": "2025-10-17",
+            "intensity": 33
+          },
+          {
+            "date": "2025-10-24",
+            "intensity": 51
+          },
+          {
+            "date": "2025-10-31",
+            "intensity": 33
+          },
+          {
+            "date": "2025-11-07",
+            "intensity": 15
+          },
+          {
+            "date": "2025-11-14",
+            "intensity": 15
+          },
+          {
+            "date": "2025-11-21",
+            "intensity": 21
+          }
+        ]
+      },
+      "commitsCount7d": 37
+    },
+    "teamTrackRecords": {
+      "isEducationRelevant": false,
+      "isWorkExperienceRelevant": true,
+      "isBusinessExperienceRelevant": true
+    },
+    "liquidityRisks": {
+      "cexQuality": "2025-10-08",
+      "cexVolToMcap": "Below Average",
+      "dexLpState": "Unknown",
+      "dexLpToMcap": "Below Average",
+      "orderbookToMcap": "Above Average"
+    },
+    "documentation": [
+      {
+        "label": "Whitepaper",
+        "url": "http://zerocash-project.org/media/pdf/zerocash-extended-20140518.pdf"
+      },
+      {
+        "label": "Documentation",
+        "url": "https://zcash.readthedocs.io/en/latest/#"
+      },
+      {
+        "label": "Roadmap",
+        "url": "https://forum.zcashcommunity.com/t/2025-6-zcash-protocol-roadmap/51760"
+      }
+    ],
+    "certifications": {
+      "iso": false,
+      "ccss": false
+    }
+  },
+  "reputational": {
+    "score": {
+      "current": 68.5,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "insurance": {
+      "custody": "none",
+      "coverage": "none"
+    },
+    "auditReputation": {
+      "topAuditor": {
+        "name": "security",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f3999ba1-769e-447c-899c-0fffa2ef0211.png",
+        "grade": {
+          "label": "AAA",
+          "tier": "Top-Tier"
+        }
+      }
+    },
+    "redFlags": {
+      "mmRedFlags": "Not Listed",
+      "investorRedFlags": "Not Listed"
+    },
+    "longevity": {
+      "projectLaunchedAt": "5 years +",
+      "protocolLaunchedAt": "5 years +"
+    },
+    "social": {
+      "twitter": {
+        "score": "Excellent",
+        "label": "Twitter Score"
+      },
+      "website": {
+        "visits": {
+          "count": 10600,
+          "tag": {
+            "label": "average",
+            "severity": "medium"
+          }
+        }
+      },
+      "googleTrends": {
+        "tag": {
+          "label": "Average Range",
+          "severity": "medium"
+        }
+      },
+      "interactions": {
+        "tag": {
+          "label": "Average Range ",
+          "severity": "medium"
+        }
+      }
+    }
+  },
+  "regulatory": {
+    "score": {
+      "current": 50,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "regulatorySurfaceControls": {
+      "isKycPresented": false,
+      "isKytPresented": false
+    },
+    "jurisdictionQuality": "Tier 2",
+    "isLegalPresent": true,
+    "isPublicRegistrationPresent": true,
+    "isTeamTransparencyPublic": true,
+    "operatesUnderRegulations": false
+  },
+  "dependency": {
+    "score": {
+      "current": 0,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    }
+  },
+  "proofOfOpinion": {
+    "communitySentiment": {
+      "percentage": {
+        "min": -100,
+        "max": 100
+      },
+      "points": [
+        {
+          "date": "2025-09-10",
+          "positive": 28,
+          "negative": 19
+        },
+        {
+          "date": "2025-09-17",
+          "positive": 10,
+          "negative": 32
+        },
+        {
+          "date": "2025-09-24",
+          "positive": 26,
+          "negative": 17
+        },
+        {
+          "date": "2025-10-01",
+          "positive": 68,
+          "negative": 54
+        },
+        {
+          "date": "2025-10-08",
+          "positive": 31,
+          "negative": 19
+        },
+        {
+          "date": "2025-10-15",
+          "positive": 22,
+          "negative": 16
+        },
+        {
+          "date": "2025-10-22",
+          "positive": 42,
+          "negative": 48
+        },
+        {
+          "date": "2025-10-29",
+          "positive": 50,
+          "negative": 48
+        },
+        {
+          "date": "2025-11-05",
+          "positive": 56,
+          "negative": 33
+        },
+        {
+          "date": "2025-11-12",
+          "positive": 46,
+          "negative": 41
+        },
+        {
+          "date": "2025-11-19",
+          "positive": 35,
+          "negative": 8
+        },
+        {
+          "date": "2025-11-26",
+          "positive": 50,
+          "negative": 7
+        },
+        {
+          "date": "2025-12-03",
+          "positive": 88,
+          "negative": 25
+        }
+      ]
+    },
+    "prosAndCons": {
+      "pros": [
+        "Advanced privacy features unmatched by most coins.",
+        "Strong community and developer support.",
+        "Halving events maintain scarcity."
+      ],
+      "cons": [
+        "Regulatory pressures on privacy coins.",
+        "Slower transaction speeds than newer chains.",
+        "Low liquidity on some exchanges."
+      ]
+    },
+    "expertReviews": {
+      "total": 6,
+      "reviews": [
+        {
+          "reviewer": {
+            "tag": "Aaronic0"
+          },
+          "date": "2025-12-01",
+          "text": "Zcash is a privacy-focused cryptocurrency using zk-SNARKs for shielded transactions, launched in 2016 as a fork of Bitcoin. It allows optional privacy, making it popular for confidential transfers. The team is led by the Electric Coin Company, with ongoing development in scalability. In 2025, it’s still used in dark markets but has legitimate adoption in privacy tools. However, it has struggled with low market cap compared to Monero. Overall, it’s a veteran project with solid tech but facing competition.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Amentinho"
+          },
+          "date": "2025-12-01",
+          "text": "Zcash is one of the oldest privacy-focused cryptocurrency projects. The idea was born in 2013 from a group of people who wanted to create transactions private in Bitcoin, but due to complexity, a parallel project was created. It is famous because users can send shielded or transparent transactions. It uses zk-SNARKs to provide optional anonymity and the tokenomics see a fixed 21M supply, with halving every 4 years. Some fun fact, the updates were before named after plants, but then they started to be called by N followed by a number (example N1, N2). It benefited from the 2025 U.S. “Clarity Act” which explicitly allowed privacy coins, although regulations in the EU are still a challenge for it. The coin saw renewed interest as institutional players and regulatory clarity in the last 2025 quarter led to a huge price surge, showing that privacy is still one of most interesting topics in web3. To summarize, Zcash is a kind of privacy Bitcoin, it is possible to switch from private mode to transparent mode with no effort. Around 25% of coins are currently in private addresses.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Softwaredynamism"
+          },
+          "date": "2025-12-01",
+          "text": "The project is a privacy focused or oriented one. It uses zero knowledge encryption for private peer to peer payments. The platform makes it optional for enhanced privacy or not. It's encrypted electronic cash, one can use it, if you want to stay shielded.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Shams1412hailover"
+          },
+          "date": "2025-12-01",
+          "text": "Zcash is a privacy focused Layer 1 blockchain that uses the Equihash algorithm proof of work consensus mechanism. It was created in 2016 as a fork of the Bitcoin codebase. But recently they introduced Zero-Knowledge Succinct Non-Interactive Argument of Knowledge (zk-SNARKs) in order to enable optional privacy. I find it interesting to see Zcash combine the traditional PoW technology with the modern zk-SNARKs technology for enhanced privacy solutions. Zcash has an experienced team from Electric Coin Company and Zcash foundation backed by institutional giants like Grayscale, Reliance Global Group, Digital Currency Group and Panthera Capital and important Ecosystem partners like Gemini, Coinbase and Kraken. The project has a good potential in my opinion.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Max_08892"
+          },
+          "date": "2025-12-01",
+          "text": "Zcash feels like a technically impressive privacy coin to me, but also somewhat esoteric. I respect that it uses advanced cryptography to anonymize transactions, but I suspect most people will find it too complex or niche. It seems strong in concept, yet its real world use stays limited.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Benblockk "
+          },
+          "date": "2025-12-01",
+          "text": "I checked out Zcash, and it’s one of those older crypto projects that has been around for years. The main idea is privacy and they really focus on it. The tech behind it looks strong, and the project has survived multiple market cycles, which says something.\nBut at the same time, Zcash feels a bit “quiet” these days. Not much noise, not a lot of new updates compared to newer privacy projects. It still works and still has a solid purpose, but it doesn’t feel like a project that’s pushing for big growth anymore.",
+          "url": null
+        }
+      ]
+    }
+  }
+}

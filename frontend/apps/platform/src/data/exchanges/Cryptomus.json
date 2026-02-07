@@ -1,0 +1,234 @@
+{
+  "exchangeDetails": {
+    "id": "507",
+    "name": "Cryptomus",
+    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/8b6e9073-3fb5-4a32-9a27-d25eb5614b98.jpg",
+    "rank": 168,
+    "description": "Cryptomus is a centralized cryptocurrency exchange registered in Canada. Is Cryptomus safe? Cryptomus security rating is high with 22% security score.",
+    "certification": {
+      "level": "uncertified"
+    },
+    "users": null,
+    "dateOfOperation": "2025",
+    "jurisdiction": "Canada",
+    "listedAssetsCount": null,
+    "documentation": "https://cryptomus.com/",
+    "socials": [
+      {
+        "url": "https://x.com/cryptomus",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/94bc0489-8e36-44b9-9fc0-ecf89bedc92c.png"
+      },
+      {
+        "url": "https://discord.gg/9vHK6R9HkQ",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/6ddc824e-2d53-465d-9612-bfe99aa26ab6.png"
+      },
+      {
+        "url": "https://www.linkedin.com/company/cryptomusgateway/",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/d4ae6571-35c3-430a-b311-e13a3ad2ac79.png"
+      }
+    ],
+    "audits": [],
+    "security": {
+      "score": {
+        "current": 22,
+        "min": 0,
+        "max": 100
+      },
+      "grade": {
+        "label": "C",
+        "tier": "low"
+      },
+      "confidence": null,
+      "change24h": null,
+      "dataCoverage": {
+        "percentage": 75
+      },
+      "categories": [
+        {
+          "name": "Security",
+          "score": {
+            "current": 21.6,
+            "min": 0,
+            "max": 100
+          }
+        }
+      ],
+      "dynamic": {
+        "window": "7d",
+        "score": {
+          "min": 0,
+          "max": 100
+        },
+        "points": []
+      }
+    },
+    "newsFeed": {
+      "topRisks": [
+        {
+          "date": "2025-11-30",
+          "content": "The absence of CCSS certification leaves crypto custody controls unvalidated, increasing the risk of undetected security gaps."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "Missing penetration testing leaves the system without independent validation, increasing the likelihood that hidden security flaws remain undetected."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "Without a Proof of Reserve audit, user asset backing cannot be independently verified, elevating transparency and solvency risks."
+        }
+      ],
+      "recentChanges": [
+        {
+          "date": "2025-11-30",
+          "content": "The cookie flag score is improved, meaning cookies are now set more securely to better protect user sessions."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "The password policy is updated, requiring stronger passwords and improving overall account security."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "The HTTP headers score is improved, adding better protections against common web attacks."
+        }
+      ]
+    }
+  },
+  "securityScoreCategoriesDynamic": {
+    "window": "1y",
+    "score": {
+      "min": 0,
+      "max": 100
+    },
+    "points": []
+  },
+  "security": {
+    "score": {
+      "current": 22,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "server": {
+      "sslTlsCertificate": {
+        "score": 9,
+        "maxScore": 10
+      },
+      "wasCdn": {
+        "score": 10,
+        "maxScore": 10
+      },
+      "spamDbPresence": "0 blacklists",
+      "cookieFlags": [
+        "Secure",
+        "SameSite"
+      ],
+      "certificationTags": [
+        {
+          "label": "ISO 27001",
+          "tooltip": "An international standard that specifies requirements for an information security management system, ensuring best practices in security measures.",
+          "value": "No"
+        },
+        {
+          "label": "CCSS",
+          "tooltip": "A set of security standards specifically designed to secure cryptocurrency systems and protect against common threats like access control attacks.",
+          "value": " No"
+        }
+      ]
+    },
+    "user": {
+      "isTwoFactorAuthenticationPresent": true,
+      "isAntiPhishingProtectionPresent": false,
+      "isWithdrawalWhitelistingPresent": true,
+      "isCaptchaProtectionPresent": true,
+      "deviceManagement": "List & Terminate",
+      "passwordRequirements": [
+        "Length >= 8 characters",
+        "Length over 32 character",
+        "Digit",
+        "Uppercase"
+      ]
+    },
+    "penetrationTest": {
+      "coverage": {
+        "percentage": 0
+      },
+      "score": {
+        "current": 0,
+        "maxScore": 100
+      }
+    },
+    "isInsuranceFundPresent": false,
+    "bugBounty": {
+      "status": {
+        "label": null
+      },
+      "payoutRange": null,
+      "provider": {
+        "url": null,
+        "name": null,
+        "logo": null
+      },
+      "score": {
+        "current": 0,
+        "maxScore": 100
+      }
+    },
+    "serverSecurity": {
+      "score": 80,
+      "maxScore": 100
+    },
+    "userSecurity": {
+      "score": 82,
+      "maxScore": 100
+    }
+  },
+  "solvency": {
+    "score": {
+      "current": null,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "proofOfReserves": {
+      "isProofOfReservesAuditPresent": false,
+      "isProofOfOwnerPresent": false,
+      "userScope": null,
+      "assetComposition": null,
+      "regulatory": null,
+      "merkleTree": null
+    },
+    "auditUsersCoverage": {
+      "percentage": null
+    },
+    "rehypothecationPolicy": {
+      "label": null,
+      "severity": null
+    },
+    "liabilityVsReserves": {
+      "window": "1y",
+      "points": []
+    }
+  },
+  "transparency": {
+    "score": {
+      "current": null,
+      "max": null,
+      "label": null
+    },
+    "isWalletTrackingPresent": null,
+    "lastLiabilitiesSnapshot": {
+      "date": null,
+      "totalUsd": null
+    },
+    "reserves": {
+      "totalUsd": null,
+      "totalWallets": null,
+      "assetsList": {
+        "list": []
+      },
+      "assetsDistribution": []
+    }
+  },
+  "listedAssets": {
+    "total": null,
+    "list": []
+  }
+}

@@ -1,0 +1,9 @@
+export { default as TwitterIcon } from './TwitterIcon';
+export { default as DiscordIcon } from './DiscordIcon';
+export { default as GithubIcon } from './GithubIcon';
+export { default as YoutubeIcon } from './YoutubeIcon';
+export { default as TelegramIcon } from './TelegramIcon';
+export { default as MediumIcon } from './MediumIcon';
+export { default as LinkedinIcon } from './LinkedinIcon';
+export { default as StatUpIcon } from './StatUpIcon';
+export { default as StatDownIcon } from './StatDownIcon';

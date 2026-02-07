@@ -1,0 +1,31 @@
+{
+  "placeholder": "Search projects and exchanges",
+  "button": {
+    "clear": "Clear",
+    "pressToSearch": "Press / to search"
+  },
+  "tabs": {
+    "all": "All",
+    "projects": "Projects",
+    "exchanges": "Exchanges"
+  },
+  "sections": {
+    "recentSearches": "Recent Searches",
+    "trendingProjects": "Trending Projects",
+    "trendingExchanges": "Trending Exchanges"
+  },
+  "navigation": {
+    "toNavigate": "to navigate",
+    "toExit": "to exit",
+    "toSelect": "to select",
+    "esc": "Esc"
+  },
+  "aria": {
+    "search": "Search projects and exchanges",
+    "clearRecent": "Clear recent searches"
+  },
+  "noResults": {
+    "found": "No results found"
+  }
+}
+

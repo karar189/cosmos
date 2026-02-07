@@ -1,0 +1,172 @@
+{
+    "exchangeDetails": {
+        "id": "binance",
+        "name": "Binance",
+        "logo": "https://cryptologos.cc/logos/binance-coin-bnb-logo.png",
+        "rank": 1,
+        "description": "Binance is the world's largest cryptocurrency exchange by user count and trading volume, with over $217 billion in daily volume across spot and futures markets as of June 2025.",
+        "certification": {
+            "level": "gold"
+        },
+        "users": 160000000,
+        "dateOfOperation": "2017-07-14",
+        "jurisdiction": "Multiple",
+        "listedAssetsCount": 350,
+        "documentation": "binance.com/docs",
+        "socials": [
+            {
+                "url": "https://twitter.com/binance",
+                "logo": "https://abs.twimg.com/icons/apple-touch-icon-192x192.png"
+            },
+            {
+                "url": "https://discord.gg/binance",
+                "logo": "https://discord.com/assets/f9bb9c4af2b9c32a2c5ee0014661546d.png"
+            },
+            {
+                "url": "https://github.com/binance",
+                "logo": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+            },
+            {
+                "url": "https://youtube.com/binance",
+                "logo": "https://www.youtube.com/s/desktop/f506bd45/img/favicon_144x144.png"
+            },
+            {
+                "url": "https://t.me/binance",
+                "logo": "https://telegram.org/img/t_logo.png"
+            }
+        ],
+        "audits": [
+            {
+                "auditor": {
+                    "name": "security",
+                    "logo": "https://avatars.githubusercontent.com/u/21345719?s=200&v=4"
+                },
+                "report": {
+                    "url": "https://security.io/audits/binance"
+                }
+            },
+            {
+                "auditor": {
+                    "name": "CertiK",
+                    "logo": "https://pbs.twimg.com/profile_images/1732766832820600832/NnJZKvp__400x400.jpg"
+                },
+                "report": {
+                    "url": "https://certik.com/audits/binance"
+                }
+            },
+            {
+                "auditor": {
+                    "name": "Trail of Bits",
+                    "logo": "https://pbs.twimg.com/profile_images/1550532865412349952/K0y6k-Lm_400x400.png"
+                },
+                "report": {
+                    "url": "https://trailofbits.com/audits/binance"
+                }
+            }
+        ],
+        "disclosures": {
+            "policies": {
+                "url": "binance.com/docs"
+            },
+            "attestations": {
+                "url": "binance.com/attestation"
+            },
+            "legal": {
+                "url": "binance.com/policies"
+            }
+        },
+        "security": {
+            "score": {
+                "current": 45,
+                "min": 0,
+                "max": 100
+            },
+            "grade": {
+                "label": "BBB",
+                "tier": "medium"
+            },
+            "confidence": "high",
+            "change24h": 1,
+            "dataCoverage": {
+                "percentage": 40
+            },
+            "categories": [
+                {
+                    "name": "Security",
+                    "score": {
+                        "current": 5,
+                        "min": 0,
+                        "max": 100
+                    }
+                },
+                {
+                    "name": "Solvency",
+                    "score": {
+                        "current": 35,
+                        "min": 0,
+                        "max": 100
+                    }
+                },
+                {
+                    "name": "Transparency",
+                    "score": {
+                        "current": 55,
+                        "min": 0,
+                        "max": 100
+                    }
+                }
+            ],
+            "dynamic": {
+                "window": "30d",
+                "score": {
+                    "min": 40,
+                    "max": 50
+                },
+                "points": [
+                    {
+                        "date": "2025-01-01",
+                        "averagePolScore": 42
+                    },
+                    {
+                        "date": "2025-01-15",
+                        "averagePolScore": 44
+                    },
+                    {
+                        "date": "2025-02-01",
+                        "averagePolScore": 45
+                    }
+                ]
+            }
+        },
+        "newsFeed": {
+            "topRisks": [
+                {
+                    "date": "2025-03-04",
+                    "content": "Centralized custody model exposes users to counterparty risk."
+                },
+                {
+                    "date": "2025-03-03",
+                    "content": "Limited transparency on reserve composition and audit frequency."
+                },
+                {
+                    "date": "2025-03-02",
+                    "content": "Regulatory uncertainty in multiple jurisdictions affects operations."
+                }
+            ],
+            "recentChanges": [
+                {
+                    "date": "2025-03-04",
+                    "content": "New audit scope for router vX; 2 medium issues resolved."
+                },
+                {
+                    "date": "2025-03-04",
+                    "content": "Bug bounty top tier raised to $1m; 0 critical payouts last 90d."
+                },
+                {
+                    "date": "2025-03-04",
+                    "content": "Governance proposal added circuit‑breaker parameter set."
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,124 @@
+{
+    "layout": {
+      "backToExchanges": "Back to Exchange Ratings",
+      "loading": "Loading exchange details...",
+      "error": {
+        "title": "Unable to Load Exchange",
+        "message": "We couldn't load the exchange details. Please try again.",
+        "notFound": "Exchange not found",
+        "retry": "Retry"
+      }
+    },
+    "header": {
+      "rank": "Rank",
+      "certification": "Certification",
+      "aria": {
+        "exchangeHeader": "Exchange header"
+      }
+    },
+    "details": {
+      "tabs": {
+        "overview": "Overview",
+        "security": "Security",
+        "solvency": "Solvency",
+        "transparency": "Transparency",
+        "listedAssets": "Listed Assets"
+      },
+      "overview": {
+        "tradingVolume": "Trading Volume",
+        "tradingVolumeChart": "Trading Volume Chart",
+        "scoreChart": "Score Chart",
+        "listedAssets": "Listed Assets",
+        "exchangeAge": "Exchange Age"
+      }
+    },
+    "security": {
+      "title": "Security",
+      "serverSecurity": "Server Security",
+      "userSecurity": "User Security",
+      "insuranceFund": "Insurance Fund",
+      "certifications": "Server Security",
+      "certificationsTooltip": "Security certifications and compliance standards achieved by the exchange",
+      "bugBountySection": {
+        "title": "Bug Bounty"
+      },
+      "server": {
+        "sslTlsCertificate": "SSL/TLS Certificate",
+        "sslTlsCertificateTooltip": "Ensures secure data transmission between user browsers and the exchange's servers by encrypting communications",
+        "wafCdn": "WAF / CDN",
+        "wafCdnTooltip": "Protects against web-based threats while enhancing website performance and availability globally",
+        "spfDnssec": "SPF & DNSSEC",
+        "spfDnssecTooltip": "Validates email sources to prevent spoofing and secures DNS queries against tampering, respectively",
+        "httpHeaders": "HTTP headers",
+        "httpHeadersTooltip": "Utilize security directives in web communications to protect users from common vulnerabilities like cross-site scripting and clickjacking",
+        "spamDbPresence": "Spam DB Presence",
+        "cookieFlags": "Cookie Flags"
+      },
+      "user": {
+        "twoFactor": "2‑factor authentication",
+        "antiPhishing": "Anti‑phishing code",
+        "withdrawalWhitelist": "Withdrawal whitelist",
+        "captcha": "Captcha",
+        "deviceManagement": "Device Management",
+        "passwordRequirements": "Password Requirements"
+      },
+      "bugBounty": {
+        "status": "Status",
+        "statusTooltip": "The hosting party of the bug bounty program",
+        "payoutRange": "Payout Range",
+        "payoutRangeTooltip": "Reward range of the bug bounty program",
+        "provider": "Bug Bounty Provider"
+      },
+      "penetrationTest": {
+        "title": "Penetration Test",
+        "coverage": "Score Coverage"
+      }
+    },
+    "solvency": {
+      "title": "Solvency",
+      "auditUsersCoverage": "Audit Users Coverage",
+      "liabilityVsReserves": "Liability vs Reserves",
+      "rehypothecationPolicy": "Rehypothecation policy",
+      "proofOfReserves": {
+        "title": "Proof of Reserves",
+        "porAudit": "PoR Audit",
+        "proofOfOwnership": "Proof of Ownership",
+        "userScope": "User Scope",
+        "userScopeTooltip": "Percentage of users included into the Proof of Reserves audit report",
+        "assetComposition": "Asset Composition",
+        "assetCompositionTooltip": "Reserve structure assets composition analysis",
+        "regulatory": "Regulatory",
+        "regulatoryTooltip": "Proof of Reserves auditing frequency",
+        "merkleTree": "Merkle Tree",
+        "merkleTreeTooltip": "A cryptographic proof of client balances, enabling anyone to verify anonymously that an exchange holds their funds and that their account balances are included in the Proof of Reserves"
+      }
+    },
+    "transparency": {
+      "lastLiabilitiesSnapshot": "Last Liabilities Snapshot",
+      "reserves": {
+        "title": "Reserves",
+        "comingSoonSubtitle": "Is this your exchange? Create an account to submit your wallets data",
+        "createAccount": "CREATE EXCHANGE ACCOUNT",
+        "distribution": "Distribution"
+      }
+    },
+    "listedAssets": {
+      "title": "Listed Assets",
+      "searchPlaceholder": "Search tokens",
+      "categoryPlaceholder": "Category",
+      "table": {
+        "columns": {
+          "asset": "Asset",
+          "ticker": "Ticker",
+          "marketCap": "Market Cap",
+          "balance": "Balance",
+          "tokenAudits": "Token Audits",
+          "bugBounty": "Bug Bounty",
+          "pol": "PoL",
+          "category": "Category"
+        }
+      }
+    }
+  }
+  
+  

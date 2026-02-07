@@ -1,0 +1,3453 @@
+{
+  "exchangeDetails": {
+    "id": "491",
+    "name": "OrangeX",
+    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/39ff096c-6ef4-4e2f-b662-9ec5b9c62e87.webp",
+    "rank": 150,
+    "description": "OrangeX is a centralized cryptocurrency exchange registered in Seychelles. Is OrangeX safe? OrangeX security rating is high with 25% security score.",
+    "certification": {
+      "level": "uncertified"
+    },
+    "users": null,
+    "dateOfOperation": "2021",
+    "jurisdiction": "Seychelles",
+    "listedAssetsCount": 309,
+    "documentation": "https://www.orangex.com/",
+    "socials": [
+      {
+        "url": "https://medium.com/@OrangeX_Exchange",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/356bb2bf-b3a0-4216-9151-63448fda5245.png"
+      },
+      {
+        "url": "https://x.com/OrangeXExchange",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/94bc0489-8e36-44b9-9fc0-ecf89bedc92c.png"
+      },
+      {
+        "url": "https://t.me/OrangeX_exchange",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/3ba661b4-0013-41af-8a4c-f7fad6622784.png"
+      },
+      {
+        "url": "https://www.linkedin.com/company/orangexexchange/",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/d4ae6571-35c3-430a-b311-e13a3ad2ac79.png"
+      }
+    ],
+    "audits": [],
+    "security": {
+      "score": {
+        "current": 25,
+        "min": 0,
+        "max": 100
+      },
+      "grade": {
+        "label": "C",
+        "tier": "low"
+      },
+      "confidence": null,
+      "change24h": null,
+      "dataCoverage": {
+        "percentage": 75
+      },
+      "categories": [
+        {
+          "name": "Security",
+          "score": {
+            "current": 26.0,
+            "min": 0,
+            "max": 100
+          }
+        }
+      ],
+      "dynamic": {
+        "window": "7d",
+        "score": {
+          "min": 0,
+          "max": 100
+        },
+        "points": []
+      }
+    },
+    "newsFeed": {
+      "topRisks": [
+        {
+          "date": "2025-11-30",
+          "content": "The absence of CCSS certification leaves crypto custody controls unvalidated, increasing the risk of undetected security gaps."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "Missing penetration testing leaves the system without independent validation, increasing the likelihood that hidden security flaws remain undetected."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "Without a Proof of Reserve audit, user asset backing cannot be independently verified, elevating transparency and solvency risks."
+        }
+      ],
+      "recentChanges": [
+        {
+          "date": "2025-11-30",
+          "content": "The cookie flag score is improved, meaning cookies are now set more securely to better protect user sessions."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "The password policy is updated, requiring stronger passwords and improving overall account security."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "The HTTP headers score is improved, adding better protections against common web attacks."
+        }
+      ]
+    }
+  },
+  "securityScoreCategoriesDynamic": {
+    "window": "1y",
+    "score": {
+      "min": 0,
+      "max": 100
+    },
+    "points": []
+  },
+  "security": {
+    "score": {
+      "current": 25,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "server": {
+      "sslTlsCertificate": {
+        "score": 9,
+        "maxScore": 10
+      },
+      "wasCdn": {
+        "score": 10,
+        "maxScore": 10
+      },
+      "spamDbPresence": "0 blacklists",
+      "cookieFlags": [
+        "HTTP Only",
+        "Secure",
+        "SameSite"
+      ],
+      "certificationTags": [
+        {
+          "label": "ISO 27001",
+          "tooltip": "An international standard that specifies requirements for an information security management system, ensuring best practices in security measures.",
+          "value": "No"
+        },
+        {
+          "label": "CCSS",
+          "tooltip": "A set of security standards specifically designed to secure cryptocurrency systems and protect against common threats like access control attacks.",
+          "value": " No"
+        }
+      ]
+    },
+    "user": {
+      "isTwoFactorAuthenticationPresent": true,
+      "isAntiPhishingProtectionPresent": true,
+      "isWithdrawalWhitelistingPresent": true,
+      "isCaptchaProtectionPresent": true,
+      "deviceManagement": "List",
+      "passwordRequirements": [
+        "Length >= 8 characters",
+        "Length over 32 character",
+        "Digit"
+      ]
+    },
+    "penetrationTest": {
+      "coverage": {
+        "percentage": 0
+      },
+      "score": {
+        "current": 0,
+        "maxScore": 100
+      }
+    },
+    "isInsuranceFundPresent": true,
+    "bugBounty": {
+      "status": {
+        "label": null
+      },
+      "payoutRange": null,
+      "provider": {
+        "url": null,
+        "name": null,
+        "logo": null
+      },
+      "score": {
+        "current": 0,
+        "maxScore": 100
+      }
+    },
+    "serverSecurity": {
+      "score": 82,
+      "maxScore": 100
+    },
+    "userSecurity": {
+      "score": 86,
+      "maxScore": 100
+    }
+  },
+  "solvency": {
+    "score": {
+      "current": null,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "proofOfReserves": {
+      "isProofOfReservesAuditPresent": false,
+      "isProofOfOwnerPresent": false,
+      "userScope": null,
+      "assetComposition": null,
+      "regulatory": null,
+      "merkleTree": null
+    },
+    "auditUsersCoverage": {
+      "percentage": null
+    },
+    "rehypothecationPolicy": {
+      "label": null,
+      "severity": null
+    },
+    "liabilityVsReserves": {
+      "window": "1y",
+      "points": []
+    }
+  },
+  "transparency": {
+    "score": {
+      "current": null,
+      "max": null,
+      "label": null
+    },
+    "isWalletTrackingPresent": null,
+    "lastLiabilitiesSnapshot": {
+      "date": null,
+      "totalUsd": null
+    },
+    "reserves": {
+      "totalUsd": null,
+      "totalWallets": null,
+      "assetsList": {
+        "list": []
+      },
+      "assetsDistribution": []
+    }
+  },
+  "listedAssets": {
+    "total": 309,
+    "list": [
+      {
+        "ticker": "ETH",
+        "name": "Ethereum",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/3a57df21-1fbc-4062-9db5-a696915e84e8.PNG",
+        "address": null,
+        "marketCap": 379613244509,
+        "tokenAudits": "Up to date",
+        "category": "General-purpose",
+        "pol": {
+          "score": 4,
+          "grade": "A",
+          "severity": "Exceptional"
+        }
+      },
+      {
+        "ticker": "SOL",
+        "name": "SOL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BTC",
+        "name": "BTC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ADA",
+        "name": "ADA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "EURQ",
+        "name": "EURQ",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "KITE",
+        "name": "KITE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "EURR",
+        "name": "EURR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FARTCOIN",
+        "name": "FARTCOIN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LTC",
+        "name": "LTC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "YB",
+        "name": "YB",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "DOGE",
+        "name": "Dogecoin",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/36355b65-0a4d-48e3-9f9a-e7057e044260.PNG",
+        "address": null,
+        "marketCap": 22620899939,
+        "tokenAudits": "Up to date",
+        "category": "Pure meme",
+        "pol": {
+          "score": 17,
+          "grade": "DDD",
+          "severity": "Low"
+        }
+      },
+      {
+        "ticker": "APT",
+        "name": "Aptos",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/3b137af0-ec5a-4de1-bea8-fe665cda5d33.PNG",
+        "address": null,
+        "marketCap": 1458144985,
+        "tokenAudits": "Up to date",
+        "category": "General-purpose",
+        "pol": {
+          "score": 11,
+          "grade": "CCC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "AVNT",
+        "name": "AVNT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GAIB",
+        "name": "GAIB",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ARB",
+        "name": "Arbitrum",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/69603f4a-ceb9-4922-98c0-1e7eadabbad5.PNG",
+        "address": null,
+        "marketCap": 1224588297,
+        "tokenAudits": "Up to date",
+        "category": "Optimistic rollups",
+        "pol": {
+          "score": 9,
+          "grade": "B",
+          "severity": "High"
+        }
+      },
+      {
+        "ticker": "SUI",
+        "name": "SUI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ENS",
+        "name": "ENS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ZORA",
+        "name": "ZORA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "YZY",
+        "name": "YZY",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MMT",
+        "name": "MMT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MITO",
+        "name": "MITO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "UNI",
+        "name": "Uniswap",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/173f1a98-ee7d-471d-a6ca-8b99f1a4943e.PNG",
+        "address": null,
+        "marketCap": 3764038921,
+        "tokenAudits": "Up to date",
+        "category": "DEX",
+        "pol": {
+          "score": 6,
+          "grade": "BB",
+          "severity": "High"
+        }
+      },
+      {
+        "ticker": "ZKC",
+        "name": "ZKC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PENGU",
+        "name": "PENGU",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PROMPT",
+        "name": "PROMPT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PUMP",
+        "name": "Pump.fun",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/c3684730-73aa-4c1f-b35b-8aba032daf59.PNG",
+        "address": null,
+        "marketCap": 1854241547,
+        "tokenAudits": "Up to date",
+        "category": "Pure meme",
+        "pol": {
+          "score": 18,
+          "grade": "DD",
+          "severity": "Low"
+        }
+      },
+      {
+        "ticker": "COMP",
+        "name": "COMP",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TRUMP",
+        "name": "Official Trump",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/1a625207-82b4-495c-8bcf-dbefb3921e08.PNG",
+        "address": null,
+        "marketCap": 1209516025,
+        "tokenAudits": "Up to date",
+        "category": "Pure meme",
+        "pol": {
+          "score": 14,
+          "grade": "C",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "ZBT",
+        "name": "ZBT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MERL",
+        "name": "MERL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "JST",
+        "name": "JST",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "XAUT",
+        "name": "XAUT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TAG",
+        "name": "TAG",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MNT",
+        "name": "Mantle",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/11a3f7bd-7ea9-4da4-83a9-bab7d435fa82.PNG",
+        "address": null,
+        "marketCap": 3481036692,
+        "tokenAudits": "Up to date",
+        "category": "General-purpose",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "SPK",
+        "name": "SPK",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FET",
+        "name": "FET",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ASTER",
+        "name": "Aster",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/e95a3c8e-bbca-4675-86c4-ab3e6378f4a8.PNG",
+        "address": null,
+        "marketCap": 2102403336,
+        "tokenAudits": "Up to date",
+        "category": "General-purpose",
+        "pol": {
+          "score": 9,
+          "grade": "B",
+          "severity": "High"
+        }
+      },
+      {
+        "ticker": "HOLO",
+        "name": "HOLO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "EDEN",
+        "name": "EDEN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "WLFI",
+        "name": "World Liberty Financial",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/739aa56f-7530-4f72-a0bb-aef50e81fdd3.PNG",
+        "address": null,
+        "marketCap": 4185553448,
+        "tokenAudits": "Up to date",
+        "category": "Stablecoin issuer",
+        "pol": {
+          "score": 17,
+          "grade": "DDD",
+          "severity": "Low"
+        }
+      },
+      {
+        "ticker": "APR",
+        "name": "APR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BARD",
+        "name": "BARD",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GMX",
+        "name": "GMX",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0a0147c9-d106-4118-91e1-b45d7e816b05.PNG",
+        "address": null,
+        "marketCap": 91060786,
+        "tokenAudits": "Up to date",
+        "category": "Derivatives",
+        "pol": {
+          "score": 13,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "POL",
+        "name": "POL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ZRO",
+        "name": "LayerZero",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/c684088b-df6a-42da-a83d-219be30b6d76.PNG",
+        "address": null,
+        "marketCap": 287409917,
+        "tokenAudits": "Up to date",
+        "category": "Messaging",
+        "pol": {
+          "score": 8,
+          "grade": "B",
+          "severity": "High"
+        }
+      },
+      {
+        "ticker": "ENSO",
+        "name": "ENSO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "DEEP",
+        "name": "DEEP",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TOSHI",
+        "name": "TOSHI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "J",
+        "name": "J",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ALLO",
+        "name": "ALLO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "HUMA",
+        "name": "HUMA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TIA",
+        "name": "Celestia",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/8cdde00e-8c3b-4c35-98c7-bbf901071fe8.PNG",
+        "address": null,
+        "marketCap": 537393375,
+        "tokenAudits": "Up to date",
+        "category": "DA",
+        "pol": {
+          "score": 11,
+          "grade": "CCC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "LINEA",
+        "name": "Linea",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0158cb15-6ff7-46fd-ace6-e349dca36d43.png",
+        "address": null,
+        "marketCap": 148161350,
+        "tokenAudits": "Up to date",
+        "category": "ZK rollups",
+        "pol": {
+          "score": 14,
+          "grade": "C",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "TON",
+        "name": "TON",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "USD1",
+        "name": "USD1",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FLUID",
+        "name": "FLUID",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FIL",
+        "name": "Filecoin",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/17ca0ace-6abe-40ed-9929-58bf3eaee65e.PNG",
+        "address": null,
+        "marketCap": 1130812279,
+        "tokenAudits": "Up to date",
+        "category": "Storage",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "A2Z",
+        "name": "A2Z",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AVAX",
+        "name": "AVAX",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "APE",
+        "name": "BAYC",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/7c104fdd-f0b1-47b5-8e8b-e19fa646b6cb.PNG",
+        "address": null,
+        "marketCap": 220465111,
+        "tokenAudits": "Up to date",
+        "category": "Art/Collectibles",
+        "pol": {
+          "score": 17,
+          "grade": "DDD",
+          "severity": "Low"
+        }
+      },
+      {
+        "ticker": "STX",
+        "name": "STX",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GRT",
+        "name": "GRT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TURTLE",
+        "name": "TURTLE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SYRUP",
+        "name": "SYRUP",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SOON",
+        "name": "SOON",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CAKE",
+        "name": "CAKE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ORDI",
+        "name": "ORDI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AERO",
+        "name": "AERO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "XPL",
+        "name": "Plasma",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/6b5496ce-f573-4916-88df-2f284cbd956b.PNG",
+        "address": null,
+        "marketCap": 387943454,
+        "tokenAudits": "Up to date",
+        "category": "General-purpose",
+        "pol": {
+          "score": 16,
+          "grade": "DDD",
+          "severity": "Low"
+        }
+      },
+      {
+        "ticker": "SAPIEN",
+        "name": "SAPIEN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TRUST",
+        "name": "TRUST",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "IMX",
+        "name": "IMX",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LQTY",
+        "name": "LQTY",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LDO",
+        "name": "LDO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "KAITO",
+        "name": "KAITO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LPT",
+        "name": "LPT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "HNT",
+        "name": "Helium",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0dfa22a9-1c45-4296-bab0-adca688e385e.PNG",
+        "address": null,
+        "marketCap": 378060745,
+        "tokenAudits": "Up to date",
+        "category": "Wireless",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "H",
+        "name": "H",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CYC",
+        "name": "CYC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BOBA",
+        "name": "BOBA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SKYAI",
+        "name": "SKYAI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "A",
+        "name": "A",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "1INCH",
+        "name": "1INCH",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SAHARA",
+        "name": "SAHARA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BANANA",
+        "name": "BANANA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "NXPC",
+        "name": "NXPC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FORM",
+        "name": "FORM",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SIGN",
+        "name": "SIGN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PENDLE",
+        "name": "PENDLE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MET",
+        "name": "Meteora",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/d405f158-9983-4156-9b31-a692e3c78484.PNG",
+        "address": null,
+        "marketCap": 167768395,
+        "tokenAudits": "Up to date",
+        "category": "YIeld",
+        "pol": {
+          "score": 15,
+          "grade": "C",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "ORCA",
+        "name": "ORCA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "RESOLV",
+        "name": "RESOLV",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ONDO",
+        "name": "Ondo Finance",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/09202b77-69ee-415d-8d47-f30674f70787.PNG",
+        "address": null,
+        "marketCap": 1560057865,
+        "tokenAudits": "Up to date",
+        "category": "Cash equivalents",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "LA",
+        "name": "LA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SHELL",
+        "name": "SHELL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "WIF",
+        "name": "WIF",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BEAM",
+        "name": "BEAM",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BERA",
+        "name": "BERA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "JASMY",
+        "name": "JASMY",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PROVE",
+        "name": "PROVE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "OP",
+        "name": "Optimism",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/6d402a9a-0309-4962-a2e8-0cfcde32a2fd.PNG",
+        "address": null,
+        "marketCap": 616871239,
+        "tokenAudits": "Up to date",
+        "category": "Optimistic rollups",
+        "pol": {
+          "score": 13,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "SONIC",
+        "name": "SONIC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LUNC",
+        "name": "LUNC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PEOPLE",
+        "name": "PEOPLE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SHIB",
+        "name": "SHIB",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "RAY",
+        "name": "RAY",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "METIS",
+        "name": "METIS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BANANAS31",
+        "name": "BANANAS31",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BAN",
+        "name": "BAN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ATOM",
+        "name": "ATOM",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CTK",
+        "name": "CTK",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ME",
+        "name": "ME",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ATH",
+        "name": "ATH",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SEI",
+        "name": "SEI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "USDQ",
+        "name": "USDQ",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "USDR",
+        "name": "USDR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ERA",
+        "name": "ERA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "WAL",
+        "name": "WAL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "JTO",
+        "name": "JTO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FF",
+        "name": "FF",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "S",
+        "name": "S",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PLAY",
+        "name": "PLAY",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "KAS",
+        "name": "KAS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FLOCK",
+        "name": "FLOCK",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MOCA",
+        "name": "MOCA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BRETT",
+        "name": "BRETT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LAYER",
+        "name": "LAYER",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CARV",
+        "name": "CARV",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "RENDER",
+        "name": "Render",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/006a7b32-4185-4200-8c15-cbd2960d9322.PNG",
+        "address": null,
+        "marketCap": 898495529,
+        "tokenAudits": "Up to date",
+        "category": "Compute networks",
+        "pol": {
+          "score": 10,
+          "grade": "CCC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "SAND",
+        "name": "SAND",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AGI",
+        "name": "AGI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "HOME",
+        "name": "HOME",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SOMI",
+        "name": "SOMI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MANA",
+        "name": "Decentraland",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/4e12cbf8-2716-4ed6-b1a3-f89a51e8be23.PNG",
+        "address": null,
+        "marketCap": 304663924,
+        "tokenAudits": "Up to date",
+        "category": "Metaverse",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "ETHW",
+        "name": "ETHW",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "USELESS",
+        "name": "USELESS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TNSR",
+        "name": "TNSR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GALA",
+        "name": "GALA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CKB",
+        "name": "CKB",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "WLD",
+        "name": "Worldcoin",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f5b65000-11f0-449d-b6ec-9b3ae69cdad6.PNG",
+        "address": null,
+        "marketCap": 1506318526,
+        "tokenAudits": "Up to date",
+        "category": "Private payments",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "CUDIS",
+        "name": "CUDIS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "STG",
+        "name": "STG",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "NFP",
+        "name": "NFP",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BABY",
+        "name": "BABY",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AI",
+        "name": "AI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ENA",
+        "name": "Ethena",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0e81f32c-2a9b-4aac-9cc0-16d4e74dc404.PNG",
+        "address": null,
+        "marketCap": 2135970766,
+        "tokenAudits": "Up to date",
+        "category": "YIeld",
+        "pol": {
+          "score": 14,
+          "grade": "C",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "AWE",
+        "name": "AWE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MINA",
+        "name": "MINA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SD",
+        "name": "SD",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PARTI",
+        "name": "PARTI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MEME",
+        "name": "MEME",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "DBR",
+        "name": "DBR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "IOTX",
+        "name": "IOTX",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "NOM",
+        "name": "NOM",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SUPER",
+        "name": "SUPER",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BIO",
+        "name": "BIO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SAGA",
+        "name": "SAGA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "POPCAT",
+        "name": "POPCAT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CYBER",
+        "name": "CYBER",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ETHFI",
+        "name": "Ether.fi",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/20f94780-62fc-41fc-8524-837ad9e71af5.PNG",
+        "address": null,
+        "marketCap": 500165210,
+        "tokenAudits": "Up to date",
+        "category": "YIeld",
+        "pol": {
+          "score": 10,
+          "grade": "CCC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "PNUT",
+        "name": "PNUT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "API3",
+        "name": "API3",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MAGIC",
+        "name": "MAGIC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BB",
+        "name": "BB",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GOAT",
+        "name": "GOAT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FORTH",
+        "name": "FORTH",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "YGG",
+        "name": "YGG",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PYTH",
+        "name": "PYTH",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MYRO",
+        "name": "MYRO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CHILLGUY",
+        "name": "CHILLGUY",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TST",
+        "name": "TST",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MAVIA",
+        "name": "MAVIA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SKL",
+        "name": "SKL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CATI",
+        "name": "CATI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TOKEN",
+        "name": "TOKEN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "THE",
+        "name": "THE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "COOKIE",
+        "name": "COOKIE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "NEWT",
+        "name": "NEWT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SOPH",
+        "name": "SOPH",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LUNA",
+        "name": "LUNA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ARKM",
+        "name": "ARKM",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TAIKO",
+        "name": "TAIKO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GODS",
+        "name": "GODS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "HIGH",
+        "name": "HIGH",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "WCT",
+        "name": "WCT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CHZ",
+        "name": "CHZ",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "RATS",
+        "name": "RATS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BOME",
+        "name": "BOME",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "HAEDAL",
+        "name": "HAEDAL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "KAIA",
+        "name": "KAIA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TREE",
+        "name": "TREE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PUFFER",
+        "name": "PUFFER",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SOLV",
+        "name": "SOLV",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "C",
+        "name": "C",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MORPHO",
+        "name": "MORPHO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BLUR",
+        "name": "BLUR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "STRK",
+        "name": "Starknet",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f541d12a-464f-4b0c-a22e-2761a610a5c1.PNG",
+        "address": null,
+        "marketCap": 574405821,
+        "tokenAudits": "Up to date",
+        "category": "ZK rollups",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "PORTAL",
+        "name": "PORTAL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LISTA",
+        "name": "LISTA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TOWNS",
+        "name": "TOWNS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FLOW",
+        "name": "FLOW",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SPEC",
+        "name": "SPEC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MEW",
+        "name": "MEW",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "OSMO",
+        "name": "OSMO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PRCL",
+        "name": "PRCL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "KERNEL",
+        "name": "KERNEL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "HMSTR",
+        "name": "HMSTR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ZK",
+        "name": "ZKsync",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/1265aa91-3a36-47fb-a91e-6aa0f072f54f.PNG",
+        "address": null,
+        "marketCap": 315119313,
+        "tokenAudits": "Up to date",
+        "category": "ZK rollups",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "PIRATE",
+        "name": "PIRATE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TALK",
+        "name": "TALK",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "USUAL",
+        "name": "USUAL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "W",
+        "name": "W",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ZKJ",
+        "name": "ZKJ",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BOA",
+        "name": "BOA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ANIME",
+        "name": "ANIME",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AIXBT",
+        "name": "AIXBT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SAFE",
+        "name": "SAFE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "EL",
+        "name": "EL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "IO",
+        "name": "IO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "EIGEN",
+        "name": "EIGEN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GLMR",
+        "name": "GLMR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MOVE",
+        "name": "MOVE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "DOGS",
+        "name": "DOGS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GTC",
+        "name": "GTC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PYR",
+        "name": "PYR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GIGA",
+        "name": "GIGA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SWELL",
+        "name": "SWELL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AGLD",
+        "name": "AGLD",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "DOGEGOV",
+        "name": "DOGEGOV",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "XAI",
+        "name": "XAI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "WOO",
+        "name": "WOO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "XRP",
+        "name": "XRP",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TRX",
+        "name": "TRX",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BNB",
+        "name": "BNB",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/fd0aab93-629b-44ea-8ab4-c2a7affcd529.PNG",
+        "address": null,
+        "marketCap": 124478559106,
+        "tokenAudits": "Up to date",
+        "category": "CEX utility",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "BONK",
+        "name": "BONK",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PEPE",
+        "name": "Pepe",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/6d9ee7db-4666-4a4c-b9ff-ab7eeb1406bc.jpg",
+        "address": null,
+        "marketCap": 2014309565,
+        "tokenAudits": "Up to date",
+        "category": "Pure meme",
+        "pol": {
+          "score": 12,
+          "grade": "CC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "AEVO",
+        "name": "AEVO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CAT",
+        "name": "CAT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "USTC",
+        "name": "USTC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "FTT",
+        "name": "FTT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ASM",
+        "name": "ASM",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "2Z",
+        "name": "2Z",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "VANA",
+        "name": "VANA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MOG",
+        "name": "MOG",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TURT",
+        "name": "TURT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BITCOIN",
+        "name": "BITCOIN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "0G",
+        "name": "0G",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BIGTIME",
+        "name": "BIGTIME",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "WEN",
+        "name": "WEN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "OPEN",
+        "name": "OPEN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AUCTION",
+        "name": "AUCTION",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AIOZ",
+        "name": "AIOZ",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PUMPBTC",
+        "name": "PUMPBTC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BR",
+        "name": "BR",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SATS",
+        "name": "SATS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AXS",
+        "name": "Axie Infinity",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/73635e5b-38ff-4cb4-8ef0-e4458bcdff0d.PNG",
+        "address": null,
+        "marketCap": 183862583,
+        "tokenAudits": "Up to date",
+        "category": "Play to earn",
+        "pol": {
+          "score": 10,
+          "grade": "CCC",
+          "severity": "Moderate"
+        }
+      },
+      {
+        "ticker": "MASK",
+        "name": "MASK",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ACX",
+        "name": "ACX",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ORBS",
+        "name": "ORBS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CGPT",
+        "name": "CGPT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CTC",
+        "name": "CTC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BOOP",
+        "name": "BOOP",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PING",
+        "name": "PING",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GARI",
+        "name": "GARI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "B3",
+        "name": "B3",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "JUP",
+        "name": "JUP",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BONE",
+        "name": "BONE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ZRC",
+        "name": "ZRC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "XEC",
+        "name": "XEC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PRAI",
+        "name": "PRAI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "G",
+        "name": "G",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ES",
+        "name": "ES",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ZETA",
+        "name": "ZETA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SILLY",
+        "name": "SILLY",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "F",
+        "name": "F",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AXL",
+        "name": "AXL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "CFG",
+        "name": "CFG",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GMMT",
+        "name": "GMMT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "AERGO",
+        "name": "AERGO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TGT",
+        "name": "TGT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LM",
+        "name": "LM",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "DYM",
+        "name": "DYM",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "DOLO",
+        "name": "DOLO",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "REZ",
+        "name": "REZ",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BLAST",
+        "name": "BLAST",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MANTA",
+        "name": "MANTA",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "GPS",
+        "name": "GPS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "LRDS",
+        "name": "LRDS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "DEGEN",
+        "name": "DEGEN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "TIP",
+        "name": "TIP",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "EPT",
+        "name": "EPT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MOBILE",
+        "name": "MOBILE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "BRISE",
+        "name": "BRISE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "RON",
+        "name": "RON",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MIGGLES",
+        "name": "MIGGLES",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "MODE",
+        "name": "MODE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PENG",
+        "name": "PENG",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "ZEUS",
+        "name": "ZEUS",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "NPT",
+        "name": "NPT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "RDNT",
+        "name": "RDNT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "XEN",
+        "name": "XEN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "USDC",
+        "name": "USDC",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "VIRTUAL",
+        "name": "VIRTUAL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "WEMIX",
+        "name": "WEMIX",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "APEPE",
+        "name": "APEPE",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "POKT",
+        "name": "POKT",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PIXEL",
+        "name": "PIXEL",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "SLN",
+        "name": "SLN",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      },
+      {
+        "ticker": "PEIPEI",
+        "name": "PEIPEI",
+        "logo": null,
+        "address": null,
+        "marketCap": null,
+        "tokenAudits": "Up to date",
+        "category": null,
+        "pol": null
+      }
+    ]
+  }
+}

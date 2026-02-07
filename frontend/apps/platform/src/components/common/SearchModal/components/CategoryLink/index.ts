@@ -1,0 +1,2 @@
+export { CategoryLink } from './CategoryLink';
+

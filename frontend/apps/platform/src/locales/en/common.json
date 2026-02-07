@@ -1,0 +1,116 @@
+{
+  "main": {
+    "title": "CORE3 Platform",
+    "comingSoon": "Coming Soon",
+    "buttons": {
+      "goToProjectRatings": "GO TO PROJECT RATINGS"
+    }
+  },
+  "nA": "N/A",
+  "yes": "Yes",
+  "no": "No",
+  "relevant": {
+    "yes": "Relevant",
+    "no": "Not Relevant"
+  },
+  "present": {
+    "yes": "Present",
+    "no": "Not Present"
+  },
+  "absent": "Absent",
+  "positive": "Positive",
+  "negative": "Negative",
+  "changed": {
+    "yes": "Changed",
+    "no": "Unchanged"
+  },
+  "pros": "Pros",
+  "cons": "Cons",
+  "readFullReview": "READ FULL REVIEW",
+  "showLess": "SHOW LESS",
+  "public": "Public",
+  "private": "Private",
+  "more": "More",
+  "less": "Less",
+  "comingSoon": "This Data is Coming Soon",
+  "notFound": {
+    "errorCode": "404",
+    "errorLabel": "ERROR",
+    "heading": "Signal lost, trust intact.",
+    "description": "We couldn't find that page. The link may have changed or expired.\nNavigate back and keep exploring with confidence.",
+    "button": "GO TO PROJECT RATINGS"
+  },
+  "examples": {
+    "projectRatingsTable": {
+      "title": "Project Ratings Table"
+    }
+  },
+  "charts": {
+    "chartType": {
+      "ariaLabel": "Chart type",
+      "price": {
+        "label": "Price Chart",
+        "ariaLabel": "price chart"
+      },
+      "marketCap": {
+        "label": "Market Cap Chart",
+        "ariaLabel": "market cap chart"
+      }
+    },
+    "sentiment": {
+      "positive": "Positive",
+      "negative": "Negative"
+    },
+    "washtrading": {
+      "average": "Average"
+    }
+  },
+  "time": {
+    "year_one": "year",
+    "year_other": "years",
+    "month_one": "month",
+    "month_other": "months"
+  },
+  "timeRange": {
+    "1D": "1D",
+    "7D": "7D",
+    "1W": "1W",
+    "1M": "1M",
+    "6M": "6M",
+    "1Y": "1Y",
+    "all": "All"
+  },
+  "scoreCard": {
+    "polDynamic": {
+      "label": "PoL Dynamic",
+      "tooltip": "The Probability of Loss change with the time"
+    }
+  },
+  "exampleData": {
+    "label": "Example",
+    "tooltip": "Provided data before 01.12.2025 is an example",
+    "tooltipTitle": "Data Example"
+  },
+  "footer": {
+    "tagline": {
+      "line1": "Crypto",
+      "line2": "Organisation of",
+      "line3": "Regulatory",
+      "line4": "Elaboration"
+    }
+  },
+  "header": {
+    "userMenu": {
+      "logout": "Log Out"
+    },
+    "moreMenu": {
+      "trigger": "More",
+      "methodology": "Methodology",
+      "cooperation": "Cooperation"
+    }
+  },
+  "mobileOverlay": {
+    "title": "Not mobile-ready yet",
+    "description": "CORE3 needs a bigger screen for now - please continue on a laptop or desktop."
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "exchangeDetails": {
+    "id": "291",
+    "name": "Indoex",
+    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/efe989df-4efe-4a7b-9a8e-eaaf876a7814.png",
+    "rank": 149,
+    "description": "Indoex is a centralized cryptocurrency exchange registered in United Kingdom. Is Indoex safe? Indoex security rating is low with 25% security score.",
+    "certification": {
+      "level": "uncertified"
+    },
+    "users": null,
+    "dateOfOperation": "2013",
+    "jurisdiction": "United Kingdom",
+    "listedAssetsCount": null,
+    "documentation": "https://indoex.io",
+    "socials": [],
+    "audits": [],
+    "security": {
+      "score": {
+        "current": 25,
+        "min": 0,
+        "max": 100
+      },
+      "grade": {
+        "label": "C",
+        "tier": "low"
+      },
+      "confidence": null,
+      "change24h": null,
+      "dataCoverage": {
+        "percentage": 75
+      },
+      "categories": [
+        {
+          "name": "Security",
+          "score": {
+            "current": 25.9,
+            "min": 0,
+            "max": 100
+          }
+        }
+      ],
+      "dynamic": {
+        "window": "7d",
+        "score": {
+          "min": 0,
+          "max": 100
+        },
+        "points": []
+      }
+    },
+    "newsFeed": {
+      "topRisks": [
+        {
+          "date": "2025-11-30",
+          "content": "The absence of CCSS certification leaves crypto custody controls unvalidated, increasing the risk of undetected security gaps."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "Missing penetration testing leaves the system without independent validation, increasing the likelihood that hidden security flaws remain undetected."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "Without a Proof of Reserve audit, user asset backing cannot be independently verified, elevating transparency and solvency risks."
+        }
+      ],
+      "recentChanges": [
+        {
+          "date": "2025-11-30",
+          "content": "The cookie flag score is improved, meaning cookies are now set more securely to better protect user sessions."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "The password policy is updated, requiring stronger passwords and improving overall account security."
+        },
+        {
+          "date": "2025-11-30",
+          "content": "The HTTP headers score is improved, adding better protections against common web attacks."
+        }
+      ]
+    }
+  },
+  "securityScoreCategoriesDynamic": {
+    "window": "1y",
+    "score": {
+      "min": 0,
+      "max": 100
+    },
+    "points": []
+  },
+  "security": {
+    "score": {
+      "current": 25,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "server": {
+      "sslTlsCertificate": {
+        "score": 9,
+        "maxScore": 10
+      },
+      "wasCdn": {
+        "score": 0,
+        "maxScore": 10
+      },
+      "spamDbPresence": "0 blacklists",
+      "cookieFlags": [
+        "Neither is found"
+      ],
+      "certificationTags": [
+        {
+          "label": "ISO 27001",
+          "tooltip": "An international standard that specifies requirements for an information security management system, ensuring best practices in security measures.",
+          "value": "No"
+        },
+        {
+          "label": "CCSS",
+          "tooltip": "A set of security standards specifically designed to secure cryptocurrency systems and protect against common threats like access control attacks.",
+          "value": " No"
+        }
+      ]
+    },
+    "user": {
+      "isTwoFactorAuthenticationPresent": true,
+      "isAntiPhishingProtectionPresent": false,
+      "isWithdrawalWhitelistingPresent": false,
+      "isCaptchaProtectionPresent": false,
+      "deviceManagement": "Not available",
+      "passwordRequirements": [
+        "Length >= 8 characters",
+        "Length over 32 character",
+        "Digit",
+        "Uppercase"
+      ]
+    },
+    "penetrationTest": {
+      "coverage": {
+        "percentage": 0
+      },
+      "score": {
+        "current": 0,
+        "maxScore": 100
+      }
+    },
+    "isInsuranceFundPresent": false,
+    "bugBounty": {
+      "status": {
+        "label": null
+      },
+      "payoutRange": null,
+      "provider": {
+        "url": null,
+        "name": null,
+        "logo": null
+      },
+      "score": {
+        "current": 0,
+        "maxScore": 100
+      }
+    },
+    "serverSecurity": {
+      "score": 94,
+      "maxScore": 100
+    },
+    "userSecurity": {
+      "score": 94,
+      "maxScore": 100
+    }
+  },
+  "solvency": {
+    "score": {
+      "current": null,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "proofOfReserves": {
+      "isProofOfReservesAuditPresent": false,
+      "isProofOfOwnerPresent": false,
+      "userScope": null,
+      "assetComposition": null,
+      "regulatory": null,
+      "merkleTree": null
+    },
+    "auditUsersCoverage": {
+      "percentage": null
+    },
+    "rehypothecationPolicy": {
+      "label": null,
+      "severity": null
+    },
+    "liabilityVsReserves": {
+      "window": "1y",
+      "points": []
+    }
+  },
+  "transparency": {
+    "score": {
+      "current": null,
+      "max": null,
+      "label": null
+    },
+    "isWalletTrackingPresent": null,
+    "lastLiabilitiesSnapshot": {
+      "date": null,
+      "totalUsd": null
+    },
+    "reserves": {
+      "totalUsd": null,
+      "totalWallets": null,
+      "assetsList": {
+        "list": []
+      },
+      "assetsDistribution": []
+    }
+  },
+  "listedAssets": {
+    "total": null,
+    "list": []
+  }
+}

@@ -1,0 +1,5220 @@
+{
+  "projectDetails": {
+    "id": "20",
+    "name": "LayerZero",
+    "ticker": "ZRO",
+    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/c684088b-df6a-42da-a83d-219be30b6d76.PNG",
+    "rank": 5,
+    "description": "LayerZero is an omnichain interoperability protocol that provides lightweight, generic messaging to connect smart contracts across many blockchains.",
+    "certification": {
+      "level": "Absent"
+    },
+    "chains": [
+      {
+        "name": "Arbitrum One",
+        "logo": "https://coin-images.coingecko.com/asset_platforms/images/33/large/AO_logomark.png?1706606717"
+      },
+      {
+        "name": "Avalanche",
+        "logo": "https://coin-images.coingecko.com/asset_platforms/images/12/large/avalanche.png?1706606775"
+      },
+      {
+        "name": "Base",
+        "logo": "https://coin-images.coingecko.com/asset_platforms/images/131/large/base.png?1759905869"
+      },
+      {
+        "name": "BNB Smart Chain",
+        "logo": "https://coin-images.coingecko.com/asset_platforms/images/1/large/bnb_smart_chain.png?1706606721"
+      },
+      {
+        "name": "Ethereum",
+        "logo": "https://coin-images.coingecko.com/asset_platforms/images/279/large/ethereum.png?1706606803"
+      },
+      {
+        "name": "Optimism",
+        "logo": "https://coin-images.coingecko.com/asset_platforms/images/41/large/optimism.png?1706606778"
+      },
+      {
+        "name": "Polygon POS",
+        "logo": "https://coin-images.coingecko.com/asset_platforms/images/15/large/polygon_pos.png?1706606645"
+      }
+    ],
+    "category": "Messaging",
+    "tags": [
+      "Smart Contract Platform",
+      "BNB Chain Ecosystem",
+      "Avalanche Ecosystem",
+      "Polygon Ecosystem",
+      "Arbitrum Ecosystem",
+      "Ethereum Ecosystem",
+      "Optimism Ecosystem",
+      "Base Ecosystem",
+      "Multicoin Capital Portfolio",
+      "Layer 0 (L0)",
+      "Cross-chain Communication",
+      "Circle Ventures Portfolio",
+      "Sequoia Capital Portfolio",
+      "OKX Ventures Portfolio"
+    ],
+    "launchedAt": "2024-05-01",
+    "website": {
+      "url": "https://layerzero.network/"
+    },
+    "socials": [
+      {
+        "url": "https://x.com/LayerZero_Core",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/94bc0489-8e36-44b9-9fc0-ecf89bedc92c.png"
+      },
+      {
+        "url": "https://www.linkedin.com/company/layerzerolabs/",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/d4ae6571-35c3-430a-b311-e13a3ad2ac79.png"
+      }
+    ],
+    "coingeckoId": "layerzero",
+    "hasToken": true,
+    "projectBucket": "L1",
+    "disclosures": {
+      "whitepaper": {
+        "url": "https://layerzero.network/publications/LayerZero_Whitepaper_V2.1.1.pdf"
+      },
+      "legal": {
+        "url": "https://layerzero.network/terms"
+      },
+      "audits": [
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/AptosBridge-Ottersec-30SEPT2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/AptosZROAirdrop-Paladin-17JUN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ArbitrumOFT-Hexens-june2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ArbitrumOrbitV2-Hexens-SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ArbitrumOrbitV2-Pashov-20SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/DVN-OtterSec-12SEPT2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/DVN-Paladin-26AUG2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/DVN-Zellic-25AUG2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/DVN1.0-Zellic-14MAR2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-Ackee-15MAR2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Certora",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0306e040-b943-4144-bde2-34ac3642bf2c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-Certora-28JUL2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "SlowMist",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-SlowMist-15MAR2022Audit.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-Zellic-03JUN2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-proof-lib-Ackee-11MAR2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Blockian",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Blockian-13DEC2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Josip Končurat (Windhustler)",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-CMichel-13DEC2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Certora",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0306e040-b943-4144-bde2-34ac3642bf2c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Certora-DEDC2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Ottersec%2014DEC2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Paladin-15DEC2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Josip Končurat (Windhustler)",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Windhustler-15DEC2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Zellic-13DEC2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/Ethena_OFT-Zellic-16JAN2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ExampleString-Passing-Solana-OApp_Zellic_Jun-06-2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/HyperLiquid_Composer-Paladin-9MAY2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LZ-OApp%26OFT_Zellic_Sep-23-2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LZ_OVault-Composer_Paladin_Oct-23-25.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LZ_OVault_Ottersec_Jul-16-25.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LZ_OVault_Paladin_Aug-06-25.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LzApp%26Token-Ackee-03MAY2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/MintableOFT-Paladin-06JUN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/NativeOFTAdapter-Paladin-28AUG2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/NativeOFTV2-Zellic-16JUN2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/NativeOFTWithFee-Zellic-30JUN2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/NativeOftAdapter-Ottersec-19SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OApp%26OFT-Zellic-12JUN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Chainsecurity",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/d3dbdb28-a8ba-4bde-8e05-ab0f70c80f54.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OFT-OAPP-ChainSecurity-30JAN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OFTAdapter%20Burn%20-%20Zellic%20Audit%20Report.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ONFT721_Paladin_10AUG2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OmnichainGovernanceExecutor-Paladin-30MAR2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OmnichainGovernanceExecutor-Zellic-20MAR2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/Orbitadapter-Ottersec-27JUN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/RateLimiter-Hexens-MAY2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/RateLimiterFlows-Hexens-OCT2024oct24%20(1).pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/RateLimiterFlows-Pashov-20SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Halborn",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/c3d5676c-03a5-44bb-b876-244da4f2e043.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/Solana-OFT-Halborn-24MAY2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaEndPoint-Pashov-28MAY2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Halborn",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/c3d5676c-03a5-44bb-b876-244da4f2e043.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaEndpoint-Halborn-24MAY2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaEndpoint-OAPP-Zellic-23JUL2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaEndpoint-Ottersec-07JUN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaOFT-Ottersec-25SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaOFT-Pashov-17SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaOFTandDevTools-Ottersec-24SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaOFTandDevTools-Pashov-17SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExample-Ackee-27JUL2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ackee-10OCT2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ackee-14NOV2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ottersec-21MAR2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ottersec-24JAN2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ottersec-27APR2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Zellic-21MAY2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamplesNativeProxy-Ackee-08AUG2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamplesONFT-Zellic-19JAN2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/TON_OFT-Ottersec-23May2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/TON_OFT-Zellic-19May2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/USDT_OFT-%20Ottersec-28JAN2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/USDT_OFT-Zellic-15JAN2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/USDT_TON-%20Zellic-15JAN2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/UltraLightNodeV2Radar-Zellic-22NOV2022.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/UpgradeableOFT-Ottersec-04NOV2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/UpgradeableOapp%26OFT-Hexens-01NOV2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/VeDistributor_Paladin_09-Sep-2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/VeDistributor_Zellic_08-Sep-2025.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/WrappedAssetBridge-Zellic-28FEB2023.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/WrappedAssetBridgeV2-Hexens-AUG2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/WrappedAssetBridgeV2-Ottersec-09SEPT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ZROClaim-Paladin-18JUN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ZROClaim-Pashov-17JUN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ZRPclaim-hexens-23JUN2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/lzRead-Paladin-25OCT2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Soteria",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a0425f99-7a13-4cc7-93b0-4179e15bb5e8.png"
+          },
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/lzRead-Sec3-12NOV2024.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "report": {
+            "url": "https://github.com/stargate-protocol/stargate-v2/blob/main/audits/Stargate%20V2%20-%20Zellic%20FINAL%20Audit%20Report.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "report": {
+            "url": "https://github.com/stargate-protocol/stargate-v2/blob/main/audits/Stargate_V2_Ottersec_Final.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "report": {
+            "url": "https://paladinsec.co/assets/audits/20231215_Paladin_LayerZeroMessageLib_Final_Report.pdf"
+          }
+        },
+        {
+          "auditor": {
+            "name": "Code4rena",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/b22a667e-c82f-411f-bb86-5b3c5c3de111.PNG"
+          },
+          "report": {
+            "url": "https://code4rena.com/reports/2025-09-layerzero-endpoint-v2-sui"
+          }
+        }
+      ]
+    }
+  },
+  "probabilityOfLoss": {
+    "score": {
+      "current": 29.24,
+      "min": 0,
+      "max": 100
+    },
+    "grade": {
+      "label": "BBB",
+      "tier": "medium"
+    },
+    "confidence": "High",
+    "change24h": 2,
+    "dataCoverage": {
+      "percentage": 85
+    },
+    "categories": [
+      {
+        "name": "Security",
+        "score": {
+          "current": 76,
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "name": "Financial",
+        "score": {
+          "current": 49.33,
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "name": "Operational",
+        "score": {
+          "current": 34,
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "name": "Reputational",
+        "score": {
+          "current": 67.5,
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "name": "Regulatory",
+        "score": {
+          "current": 35,
+          "min": 0,
+          "max": 100
+        }
+      }
+    ],
+    "dynamic": {
+      "window": "30d",
+      "score": {
+        "min": 0,
+        "max": 100
+      },
+      "points": [
+        {
+          "date": "2025-11-02",
+          "averagePolScore": 8
+        },
+        {
+          "date": "2025-11-03",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-04",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-05",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-06",
+          "averagePolScore": 8
+        },
+        {
+          "date": "2025-11-07",
+          "averagePolScore": 6
+        },
+        {
+          "date": "2025-11-08",
+          "averagePolScore": 6
+        },
+        {
+          "date": "2025-11-09",
+          "averagePolScore": 6
+        },
+        {
+          "date": "2025-11-10",
+          "averagePolScore": 10
+        },
+        {
+          "date": "2025-11-11",
+          "averagePolScore": 8
+        },
+        {
+          "date": "2025-11-12",
+          "averagePolScore": 7
+        },
+        {
+          "date": "2025-11-13",
+          "averagePolScore": 6
+        },
+        {
+          "date": "2025-11-14",
+          "averagePolScore": 10
+        },
+        {
+          "date": "2025-11-15",
+          "averagePolScore": 6
+        },
+        {
+          "date": "2025-11-16",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-17",
+          "averagePolScore": 8
+        },
+        {
+          "date": "2025-11-18",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-19",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-20",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-21",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-22",
+          "averagePolScore": 7
+        },
+        {
+          "date": "2025-11-23",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-24",
+          "averagePolScore": 10
+        },
+        {
+          "date": "2025-11-25",
+          "averagePolScore": 8
+        },
+        {
+          "date": "2025-11-26",
+          "averagePolScore": 8
+        },
+        {
+          "date": "2025-11-27",
+          "averagePolScore": 9
+        },
+        {
+          "date": "2025-11-28",
+          "averagePolScore": 7
+        },
+        {
+          "date": "2025-11-29",
+          "averagePolScore": 7
+        },
+        {
+          "date": "2025-11-30",
+          "averagePolScore": 8
+        },
+        {
+          "date": "2025-12-01",
+          "averagePolScore": 8
+        },
+        {
+          "date": "2025-12-04",
+          "averagePolScore": 29.24
+        }
+      ]
+    }
+  },
+  "newsFeed": {
+    "topRisks": [
+      {
+        "date": "2025-11-22",
+        "content": "Missing ISO certification."
+      },
+      {
+        "date": "2025-11-22",
+        "content": "Missing CCSS certification leaves crypto custody controls unvalidated, increasing the risk of undetected security gaps."
+      },
+      {
+        "date": "2022-03-16",
+        "content": "Following the launch of Stargate, researchers and auditors raised concerns over LayerZero’s trust model and powerful upgrade/multisig controls, emphasizing centralization and key‑management risks even in the absence of a direct exploit."
+      }
+    ],
+    "recentChanges": [
+      {
+        "date": "2023-11-22",
+        "content": "The recently completed product-related audit with a full relevancy score strengthens assurance over key controls."
+      },
+      {
+        "date": "2023-11-22",
+        "content": "The bug bounty program was updated last month"
+      },
+      {
+        "date": "2023-11-22",
+        "content": "Inflation metrics have continued to follow the same trend as last month."
+      }
+    ]
+  },
+  "probabilityOfLossCategoriesDynamic": {
+    "score": {
+      "min": 0,
+      "max": 100
+    },
+    "points": [
+      {
+        "date": "2025-09-04",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.5
+          },
+          {
+            "name": "Financial",
+            "score": 48.2
+          },
+          {
+            "name": "Operational",
+            "score": 37
+          },
+          {
+            "name": "Reputational",
+            "score": 66.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.8
+          }
+        ]
+      },
+      {
+        "date": "2025-09-05",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.9
+          },
+          {
+            "name": "Financial",
+            "score": 50
+          },
+          {
+            "name": "Operational",
+            "score": 35.5
+          },
+          {
+            "name": "Reputational",
+            "score": 65.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.1
+          }
+        ]
+      },
+      {
+        "date": "2025-09-06",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74.3
+          },
+          {
+            "name": "Financial",
+            "score": 49.4
+          },
+          {
+            "name": "Operational",
+            "score": 35.9
+          },
+          {
+            "name": "Reputational",
+            "score": 64.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.3
+          }
+        ]
+      },
+      {
+        "date": "2025-09-07",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.5
+          },
+          {
+            "name": "Financial",
+            "score": 48
+          },
+          {
+            "name": "Operational",
+            "score": 35.5
+          },
+          {
+            "name": "Reputational",
+            "score": 66.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.5
+          }
+        ]
+      },
+      {
+        "date": "2025-09-08",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.3
+          },
+          {
+            "name": "Financial",
+            "score": 48.4
+          },
+          {
+            "name": "Operational",
+            "score": 34.6
+          },
+          {
+            "name": "Reputational",
+            "score": 65.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.8
+          }
+        ]
+      },
+      {
+        "date": "2025-09-09",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 71.9
+          },
+          {
+            "name": "Financial",
+            "score": 47.5
+          },
+          {
+            "name": "Operational",
+            "score": 34.2
+          },
+          {
+            "name": "Reputational",
+            "score": 65.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.4
+          }
+        ]
+      },
+      {
+        "date": "2025-09-10",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.1
+          },
+          {
+            "name": "Financial",
+            "score": 48.7
+          },
+          {
+            "name": "Operational",
+            "score": 34.4
+          },
+          {
+            "name": "Reputational",
+            "score": 64.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.3
+          }
+        ]
+      },
+      {
+        "date": "2025-09-11",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74
+          },
+          {
+            "name": "Financial",
+            "score": 49.9
+          },
+          {
+            "name": "Operational",
+            "score": 35.6
+          },
+          {
+            "name": "Reputational",
+            "score": 62.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.7
+          }
+        ]
+      },
+      {
+        "date": "2025-09-12",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.1
+          },
+          {
+            "name": "Financial",
+            "score": 50.1
+          },
+          {
+            "name": "Operational",
+            "score": 35.8
+          },
+          {
+            "name": "Reputational",
+            "score": 63.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.2
+          }
+        ]
+      },
+      {
+        "date": "2025-09-13",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.1
+          },
+          {
+            "name": "Financial",
+            "score": 49.4
+          },
+          {
+            "name": "Operational",
+            "score": 36.2
+          },
+          {
+            "name": "Reputational",
+            "score": 64.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.9
+          }
+        ]
+      },
+      {
+        "date": "2025-09-14",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.1
+          },
+          {
+            "name": "Financial",
+            "score": 50
+          },
+          {
+            "name": "Operational",
+            "score": 37.2
+          },
+          {
+            "name": "Reputational",
+            "score": 64.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.3
+          }
+        ]
+      },
+      {
+        "date": "2025-09-15",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.9
+          },
+          {
+            "name": "Financial",
+            "score": 50.8
+          },
+          {
+            "name": "Operational",
+            "score": 39
+          },
+          {
+            "name": "Reputational",
+            "score": 62.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.3
+          }
+        ]
+      },
+      {
+        "date": "2025-09-16",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.9
+          },
+          {
+            "name": "Financial",
+            "score": 52.4
+          },
+          {
+            "name": "Operational",
+            "score": 37.5
+          },
+          {
+            "name": "Reputational",
+            "score": 61.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.7
+          }
+        ]
+      },
+      {
+        "date": "2025-09-17",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.8
+          },
+          {
+            "name": "Financial",
+            "score": 53.2
+          },
+          {
+            "name": "Operational",
+            "score": 35.6
+          },
+          {
+            "name": "Reputational",
+            "score": 59.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.2
+          }
+        ]
+      },
+      {
+        "date": "2025-09-18",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.1
+          },
+          {
+            "name": "Financial",
+            "score": 54.6
+          },
+          {
+            "name": "Operational",
+            "score": 35.5
+          },
+          {
+            "name": "Reputational",
+            "score": 58.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.8
+          }
+        ]
+      },
+      {
+        "date": "2025-09-19",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74.1
+          },
+          {
+            "name": "Financial",
+            "score": 54.2
+          },
+          {
+            "name": "Operational",
+            "score": 37.4
+          },
+          {
+            "name": "Reputational",
+            "score": 59.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.8
+          }
+        ]
+      },
+      {
+        "date": "2025-09-20",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 75.3
+          },
+          {
+            "name": "Financial",
+            "score": 52.5
+          },
+          {
+            "name": "Operational",
+            "score": 38.1
+          },
+          {
+            "name": "Reputational",
+            "score": 60.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.7
+          }
+        ]
+      },
+      {
+        "date": "2025-09-21",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74.6
+          },
+          {
+            "name": "Financial",
+            "score": 51.5
+          },
+          {
+            "name": "Operational",
+            "score": 38.6
+          },
+          {
+            "name": "Reputational",
+            "score": 60.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 33.6
+          }
+        ]
+      },
+      {
+        "date": "2025-09-22",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74.8
+          },
+          {
+            "name": "Financial",
+            "score": 53
+          },
+          {
+            "name": "Operational",
+            "score": 38.9
+          },
+          {
+            "name": "Reputational",
+            "score": 62.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 33.1
+          }
+        ]
+      },
+      {
+        "date": "2025-09-23",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.7
+          },
+          {
+            "name": "Financial",
+            "score": 53
+          },
+          {
+            "name": "Operational",
+            "score": 37.1
+          },
+          {
+            "name": "Reputational",
+            "score": 63.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 33.7
+          }
+        ]
+      },
+      {
+        "date": "2025-09-24",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 75.3
+          },
+          {
+            "name": "Financial",
+            "score": 52.2
+          },
+          {
+            "name": "Operational",
+            "score": 35.1
+          },
+          {
+            "name": "Reputational",
+            "score": 64.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.1
+          }
+        ]
+      },
+      {
+        "date": "2025-09-25",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 75.9
+          },
+          {
+            "name": "Financial",
+            "score": 52
+          },
+          {
+            "name": "Operational",
+            "score": 34.2
+          },
+          {
+            "name": "Reputational",
+            "score": 62.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 33.9
+          }
+        ]
+      },
+      {
+        "date": "2025-09-26",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 75.3
+          },
+          {
+            "name": "Financial",
+            "score": 53.1
+          },
+          {
+            "name": "Operational",
+            "score": 32.6
+          },
+          {
+            "name": "Reputational",
+            "score": 60.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.2
+          }
+        ]
+      },
+      {
+        "date": "2025-09-27",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.9
+          },
+          {
+            "name": "Financial",
+            "score": 53.8
+          },
+          {
+            "name": "Operational",
+            "score": 32.1
+          },
+          {
+            "name": "Reputational",
+            "score": 59.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.8
+          }
+        ]
+      },
+      {
+        "date": "2025-09-28",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.9
+          },
+          {
+            "name": "Financial",
+            "score": 53.5
+          },
+          {
+            "name": "Operational",
+            "score": 31.4
+          },
+          {
+            "name": "Reputational",
+            "score": 57.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.8
+          }
+        ]
+      },
+      {
+        "date": "2025-09-29",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73
+          },
+          {
+            "name": "Financial",
+            "score": 53
+          },
+          {
+            "name": "Operational",
+            "score": 32.9
+          },
+          {
+            "name": "Reputational",
+            "score": 59.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.1
+          }
+        ]
+      },
+      {
+        "date": "2025-09-30",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 71.3
+          },
+          {
+            "name": "Financial",
+            "score": 54
+          },
+          {
+            "name": "Operational",
+            "score": 33.8
+          },
+          {
+            "name": "Reputational",
+            "score": 60.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-01",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 69.6
+          },
+          {
+            "name": "Financial",
+            "score": 56
+          },
+          {
+            "name": "Operational",
+            "score": 35.6
+          },
+          {
+            "name": "Reputational",
+            "score": 60.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-02",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.7
+          },
+          {
+            "name": "Financial",
+            "score": 55.1
+          },
+          {
+            "name": "Operational",
+            "score": 35.1
+          },
+          {
+            "name": "Reputational",
+            "score": 63.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 37
+          }
+        ]
+      },
+      {
+        "date": "2025-10-03",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.6
+          },
+          {
+            "name": "Financial",
+            "score": 55.8
+          },
+          {
+            "name": "Operational",
+            "score": 34.8
+          },
+          {
+            "name": "Reputational",
+            "score": 62.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-04",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.3
+          },
+          {
+            "name": "Financial",
+            "score": 54
+          },
+          {
+            "name": "Operational",
+            "score": 34.6
+          },
+          {
+            "name": "Reputational",
+            "score": 60.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.7
+          }
+        ]
+      },
+      {
+        "date": "2025-10-05",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.6
+          },
+          {
+            "name": "Financial",
+            "score": 55.8
+          },
+          {
+            "name": "Operational",
+            "score": 35.2
+          },
+          {
+            "name": "Reputational",
+            "score": 63.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.2
+          }
+        ]
+      },
+      {
+        "date": "2025-10-06",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.4
+          },
+          {
+            "name": "Financial",
+            "score": 55.6
+          },
+          {
+            "name": "Operational",
+            "score": 34
+          },
+          {
+            "name": "Reputational",
+            "score": 65.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.6
+          }
+        ]
+      },
+      {
+        "date": "2025-10-07",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 69.9
+          },
+          {
+            "name": "Financial",
+            "score": 55.9
+          },
+          {
+            "name": "Operational",
+            "score": 34.8
+          },
+          {
+            "name": "Reputational",
+            "score": 64.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.4
+          }
+        ]
+      },
+      {
+        "date": "2025-10-08",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.8
+          },
+          {
+            "name": "Financial",
+            "score": 56.3
+          },
+          {
+            "name": "Operational",
+            "score": 33.8
+          },
+          {
+            "name": "Reputational",
+            "score": 64.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.6
+          }
+        ]
+      },
+      {
+        "date": "2025-10-09",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.8
+          },
+          {
+            "name": "Financial",
+            "score": 58
+          },
+          {
+            "name": "Operational",
+            "score": 32.2
+          },
+          {
+            "name": "Reputational",
+            "score": 64.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.1
+          }
+        ]
+      },
+      {
+        "date": "2025-10-10",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 69.9
+          },
+          {
+            "name": "Financial",
+            "score": 58.1
+          },
+          {
+            "name": "Operational",
+            "score": 30.6
+          },
+          {
+            "name": "Reputational",
+            "score": 64
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-11",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 67.9
+          },
+          {
+            "name": "Financial",
+            "score": 56.5
+          },
+          {
+            "name": "Operational",
+            "score": 29.5
+          },
+          {
+            "name": "Reputational",
+            "score": 62.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-12",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68.1
+          },
+          {
+            "name": "Financial",
+            "score": 56
+          },
+          {
+            "name": "Operational",
+            "score": 28.5
+          },
+          {
+            "name": "Reputational",
+            "score": 63
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.3
+          }
+        ]
+      },
+      {
+        "date": "2025-10-13",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68.5
+          },
+          {
+            "name": "Financial",
+            "score": 55.4
+          },
+          {
+            "name": "Operational",
+            "score": 29.6
+          },
+          {
+            "name": "Reputational",
+            "score": 64.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-14",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 67.7
+          },
+          {
+            "name": "Financial",
+            "score": 57.1
+          },
+          {
+            "name": "Operational",
+            "score": 29.3
+          },
+          {
+            "name": "Reputational",
+            "score": 63.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-15",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68.8
+          },
+          {
+            "name": "Financial",
+            "score": 55.2
+          },
+          {
+            "name": "Operational",
+            "score": 29.6
+          },
+          {
+            "name": "Reputational",
+            "score": 64.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.4
+          }
+        ]
+      },
+      {
+        "date": "2025-10-16",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68.4
+          },
+          {
+            "name": "Financial",
+            "score": 54.1
+          },
+          {
+            "name": "Operational",
+            "score": 29.3
+          },
+          {
+            "name": "Reputational",
+            "score": 62.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-17",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 67.1
+          },
+          {
+            "name": "Financial",
+            "score": 55.8
+          },
+          {
+            "name": "Operational",
+            "score": 29.7
+          },
+          {
+            "name": "Reputational",
+            "score": 64.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 33.2
+          }
+        ]
+      },
+      {
+        "date": "2025-10-18",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 66.7
+          },
+          {
+            "name": "Financial",
+            "score": 54.2
+          },
+          {
+            "name": "Operational",
+            "score": 28.8
+          },
+          {
+            "name": "Reputational",
+            "score": 66.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 33.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-19",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68.1
+          },
+          {
+            "name": "Financial",
+            "score": 53.2
+          },
+          {
+            "name": "Operational",
+            "score": 30.6
+          },
+          {
+            "name": "Reputational",
+            "score": 68.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 33.4
+          }
+        ]
+      },
+      {
+        "date": "2025-10-20",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68.8
+          },
+          {
+            "name": "Financial",
+            "score": 55.1
+          },
+          {
+            "name": "Operational",
+            "score": 32.5
+          },
+          {
+            "name": "Reputational",
+            "score": 68
+          },
+          {
+            "name": "Regulatory",
+            "score": 33.5
+          }
+        ]
+      },
+      {
+        "date": "2025-10-21",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.4
+          },
+          {
+            "name": "Financial",
+            "score": 55.1
+          },
+          {
+            "name": "Operational",
+            "score": 30.8
+          },
+          {
+            "name": "Reputational",
+            "score": 67
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-22",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 71.7
+          },
+          {
+            "name": "Financial",
+            "score": 55.1
+          },
+          {
+            "name": "Operational",
+            "score": 32.8
+          },
+          {
+            "name": "Reputational",
+            "score": 65.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.1
+          }
+        ]
+      },
+      {
+        "date": "2025-10-23",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72
+          },
+          {
+            "name": "Financial",
+            "score": 56.2
+          },
+          {
+            "name": "Operational",
+            "score": 31.7
+          },
+          {
+            "name": "Reputational",
+            "score": 64.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.9
+          }
+        ]
+      },
+      {
+        "date": "2025-10-24",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.6
+          },
+          {
+            "name": "Financial",
+            "score": 54.8
+          },
+          {
+            "name": "Operational",
+            "score": 33
+          },
+          {
+            "name": "Reputational",
+            "score": 66.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.9
+          }
+        ]
+      },
+      {
+        "date": "2025-10-25",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 71.4
+          },
+          {
+            "name": "Financial",
+            "score": 55.5
+          },
+          {
+            "name": "Operational",
+            "score": 34.1
+          },
+          {
+            "name": "Reputational",
+            "score": 65.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-26",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 69.4
+          },
+          {
+            "name": "Financial",
+            "score": 56.2
+          },
+          {
+            "name": "Operational",
+            "score": 35.9
+          },
+          {
+            "name": "Reputational",
+            "score": 64.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-27",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68.2
+          },
+          {
+            "name": "Financial",
+            "score": 56.5
+          },
+          {
+            "name": "Operational",
+            "score": 37.2
+          },
+          {
+            "name": "Reputational",
+            "score": 66.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.6
+          }
+        ]
+      },
+      {
+        "date": "2025-10-28",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 69
+          },
+          {
+            "name": "Financial",
+            "score": 57.8
+          },
+          {
+            "name": "Operational",
+            "score": 37.6
+          },
+          {
+            "name": "Reputational",
+            "score": 66.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.8
+          }
+        ]
+      },
+      {
+        "date": "2025-10-29",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 69
+          },
+          {
+            "name": "Financial",
+            "score": 56.5
+          },
+          {
+            "name": "Operational",
+            "score": 35.9
+          },
+          {
+            "name": "Reputational",
+            "score": 67.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.4
+          }
+        ]
+      },
+      {
+        "date": "2025-10-30",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.2
+          },
+          {
+            "name": "Financial",
+            "score": 57.1
+          },
+          {
+            "name": "Operational",
+            "score": 34.4
+          },
+          {
+            "name": "Reputational",
+            "score": 65.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 35.7
+          }
+        ]
+      },
+      {
+        "date": "2025-10-31",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68.5
+          },
+          {
+            "name": "Financial",
+            "score": 58.7
+          },
+          {
+            "name": "Operational",
+            "score": 34.5
+          },
+          {
+            "name": "Reputational",
+            "score": 64.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-01",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 67.7
+          },
+          {
+            "name": "Financial",
+            "score": 57.2
+          },
+          {
+            "name": "Operational",
+            "score": 33.1
+          },
+          {
+            "name": "Reputational",
+            "score": 65.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.1
+          }
+        ]
+      },
+      {
+        "date": "2025-11-02",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 66
+          },
+          {
+            "name": "Financial",
+            "score": 58.5
+          },
+          {
+            "name": "Operational",
+            "score": 34.8
+          },
+          {
+            "name": "Reputational",
+            "score": 66.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 35
+          }
+        ]
+      },
+      {
+        "date": "2025-11-03",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 67.2
+          },
+          {
+            "name": "Financial",
+            "score": 57.8
+          },
+          {
+            "name": "Operational",
+            "score": 36.6
+          },
+          {
+            "name": "Reputational",
+            "score": 65.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 34.8
+          }
+        ]
+      },
+      {
+        "date": "2025-11-04",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 66.7
+          },
+          {
+            "name": "Financial",
+            "score": 59
+          },
+          {
+            "name": "Operational",
+            "score": 37.6
+          },
+          {
+            "name": "Reputational",
+            "score": 67.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.2
+          }
+        ]
+      },
+      {
+        "date": "2025-11-05",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 67.5
+          },
+          {
+            "name": "Financial",
+            "score": 59.3
+          },
+          {
+            "name": "Operational",
+            "score": 38.2
+          },
+          {
+            "name": "Reputational",
+            "score": 67.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.4
+          }
+        ]
+      },
+      {
+        "date": "2025-11-06",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 66.4
+          },
+          {
+            "name": "Financial",
+            "score": 59
+          },
+          {
+            "name": "Operational",
+            "score": 36.7
+          },
+          {
+            "name": "Reputational",
+            "score": 66.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.6
+          }
+        ]
+      },
+      {
+        "date": "2025-11-07",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 68
+          },
+          {
+            "name": "Financial",
+            "score": 57.9
+          },
+          {
+            "name": "Operational",
+            "score": 35.3
+          },
+          {
+            "name": "Reputational",
+            "score": 68.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 37
+          }
+        ]
+      },
+      {
+        "date": "2025-11-08",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 66.1
+          },
+          {
+            "name": "Financial",
+            "score": 59.3
+          },
+          {
+            "name": "Operational",
+            "score": 36.4
+          },
+          {
+            "name": "Reputational",
+            "score": 67.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.9
+          }
+        ]
+      },
+      {
+        "date": "2025-11-09",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 67.8
+          },
+          {
+            "name": "Financial",
+            "score": 60.8
+          },
+          {
+            "name": "Operational",
+            "score": 35.2
+          },
+          {
+            "name": "Reputational",
+            "score": 69.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.1
+          }
+        ]
+      },
+      {
+        "date": "2025-11-10",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 69.3
+          },
+          {
+            "name": "Financial",
+            "score": 60.9
+          },
+          {
+            "name": "Operational",
+            "score": 34.7
+          },
+          {
+            "name": "Reputational",
+            "score": 67.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.6
+          }
+        ]
+      },
+      {
+        "date": "2025-11-11",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.3
+          },
+          {
+            "name": "Financial",
+            "score": 62.2
+          },
+          {
+            "name": "Operational",
+            "score": 34.5
+          },
+          {
+            "name": "Reputational",
+            "score": 66
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.5
+          }
+        ]
+      },
+      {
+        "date": "2025-11-12",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.7
+          },
+          {
+            "name": "Financial",
+            "score": 63.7
+          },
+          {
+            "name": "Operational",
+            "score": 32.8
+          },
+          {
+            "name": "Reputational",
+            "score": 65.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.2
+          }
+        ]
+      },
+      {
+        "date": "2025-11-13",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.4
+          },
+          {
+            "name": "Financial",
+            "score": 65
+          },
+          {
+            "name": "Operational",
+            "score": 34.6
+          },
+          {
+            "name": "Reputational",
+            "score": 65.9
+          },
+          {
+            "name": "Regulatory",
+            "score": 36.8
+          }
+        ]
+      },
+      {
+        "date": "2025-11-14",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.1
+          },
+          {
+            "name": "Financial",
+            "score": 63.9
+          },
+          {
+            "name": "Operational",
+            "score": 34.1
+          },
+          {
+            "name": "Reputational",
+            "score": 67.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 37.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-15",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.1
+          },
+          {
+            "name": "Financial",
+            "score": 63
+          },
+          {
+            "name": "Operational",
+            "score": 35.8
+          },
+          {
+            "name": "Reputational",
+            "score": 66.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-16",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.7
+          },
+          {
+            "name": "Financial",
+            "score": 63.4
+          },
+          {
+            "name": "Operational",
+            "score": 37
+          },
+          {
+            "name": "Reputational",
+            "score": 67
+          },
+          {
+            "name": "Regulatory",
+            "score": 39
+          }
+        ]
+      },
+      {
+        "date": "2025-11-17",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.9
+          },
+          {
+            "name": "Financial",
+            "score": 65.2
+          },
+          {
+            "name": "Operational",
+            "score": 35.2
+          },
+          {
+            "name": "Reputational",
+            "score": 66.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.5
+          }
+        ]
+      },
+      {
+        "date": "2025-11-18",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.5
+          },
+          {
+            "name": "Financial",
+            "score": 64.9
+          },
+          {
+            "name": "Operational",
+            "score": 36.2
+          },
+          {
+            "name": "Reputational",
+            "score": 66.1
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.1
+          }
+        ]
+      },
+      {
+        "date": "2025-11-19",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74.7
+          },
+          {
+            "name": "Financial",
+            "score": 64.9
+          },
+          {
+            "name": "Operational",
+            "score": 37.5
+          },
+          {
+            "name": "Reputational",
+            "score": 67.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.4
+          }
+        ]
+      },
+      {
+        "date": "2025-11-20",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 75.9
+          },
+          {
+            "name": "Financial",
+            "score": 63.2
+          },
+          {
+            "name": "Operational",
+            "score": 36.1
+          },
+          {
+            "name": "Reputational",
+            "score": 67.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-21",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 76.4
+          },
+          {
+            "name": "Financial",
+            "score": 61.7
+          },
+          {
+            "name": "Operational",
+            "score": 37
+          },
+          {
+            "name": "Reputational",
+            "score": 68.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 38.4
+          }
+        ]
+      },
+      {
+        "date": "2025-11-22",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74.9
+          },
+          {
+            "name": "Financial",
+            "score": 60.4
+          },
+          {
+            "name": "Operational",
+            "score": 37
+          },
+          {
+            "name": "Reputational",
+            "score": 67.2
+          },
+          {
+            "name": "Regulatory",
+            "score": 39.7
+          }
+        ]
+      },
+      {
+        "date": "2025-11-23",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.9
+          },
+          {
+            "name": "Financial",
+            "score": 61.1
+          },
+          {
+            "name": "Operational",
+            "score": 37.6
+          },
+          {
+            "name": "Reputational",
+            "score": 69.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 40.8
+          }
+        ]
+      },
+      {
+        "date": "2025-11-24",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.6
+          },
+          {
+            "name": "Financial",
+            "score": 60.9
+          },
+          {
+            "name": "Operational",
+            "score": 35.7
+          },
+          {
+            "name": "Reputational",
+            "score": 70.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 40.5
+          }
+        ]
+      },
+      {
+        "date": "2025-11-25",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 70.7
+          },
+          {
+            "name": "Financial",
+            "score": 61
+          },
+          {
+            "name": "Operational",
+            "score": 34
+          },
+          {
+            "name": "Reputational",
+            "score": 70.4
+          },
+          {
+            "name": "Regulatory",
+            "score": 41.2
+          }
+        ]
+      },
+      {
+        "date": "2025-11-26",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 71.5
+          },
+          {
+            "name": "Financial",
+            "score": 62
+          },
+          {
+            "name": "Operational",
+            "score": 32.2
+          },
+          {
+            "name": "Reputational",
+            "score": 69.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 40.8
+          }
+        ]
+      },
+      {
+        "date": "2025-11-27",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 71.3
+          },
+          {
+            "name": "Financial",
+            "score": 61.7
+          },
+          {
+            "name": "Operational",
+            "score": 31.5
+          },
+          {
+            "name": "Reputational",
+            "score": 69.7
+          },
+          {
+            "name": "Regulatory",
+            "score": 40
+          }
+        ]
+      },
+      {
+        "date": "2025-11-28",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 73.3
+          },
+          {
+            "name": "Financial",
+            "score": 62
+          },
+          {
+            "name": "Operational",
+            "score": 32.8
+          },
+          {
+            "name": "Reputational",
+            "score": 69.6
+          },
+          {
+            "name": "Regulatory",
+            "score": 40.1
+          }
+        ]
+      },
+      {
+        "date": "2025-11-29",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74.1
+          },
+          {
+            "name": "Financial",
+            "score": 61.7
+          },
+          {
+            "name": "Operational",
+            "score": 34.7
+          },
+          {
+            "name": "Reputational",
+            "score": 70.3
+          },
+          {
+            "name": "Regulatory",
+            "score": 40.6
+          }
+        ]
+      },
+      {
+        "date": "2025-11-30",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 74.6
+          },
+          {
+            "name": "Financial",
+            "score": 63.4
+          },
+          {
+            "name": "Operational",
+            "score": 34.6
+          },
+          {
+            "name": "Reputational",
+            "score": 70.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 41.9
+          }
+        ]
+      },
+      {
+        "date": "2025-12-01",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72
+          },
+          {
+            "name": "Financial",
+            "score": 49.33
+          },
+          {
+            "name": "Operational",
+            "score": 36
+          },
+          {
+            "name": "Reputational",
+            "score": 67.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 35
+          }
+        ]
+      },
+      {
+        "date": "2025-12-02",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72.6
+          },
+          {
+            "name": "Financial",
+            "score": 64.2
+          },
+          {
+            "name": "Operational",
+            "score": 34.3
+          },
+          {
+            "name": "Reputational",
+            "score": 70.8
+          },
+          {
+            "name": "Regulatory",
+            "score": 43.9
+          }
+        ]
+      },
+      {
+        "date": "2025-12-03",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 72
+          },
+          {
+            "name": "Financial",
+            "score": 49.3
+          },
+          {
+            "name": "Operational",
+            "score": 36
+          },
+          {
+            "name": "Reputational",
+            "score": 67.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 35
+          }
+        ]
+      },
+      {
+        "date": "2025-12-04",
+        "categories": [
+          {
+            "name": "Security",
+            "score": 76
+          },
+          {
+            "name": "Financial",
+            "score": 49.33
+          },
+          {
+            "name": "Operational",
+            "score": 34
+          },
+          {
+            "name": "Reputational",
+            "score": 67.5
+          },
+          {
+            "name": "Regulatory",
+            "score": 35
+          }
+        ]
+      }
+    ]
+  },
+  "security": {
+    "score": {
+      "current": 76,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "audits": {
+      "token": [],
+      "product": [
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/AptosBridge-Ottersec-30SEPT2022.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2022-09-30",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/AptosZROAirdrop-Paladin-17JUN2024.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": null
+          },
+          "date": "2024-06-17",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ArbitrumOFT-Hexens-june2024.pdf"
+          },
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "date": "2024-06-24",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ArbitrumOrbitV2-Hexens-SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "date": "2024-09-24",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ArbitrumOrbitV2-Pashov-20SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "date": "2024-09-20",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/DVN-OtterSec-12SEPT2023.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": null
+          },
+          "date": "2023-08-25",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/DVN-Paladin-26AUG2023.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": null
+          },
+          "date": "2023-08-26",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/DVN-Zellic-25AUG2023.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2023-08-25",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/DVN1.0-Zellic-14MAR2024.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2024-03-14",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-Ackee-15MAR2022.pdf"
+          },
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "date": "2022-03-15",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-Certora-28JUL2022.pdf"
+          },
+          "auditor": {
+            "name": "Certora",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0306e040-b943-4144-bde2-34ac3642bf2c.png"
+          },
+          "date": "2022-07-28",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-SlowMist-15MAR2022Audit.pdf"
+          },
+          "auditor": {
+            "name": "SlowMist",
+            "logo": null
+          },
+          "date": "2022-03-15",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-Zellic-03JUN2022.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2022-06-03",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV1-proof-lib-Ackee-11MAR2022.pdf"
+          },
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "date": "2022-03-11",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Blockian-13DEC2023.pdf"
+          },
+          "auditor": {
+            "name": "Blockian",
+            "logo": null
+          },
+          "date": "2023-12-13",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-CMichel-13DEC2023.pdf"
+          },
+          "auditor": {
+            "name": "Josip Končurat (Windhustler)",
+            "logo": null
+          },
+          "date": "2023-12-13",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Certora-DEDC2023.pdf"
+          },
+          "auditor": {
+            "name": "Certora",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0306e040-b943-4144-bde2-34ac3642bf2c.png"
+          },
+          "date": "2023-12-01",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Ottersec%2014DEC2023.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2023-08-03",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Paladin-15DEC2023.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2023-12-15",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Windhustler-15DEC2023.pdf"
+          },
+          "auditor": {
+            "name": "Josip Končurat (Windhustler)",
+            "logo": null
+          },
+          "date": "2023-12-15",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/EndpointV2-Zellic-13DEC2023.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2023-12-13",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/Ethena_OFT-Zellic-16JAN2025.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2025-01-16",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ExampleString-Passing-Solana-OApp_Zellic_Jun-06-2025.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2025-06-06",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/HyperLiquid_Composer-Paladin-9MAY2025.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2025-04-21",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LZ-OApp%26OFT_Zellic_Sep-23-2025.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2025-09-23",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LZ_OVault-Composer_Paladin_Oct-23-25.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2025-10-23",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LZ_OVault_Ottersec_Jul-16-25.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2025-07-16",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LZ_OVault_Paladin_Aug-06-25.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2025-08-06",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/LzApp%26Token-Ackee-03MAY2022.pdf"
+          },
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "date": "2022-05-03",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/MintableOFT-Paladin-06JUN2024.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2024-06-06",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/NativeOFTAdapter-Paladin-28AUG2024.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2024-08-28",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/NativeOFTV2-Zellic-16JUN2023.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2023-06-16",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/NativeOFTWithFee-Zellic-30JUN2023.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2023-06-30",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/NativeOftAdapter-Ottersec-19SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2024-09-19",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OApp%26OFT-Zellic-12JUN2024.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2024-06-12",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OFT-OAPP-ChainSecurity-30JAN2024.pdf"
+          },
+          "auditor": {
+            "name": "Chainsecurity",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/d3dbdb28-a8ba-4bde-8e05-ab0f70c80f54.PNG"
+          },
+          "date": "2024-01-30",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OFTAdapter%20Burn%20-%20Zellic%20Audit%20Report.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2025-06-06",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ONFT721_Paladin_10AUG2024.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2024-08-10",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OmnichainGovernanceExecutor-Paladin-30MAR2023.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2023-03-30",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/OmnichainGovernanceExecutor-Zellic-20MAR2023.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2023-03-20",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/Orbitadapter-Ottersec-27JUN2024.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2024-06-27",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/RateLimiter-Hexens-MAY2024.pdf"
+          },
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "date": "2024-05-24",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/RateLimiterFlows-Hexens-OCT2024oct24%20(1).pdf"
+          },
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "date": "2024-10-24",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/RateLimiterFlows-Pashov-20SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "date": "2024-10-20",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/Solana-OFT-Halborn-24MAY2024.pdf"
+          },
+          "auditor": {
+            "name": "Halborn",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/c3d5676c-03a5-44bb-b876-244da4f2e043.PNG"
+          },
+          "date": "2024-05-24",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaEndPoint-Pashov-28MAY2024.pdf"
+          },
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "date": "2024-05-28",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaEndpoint-Halborn-24MAY2024.pdf"
+          },
+          "auditor": {
+            "name": "Halborn",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/c3d5676c-03a5-44bb-b876-244da4f2e043.PNG"
+          },
+          "date": "2024-05-29",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaEndpoint-OAPP-Zellic-23JUL2024.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2024-07-23",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaEndpoint-Ottersec-07JUN2024.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2024-06-07",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaOFT-Ottersec-25SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2024-09-25",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaOFT-Pashov-17SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "date": "2024-09-17",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaOFTandDevTools-Ottersec-24SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2024-09-25",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolanaOFTandDevTools-Pashov-17SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "date": "2024-09-17",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExample-Ackee-27JUL2022.pdf"
+          },
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "date": "2024-07-27",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ackee-10OCT2022.pdf"
+          },
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "date": "2022-10-10",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ackee-14NOV2022.pdf"
+          },
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "date": "2022-11-14",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ottersec-21MAR2023.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2023-03-21",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ottersec-24JAN2023.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2023-01-24",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Ottersec-27APR2023.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2023-04-27",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamples-Zellic-21MAY2022.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2022-05-21",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamplesNativeProxy-Ackee-08AUG2022.pdf"
+          },
+          "auditor": {
+            "name": "Ackee Blockchain",
+            "logo": null
+          },
+          "date": "2022-08-08",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/SolidityExamplesONFT-Zellic-19JAN2023.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2023-01-19",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/TON_OFT-Ottersec-23May2025.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2025-05-23",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/TON_OFT-Zellic-19May2025.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2025-05-19",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/USDT_OFT-%20Ottersec-28JAN2025.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2025-01-28",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/USDT_OFT-Zellic-15JAN2025.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2025-01-15",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/USDT_TON-%20Zellic-15JAN2025.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2025-01-15",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/UltraLightNodeV2Radar-Zellic-22NOV2022.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2022-11-22",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/UpgradeableOFT-Ottersec-04NOV2024.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2024-11-04",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/UpgradeableOapp%26OFT-Hexens-01NOV2024.pdf"
+          },
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "date": "2024-11-01",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/VeDistributor_Paladin_09-Sep-2025.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2025-09-09",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/VeDistributor_Zellic_08-Sep-2025.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2025-09-08",
+          "fixedFindings": {
+            "label": "Unfixed",
+            "severity": "high"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/WrappedAssetBridge-Zellic-28FEB2023.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2023-02-28",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/WrappedAssetBridgeV2-Hexens-AUG2024.pdf"
+          },
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "date": "2024-08-24",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/WrappedAssetBridgeV2-Ottersec-09SEPT2024.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2024-09-09",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ZROClaim-Paladin-18JUN2024.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2024-06-18",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ZROClaim-Pashov-17JUN2024.pdf"
+          },
+          "auditor": {
+            "name": "Pashov",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fa2ab5b-8698-47af-8e53-e3877d146ee8.jpeg"
+          },
+          "date": "2024-06-17",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/ZRPclaim-hexens-23JUN2024.pdf"
+          },
+          "auditor": {
+            "name": "Hexens",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/f98eb5d1-baf5-420b-8b6e-352c75758e9c.png"
+          },
+          "date": "2024-06-23",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/lzRead-Paladin-25OCT2024.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2024-10-25",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/lzRead-Sec3-12NOV2024.pdf"
+          },
+          "auditor": {
+            "name": "Soteria",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a0425f99-7a13-4cc7-93b0-4179e15bb5e8.png"
+          },
+          "date": "2024-11-12",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/stargate-protocol/stargate-v2/blob/main/audits/Stargate%20V2%20-%20Zellic%20FINAL%20Audit%20Report.pdf"
+          },
+          "auditor": {
+            "name": "Zellic",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png"
+          },
+          "date": "2024-05-22",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://github.com/stargate-protocol/stargate-v2/blob/main/audits/Stargate_V2_Ottersec_Final.pdf"
+          },
+          "auditor": {
+            "name": "OtterSec",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/2fedbb1a-fa14-410f-bb31-09a3aa489693.PNG"
+          },
+          "date": "2024-04-26",
+          "fixedFindings": {
+            "label": "All Fixed",
+            "severity": "low"
+          },
+          "isAuditCodeAccessPresent": true
+        },
+        {
+          "report": {
+            "url": "https://paladinsec.co/assets/audits/20231215_Paladin_LayerZeroMessageLib_Final_Report.pdf"
+          },
+          "auditor": {
+            "name": "Paladin",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/a71c6dea-91b4-4df1-9070-6ce3deaa7073.jpg"
+          },
+          "date": "2023-12-15",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": false
+        },
+        {
+          "report": {
+            "url": "https://code4rena.com/reports/2025-09-layerzero-endpoint-v2-sui"
+          },
+          "auditor": {
+            "name": "Code4rena",
+            "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/b22a667e-c82f-411f-bb86-5b3c5c3de111.PNG"
+          },
+          "date": "2025-11-05",
+          "fixedFindings": {
+            "label": "Major Fixed",
+            "severity": "medium"
+          },
+          "isAuditCodeAccessPresent": true
+        }
+      ]
+    },
+    "bugBounty": {
+      "custody": "3rd-party",
+      "payoutPolicy": "$1k-$15m",
+      "isAttestationSlaPresent": false,
+      "provider": {
+        "url": "https://immunefi.com/bug-bounty/layerzero/",
+        "name": "Immunefi",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/0e3cee32-c6c9-43cf-be2b-85b6f510aa47.jpeg"
+      }
+    },
+    "tokenContracts": {
+      "isVerifiedOnChain": false,
+      "isAudited": false
+    },
+    "thirdPartyMonitoring": {
+      "label": null,
+      "severity": null
+    }
+  },
+  "financial": {
+    "score": {
+      "current": 49.33,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "inflation": {
+      "window": "3m",
+      "points": [
+        {
+          "date": "2023-01-01"
+        },
+        {
+          "date": "2023-04-01"
+        },
+        {
+          "date": "2023-07-01"
+        },
+        {
+          "date": "2023-10-01"
+        },
+        {
+          "date": "2024-01-01"
+        },
+        {
+          "date": "2024-04-01",
+          "percentage": -0.1847
+        },
+        {
+          "date": "2024-07-01",
+          "percentage": -54.992
+        },
+        {
+          "date": "2024-10-01",
+          "percentage": -0.0171
+        },
+        {
+          "date": "2025-01-01",
+          "percentage": 0.2115
+        },
+        {
+          "date": "2025-04-01",
+          "percentage": 0.2853
+        },
+        {
+          "date": "2025-07-01",
+          "percentage": 0.0878
+        }
+      ]
+    },
+    "revenueSources": [
+      {
+        "label": "Transaction/Protocol Fees"
+      },
+      {
+        "label": "Enterprise Partnerships"
+      }
+    ],
+    "treasuryQuality": {
+      "topTierAssetsShare": "unknown",
+      "trend": {
+        "label": null,
+        "severity": "high"
+      },
+      "isSpikesPresent": false,
+      "assetDistribution": [
+        {
+          "label": "Stable"
+        },
+        {
+          "label": "Native"
+        },
+        {
+          "label": "Project"
+        }
+      ]
+    },
+    "circularSupplyAnalysis": {
+      "matchesDeclared": "Cross-chain",
+      "isLessThanTotalSupply": true,
+      "deviation": null
+    },
+    "lockersAnalysis": {
+      "type": "Third-Party Audited"
+    }
+  },
+  "operational": {
+    "score": {
+      "current": 34,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "githubActivity": {
+      "heatmap": {
+        "intensities": [
+          0,
+          25,
+          50,
+          75,
+          100
+        ],
+        "points": [
+          {
+            "date": "2024-11-29",
+            "intensity": 38
+          },
+          {
+            "date": "2024-12-06",
+            "intensity": 32
+          },
+          {
+            "date": "2024-12-13",
+            "intensity": 43
+          },
+          {
+            "date": "2024-12-20",
+            "intensity": 22
+          },
+          {
+            "date": "2024-12-27",
+            "intensity": 16
+          },
+          {
+            "date": "2025-01-03",
+            "intensity": 42
+          },
+          {
+            "date": "2025-01-10",
+            "intensity": 46
+          },
+          {
+            "date": "2025-01-17",
+            "intensity": 28
+          },
+          {
+            "date": "2025-01-24",
+            "intensity": 42
+          },
+          {
+            "date": "2025-01-31",
+            "intensity": 70
+          },
+          {
+            "date": "2025-02-07",
+            "intensity": 70
+          },
+          {
+            "date": "2025-02-14",
+            "intensity": 57
+          },
+          {
+            "date": "2025-02-21",
+            "intensity": 49
+          },
+          {
+            "date": "2025-02-28",
+            "intensity": 64
+          },
+          {
+            "date": "2025-03-07",
+            "intensity": 100
+          },
+          {
+            "date": "2025-03-14",
+            "intensity": 81
+          },
+          {
+            "date": "2025-03-21",
+            "intensity": 97
+          },
+          {
+            "date": "2025-03-28",
+            "intensity": 45
+          },
+          {
+            "date": "2025-04-04",
+            "intensity": 48
+          },
+          {
+            "date": "2025-04-11",
+            "intensity": 33
+          },
+          {
+            "date": "2025-04-18",
+            "intensity": 42
+          },
+          {
+            "date": "2025-04-25",
+            "intensity": 57
+          },
+          {
+            "date": "2025-05-02",
+            "intensity": 29
+          },
+          {
+            "date": "2025-05-09",
+            "intensity": 52
+          },
+          {
+            "date": "2025-05-16",
+            "intensity": 29
+          },
+          {
+            "date": "2025-05-23",
+            "intensity": 36
+          },
+          {
+            "date": "2025-05-30",
+            "intensity": 51
+          },
+          {
+            "date": "2025-06-06",
+            "intensity": 54
+          },
+          {
+            "date": "2025-06-13",
+            "intensity": 33
+          },
+          {
+            "date": "2025-06-20",
+            "intensity": 25
+          },
+          {
+            "date": "2025-06-27",
+            "intensity": 36
+          },
+          {
+            "date": "2025-07-04",
+            "intensity": 33
+          },
+          {
+            "date": "2025-07-11",
+            "intensity": 41
+          },
+          {
+            "date": "2025-07-18",
+            "intensity": 71
+          },
+          {
+            "date": "2025-07-25",
+            "intensity": 32
+          },
+          {
+            "date": "2025-08-01",
+            "intensity": 29
+          },
+          {
+            "date": "2025-08-08",
+            "intensity": 19
+          },
+          {
+            "date": "2025-08-15",
+            "intensity": 20
+          },
+          {
+            "date": "2025-08-22",
+            "intensity": 16
+          },
+          {
+            "date": "2025-08-29",
+            "intensity": 17
+          },
+          {
+            "date": "2025-09-05",
+            "intensity": 6
+          },
+          {
+            "date": "2025-09-12",
+            "intensity": 17
+          },
+          {
+            "date": "2025-09-19",
+            "intensity": 13
+          },
+          {
+            "date": "2025-09-26",
+            "intensity": 14
+          },
+          {
+            "date": "2025-10-03",
+            "intensity": 10
+          },
+          {
+            "date": "2025-10-10",
+            "intensity": 13
+          },
+          {
+            "date": "2025-10-17",
+            "intensity": 10
+          },
+          {
+            "date": "2025-10-24",
+            "intensity": 3
+          },
+          {
+            "date": "2025-10-31",
+            "intensity": 19
+          },
+          {
+            "date": "2025-11-07",
+            "intensity": 26
+          },
+          {
+            "date": "2025-11-14",
+            "intensity": 16
+          },
+          {
+            "date": "2025-11-21",
+            "intensity": 26
+          }
+        ]
+      },
+      "commitsCount7d": 18
+    },
+    "teamTrackRecords": {
+      "isEducationRelevant": true,
+      "isWorkExperienceRelevant": true,
+      "isBusinessExperienceRelevant": true
+    },
+    "liquidityRisks": {
+      "cexQuality": "2025-10-08",
+      "cexVolToMcap": "Below Average",
+      "dexLpState": "Unlocked",
+      "dexLpToMcap": "Below Average",
+      "orderbookToMcap": "Above Average"
+    },
+    "documentation": [
+      {
+        "label": "Whitepaper",
+        "url": "https://layerzero.network/publications/LayerZero_Whitepaper_V2.1.1.pdf"
+      },
+      {
+        "label": "Documentation",
+        "url": "https://docs.layerzero.network/v2"
+      }
+    ],
+    "certifications": {
+      "iso": false,
+      "ccss": false
+    }
+  },
+  "reputational": {
+    "score": {
+      "current": 67.5,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "insurance": {
+      "custody": "none",
+      "coverage": "none"
+    },
+    "auditReputation": {
+      "topAuditor": {
+        "name": "Zellic",
+        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/9ba6ce89-93f4-4099-a341-2098b68a9f21.png",
+        "grade": {
+          "label": "A",
+          "tier": "High-Tier"
+        }
+      }
+    },
+    "redFlags": {
+      "mmRedFlags": "Not Listed",
+      "investorRedFlags": "Not Listed"
+    },
+    "longevity": {
+      "projectLaunchedAt": "3 years +",
+      "protocolLaunchedAt": "3 years +"
+    },
+    "social": {
+      "twitter": {
+        "score": "Excellent",
+        "label": "Twitter Score"
+      },
+      "website": {
+        "visits": {
+          "count": 9200,
+          "tag": {
+            "label": "average",
+            "severity": "medium"
+          }
+        }
+      },
+      "googleTrends": {
+        "tag": {
+          "label": "Average Range",
+          "severity": "medium"
+        }
+      },
+      "interactions": {
+        "tag": {
+          "label": "Average Range ",
+          "severity": "medium"
+        }
+      }
+    }
+  },
+  "regulatory": {
+    "score": {
+      "current": 35,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    },
+    "regulatorySurfaceControls": {
+      "isKycPresented": false,
+      "isKytPresented": false
+    },
+    "jurisdictionQuality": "Tier 3",
+    "isLegalPresent": true,
+    "isPublicRegistrationPresent": true,
+    "isTeamTransparencyPublic": true,
+    "operatesUnderRegulations": false
+  },
+  "dependency": {
+    "score": {
+      "current": 0,
+      "min": 0,
+      "max": 100,
+      "label": "average across similar projects"
+    }
+  },
+  "proofOfOpinion": {
+    "communitySentiment": {
+      "percentage": {
+        "min": -100,
+        "max": 100
+      },
+      "points": [
+        {
+          "date": "2025-09-10",
+          "positive": 19,
+          "negative": 46
+        },
+        {
+          "date": "2025-09-17",
+          "positive": 48,
+          "negative": 14
+        },
+        {
+          "date": "2025-09-24",
+          "positive": 74,
+          "negative": 63
+        },
+        {
+          "date": "2025-10-01",
+          "positive": 48,
+          "negative": 6
+        },
+        {
+          "date": "2025-10-08",
+          "positive": 26,
+          "negative": 25
+        },
+        {
+          "date": "2025-10-15",
+          "positive": 61,
+          "negative": 42
+        },
+        {
+          "date": "2025-10-22",
+          "positive": 78,
+          "negative": 38
+        },
+        {
+          "date": "2025-10-29",
+          "positive": 84,
+          "negative": 10
+        },
+        {
+          "date": "2025-11-05",
+          "positive": 84,
+          "negative": 54
+        },
+        {
+          "date": "2025-11-12",
+          "positive": 32,
+          "negative": 56
+        },
+        {
+          "date": "2025-11-19",
+          "positive": 70,
+          "negative": 55
+        },
+        {
+          "date": "2025-11-26",
+          "positive": 85,
+          "negative": 48
+        },
+        {
+          "date": "2025-12-03",
+          "positive": 86,
+          "negative": 41
+        }
+      ]
+    },
+    "prosAndCons": {
+      "pros": [
+        "Seamless interoperability.",
+        "Decentralized verification networks.",
+        "Popular across chains."
+      ],
+      "cons": [
+        "Complex configurations.",
+        "Early exploits have occurred.",
+        "Token inflation concerns."
+      ]
+    },
+    "expertReviews": {
+      "total": 5,
+      "reviews": [
+        {
+          "reviewer": {
+            "tag": "Aaronic0"
+          },
+          "date": "2025-12-01",
+          "text": "LayerZero is an omnichain messaging protocol connecting different blockchains. Launched in 2022, it has a ZRO token and DVN security model. In 2025, V2 is more secure. Broad adoption.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Miner Sarp"
+          },
+          "date": "2025-12-01",
+          "text": "Layer Zero is an omnichain-cross chain- communication protocol.  It allows different chain( bsc,apt,avalanche,polygon etc..)networks to communicate securely with each other in a direct and decentralized manner. Thanks to its technological structure, the tokens and NFTs sent come as themselves, not as wrapped tokens and custody. It prevents liquidity fragmentation and enables cross-chain token and data flow. Its total supply is 1 billion and its token is ZRO.  Protocol and infrastructure are developed by Layer Zero Labs.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Amentinho"
+          },
+          "date": "2025-12-01",
+          "text": "LayerZero is a tool that helps different blockchains talk to each other. It's used behind the scenes in many apps that move tokens between chains, like Stargate. It enables interoperability  smart contracts on one chain can send data to another, so for example if a dApp is developed in Arbitrium can communicate with one in Base. LayerZero uses a system called CORE, which lets the tool work without needing to trust anyone, keeping everything simple. I would say of LayerZero that it’s like a glue that safely connects different blockchains.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Max_08892"
+          },
+          "date": "2025-12-01",
+          "text": "LayerZero feels like an elegant messaging protocol to me. Its whole idea is to let blockchains send data to each other in a nearly trustless way, which I respect. It even uses things like Chainlink oracles for extra security. That said, I know it still requires trusting an oracle and a relayer not to collude, which is basically a shared secret if either misbehaves, an invalid cross chain message could go through. So while it’s innovative, I consider it still not 100% foolproof.",
+          "url": null
+        },
+        {
+          "reviewer": {
+            "tag": "Benblockk "
+          },
+          "date": "2025-12-01",
+          "text": "LayerZero is a decentralized interoperability protocol designed to connect various blockchains, enabling seamless cross-chain communication. It aims to provide a lightweight solution for connecting blockchains without the need for intermediaries, making it easier for decentralized applications (dApps) to interact across multiple networks.",
+          "url": null
+        }
+      ]
+    }
+  }
+}
