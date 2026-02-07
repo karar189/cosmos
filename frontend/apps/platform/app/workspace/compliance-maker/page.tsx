@@ -23,7 +23,9 @@ export interface ComplianceSession {
   savedAt: string;
 }
 
-function getImportedWidgets(): ComplianceWidget[] {
+type ImportedComplianceWidget = ComplianceWidget & { institutionType?: string };
+
+function getImportedWidgets(): ImportedComplianceWidget[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = window.localStorage.getItem(IMPORTED_WIDGETS_STORAGE_KEY);
@@ -33,7 +35,7 @@ function getImportedWidgets(): ComplianceWidget[] {
   }
 }
 
-function addWidgetToImports(widget: ComplianceWidget) {
+function addWidgetToImports(widget: ImportedComplianceWidget) {
   const list = getImportedWidgets();
   if (list.some((w) => w.id === widget.id)) return;
   list.push(widget);
@@ -91,6 +93,11 @@ const institutionTypes: InstitutionType[] = [
       { name: 'Regulatory Reporting', description: 'Auto-generate SEC, MAS, FCA reports with ISO 20022 formatted outputs', priority: 'medium', category: 'Reporting' },
       { name: 'Proof-of-Reserve Oracle', description: 'On-chain attestation of off-chain collateral via oracle integration', priority: 'high', category: 'Verification' },
       { name: 'Soroban Enforcement Module', description: 'Smart contract-based freeze/clawback capabilities for regulatory compliance', priority: 'low', category: 'Enforcement' },
+      { name: 'Asset Performance', description: 'Track underlying asset value, price feeds, and volatility with alerts for drawdowns', priority: 'medium', category: 'Analytics' },
+      { name: 'Investor Accreditation', description: 'Accreditation/KYC status tracking for investors with expiry reminders and audit trail', priority: 'high', category: 'Compliance' },
+      { name: 'Secondary Market Activity', description: 'Monitor secondary trading volume, liquidity, and abnormal price impact across venues', priority: 'medium', category: 'Analytics' },
+      { name: 'Asset Valuation Tracker', description: 'Mark-to-market valuations with valuation source transparency and overrides logging', priority: 'medium', category: 'Reporting' },
+      { name: 'Custody Monitor', description: 'Custody status, asset location, and custodian risk alerts with incident timeline', priority: 'high', category: 'Monitoring' },
     ]
   },
   { 
@@ -103,6 +110,11 @@ const institutionTypes: InstitutionType[] = [
       { name: 'Audit Dashboard', description: 'Continuous audit trail with real-time attestation and external auditor integration', priority: 'medium', category: 'Audit' },
       { name: 'Trustline Analytics', description: 'Holder risk distribution analysis and geo-distribution monitoring', priority: 'medium', category: 'Analytics' },
       { name: 'Freeze/Unfreeze Panel', description: 'Administrative controls for token freezing with full audit trail', priority: 'low', category: 'Enforcement' },
+      { name: 'Peg Stability Monitor', description: 'Track price deviation from peg with alerts for sustained drift and liquidity stress', priority: 'high', category: 'Monitoring' },
+      { name: 'Mint/Burn Volume', description: 'Daily mint/burn activity trends with anomaly detection and root-cause tagging', priority: 'medium', category: 'Analytics' },
+      { name: 'Circulation Analytics', description: 'Circulating supply breakdown by chain, venue, and wallet segment', priority: 'medium', category: 'Analytics' },
+      { name: 'Attestation Status', description: 'Upcoming attestation deadlines, completion status, and evidence repository links', priority: 'high', category: 'Audit' },
+      { name: 'Bank Balance Monitor', description: 'Bank account balances for fiat reserves with reconciliation and variance alerts', priority: 'high', category: 'Monitoring' },
     ]
   },
   { 
@@ -115,6 +127,10 @@ const institutionTypes: InstitutionType[] = [
       { name: 'Regulatory Reporting', description: 'Automated STR, SAR, CTR generation with compliance deadline tracking', priority: 'medium', category: 'Reporting' },
       { name: 'Large-Value Transfer Monitor', description: 'Threshold-based monitoring for high-value transactions with escalation workflows', priority: 'medium', category: 'Monitoring' },
       { name: 'Jurisdiction Rule Engine', description: 'Configurable rules per operating jurisdiction with automatic enforcement', priority: 'low', category: 'Compliance' },
+      { name: 'Account Opening Metrics', description: 'Track onboarding funnel conversion, drop-offs, approval rates, and review SLAs', priority: 'medium', category: 'Analytics' },
+      { name: 'Liquidity Monitor', description: 'Real-time liquidity ratios, intraday inflows/outflows, and stress scenario indicators', priority: 'high', category: 'Monitoring' },
+      { name: 'Customer Segmentation', description: 'Customer distribution by risk tier, geography, product usage, and lifecycle stage', priority: 'medium', category: 'Analytics' },
+      { name: 'Lending Portfolio Health', description: 'Portfolio quality view: delinquency, defaults, vintage curves, and concentration risk', priority: 'medium', category: 'Analytics' },
     ]
   },
   { 
@@ -127,6 +143,11 @@ const institutionTypes: InstitutionType[] = [
       { name: 'Transparency Dashboard', description: 'Public-facing reports showing fund utilization rates and beneficiary impact metrics', priority: 'medium', category: 'Reporting' },
       { name: 'Geo-Risk Scoring', description: 'High-risk region assessment for all operational corridors', priority: 'medium', category: 'Risk' },
       { name: 'Wallet Behavior Profiler', description: 'Beneficiary verification through transaction pattern analysis', priority: 'low', category: 'Analytics' },
+      { name: 'Beneficiary Verification', description: 'Recipient verification status with watchlist hits, documentation checks, and re-verification cycles', priority: 'high', category: 'Compliance' },
+      { name: 'Impact Metrics', description: 'Program impact KPIs by region/project with funding-to-outcome reporting', priority: 'medium', category: 'Reporting' },
+      { name: 'Donor Compliance', description: 'Know Your Donor (KYD) tracking with risk flags and source-of-funds documentation status', priority: 'high', category: 'Tracking' },
+      { name: 'Regulatory Reporting', description: 'Track reporting obligations and deadlines with exportable evidence packs', priority: 'medium', category: 'Reporting' },
+      { name: 'Expense Ratio Monitor', description: 'Admin vs program expense ratio tracking with trend alerts and drill-downs', priority: 'medium', category: 'Analytics' },
     ]
   },
   { 
@@ -139,6 +160,10 @@ const institutionTypes: InstitutionType[] = [
       { name: 'Regulatory Compliance', description: 'Multi-jurisdiction money transmitter license tracking and reporting', priority: 'medium', category: 'Compliance' },
       { name: 'Smurfing Detection', description: 'AI-powered detection of transaction structuring across customer accounts', priority: 'medium', category: 'Detection' },
       { name: 'Memo Validator', description: 'Enforce memo requirements on all transfers with validation rules', priority: 'low', category: 'Enforcement' },
+      { name: 'Cross-Border Volume', description: 'Volume trends by corridor with spike detection and seasonality insights', priority: 'medium', category: 'Analytics' },
+      { name: 'Settlement Time Tracker', description: 'Track end-to-end settlement times by corridor/provider and SLA compliance', priority: 'medium', category: 'Operations' },
+      { name: 'Agent Network Monitor', description: 'Monitor agent availability, compliance status, and operational capacity by region', priority: 'medium', category: 'Monitoring' },
+      { name: 'Regulatory Alerts', description: 'Corridor-specific regulatory change alerts with required action checklists', priority: 'medium', category: 'Compliance' },
     ]
   },
   { 
@@ -151,6 +176,10 @@ const institutionTypes: InstitutionType[] = [
       { name: 'User Risk Assessment', description: 'Dynamic risk profiling based on onboarding data, behavior, and device patterns', priority: 'medium', category: 'Risk' },
       { name: 'Sanctions Screening', description: 'Real-time screening on all payment flows with automated blocking', priority: 'medium', category: 'Compliance' },
       { name: 'ISO 20022 Formatter', description: 'Auto-format Stellar transactions into ISO 20022 bank messages', priority: 'low', category: 'Integration' },
+      { name: 'Payment Volume by Method', description: 'Breakdown of volume across rails (card, ACH, wire, crypto) with trend lines', priority: 'medium', category: 'Analytics' },
+      { name: 'Chargeback Monitor', description: 'Chargeback rate trends, dispute outcomes, and alerting on threshold breaches', priority: 'medium', category: 'Monitoring' },
+      { name: 'Authorization Rates', description: 'Real-time authorization success metrics with issuer-level drilldowns', priority: 'medium', category: 'Analytics' },
+      { name: 'Payment Routing Optimizer', description: 'Route recommendations to maximize success rate and minimize fees/latency', priority: 'low', category: 'Operations' },
     ]
   },
 ];
@@ -195,7 +224,7 @@ export default function ComplianceMakerPage() {
 
   const handleImportSelectedToDashboard = () => {
     const toImport = suggestedChecklist.filter((w) => selectedWidgetIds.has(w.id));
-    toImport.forEach((w) => addWidgetToImports(w));
+    toImport.forEach((w) => addWidgetToImports({ ...w, institutionType }));
     setImportedIds((prev) => new Set([...prev, ...selectedWidgetIds]));
     setSelectedWidgetIds(new Set());
     router.push(ROUTES.WORKSPACE.DASHBOARD_BUILDER);
@@ -238,7 +267,7 @@ export default function ComplianceMakerPage() {
       setAnalysisSource(analysisSourceValue);
     } finally {
       const checklist: ComplianceWidget[] = selectedInst?.widgets.map((widget, index) => ({
-        id: `widget-${index}`,
+        id: `widget-${institutionType}-${index}`,
         name: widget.name,
         category: widget.category,
         description: widget.description,
