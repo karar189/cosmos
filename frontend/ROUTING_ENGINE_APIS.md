@@ -34,13 +34,13 @@ const response = await fetch(`https://horizon.stellar.org/paths/strict-send?
 
 ## 🌟 2. **Orderbook API** (LIVE)
 
-**Endpoint**: `https://horizon.stellar.org/orderbook`
+**Endpoint**: `https://horizon.stellar.org/order_book`
 
-**What it does**: Gets real-time DEX liquidity data
+**What it does**: Gets real-time DEX liquidity data (bids, asks, base, counter per Horizon API Reference)
 
 **Example Call**:
 ```javascript
-const response = await fetch(`https://horizon.stellar.org/orderbook?
+const response = await fetch(`https://horizon.stellar.org/order_book?
   selling_asset_type=credit_alphanum4&
   selling_asset_code=USDC&
   selling_asset_issuer=GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN&

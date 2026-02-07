@@ -444,6 +444,18 @@ export const summaryRow = css`
 export const executeButton = css`
   ${size.width.full}
   ${spacing.margin.bottom.m}
+  /* Single clean button: remove wrapper border/padding so it doesn’t look double-bordered */
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  button {
+    box-shadow: none !important;
+  }
+  button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
 `;
 
 export const executionNote = css`

@@ -3,12 +3,25 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, Core3Button as Button, Select, Icon, Badge, Section } from '@core3/ui-components';
+import { Card, Core3Button as Button, Input, Select, Icon, Badge, Section } from '@core3/ui-components';
 import useTranslation from '@/hooks/useTranslation';
 import { ROUTES } from '@/constants/routes';
 import * as styles from './page.styles';
 
 const IMPORTED_WIDGETS_STORAGE_KEY = 'cosmops_imported_widgets';
+const COMPLIANCE_SESSION_STORAGE_KEY = 'cosmops_compliance_session';
+
+export interface ComplianceSession {
+  institutionName: string;
+  institutionType: string;
+  institutionTypeLabel?: string;
+  lookingFor: string;
+  existingAudits: string;
+  analysis: string;
+  analysisSource: string;
+  suggestedChecklist: ComplianceWidget[];
+  savedAt: string;
+}
 
 function getImportedWidgets(): ComplianceWidget[] {
   if (typeof window === 'undefined') return [];
@@ -25,6 +38,35 @@ function addWidgetToImports(widget: ComplianceWidget) {
   if (list.some((w) => w.id === widget.id)) return;
   list.push(widget);
   window.localStorage.setItem(IMPORTED_WIDGETS_STORAGE_KEY, JSON.stringify(list));
+}
+
+function saveComplianceSession(session: ComplianceSession) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(COMPLIANCE_SESSION_STORAGE_KEY, JSON.stringify(session));
+  } catch (e) {
+    console.warn('Failed to save compliance session', e);
+  }
+}
+
+function getComplianceSession(): ComplianceSession | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(COMPLIANCE_SESSION_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearComplianceCache() {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(COMPLIANCE_SESSION_STORAGE_KEY);
+    window.localStorage.removeItem(IMPORTED_WIDGETS_STORAGE_KEY);
+  } catch (e) {
+    console.warn('Failed to clear compliance cache', e);
+  }
 }
 
 interface InstitutionType {
@@ -124,6 +166,7 @@ interface ComplianceWidget {
 
 export default function ComplianceMakerPage() {
   useTranslation('workspace');
+  const [institutionName, setInstitutionName] = useState<string>('');
   const [institutionType, setInstitutionType] = useState<string>('');
   const [lookingFor, setLookingFor] = useState<string>('');
   const [existingAudits, setExistingAudits] = useState<string>('');
@@ -159,7 +202,7 @@ export default function ComplianceMakerPage() {
   };
 
   const handleSubmit = async () => {
-    if (!institutionType || !lookingFor) return;
+    if (!institutionName?.trim() || !institutionType || !lookingFor) return;
 
     setIsSubmitting(true);
     setHasSubmitted(true);
@@ -167,12 +210,14 @@ export default function ComplianceMakerPage() {
     setSuggestedChecklist([]);
     
     const selectedInst = institutionTypes.find(t => t.id === institutionType);
+    let analysisText = '';
+    let analysisSourceValue = 'fallback';
 
     try {
       const response = await fetch('/api/compliance/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ institutionType, lookingFor, existingAudits }),
+        body: JSON.stringify({ institutionName: institutionName.trim(), institutionType, lookingFor, existingAudits }),
       });
 
       const data = await response.json();
@@ -181,12 +226,16 @@ export default function ComplianceMakerPage() {
         throw new Error(data.error || `API error ${response.status}`);
       }
 
-      setAiAnalysis(data.analysis || 'Unable to generate analysis.');
-      setAnalysisSource(data.source || 'ai');
+      analysisText = data.analysis || 'Unable to generate analysis.';
+      analysisSourceValue = data.source || 'ai';
+      setAiAnalysis(analysisText);
+      setAnalysisSource(analysisSourceValue);
     } catch (error) {
       console.error('Error calling AI:', error);
-      setAiAnalysis('Analysis generated from built-in compliance engine. Connect OpenAI for personalized recommendations.');
-      setAnalysisSource('fallback');
+      analysisText = 'Analysis generated from built-in compliance engine. Connect OpenAI for personalized recommendations.';
+      analysisSourceValue = 'fallback';
+      setAiAnalysis(analysisText);
+      setAnalysisSource(analysisSourceValue);
     } finally {
       const checklist: ComplianceWidget[] = selectedInst?.widgets.map((widget, index) => ({
         id: `widget-${index}`,
@@ -198,7 +247,32 @@ export default function ComplianceMakerPage() {
       })) || [];
       setSuggestedChecklist(checklist);
       setIsSubmitting(false);
+      saveComplianceSession({
+        institutionName: institutionName.trim(),
+        institutionType,
+        institutionTypeLabel: selectedInst?.name,
+        lookingFor,
+        existingAudits,
+        analysis: analysisText || (checklist.length ? 'Analysis saved.' : ''),
+        analysisSource: analysisSourceValue,
+        suggestedChecklist: checklist,
+        savedAt: new Date().toISOString(),
+      });
     }
+  };
+
+  const handleClearCache = () => {
+    clearComplianceCache();
+    setInstitutionName('');
+    setInstitutionType('');
+    setLookingFor('');
+    setExistingAudits('');
+    setAiAnalysis('');
+    setSuggestedChecklist([]);
+    setAnalysisSource('');
+    setHasSubmitted(false);
+    setSelectedWidgetIds(new Set());
+    setImportedIds(new Set());
   };
 
   const priorityColor = (p: string) => {
@@ -272,7 +346,17 @@ export default function ComplianceMakerPage() {
             <div css={styles.formContent}>
               <div css={styles.formBlock}>
                 <label css={styles.label}>
-                  1. Type of Institution <span css={styles.required}>*</span>
+                  1. Name of the Institute <span css={styles.required}>*</span>
+                </label>
+                <Input
+                  value={institutionName}
+                  onChange={(e) => setInstitutionName(e.target.value)}
+                  placeholder="e.g. Acme RWA Fund, Stellar Payments Inc."
+                />
+              </div>
+              <div css={styles.formBlock}>
+                <label css={styles.label}>
+                  2. Type of Institution <span css={styles.required}>*</span>
                 </label>
                 <Select
                   value={institutionType}
@@ -285,7 +369,7 @@ export default function ComplianceMakerPage() {
               </div>
               <div css={styles.formBlock}>
                 <label css={styles.label}>
-                  2. What are you looking for? <span css={styles.required}>*</span>
+                  3. What are you looking for? <span css={styles.required}>*</span>
                 </label>
                 <textarea
                   css={styles.textarea}
@@ -297,7 +381,7 @@ export default function ComplianceMakerPage() {
               </div>
               <div css={styles.formBlock}>
                 <label css={styles.label}>
-                  3. Existing audits & security rails?
+                  4. Existing audits & security rails?
                 </label>
                 <textarea
                   css={styles.textarea}
@@ -312,10 +396,19 @@ export default function ComplianceMakerPage() {
                   variant="primary"
                   size="large"
                   onClick={handleSubmit}
-                  disabled={!institutionType || !lookingFor || isSubmitting}
+                  disabled={!institutionName?.trim() || !institutionType || !lookingFor || isSubmitting}
                 >
                   {isSubmitting ? 'Analyzing...' : 'Submit & Analyze'}
                   <Icon name="data-transfer" />
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="medium"
+                  onClick={handleClearCache}
+                  css={styles.clearCacheButton}
+                >
+                  <Icon name="minus-circle" />
+                  Clear cache
                 </Button>
               </div>
             </div>
@@ -341,7 +434,7 @@ export default function ComplianceMakerPage() {
                       Fill out the form and submit to get AI-powered compliance recommendations.
                     </p>
                     <p css={styles.emptyStateSubtext}>
-                      Our engine analyzes your institution type, requirements, and infrastructure to generate a personalized checklist.
+                      Our engine analyzes your institution name, type, requirements, and infrastructure to generate a personalized checklist and smart contract recommendations (what you might need—or not need—on Stellar/Soroban).
                     </p>
                   </div>
                 </Card>

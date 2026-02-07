@@ -19,12 +19,12 @@ import {
  */
 export const sidebar = css`
   ${flex.column}
-  ${size.width.custom('280px')}
+  ${size.width.custom('200px')}
   ${size.height.full}
-  ${spacing.padding.top.l}
+  ${spacing.padding.top.m}
   ${spacing.padding.bottom.xxxxl}
-  ${spacing.padding.left.s}
-  ${spacing.padding.right.s}
+  ${spacing.padding.left.xs}
+  ${spacing.padding.right.xs}
   ${coloring.background.project}
   border-right: 1px solid ${colors.neutral.gray300};
   overflow-y: auto;
@@ -53,12 +53,12 @@ export const sidebarUtilitySection = css`
 export const sidebarItemWrapper = css`
   ${flex.row}
   ${flex.align.center}
-  ${spacing.padding.top.s}
-  ${spacing.padding.bottom.s}
-  ${spacing.padding.left.m}
-  ${spacing.padding.right.m}
+  ${spacing.padding.top.xs}
+  ${spacing.padding.bottom.xs}
+  ${spacing.padding.left.s}
+  ${spacing.padding.right.s}
   ${borders.radius.full}
-  ${spacing.gap.m}
+  ${spacing.gap.s}
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -81,7 +81,7 @@ export const sidebarItemActive = css`
 export const sidebarItem = css`
   ${flex.row}
   ${flex.align.center}
-  ${spacing.gap.m}
+  ${spacing.gap.s}
   ${size.width.full}
 `;
 
@@ -89,8 +89,8 @@ export const sidebarItem = css`
  * Sidebar item icon (main nav - gray)
  */
 export const sidebarItemIcon = css`
-  ${size.width.custom('24px')}
-  ${size.height.custom('24px')}
+  ${size.width.custom('20px')}
+  ${size.height.custom('20px')}
   ${flex.item.shrink0}
   ${coloring.text.secondary}
 `;
@@ -99,8 +99,8 @@ export const sidebarItemIcon = css`
  * Sidebar item icon (utility - black)
  */
 export const sidebarItemIconUtility = css`
-  ${size.width.custom('24px')}
-  ${size.height.custom('24px')}
+  ${size.width.custom('20px')}
+  ${size.height.custom('20px')}
   ${flex.item.shrink0}
   ${coloring.text.primary}
 `;
@@ -110,7 +110,7 @@ export const sidebarItemIconUtility = css`
  */
 export const sidebarItemText = css`
   ${typography.fontFamily.primary}
-  ${typography.fontSize.base}
+  ${typography.fontSize.sm}
   ${typography.fontWeight.medium}
   ${typography.lineHeight.normal}
   ${typography.letterSpacing.normal}
@@ -123,7 +123,7 @@ export const sidebarItemText = css`
  */
 export const sidebarItemTextUtility = css`
   ${typography.fontFamily.primary}
-  ${typography.fontSize.base}
+  ${typography.fontSize.sm}
   ${typography.fontWeight.medium}
   ${typography.lineHeight.normal}
   ${typography.letterSpacing.normal}

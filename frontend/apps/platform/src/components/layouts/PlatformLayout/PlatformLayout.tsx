@@ -17,6 +17,7 @@ import { useCooperationSubmit } from '@/hooks/useCooperationSubmit';
 import { useCooperationOptions } from '@/hooks/useCooperationOptions';
 import { useCooperationFormConfig } from '@/hooks/useCooperationFormConfig';
 import { useAuth } from '@/hooks/useAuth';
+import { useFreighter } from '@/hooks/useFreighter';
 import type { CooperationFormData } from '@/types/cooperation';
 import { CooperationModalContext } from './CooperationModalContext';
 import PlatformSearch from '@/components/common/PlatformSearch';
@@ -31,7 +32,7 @@ type HCaptchaInstance = typeof HCaptcha.prototype;
  */
 
 // Default header configuration builder (needs cooperation handler)
-const getDefaultHeaderProps = (openCooperationModal: () => void): HeaderProps => ({
+const getDefaultHeaderProps = (_openCooperationModal: () => void): HeaderProps => ({
   logoElement: (
     <span css={css`
       font-family: var(--font-aeonik);
@@ -40,19 +41,20 @@ const getDefaultHeaderProps = (openCooperationModal: () => void): HeaderProps =>
       color: #000;
       letter-spacing: -0.02em;
     `}>
-      COSMOps
+      Cosmos
     </span>
   ),
   logoHref: ROUTES.HOME,
-  logoAlt: 'COSMOps',
+  logoAlt: 'Cosmos',
   menuItems: [
+    { name: 'DASHBOARD', href: ROUTES.WORKSPACE.ROOT },
     { name: 'PROJECT RATINGS', href: ROUTES.RATINGS.PROJECTS },
     { name: 'EXCHANGE RATINGS', href: ROUTES.RATINGS.EXCHANGES },
   ],
-  ctaText: 'JOIN WATCHLIST',
-  ctaTextMobile: 'JOIN',
+  ctaText: 'CONNECT WALLET',
+  ctaTextMobile: 'CONNECT',
   onCtaClick: () => {
-    openCooperationModal();
+    // Wallet connection to be wired (e.g. Stellar wallet adapter)
   },
   sticky: true, // Main header is sticky
 });
@@ -61,6 +63,7 @@ const getDefaultHeaderProps = (openCooperationModal: () => void): HeaderProps =>
 // No CORE.3 bottom image, no social links, no Methodology/Cooperation
 const getDefaultFooterPropsBase = (_openCooperationModal: () => void): Omit<FooterProps, 'tagline'> => ({
   menuItems: [
+    { name: 'Dashboard', href: ROUTES.WORKSPACE.ROOT },
     { name: 'Project Ratings', href: ROUTES.RATINGS.PROJECTS },
     { name: 'Exchange Ratings', href: ROUTES.RATINGS.EXCHANGES },
   ],
@@ -159,6 +162,9 @@ export default function PlatformLayout({
   
   // Authentication state
   const { isAuthenticated, user, logout } = useAuth();
+
+  // Freighter wallet (Connect Wallet button)
+  const { publicKey: walletAddress, connect: connectWallet, disconnect: disconnectWallet, isConnecting: isWalletConnecting, truncatedAddress: walletTruncated } = useFreighter();
 
   // Cooperation modal state
   const [cooperationModalOpen, setCooperationModalOpen] = useState(false);
@@ -317,11 +323,11 @@ export default function PlatformLayout({
         color: #000;
         letter-spacing: -0.02em;
       `}>
-        COSMOps
-      </span>
-    ),
-    logoHref: ROUTES.HOME,
-    logoAlt: 'COSMOps',
+      Cosmos
+    </span>
+  ),
+  logoHref: ROUTES.HOME,
+  logoAlt: 'Cosmos',
     isAuthenticated: true,
     accountTypeBadge: (
       <AccountTypeBadge 
@@ -361,7 +367,7 @@ export default function PlatformLayout({
   const defaultHeaderProps = getDefaultHeaderProps(openCooperationModal);
 
   // Merge header props based on auth state
-  const mergedHeaderProps: HeaderProps = isAuthenticated && authenticatedHeaderProps ? {
+  const baseMerged = isAuthenticated && authenticatedHeaderProps ? {
     ...authenticatedHeaderProps,
     ...headerProps,
     menuItems: activeMenuItem
@@ -381,6 +387,20 @@ export default function PlatformLayout({
         }))
       : defaultHeaderProps.menuItems,
   };
+
+  // When not authenticated, wire Connect Wallet to Freighter
+  const mergedHeaderProps: HeaderProps = isAuthenticated
+    ? baseMerged
+    : {
+        ...baseMerged,
+        ctaText: isWalletConnecting
+          ? 'Connecting...'
+          : walletAddress && walletTruncated
+            ? walletTruncated
+            : 'CONNECT WALLET',
+        ctaTextMobile: walletAddress && walletTruncated ? walletTruncated : 'CONNECT',
+        onCtaClick: walletAddress ? disconnectWallet : () => void connectWallet(),
+      };
 
   // Merge default footer props with overrides
   const mergedFooterProps: FooterProps = {

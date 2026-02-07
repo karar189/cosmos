@@ -155,10 +155,12 @@ export const textarea = css`
 `;
 
 export const submitButtonWrapper = css`
+  ${flex.column}
+  ${spacing.gap.s}
   ${spacing.margin.top.xs}
   
   /* Fix button outline height and make it fit content */
-  button {
+  & > button {
     ${size.width.full}
     ${flex.row}
     ${flex.align.center}
@@ -166,6 +168,10 @@ export const submitButtonWrapper = css`
     ${spacing.gap.s}
     box-sizing: border-box;
   }
+`;
+
+export const clearCacheButton = css`
+  ${size.width.full}
 `;
 
 // ===== Analysis Section =====

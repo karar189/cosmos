@@ -59,15 +59,16 @@ class StellarPaymentService {
   /**
    * Get real-time payment status
    */
+  /**
+   * Get payment status via Horizon GET /transactions/:transaction_id (per Horizon API Reference)
+   */
   async getPaymentStatus(transactionHash: string): Promise<{
     status: 'pending' | 'success' | 'failed';
     ledger?: number;
     fee?: string;
   }> {
     try {
-      // In production, this would query Horizon for transaction status
       const response = await fetch(`${this.horizonUrl}/transactions/${transactionHash}`);
-      
       if (response.ok) {
         const data = await response.json();
         return {
@@ -75,9 +76,11 @@ class StellarPaymentService {
           ledger: data.ledger,
           fee: data.fee_charged,
         };
-      } else {
-        return { status: 'pending' };
       }
+      if (response.status === 404) {
+        return { status: 'failed' };
+      }
+      return { status: 'pending' };
     } catch (error) {
       return { status: 'failed' };
     }

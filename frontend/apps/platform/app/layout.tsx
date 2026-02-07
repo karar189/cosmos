@@ -4,8 +4,8 @@ import Providers from './providers';
 import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata: Metadata = {
-  title: 'COSMOps Platform',
-  description: 'COSMOps platform – Measure risk. Build trust.',
+  title: 'Cosmos Platform',
+  description: 'Cosmos platform – Measure risk. Build trust.',
   icons: {
     icon: [
       {

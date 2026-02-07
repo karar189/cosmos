@@ -2,12 +2,27 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, Core3Button as Button, Badge, Icon, Select } from '@core3/ui-components';
 import { SingleLineChart, BarChart, DonutChart, GaugeChart } from '@core3/ui-components';
 import useTranslation from '@/hooks/useTranslation';
+import { ROUTES } from '@/constants/routes';
 import * as styles from './page.styles';
 
 const IMPORTED_WIDGETS_STORAGE_KEY = 'cosmops_imported_widgets';
+const COMPLIANCE_SESSION_STORAGE_KEY = 'cosmops_compliance_session';
+
+interface ComplianceSession {
+  institutionName: string;
+  institutionType: string;
+  institutionTypeLabel?: string;
+  lookingFor: string;
+  existingAudits: string;
+  analysis: string;
+  analysisSource: string;
+  suggestedChecklist: { id: string; name: string; category: string; description: string; priority: string }[];
+  savedAt: string;
+}
 
 interface Widget {
   id: string;
@@ -118,10 +133,12 @@ const assetDistributionData = [
 
 export default function DashboardBuilderPage() {
   const { t } = useTranslation('workspace');
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [dashboardWidgets, setDashboardWidgets] = useState<DashboardWidget[]>([]);
   const [isDragging, setIsDragging] = useState<string | null>(null);
   const [importedWidgets, setImportedWidgets] = useState<Widget[]>([]);
+  const [complianceSession, setComplianceSession] = useState<ComplianceSession | null>(null);
 
   useEffect(() => {
     try {
@@ -138,6 +155,17 @@ export default function DashboardBuilderPage() {
       setImportedWidgets(mapped);
     } catch {
       setImportedWidgets([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? window.localStorage.getItem(COMPLIANCE_SESSION_STORAGE_KEY) : null;
+      if (!raw) return;
+      const session = JSON.parse(raw) as ComplianceSession;
+      setComplianceSession(session);
+    } catch {
+      setComplianceSession(null);
     }
   }, []);
 
@@ -248,6 +276,43 @@ export default function DashboardBuilderPage() {
           </p>
         </div>
       </header>
+
+      {complianceSession && (
+        <Card title="From Compliance Maker" css={styles.complianceSessionCard}>
+          <div css={styles.complianceSessionContent}>
+            <div css={styles.complianceSessionRow}>
+              <span css={styles.complianceSessionLabel}>Institution:</span>
+              <strong>{complianceSession.institutionName}</strong>
+            </div>
+            <div css={styles.complianceSessionRow}>
+              <span css={styles.complianceSessionLabel}>Type:</span>
+              <span>{complianceSession.institutionTypeLabel || complianceSession.institutionType}</span>
+            </div>
+            <div css={styles.complianceSessionSnippet}>
+              <span css={styles.complianceSessionLabel}>Analysis snippet:</span>
+              <p css={styles.complianceSessionAnalysis}>
+                {(complianceSession.analysis || '').slice(0, 280)}
+                {(complianceSession.analysis || '').length > 280 ? '…' : ''}
+              </p>
+            </div>
+            <div css={styles.complianceSessionMeta}>
+              <span css={styles.complianceSessionSaved}>
+                Saved {new Date(complianceSession.savedAt).toLocaleString()}
+                {complianceSession.suggestedChecklist?.length > 0 &&
+                  ` · ${complianceSession.suggestedChecklist.length} recommended widgets`}
+              </span>
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={() => router.push(ROUTES.WORKSPACE.COMPLIANCE_MAKER)}
+              >
+                <Icon name="tools" />
+                Open Compliance Maker
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <div css={styles.twoColumnLayout}>
         <aside css={styles.leftColumn}>

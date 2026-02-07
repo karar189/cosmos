@@ -28,3 +28,5 @@ export { useProjectFilters } from './useProjectFilters';
 export { useExchangeSort } from './useExchangeSort';
 export { useExchangeFilters } from './useExchangeFilters';
 export { useResponsiveTabView } from './useResponsiveTabView';
+export { useFreighter } from './useFreighter';
+export type { UseFreighterResult } from './useFreighter';

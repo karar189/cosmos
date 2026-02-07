@@ -82,19 +82,21 @@ export function useRouting() {
   };
 }
 
+const ASSET_CODE_TO_CONFIG: Record<string, keyof typeof KNOWN_ASSETS> = {
+  XLM: 'XLM_NATIVE',
+  USDC: 'USDC_CIRCLE',
+  USDT: 'USDT_TETHER',
+  EUR: 'EUR_TEMPO',
+  USD: 'USD_ANCHOR',
+  EURT: 'EURT_TETHER',
+  BTC: 'BTC_BITGO',
+  NGNT: 'NGNT_NIGERIA',
+};
+
 function getAssetByCode(assetCode: string): StellarAsset | null {
-  switch (assetCode.toUpperCase()) {
-    case 'XLM':
-      return KNOWN_ASSETS.XLM_NATIVE;
-    case 'USDC':
-      return KNOWN_ASSETS.USDC_CIRCLE;
-    case 'USDT':
-      return KNOWN_ASSETS.USDT_TETHER;
-    case 'EUR':
-      return KNOWN_ASSETS.EUR_TEMPO;
-    default:
-      return null;
-  }
+  const key = ASSET_CODE_TO_CONFIG[assetCode.toUpperCase()];
+  if (!key) return null;
+  return KNOWN_ASSETS[key] as StellarAsset;
 }
 
 function getScore(route: EnhancedRoute) {

@@ -79,6 +79,60 @@ export const headerSaveButton = css`
   margin-left: auto;
 `;
 
+// ===== Compliance session card (from Compliance Maker) =====
+export const complianceSessionCard = css`
+  ${size.width.full}
+  ${spacing.margin.bottom.m}
+`;
+
+export const complianceSessionContent = css`
+  ${flex.column}
+  ${spacing.gap.s}
+`;
+
+export const complianceSessionRow = css`
+  ${flex.row}
+  ${flex.align.center}
+  ${spacing.gap.s}
+  ${typography.fontSize.sm}
+  ${coloring.text.primary}
+`;
+
+export const complianceSessionLabel = css`
+  ${coloring.text.variants.secondary.op75}
+  min-width: 100px;
+`;
+
+export const complianceSessionSnippet = css`
+  ${flex.column}
+  ${spacing.gap.xs}
+  ${spacing.padding.top.s}
+  ${spacing.padding.bottom.s}
+  border-top: 1px solid ${colors.neutral.gray200};
+  border-bottom: 1px solid ${colors.neutral.gray200};
+`;
+
+export const complianceSessionAnalysis = css`
+  ${typography.fontSize.sm}
+  ${coloring.text.variants.secondary.op75}
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.5;
+`;
+
+export const complianceSessionMeta = css`
+  ${flex.row}
+  ${flex.align.center}
+  ${flex.justify.between}
+  ${flex.wrap.wrap}
+  ${spacing.gap.s}
+`;
+
+export const complianceSessionSaved = css`
+  ${typography.fontSize.xs}
+  ${coloring.text.variants.secondary.op65}
+`;
+
 // ===== Two column layout: 20% left / 80% right =====
 export const twoColumnLayout = css`
   display: flex;

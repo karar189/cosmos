@@ -2,7 +2,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, Core3Button as Button, Input, Badge, Icon, Toggle, type ToggleOption } from '@core3/ui-components';
+import { Card, Core3Button as Button, Input, Select, Badge, Icon, Toggle, type ToggleOption } from '@core3/ui-components';
+import { ROUTING_ASSET_OPTIONS } from '@/services/stellar';
 import { MultiLineChart, DataBlock } from '@core3/ui-components';
 import useTranslation from '@/hooks/useTranslation';
 import { useRouting } from '@/hooks/useRouting';
@@ -88,18 +89,22 @@ export default function RoutingEnginePage() {
             <div css={styles.formContent}>
               <div css={styles.formBlock}>
                 <label css={styles.label}>Source Asset</label>
-                <Input
+                <Select
+                  options={ROUTING_ASSET_OPTIONS}
                   value={sourceAsset}
-                  onChange={(e) => setSourceAsset(e.target.value)}
-                  placeholder="USDC"
+                  onChange={(value) => setSourceAsset(String(value))}
+                  placeholder="Select source asset"
+                  ariaLabel="Source asset"
                 />
               </div>
               <div css={styles.formBlock}>
                 <label css={styles.label}>Destination Asset</label>
-                <Input
+                <Select
+                  options={ROUTING_ASSET_OPTIONS}
                   value={destinationAsset}
-                  onChange={(e) => setDestinationAsset(e.target.value)}
-                  placeholder="XLM"
+                  onChange={(value) => setDestinationAsset(String(value))}
+                  placeholder="Select destination asset"
+                  ariaLabel="Destination asset"
                 />
               </div>
               <div css={styles.formBlock}>

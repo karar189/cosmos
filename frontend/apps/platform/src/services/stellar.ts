@@ -53,8 +53,12 @@ export interface EnhancedRoute extends PathPaymentRoute {
   corridorRisk: number;
 }
 
-// Known asset configurations
+// Known asset configurations (real Stellar anchors / issuers)
 export const KNOWN_ASSETS = {
+  XLM_NATIVE: {
+    asset_type: 'native' as const,
+    asset_code: 'XLM',
+  },
   USDC_CIRCLE: {
     asset_type: 'credit_alphanum4' as const,
     asset_code: 'USDC',
@@ -65,15 +69,44 @@ export const KNOWN_ASSETS = {
     asset_code: 'USDT',
     asset_issuer: 'GCQTGZQQ5G4PTM2GL7CDIFKUBIPEC52BROAQIAPW53XBRJVN6ZJVTG6V',
   },
-  XLM_NATIVE: {
-    asset_type: 'native' as const,
-  },
   EUR_TEMPO: {
     asset_type: 'credit_alphanum4' as const,
     asset_code: 'EUR',
     asset_issuer: 'GDTNXRLOJD2YEBPKK7KCMR7J33AAG5VZXHAJTHIG736D6LVEFLLLKPDL',
   },
+  USD_ANCHOR: {
+    asset_type: 'credit_alphanum4' as const,
+    asset_code: 'USD',
+    asset_issuer: 'GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX',
+  },
+  EURT_TETHER: {
+    asset_type: 'credit_alphanum4' as const,
+    asset_code: 'EURT',
+    asset_issuer: 'GAP5LETOV6YIE62YAM56STDANPRDO7ZFDBGSNHJQIYGGKSMOZAHOOS2S',
+  },
+  BTC_BITGO: {
+    asset_type: 'credit_alphanum4' as const,
+    asset_code: 'BTC',
+    asset_issuer: 'GAUTUYY2THLF7SGITDFMXJVYH3LHDSMGEAKSBU267M2K7A3W543CKUEF',
+  },
+  NGNT_NIGERIA: {
+    asset_type: 'credit_alphanum4' as const,
+    asset_code: 'NGNT',
+    asset_issuer: 'GAWODAROMJ33V5YDFY3NPYTHVYQG7MJXVJ2ND3AOGIHYRWINES6ACCPD',
+  },
 };
+
+// Asset options for routing dropdowns: code -> label (with issuer/description)
+export const ROUTING_ASSET_OPTIONS: { value: string; label: string }[] = [
+  { value: 'XLM', label: 'XLM (Stellar Lumens)' },
+  { value: 'USDC', label: 'USDC (Circle)' },
+  { value: 'USDT', label: 'USDT (Tether)' },
+  { value: 'USD', label: 'USD (Anchor)' },
+  { value: 'EUR', label: 'EUR (Tempo)' },
+  { value: 'EURT', label: 'EURT (Tether Euro)' },
+  { value: 'BTC', label: 'BTC (BitGo)' },
+  { value: 'NGNT', label: 'NGNT (Nigeria)' },
+];
 
 // Corridor risk scores (can be enhanced with real FATF data)
 const CORRIDOR_RISK_SCORES: Record<string, number> = {
@@ -111,13 +144,13 @@ class StellarRoutingService {
           params.append('source_asset_issuer', sourceAsset.asset_issuer!);
         }
         
-        // Destination asset - use destination_assets format (comma-separated)
-        // Format: "native" or "credit_alphanum4:CODE:ISSUER"
+        // Destination asset - use destination_assets format per Horizon docs:
+        // "native" or "CODE:ISSUER" (e.g. USD:GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX)
         let destinationAssetStr: string;
         if (destinationAsset.asset_type === 'native') {
           destinationAssetStr = 'native';
         } else {
-          destinationAssetStr = `${destinationAsset.asset_type}:${destinationAsset.asset_code}:${destinationAsset.asset_issuer}`;
+          destinationAssetStr = `${destinationAsset.asset_code}:${destinationAsset.asset_issuer}`;
         }
         params.append('destination_assets', destinationAssetStr);
       } else {
@@ -131,12 +164,12 @@ class StellarRoutingService {
           params.append('destination_asset_issuer', destinationAsset.asset_issuer!);
         }
         
-        // Source asset for strict-receive
+        // Source asset for strict-receive - same format: "native" or "CODE:ISSUER"
         let sourceAssetStr: string;
         if (sourceAsset.asset_type === 'native') {
           sourceAssetStr = 'native';
         } else {
-          sourceAssetStr = `${sourceAsset.asset_type}:${sourceAsset.asset_code}:${sourceAsset.asset_issuer}`;
+          sourceAssetStr = `${sourceAsset.asset_code}:${sourceAsset.asset_issuer}`;
         }
         params.append('source_assets', sourceAssetStr);
       }
@@ -183,9 +216,13 @@ class StellarRoutingService {
         params.append('buying_asset_issuer', buyingAsset.asset_issuer!);
       }
 
-      const response = await fetch(`${this.horizonUrl}/orderbook?${params}`);
+      const response = await fetch(`${this.horizonUrl}/order_book?${params}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Horizon order book API error:', errorData);
+        return null;
+      }
       const data = await response.json();
-      
       return data;
     } catch (error) {
       console.error('Error fetching orderbook:', error);

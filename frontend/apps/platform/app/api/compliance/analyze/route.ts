@@ -33,6 +33,11 @@ Based on your institution profile, here is my analysis and recommended complianc
 - Implement proof-of-reserve oracle integration
 - Configure automated SAR (Suspicious Activity Report) generation
 
+### Smart Contract Recommendations
+- **Soroban Enforcement Module** — You likely need smart contract–based freeze/clawback for regulatory compliance (e.g. court orders, sanctions). Build or use a Soroban contract that allows an authorized admin to freeze or claw back token balances.
+- **Proof-of-Reserve Oracle** — Consider an oracle contract that attests off-chain collateral on-chain so holders can verify backing. Useful for RWA and stablecoin-style tokens.
+- **Asset Token Contract** — If you issue tokens for real-world assets, you need a Soroban token contract (or Stellar Classic asset) with the right metadata and compliance hooks; you may not need custom logic beyond standard issuance if you rely on off-chain compliance.
+
 These widgets are available on your **Dashboard Maker** page and can be customized to your specific needs.`,
 
   stablecoin: `## Compliance Analysis: Stablecoin / Fiat Issuers
@@ -54,6 +59,11 @@ Your institution requires robust compliance infrastructure for issuing and manag
 - Configure trustline analytics for holder risk distribution
 - Set up geo-distribution monitoring for sanctions compliance
 - Enable freeze/unfreeze capabilities via Soroban enforcement
+
+### Smart Contract Recommendations
+- **Freeze/Clawback Contract** — You typically need a Soroban (or Classic) contract with freeze and clawback for regulatory and court orders. Many stablecoin issuers use this; avoid custom logic if your platform already provides it.
+- **Reserve Attestation** — You may not need a custom smart contract for reserves if you use off-chain attestations and dashboards; an on-chain oracle is optional but improves trust.
+- **Custom Token Logic** — Only build custom token contracts if you need programmatic redemption, tiered access, or other rules; standard Stellar assets plus admin tools are often enough.
 
 These widgets are available on your **Dashboard Maker** page and can be customized to your specific needs.`,
 
@@ -77,6 +87,11 @@ As a neobank operating on the Stellar network, your compliance needs span tradit
 - Set up jurisdiction-specific rule engines
 - Configure large-value transfer monitoring thresholds
 
+### Smart Contract Recommendations
+- **Enforcement Rules** — You may not need on-chain smart contracts for limits; off-chain KYC and transaction monitoring often suffice. Consider Soroban only if you need enforceable, programmable limits on-chain.
+- **Identity / KYC Hooks** — If you require on-chain gating (e.g. only verified accounts hold certain assets), a Soroban contract that checks an allowlist or attestation can help; otherwise keep compliance off-chain.
+- **Freeze/Clawback** — For fraud or court orders, a token with freeze/clawback (Classic or Soroban) is recommended; use existing issuer tooling if available.
+
 These widgets are available on your **Dashboard Maker** page and can be customized to your specific needs.`,
 
   ngo: `## Compliance Analysis: NGOs / Aid Organizations
@@ -98,6 +113,11 @@ Aid organizations operating on Stellar face unique compliance challenges around 
 - Configure high-risk region geo-scoring for all corridors
 - Set up rapid outflow detection for corruption risk
 - Enable wallet behavior profiling for beneficiary verification
+
+### Smart Contract Recommendations
+- **You may not need custom smart contracts** — Many NGOs run on standard Stellar payments and off-chain compliance; focus on tracking and reporting first.
+- **Conditional Disbursement** — If you need “pay only when condition X is met,” a simple Soroban contract or escrow can help; otherwise use SDP or manual flows.
+- **Attestation / Proof of Use** — Optional: a lightweight contract or claimable balance that records that funds reached a beneficiary can improve transparency without heavy smart contract use.
 
 These widgets are available on your **Dashboard Maker** page and can be customized to your specific needs.`,
 
@@ -121,6 +141,11 @@ Cross-border remittance on Stellar requires robust AML/CFT compliance, corridor 
 - Set up high-risk corridor alerts with automatic escalation
 - Enable smurfing detection algorithms across customer accounts
 
+### Smart Contract Recommendations
+- **Memo / Compliance Data** — You usually do not need a smart contract for memo enforcement; use Stellar transaction memos and off-chain validation. Soroban is for programmable logic, not just metadata.
+- **Limit Enforcement** — Daily/corridor limits are typically enforced off-chain; consider Soroban only if you need hard, on-chain caps (e.g. per-account caps in a liquidity pool).
+- **Freeze/Clawback** — If you issue tokens, having freeze/clawback for sanctions or court orders is recommended; use Stellar’s native asset flags or a Soroban wrapper.
+
 These widgets are available on your **Dashboard Maker** page and can be customized to your specific needs.`,
 
   fintech: `## Compliance Analysis: Fintech Payment Apps
@@ -143,22 +168,28 @@ As a fintech payment app on Stellar, you need a modern compliance stack that bal
 - Configure ISO 20022 metadata formatting for bank interoperability
 - Set up automated fraud pattern detection with ML models
 
+### Smart Contract Recommendations
+- **You may not need custom smart contracts** — Many fintech apps use Stellar as a rail and do compliance off-chain; only add Soroban if you need programmable rules (e.g. conditional releases, loyalty logic).
+- **Conditional or Programmable Payments** — If you need “pay when X” or multi-step flows, a small Soroban contract or escrow can help; otherwise use standard payments + your backend.
+- **Token or Loyalty Programs** — If you issue points or tokens, a simple Soroban token contract may be useful; for pure fiat flows, standard Stellar payments are often enough.
+
 These widgets are available on your **Dashboard Maker** page and can be customized to your specific needs.`,
 };
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { institutionType, lookingFor, existingAudits } = body;
+    const { institutionName: institutionNameInput, institutionType, lookingFor, existingAudits } = body;
 
-    if (!institutionType || !lookingFor) {
+    if (!institutionNameInput?.trim() || !institutionType || !lookingFor) {
       return NextResponse.json(
-        { error: 'Institution type and requirements are required' },
+        { error: 'Institution name, type, and requirements are required' },
         { status: 400 }
       );
     }
 
-    const institutionName = INSTITUTION_NAMES[institutionType] || institutionType;
+    const institutionTypeLabel = INSTITUTION_NAMES[institutionType] || institutionType;
+    const institutionName = String(institutionNameInput).trim();
 
     // Try OpenAI first
     if (OPENAI_API_KEY && OPENAI_API_KEY.startsWith('sk-')) {
@@ -175,15 +206,19 @@ export async function POST(request: NextRequest) {
             messages: [
               {
                 role: 'system',
-                content: `You are a compliance expert helping institutions set up compliance checklists for Stellar blockchain operations. Be concise and practical. Use markdown formatting with headers and bullet points.`
+                content: `You are a compliance and Stellar/Soroban smart contract expert. Help institutions set up compliance checklists for Stellar blockchain operations. Be concise and practical. Use markdown with headers and bullet points. Always include:
+1) Key risk areas
+2) Recommended compliance widgets
+3) Priority actions
+4) Smart Contract Recommendations — what kind of smart contracts this institution might need (e.g. Soroban freeze/clawback, oracles, token contracts) or when they may NOT need custom smart contracts. Be specific to Stellar/Soroban.`
               },
               {
                 role: 'user',
-                content: `Institution Type: ${institutionName}\nNeeds: ${lookingFor}\nExisting audits: ${existingAudits || 'None'}\n\nProvide a compliance analysis with key risk areas, recommended widgets, and priority actions. Mention the Dashboard Maker page.`
+                content: `Institution Name: ${institutionName}\nInstitution Type: ${institutionTypeLabel}\nNeeds: ${lookingFor}\nExisting audits: ${existingAudits || 'None'}\n\nProvide a compliance analysis for "${institutionName}" including key risk areas, recommended widgets, priority actions, and a "Smart Contract Recommendations" section (what smart contracts they might need—or not need—on Stellar/Soroban). Mention the Dashboard Maker page.`
               }
             ],
             temperature: 0.7,
-            max_tokens: 1000
+            max_tokens: 1200
           })
         });
 
@@ -201,15 +236,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Fallback: use curated responses
+    // Fallback: use curated responses (include institution name and smart contract section)
     console.log('[API] Using fallback response for:', institutionType);
     const fallbackAnalysis = FALLBACK_RESPONSES[institutionType] || FALLBACK_RESPONSES['fintech'];
+    const analysisWithName = `Compliance analysis for: ${institutionName}\n\n${fallbackAnalysis}`;
 
     // Simulate slight delay for realism
     await new Promise(resolve => setTimeout(resolve, 800));
 
     return NextResponse.json({ 
-      analysis: fallbackAnalysis, 
+      analysis: analysisWithName, 
       success: true, 
       source: 'fallback'
     });
