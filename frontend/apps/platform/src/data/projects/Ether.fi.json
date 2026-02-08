@@ -1,33 +1,21 @@
 {
   "projectDetails": {
     "id": "41",
-    "name": "Ether.fi",
-    "ticker": "ETHFI",
-    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/20f94780-62fc-41fc-8524-837ad9e71af5.PNG",
+    "name": "Velo",
+    "ticker": "VELO",
+    "logo": "https://coin-images.coingecko.com/coins/images/12538/large/Logo_200x_200.png",
     "rank": 12,
-    "description": "Ether.fi is a non-custodial liquid restaking and staking protocol that lets users stake ETH, earn yields, and participate in Actively Validated Services while retaining control of their keys.",
+    "description": "Velo is a payments and credit issuance protocol focused on cross-border settlement and liquidity, with strong ties to the Stellar ecosystem.",
     "certification": {
       "level": "Absent"
     },
     "chains": [
       {
-        "name": "Arbitrum One",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/33/large/AO_logomark.png?1706606717"
-      },
-      {
-        "name": "Base",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/131/large/base.png?1759905869"
-      },
-      {
-        "name": "Ethereum",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/279/large/ethereum.png?1706606803"
-      },
-      {
-        "name": "Scroll",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/153/large/scroll.jpeg?1706606782"
+        "name": "Stellar",
+        "logo": "https://coin-images.coingecko.com/coins/images/12538/large/Logo_200x_200.png"
       }
     ],
-    "category": "YIeld",
+    "category": "Payments",
     "tags": [
       "Decentralized Finance (DeFi)",
       "Binance Launchpool",

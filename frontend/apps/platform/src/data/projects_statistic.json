@@ -3,8 +3,8 @@
     {
       "project": {
         "id": "5",
-        "name": "Arbitrum",
-        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/69603f4a-ceb9-4922-98c0-1e7eadabbad5.PNG"
+        "name": "Stellar",
+        "logo": "https://coin-images.coingecko.com/coins/images/100/large/fmpFRHHQ_400x400.jpg?1735231350"
       },
       "probabilityOfLoss": {
         "score": 9,
@@ -14,9 +14,9 @@
     },
     {
       "project": {
-        "id": "7",
-        "name": "Uniswap",
-        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/173f1a98-ee7d-471d-a6ca-8b99f1a4943e.PNG"
+        "id": "13",
+        "name": "Aquarius",
+        "logo": "https://coin-images.coingecko.com/coins/images/20026/large/aqua-logo.png?1696519446"
       },
       "probabilityOfLoss": {
         "score": 6,
@@ -26,9 +26,9 @@
     },
     {
       "project": {
-        "id": "3",
-        "name": "Ethereum",
-        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/3a57df21-1fbc-4062-9db5-a696915e84e8.PNG"
+        "id": "29",
+        "name": "PayPal USD",
+        "logo": "https://coin-images.coingecko.com/coins/images/31212/large/PYUSD_Token_Logo_2x.png?1765987788"
       },
       "probabilityOfLoss": {
         "score": 4,
@@ -40,33 +40,33 @@
   "topPolLosers": [
     {
       "project": {
+        "id": "11",
+        "name": "EURC",
+        "logo": "https://coin-images.coingecko.com/coins/images/26045/large/EURC.png?1769615705"
+      },
+      "probabilityOfLoss": {
+        "score": 11,
+        "grade": "CCC",
+        "delta": 3
+      }
+    },
+    {
+      "project": {
+        "id": "41",
+        "name": "Velo",
+        "logo": "https://coin-images.coingecko.com/coins/images/12538/large/Logo_200x_200.png"
+      },
+      "probabilityOfLoss": {
+        "score": 11,
+        "grade": "CCC",
+        "delta": 3
+      }
+    },
+    {
+      "project": {
         "id": "8",
-        "name": "Benqi",
-        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/afd5ea10-35c7-4a20-9b11-a7fcad2a47af.PNG"
-      },
-      "probabilityOfLoss": {
-        "score": 11,
-        "grade": "CCC",
-        "delta": 3
-      }
-    },
-    {
-      "project": {
-        "id": "18",
-        "name": "Monero",
-        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/647fde6c-1b98-47c3-8027-1a2e9a133867.PNG"
-      },
-      "probabilityOfLoss": {
-        "score": 11,
-        "grade": "CCC",
-        "delta": 3
-      }
-    },
-    {
-      "project": {
-        "id": "24",
-        "name": "RealT",
-        "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/527ef5f3-4739-49fa-b656-f2de9ca89039.PNG"
+        "name": "USDC",
+        "logo": "https://coin-images.coingecko.com/coins/images/6319/large/USDC.png"
       },
       "probabilityOfLoss": {
         "score": 19,
@@ -615,20 +615,14 @@
         "rank": 6,
         "project": {
           "id": "5",
-          "name": "Arbitrum",
-          "ticker": "ARB",
-          "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/69603f4a-ceb9-4922-98c0-1e7eadabbad5.PNG",
-          "category": "Optimistic rollups"
+          "name": "Stellar",
+          "ticker": "XLM",
+          "logo": "https://coin-images.coingecko.com/coins/images/100/large/fmpFRHHQ_400x400.jpg?1735231350",
+          "category": "Layer 1"
         },
         "chains": [
           {
-            "name": "Arbitrum Nova"
-          },
-          {
-            "name": "Arbitrum One"
-          },
-          {
-            "name": "Ethereum"
+            "name": "Stellar"
           }
         ],
         "compliance": [
@@ -650,14 +644,14 @@
         "rank": 11,
         "project": {
           "id": "29",
-          "name": "Aster",
-          "ticker": "ASTER",
-          "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/e95a3c8e-bbca-4675-86c4-ab3e6378f4a8.PNG",
-          "category": "General-purpose"
+          "name": "PayPal USD",
+          "ticker": "PYUSD",
+          "logo": "https://coin-images.coingecko.com/coins/images/31212/large/PYUSD_Token_Logo_2x.png?1765987788",
+          "category": "Stablecoin"
         },
         "chains": [
           {
-            "name": "BNB Smart Chain"
+            "name": "Stellar"
           }
         ],
         "compliance": [
@@ -679,26 +673,14 @@
         "rank": 15,
         "project": {
           "id": "11",
-          "name": "Axie Infinity",
-          "ticker": "AXS",
-          "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/73635e5b-38ff-4cb4-8ef0-e4458bcdff0d.PNG",
-          "category": "Play to earn"
+          "name": "EURC",
+          "ticker": "EURC",
+          "logo": "https://coin-images.coingecko.com/coins/images/26045/large/EURC.png?1769615705",
+          "category": "Stablecoin"
         },
         "chains": [
           {
-            "name": "BNB Smart Chain"
-          },
-          {
-            "name": "Energi"
-          },
-          {
-            "name": "Ethereum"
-          },
-          {
-            "name": "Harmony Shard 0"
-          },
-          {
-            "name": "Ronin"
+            "name": "Stellar"
           }
         ],
         "compliance": [
@@ -719,17 +701,14 @@
         "rank": 16,
         "project": {
           "id": "13",
-          "name": "Render",
-          "ticker": "RENDER",
-          "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/006a7b32-4185-4200-8c15-cbd2960d9322.PNG",
-          "category": "Compute networks"
+          "name": "Aquarius",
+          "ticker": "AQUA",
+          "logo": "https://coin-images.coingecko.com/coins/images/20026/large/aqua-logo.png?1696519446",
+          "category": "DeFi"
         },
         "chains": [
           {
-            "name": "Ethereum"
-          },
-          {
-            "name": "Solana"
+            "name": "Stellar"
           }
         ],
         "compliance": [
@@ -750,23 +729,14 @@
         "rank": 12,
         "project": {
           "id": "41",
-          "name": "Ether.fi",
-          "ticker": "ETHFI",
-          "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/20f94780-62fc-41fc-8524-837ad9e71af5.PNG",
-          "category": "YIeld"
+          "name": "Velo",
+          "ticker": "VELO",
+          "logo": "https://coin-images.coingecko.com/coins/images/12538/large/Logo_200x_200.png",
+          "category": "Payments"
         },
         "chains": [
           {
-            "name": "Arbitrum One"
-          },
-          {
-            "name": "Base"
-          },
-          {
-            "name": "Ethereum"
-          },
-          {
-            "name": "Scroll"
+            "name": "Stellar"
           }
         ],
         "compliance": [
@@ -822,14 +792,14 @@
         "rank": 20,
         "project": {
           "id": "8",
-          "name": "Benqi",
-          "ticker": "BENQI",
-          "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/afd5ea10-35c7-4a20-9b11-a7fcad2a47af.PNG",
-          "category": "Lending"
+          "name": "USDC",
+          "ticker": "USDC",
+          "logo": "https://coin-images.coingecko.com/coins/images/6319/large/USDC.png",
+          "category": "Stablecoin"
         },
         "chains": [
           {
-            "name": "Avalanche"
+            "name": "Stellar"
           }
         ],
         "compliance": [

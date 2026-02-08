@@ -1,37 +1,21 @@
 {
   "projectDetails": {
     "id": "11",
-    "name": "Axie Infinity",
-    "ticker": "AXS",
-    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/73635e5b-38ff-4cb4-8ef0-e4458bcdff0d.PNG",
+    "name": "EURC",
+    "ticker": "EURC",
+    "logo": "https://coin-images.coingecko.com/coins/images/26045/large/EURC.png?1769615705",
     "rank": 15,
-    "description": "Axie Infinity is a blockchain-based play-to-earn game where players collect, battle, and trade NFT creatures called Axies on its own sidechain infrastructure.",
+    "description": "EURC is a euro-denominated stablecoin used for payments, trading, and on-chain settlement across supported networks.",
     "certification": {
       "level": "Absent"
     },
     "chains": [
       {
-        "name": "BNB Smart Chain",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/1/large/bnb_smart_chain.png?1706606721"
-      },
-      {
-        "name": "Energi",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/76/large/energi.jpeg?1706606568"
-      },
-      {
-        "name": "Ethereum",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/279/large/ethereum.png?1706606803"
-      },
-      {
-        "name": "Harmony Shard 0",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/20/large/harmony.jpg?1724898618"
-      },
-      {
-        "name": "Ronin",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/45/large/ronin.png?1706606769"
+        "name": "Stellar",
+        "logo": "https://coin-images.coingecko.com/coins/images/26045/large/EURC.png?1769615705"
       }
     ],
-    "category": "Play to earn",
+    "category": "Stablecoin",
     "tags": [
       "Gaming (GameFi)",
       "NFT",

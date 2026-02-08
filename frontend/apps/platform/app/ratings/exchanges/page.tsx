@@ -91,10 +91,6 @@ export default function ExchangesRatingsPage() {
         refetch={refetch}
         titleSectionContent={
           <>
-            <h1 css={styles.pageTitle}>
-              <strong>{t('exchanges.title.explore', 'explore')}</strong>{' '}
-              {t('exchanges.title.rest', '1,000+ exchanges.')}
-            </h1>
             <div css={styles.listWrapper}>
               <ExchangesRatingCard
                 title={t('ratings.exchanges.topSecurityRatings', 'Top Security Ratings')}

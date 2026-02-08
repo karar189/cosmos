@@ -1,25 +1,21 @@
 {
   "projectDetails": {
     "id": "13",
-    "name": "Render",
-    "ticker": "RENDER",
-    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/006a7b32-4185-4200-8c15-cbd2960d9322.PNG",
+    "name": "Aquarius",
+    "ticker": "AQUA",
+    "logo": "https://coin-images.coingecko.com/coins/images/20026/large/aqua-logo.png?1696519446",
     "rank": 16,
-    "description": "Render is a decentralized GPU rendering network that connects artists and developers with distributed GPU providers to power high-performance, on-demand rendering.",
+    "description": "Aquarius is a liquidity and rewards protocol in the Stellar ecosystem, designed to deepen markets and improve on-chain trading efficiency.",
     "certification": {
       "level": "Absent"
     },
     "chains": [
       {
-        "name": "Ethereum",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/279/large/ethereum.png?1706606803"
-      },
-      {
-        "name": "Solana",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/5/large/solana.png?1706606708"
+        "name": "Stellar",
+        "logo": "https://coin-images.coingecko.com/coins/images/20026/large/aqua-logo.png?1696519446"
       }
     ],
-    "category": "Compute networks",
+    "category": "DeFi",
     "tags": [
       "Artificial Intelligence (AI)",
       "NFT",

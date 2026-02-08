@@ -1,29 +1,21 @@
 {
   "projectDetails": {
     "id": "5",
-    "name": "Arbitrum",
-    "ticker": "ARB",
-    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/69603f4a-ceb9-4922-98c0-1e7eadabbad5.PNG",
+    "name": "Stellar",
+    "ticker": "XLM",
+    "logo": "https://coin-images.coingecko.com/coins/images/100/large/fmpFRHHQ_400x400.jpg?1735231350",
     "rank": 6,
-    "description": "Arbitrum is an Ethereum Layer 2 scaling solution that uses optimistic rollups to provide faster and cheaper transactions while inheriting Ethereum’s security.",
+    "description": "Stellar is an open network for fast, low-cost payments and asset issuance, widely used for cross-border transfers and stablecoins.",
     "certification": {
       "level": "Absent"
     },
     "chains": [
       {
-        "name": "Arbitrum Nova",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/93/large/AN_logomark.png?1706606703"
-      },
-      {
-        "name": "Arbitrum One",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/33/large/AO_logomark.png?1706606717"
-      },
-      {
-        "name": "Ethereum",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/279/large/ethereum.png?1706606803"
+        "name": "Stellar",
+        "logo": "https://coin-images.coingecko.com/coins/images/100/large/fmpFRHHQ_400x400.jpg?1735231350"
       }
     ],
-    "category": "Optimistic rollups",
+    "category": "Layer 1",
     "tags": [
       "Smart Contract Platform",
       "Arbitrum Ecosystem",

@@ -1,21 +1,21 @@
 {
   "projectDetails": {
     "id": "29",
-    "name": "Aster",
-    "ticker": "ASTER",
-    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/e95a3c8e-bbca-4675-86c4-ab3e6378f4a8.PNG",
+    "name": "PayPal USD",
+    "ticker": "PYUSD",
+    "logo": "https://coin-images.coingecko.com/coins/images/31212/large/PYUSD_Token_Logo_2x.png?1765987788",
     "rank": 11,
-    "description": "Aster is a blockchain project (likely Astar Network if intended) focused on supporting multi-chain smart contracts and dApps with scalable, interoperable infrastructure.",
+    "description": "PayPal USD (PYUSD) is PayPal’s USD-backed stablecoin designed for payments and on-chain settlement across supported networks.",
     "certification": {
       "level": "Absent"
     },
     "chains": [
       {
-        "name": "BNB Smart Chain",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/1/large/bnb_smart_chain.png?1706606721"
+        "name": "Stellar",
+        "logo": "https://coin-images.coingecko.com/coins/images/31212/large/PYUSD_Token_Logo_2x.png?1765987788"
       }
     ],
-    "category": "General-purpose",
+    "category": "Stablecoin",
     "tags": [
       "Decentralized Exchange (DEX)",
       "Exchange-based Tokens",

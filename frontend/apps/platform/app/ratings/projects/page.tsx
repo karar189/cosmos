@@ -59,9 +59,6 @@ export default function ProjectRatingsPage() {
         refetch={refetch}
         titleSectionContent={
           <>
-            <h1 css={styles.pageTitle}>
-              <strong>{t('projects.title.explore', 'explore')}</strong>
-            </h1>
             <div css={styles.listWrapper}>
               <ProjectsPolCard
                 title={t('ratings.projects.topPolGainers.title', 'Top PoL Gainers')}

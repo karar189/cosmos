@@ -1,21 +1,21 @@
 {
   "projectDetails": {
     "id": "8",
-    "name": "Benqi",
-    "ticker": "BENQI",
-    "logo": "https://d3apen4n3doslf.cloudfront.net/cer2-media/afd5ea10-35c7-4a20-9b11-a7fcad2a47af.PNG",
+    "name": "USDC",
+    "ticker": "USDC",
+    "logo": "https://coin-images.coingecko.com/coins/images/6319/large/USDC.png",
     "rank": 20,
-    "description": "Benqi is a DeFi protocol on Avalanche offering liquid staking and lending markets to unlock liquidity from staked assets.",
+    "description": "USDC is a USD-backed stablecoin used for payments and settlement across multiple networks, including Stellar.",
     "certification": {
       "level": "Absent"
     },
     "chains": [
       {
-        "name": "Avalanche",
-        "logo": "https://coin-images.coingecko.com/asset_platforms/images/12/large/avalanche.png?1706606775"
+        "name": "Stellar",
+        "logo": "https://coin-images.coingecko.com/coins/images/100/large/fmpFRHHQ_400x400.jpg?1735231350"
       }
     ],
-    "category": "Lending",
+    "category": "Stablecoin",
     "tags": [
       "Decentralized Finance (DeFi)",
       "Yield Farming",
