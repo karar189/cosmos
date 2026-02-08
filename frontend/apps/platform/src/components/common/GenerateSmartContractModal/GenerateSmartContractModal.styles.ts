@@ -75,6 +75,45 @@ export const successMessage = css`
   margin: 0;
 `;
 
+export const deployingMessage = css`
+  ${typography.fontSize.sm}
+  ${coloring.text.variants.secondary.op75}
+  margin: 0;
+  font-style: italic;
+`;
+
+export const deploySuccessBadge = css`
+  ${typography.fontSize.sm}
+  ${typography.fontWeight.semibold}
+  color: #059669;
+  margin: 0 0 ${spacing.gap.xs};
+`;
+
+export const contractId = css`
+  ${typography.fontSize.sm}
+  ${coloring.text.primary}
+  margin: 0 0 ${spacing.gap.s};
+`;
+
+export const explorerLink = css`
+  ${typography.fontSize.sm}
+  color: #2563eb;
+  margin: 0 0 ${spacing.gap.s};
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const contractIdCode = css`
+  ${typography.fontFamily.mono}
+  ${typography.fontSize.xs}
+  word-break: break-all;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+`;
+
 export const errorMessage = css`
   ${typography.fontSize.sm}
   color: #b91c1c;

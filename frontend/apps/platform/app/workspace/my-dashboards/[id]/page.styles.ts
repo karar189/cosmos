@@ -66,25 +66,15 @@ export const secondRowSectionWrapper = css`
   ${spacing.margin.bottom.l}
 `;
 
-export const cardsGridSection = css`
+export const chartsSectionWrapper = css`
   ${spacing.margin.bottom.l}
-`;
-
-export const cardsGrid = css`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  align-content: start;
-
-  /* Single column only on narrow viewports (below 600px) */
-  @media (max-width: 599px) {
-    grid-template-columns: 1fr;
-  }
 `;
 
 export const dataCard = css`
   ${flex.column}
   min-height: 120px;
+  ${coloring.background.neutral.white}
+  overflow: hidden;
 `;
 
 export const chartCardInner = css`
