@@ -19,13 +19,22 @@ export default function GenerateSmartContractModal({
 }: GenerateSmartContractModalProps) {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ code?: string; deployedAddress?: string | null; message?: string } | null>(null);
+  const [step, setStep] = useState<'idle' | 'generating' | 'deploying'>('idle');
+  const [result, setResult] = useState<{ code?: string; message?: string } | null>(null);
+  const [deployResult, setDeployResult] = useState<{
+    contractId?: string | null;
+    output?: string;
+    message?: string;
+    explorerUrl?: string | null;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     setLoading(true);
     setError(null);
     setResult(null);
+    setDeployResult(null);
+    setStep('generating');
     try {
       const res = await fetch('/api/smart-contracts/generate', {
         method: 'POST',
@@ -38,17 +47,43 @@ export default function GenerateSmartContractModal({
         return;
       }
       setResult(data);
+      if (!data.code) {
+        setLoading(false);
+        setStep('idle');
+        return;
+      }
+      setStep('deploying');
+      const deployRes = await fetch('/api/smart-contracts/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rustCode: data.code }),
+      });
+      const deployData = await deployRes.json();
+      if (!deployRes.ok) {
+        setError(deployData.error || deployData.details || 'Deploy failed');
+        setDeployResult(null);
+      } else {
+        setDeployResult({
+          contractId: deployData.contractId ?? null,
+          output: deployData.output,
+          message: deployData.message,
+          explorerUrl: deployData.explorerUrl ?? (deployData.contractId ? `https://testnet.steexp.com/contract/${deployData.contractId}` : null),
+        });
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Network error');
     } finally {
       setLoading(false);
+      setStep('idle');
     }
   };
 
   const handleClose = () => {
     setDescription('');
     setResult(null);
+    setDeployResult(null);
     setError(null);
+    setStep('idle');
     onClose();
   };
 
@@ -85,7 +120,34 @@ export default function GenerateSmartContractModal({
           <div css={styles.formGroup}>
             <label css={styles.label}>Generated contract (Soroban / Rust)</label>
             <pre css={styles.codeBlock}>{result.code}</pre>
-            {result.message && <p css={styles.successMessage}>{result.message}</p>}
+            {step === 'deploying' && <p css={styles.deployingMessage}>Deploying to Stellar testnet…</p>}
+            {deployResult != null && (
+              <div css={styles.formGroup}>
+                <label css={styles.label}>Deployment</label>
+                {deployResult.contractId && (
+                  <>
+                    <p css={styles.deploySuccessBadge}>Contract deployed successfully</p>
+                    <p css={styles.contractId}>
+                      Contract ID: <code css={styles.contractIdCode}>{deployResult.contractId}</code>
+                    </p>
+                    {(deployResult.explorerUrl ?? (deployResult.contractId ? `https://testnet.steexp.com/contract/${deployResult.contractId}` : null)) && (
+                      <a
+                        href={deployResult.explorerUrl ?? `https://testnet.steexp.com/contract/${deployResult.contractId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        css={styles.explorerLink}
+                      >
+                        View on Stellar Explorer (testnet) →
+                      </a>
+                    )}
+                  </>
+                )}
+                {deployResult.message && <p css={styles.successMessage}>{deployResult.message}</p>}
+                {deployResult.output && !deployResult.contractId && (
+                  <pre css={styles.codeBlock}>{deployResult.output}</pre>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -99,7 +161,11 @@ export default function GenerateSmartContractModal({
             onClick={handleGenerate}
             disabled={loading}
           >
-            {loading ? 'Generating…' : 'Generate & Deploy'}
+            {loading
+              ? step === 'generating'
+                ? 'Generating…'
+                : 'Deploying…'
+              : 'Generate & Deploy'}
           </Button>
         </div>
       </div>

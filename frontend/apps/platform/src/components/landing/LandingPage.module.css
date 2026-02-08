@@ -1,0 +1,230 @@
+/* Hide Unicorn Studio "Made with" badge when in main document */
+:global(a[href*='unicorn.studio']) {
+  display: none !important;
+}
+
+.section {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #000;
+  border: none;
+  outline: none;
+  position: relative;
+}
+
+.embedWrapper {
+  position: absolute;
+  inset: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.heroContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 8px;
+}
+
+@media (min-width: 640px) {
+  .heroContent {
+    gap: 32px;
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .heroContent {
+    gap: 40px;
+    padding: 0 24px;
+  }
+}
+
+.headline {
+  font-family: var(--font-pp-mori, inherit);
+  font-weight: 300;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-size: 2.25rem;
+}
+
+@media (min-width: 768px) {
+  .headline {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .headline {
+    font-size: 3.75rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .headline {
+    font-size: 4.5rem;
+  }
+}
+
+.headlineItalic {
+  font-style: italic;
+  font-weight: 500;
+}
+
+.ctaButton {
+  font-family: var(--font-pp-mori, inherit);
+  font-weight: 500;
+  color: #000;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 8px;
+  padding: 10px 24px;
+  transition: background 0.3s;
+  pointer-events: auto;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  z-index: 101;
+  position: relative;
+  text-decoration: none;
+}
+
+.ctaButton:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+@media (min-width: 640px) {
+  .ctaButton {
+    padding: 12px 32px;
+    font-size: 1rem;
+  }
+}
+
+.badgeCover {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: #000;
+  z-index: 5;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .badgeCover {
+    height: 96px;
+  }
+}
+
+@media (min-width: 768px) {
+  .badgeCover {
+    height: 80px;
+  }
+}
+
+/* Waitlist section: full-screen Unicorn embed behind "Join the alpha" */
+.waitlistSection {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.waitlistEmbed {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.waitlistContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.waitlistContent .ctaButton {
+  pointer-events: auto;
+}
+
+.waitlistHeadline {
+  font-family: var(--font-pp-mori, inherit);
+  font-weight: 300;
+  color: #fff;
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 640px) {
+  .waitlistHeadline {
+    font-size: 2.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .waitlistHeadline {
+    font-size: 3rem;
+  }
+}
+
+/* Solid black block to cover Unicorn "Made with unicorn.studio" badge */
+.waitlistBadgeCover {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 12rem;
+  background: #000;
+  z-index: 50;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .waitlistBadgeCover {
+    height: 10rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .waitlistBadgeCover {
+    height: 8rem;
+  }
+}

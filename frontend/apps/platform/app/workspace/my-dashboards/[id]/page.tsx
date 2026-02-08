@@ -20,7 +20,8 @@ import {
 import type { DataListItemData } from '@core3/ui-components';
 import { loadDashboards, type SavedDashboard } from '@/utils/dashboardWorkspace.storage';
 import TabsSection from '@/components/common/TabsSection/TabsSection';
-import { ProjectOverviewPriceChart, ProjectOverviewPolCategoriesChart } from '@/containers/projects/ProjectOverviewSection';
+import { ProjectOverviewPriceChart } from '@/containers/projects/ProjectOverviewSection';
+import { InstitutionComplianceChecklistChart } from '@/components/common/InstitutionComplianceChecklistChart';
 import RiskChangesCard from '@/components/common/Sidebar/ScoreCard/RiskChangesCard/RiskChangesCard';
 import { GenerateSmartContractModal } from '@/components/common/GenerateSmartContractModal';
 import type { NewsFeed } from '@/types/api/project';
@@ -180,6 +181,11 @@ export default function DashboardViewPage() {
   }
 
   const widgetCount = dashboard.widgets?.length ?? 0;
+  /** When true, show default chart cards so Overview always has charts & metrics (e.g. new or empty dashboard). */
+  const showDefaultCharts = widgetCount === 0;
+  const hasWidget = (id: string) =>
+    dashboard.widgets?.some((w) => w.widgetId === id) || showDefaultCharts;
+
   const updatedLabel = dashboard.updatedAt
     ? new Date(dashboard.updatedAt).toLocaleDateString(undefined, {
         month: 'short',
@@ -238,16 +244,22 @@ export default function DashboardViewPage() {
                     <ProjectOverviewPriceChart hasToken={false} symbol="" />
                   </Card>
                   <Card>
-                    <ProjectOverviewPolCategoriesChart data={undefined} />
+                    <InstitutionComplianceChecklistChart />
                   </Card>
                 </Section>
               </div>
 
-              {/* All catalog cards: visible only when dashboard has that widget (data is being rendered). Overview-relevant first. */}
-              <div css={styles.cardsGridSection}>
-                <div css={styles.cardsGrid}>
+              {/* Charts & metrics: Section + Card for each widget */}
+              <div css={styles.chartsSectionWrapper}>
+                <Section
+                  id="charts-metrics"
+                  title="Charts & metrics"
+                  showHeader={true}
+                  columns={2}
+                  gap="m"
+                >
                   {/* Compliance Score Trend (overview: PoL Dynamic) */}
-                  {dashboard.widgets?.some((w) => w.widgetId === 'compliance-score') && (
+                  {hasWidget('compliance-score') && (
                     <Card css={styles.dataCard}>
                       <div css={styles.chartCardInner}>
                         <h3 css={styles.chartCardTitle}>Compliance Score Trend</h3>
@@ -262,7 +274,7 @@ export default function DashboardViewPage() {
                     </Card>
                   )}
                   {/* Risk Heatmap (overview: GitHub activity heatmap) */}
-                  {dashboard.widgets?.some((w) => w.widgetId === 'risk-heatmap') && (
+                  {hasWidget('risk-heatmap') && (
                     <Card css={styles.dataCard}>
                       <div css={styles.chartCardInner}>
                         <h3 css={styles.chartCardTitle}>Risk Heatmap</h3>
@@ -284,13 +296,13 @@ export default function DashboardViewPage() {
                     </Card>
                   )}
                   {/* Recent Alerts (overview: RiskChangesCard / Top Risks) */}
-                  {dashboard.widgets?.some((w) => w.widgetId === 'alerts-panel') && (
+                  {hasWidget('alerts-panel') && (
                     <Card css={styles.dataCard}>
                       <RiskChangesCard data={MOCK_NEWS_FEED} />
                     </Card>
                   )}
                   {/* Transaction Volume (overview-style chart) */}
-                  {dashboard.widgets?.some((w) => w.widgetId === 'transaction-volume') && (
+                  {hasWidget('transaction-volume') && (
                     <Card css={styles.dataCard}>
                       <div css={styles.chartCardInner}>
                         <h3 css={styles.chartCardTitle}>Transaction Volume</h3>
@@ -305,7 +317,7 @@ export default function DashboardViewPage() {
                     </Card>
                   )}
                   {/* Asset Distribution (overview-style metric/chart) */}
-                  {dashboard.widgets?.some((w) => w.widgetId === 'asset-distribution') && (
+                  {hasWidget('asset-distribution') && (
                     <Card css={styles.dataCard}>
                       <div css={styles.chartCardInner}>
                         <h3 css={styles.chartCardTitle}>Asset Distribution</h3>
@@ -320,7 +332,7 @@ export default function DashboardViewPage() {
                     </Card>
                   )}
                   {/* Routing Analytics (overview-style chart) */}
-                  {dashboard.widgets?.some((w) => w.widgetId === 'routing-analytics') && (
+                  {hasWidget('routing-analytics') && (
                     <Card css={styles.dataCard}>
                       <div css={styles.chartCardInner}>
                         <h3 css={styles.chartCardTitle}>Routing Analytics</h3>
@@ -335,7 +347,7 @@ export default function DashboardViewPage() {
                     </Card>
                   )}
                   {/* Active Routes (overview-style DataValue metric) */}
-                  {dashboard.widgets?.some((w) => w.widgetId === 'active-routes') && (
+                  {hasWidget('active-routes') && (
                     <Card css={styles.dataCard}>
                       <DataValue
                         label="Active Routes"
@@ -345,7 +357,7 @@ export default function DashboardViewPage() {
                     </Card>
                   )}
                   {/* Active Compliance Blocks (overview-style DataValue metric) */}
-                  {dashboard.widgets?.some((w) => w.widgetId === 'compliance-blocks') && (
+                  {hasWidget('compliance-blocks') && (
                     <Card css={styles.dataCard}>
                       <DataValue
                         label="Active Compliance Blocks"
@@ -354,7 +366,7 @@ export default function DashboardViewPage() {
                       />
                     </Card>
                   )}
-                </div>
+                </Section>
               </div>
 
               {/* Smart Contracts for RWAs (mandatory section, Documentation-style) */}
@@ -368,12 +380,6 @@ export default function DashboardViewPage() {
                 <p css={styles.improveScoreText}>Edit this dashboard in the workspace?</p>
                 <Button variant="inverse" size="small" onClick={openInWorkspace}>
                   Edit in Workspace
-                </Button>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 24 }}>
-                <Button variant="secondary" size="small" onClick={() => router.push('/workspace/my-dashboards')}>
-                  Back to My Dashboards
                 </Button>
               </div>
             </div>
