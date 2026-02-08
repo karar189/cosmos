@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: cosmos-ai
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # Set this in the Render dashboard (not committed)
+      - key: OPENAI_API_KEY
+        sync: false
+
+      # Optional: change the model (defaults to gpt-4o-mini)
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+
+      # IMPORTANT: update this to your frontend origin(s) in production
+      # e.g. "https://your-frontend.onrender.com"
+      - key: CORS_ALLOW_ORIGINS
+        value: http://localhost:3000,http://127.0.0.1:3000
+
+      # Optional: pin Python version for Render (also supported via .python-version)
+      - key: PYTHON_VERSION
+        value: 3.12.8
