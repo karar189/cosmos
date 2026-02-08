@@ -88,16 +88,7 @@ export function MobileExchangeCard({
         </div>
       </div>
 
-      {showCTA && (
-        <div css={styles.mobileCTACard}>
-          <div css={styles.mobileCTAContent}>
-            <div css={styles.mobileCTATitle}>{t('exchanges.cta.title', 'List your exchange on CORE3')}</div>
-            <Core3Button size="small" onClick={onCTAClick}>
-              {t('exchanges.cta.button', 'APPLY FOR LISTING')}
-            </Core3Button>
-          </div>
-        </div>
-      )}
+      {/* CTA removed (Apply for listing) */}
     </>
   );
 }

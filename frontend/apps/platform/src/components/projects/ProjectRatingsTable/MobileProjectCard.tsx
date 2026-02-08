@@ -94,16 +94,7 @@ export function MobileProjectCard({
         </div>
       </div>
 
-      {showCTA && (
-        <div css={styles.mobileCTACard}>
-          <div css={styles.mobileCTAContent}>
-            <div css={styles.mobileCTATitle}>{t('projects.cta.title', '')}</div>
-            <Core3Button size="small" onClick={onCTAClick}>
-              {t('projects.cta.button', '')}
-            </Core3Button>
-          </div>
-        </div>
-      )}
+      {/* CTA removed (Apply for listing) */}
     </>
   );
 }

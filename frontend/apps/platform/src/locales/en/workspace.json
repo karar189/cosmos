@@ -20,9 +20,7 @@
         "workflows": "Workflows"
       },
       "utility": {
-        "workspaceSettings": "Workspace Settings",
-        "documentation": "Documentation",
-        "support": "Support"
+        "workspaceSettings": "Workspace Settings"
       }
     },
     "regulator": {

@@ -37,9 +37,8 @@ export interface ProjectLayoutProps {
    */
   children: React.ReactNode;
   /**
-   * Callback to open the Improve Score modal
+   * (Removed) Improve Score CTA flow
    */
-  onOpenImproveScore?: () => void;
 }
 
 // Container animation variants
@@ -81,7 +80,6 @@ export default function ProjectLayout({
   error,
   refetch,
   children,
-  onOpenImproveScore,
 }: ProjectLayoutProps) {
   const { t } = useTranslation(['projects']);
   const router = useRouter();
@@ -164,7 +162,7 @@ export default function ProjectLayout({
 
           {/* Right Column: Sticky Sidebar */}
           <aside css={styles.sidebarColumn}>
-            <ProjectSidebar data={projectData} onOpenImproveScore={onOpenImproveScore} />
+            <ProjectSidebar data={projectData} />
           </aside>
         </div>
       </MotionConfig>

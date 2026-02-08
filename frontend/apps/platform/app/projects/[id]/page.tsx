@@ -14,12 +14,10 @@ import ProjectReputationalSection from '@/containers/projects/ProjectReputationa
 import { ProjectSecuritySection } from '@/containers/projects/ProjectSecuritySection';
 import { useTokenBasic } from '@/data/api/coinGecko.queries';
 import { useProjectData, useResponsiveTabView } from '@/hooks';
-import { Core3Button } from '@core3/ui-components';
 import { notFound } from 'next/navigation';
 import { use, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as styles from './page.styles';
-import { ImproveScoreModal } from '@/components/projects/ProjectSidebar/ImproveScoreModal';
 
 interface ProjectDetailsPageProps {
   params: Promise<{
@@ -31,7 +29,6 @@ export default function ProjectDetailsPage({ params }: ProjectDetailsPageProps) 
   const { id } = use(params);
   const { t } = useTranslation();
   const tabsSectionRef = useRef<TabsSectionRef>(null);
-  const [isImproveScoreModalOpen, setIsImproveScoreModalOpen] = useState(false);
   // Get project data using shared hook (same query key as ProjectLayout)
   const { data: projectData, isLoading, error, refetch } = useProjectData(id);
   const isTokenProject = projectData?.projectDetails?.hasToken ?? false;
@@ -84,7 +81,6 @@ export default function ProjectDetailsPage({ params }: ProjectDetailsPageProps) 
           probabilityOfLossCategoriesDynamic={projectData?.probabilityOfLossCategoriesDynamic}
           probabilityOfLoss={projectData?.probabilityOfLoss}
           newsFeed={projectData?.newsFeed}
-          onOpenImproveScore={() => setIsImproveScoreModalOpen(true)}
         />
       ),
     },
@@ -171,7 +167,6 @@ export default function ProjectDetailsPage({ params }: ProjectDetailsPageProps) 
       projectData={projectData} 
       error={error} 
       refetch={refetch}
-      onOpenImproveScore={() => setIsImproveScoreModalOpen(true)}
     >
       <div css={styles.stickyTabsContainer}>
         <TabsSection data={tabs} />
@@ -185,26 +180,6 @@ export default function ProjectDetailsPage({ params }: ProjectDetailsPageProps) 
           )
         )}
       </div>
-
-      <div css={styles.improveScoreContainer}>
-        <p css={styles.improveScoreText}>
-          {t('projects.details.improveScore.title', 'Do you own this project?')}
-        </p>
-        <Core3Button 
-          size="small" 
-          variant="inverse" 
-          css={styles.improveScoreButton}
-          onClick={() => setIsImproveScoreModalOpen(true)}
-        >
-          {t('projects.details.improveScore.button', 'Improve score')}
-        </Core3Button>
-      </div>
-
-      <ImproveScoreModal 
-        open={isImproveScoreModalOpen} 
-        onClose={() => setIsImproveScoreModalOpen(false)} 
-        projectName={projectData?.projectDetails?.name ?? ''} 
-      />
     </ProjectLayout>
   );
 }

@@ -40,14 +40,10 @@ const mainNavKeys = [
 // Bottom utility items (all disabled for now)
 const utilityItems: Omit<NavItem, 'labelKey'>[] = [
   { href: ROUTES.WORKSPACE.SETTINGS, icon: 'settings', disabled: true },
-  { href: ROUTES.WORKSPACE.DOCS, icon: 'documentation', disabled: true },
-  { href: ROUTES.WORKSPACE.SUPPORT, icon: 'support', disabled: true },
 ];
 
 const utilityKeys = [
   'workspace.sidebar.utility.workspaceSettings',
-  'workspace.sidebar.utility.documentation',
-  'workspace.sidebar.utility.support',
 ];
 
 export default function WorkspaceSidebar() {

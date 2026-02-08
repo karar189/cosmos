@@ -13,7 +13,6 @@ import { ChartDataPoint } from '@/data/api/types/coin_gecko/coin_historical';
 import GaugeChart from '@/components/common/Sidebar/ScoreCard/GaugeChart/GaugeChart';
 import DataCoverageIndicator from '@/components/common/Sidebar/ScoreCard/DataCoverageIndicator/DataCoverageIndicator';
 import { RiskMetricsList } from '@/components/common/Sidebar/ScoreCard/RiskChangesCard/RiskMetricList';
-import ScoreCardCTA from '@/components/common/Sidebar/ScoreCardCTA/ScoreCardCTA';
 import RiskChangesCard from '@/components/common/Sidebar/ScoreCard/RiskChangesCard/RiskChangesCard';
 import PricePerformanceCard from '@/components/common/Sidebar/PricePerformanceCard/PricePerformanceCard';
 import BadgesRowCard from '@/components/common/Sidebar/BadgesRowCard/BadgesRowCard';
@@ -40,7 +39,6 @@ interface ProjectOverviewSectionProps {
   // Sidebar data for mobile layout
   probabilityOfLoss?: ProbabilityOfLoss;
   newsFeed?: NewsFeed;
-  onOpenImproveScore?: () => void;
 }
 
 const ProjectOverviewSection: React.FC<ProjectOverviewSectionProps> = ({
@@ -51,7 +49,6 @@ const ProjectOverviewSection: React.FC<ProjectOverviewSectionProps> = ({
   isTokenProject,
   probabilityOfLoss,
   newsFeed,
-  onOpenImproveScore,
 }) => {
   const { t } = useTranslation(['projects', 'common', 'sidebar']);
   const [period, setPeriod] = useState({ label: '7d', value: '7' });
@@ -276,17 +273,6 @@ const ProjectOverviewSection: React.FC<ProjectOverviewSectionProps> = ({
               />
             </div>
           </div>
-
-          {/* Do you own this project? CTA */}
-          {onOpenImproveScore && (
-            <div css={styles.ctaWrapper}>
-              <ScoreCardCTA
-                title={t('sidebar:scoreCard.improveCta.title', 'Do you own this project?')}
-                buttonLabel={t('sidebar:scoreCard.improveCta.button', 'IMPROVE SCORE')}
-                onClick={onOpenImproveScore}
-              />
-            </div>
-          )}
 
           {/* Data Coverage - placed in middle */}
           <div css={styles.dataCoverageCard}>

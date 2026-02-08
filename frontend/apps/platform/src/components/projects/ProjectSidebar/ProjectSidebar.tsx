@@ -7,7 +7,7 @@ import useTranslation from '@/hooks/useTranslation';
 import { ProjectApiResponse } from '@/types/api/project';
 import { Sidebar } from '@core3/ui-components';
 import { useEffect, useState } from 'react';
-import { BadgesRowCard, PricePerformanceCard, RiskChangesCard, ScoreCard, ScoreCardCTA } from '@/components/common/Sidebar';
+import { BadgesRowCard, PricePerformanceCard, RiskChangesCard, ScoreCard } from '@/components/common/Sidebar';
 import {
   aboutLabelsList,
   buildAboutProjectRows,
@@ -21,12 +21,11 @@ export interface ProjectSidebarProps {
    */
   data: ProjectApiResponse;
   /**
-   * Callback to open the Improve Score modal
+   * (Removed) Improve Score CTA flow
    */
-  onOpenImproveScore?: () => void;
 }
 
-export default function ProjectSidebar({ data, onOpenImproveScore }: ProjectSidebarProps) {
+export default function ProjectSidebar({ data }: ProjectSidebarProps) {
   const { t } = useTranslation(['sidebar', 'common']);
   const [period, setPeriod] = useState({ label: '7d', value: '7' });
   const [highLowData, setHighLowData] = useState<{ low: number; high: number }>({
@@ -100,13 +99,6 @@ export default function ProjectSidebar({ data, onOpenImproveScore }: ProjectSide
       {/* Project Score Card with Gauge, Data Coverage, Risk Metrics, and Chart */}
       <ScoreCard
         data={probabilityOfLoss}
-        customCTA={
-          <ScoreCardCTA
-            title={t('scoreCard.improveCta.title', 'Do you own this project?')}
-            buttonLabel={t('scoreCard.improveCta.button', 'IMPROVE SCORE')}
-            onClick={onOpenImproveScore}
-          />
-        }
       />
 
       {/* Risk Changes with Top Risks / Recent Changes tabs */}

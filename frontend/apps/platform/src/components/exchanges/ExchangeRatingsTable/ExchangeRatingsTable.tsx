@@ -11,7 +11,6 @@ import { DataTable, NumberCell, Stars, BottomSheet, RadioList, Icon, FilterBotto
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo } from 'react';
-import CTARow from './CTARow';
 import * as styles from './ExchangeRatingsTable.styles';
 import { BadgeRankScore } from '@/components/common/BadgeRankScore';
 import { formatAmount, formatPercentage } from '@/utils/format';
@@ -233,34 +232,14 @@ export default function ExchangeRatingsTable({ data }: ExchangeRatingsTableProps
     [t]
   );
 
-  // Custom row renderer for CTA insertion
-  const customRowRenderer = useCallback(
-    ({ index, totalRows }: { row?: unknown; index: number; totalRows: number }) => {
-      const shouldShowCTA = index === 4 || (index === totalRows - 1 && totalRows < 5);
-
-      if (!shouldShowCTA) return null;
-
-      return (
-        <CTARow
-          title={t('exchanges.cta.title', 'List your exchange on CORE3')}
-          buttonText={t('exchanges.cta.button', 'APPLY FOR LISTING')}
-          colSpan={columnsConfig.length}
-        />
-      );
-    },
-    [columnsConfig.length, t]
-  );
-
   const mobileCardRenderer = useCallback(
     ({ item, index, totalItems }: { item: ExchangeListItem; index: number; totalItems: number }) => {
-      const shouldShowCTA = index === 4 || (index === totalItems - 1 && totalItems < 5);
-
       return (
         <MobileExchangeCard
           key={item.exchange.id}
           item={item}
           index={index}
-          showCTA={shouldShowCTA}
+          showCTA={false}
           t={t}
           onCTAClick={openCooperationModal}
           onExchangeClick={handleExchangeClick}
@@ -301,7 +280,6 @@ export default function ExchangeRatingsTable({ data }: ExchangeRatingsTableProps
         data={filteredData}
         filters={filtersConfig}
         columnsConfig={columnsConfig}
-        customRowRenderer={customRowRenderer}
         mobileCardRenderer={mobileCardRenderer}
         sorting={sorting}
         onSortingChange={setSorting}

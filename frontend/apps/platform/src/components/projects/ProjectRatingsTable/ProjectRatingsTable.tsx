@@ -12,7 +12,6 @@ import { createProjectRatingsFiltersConfig, getMarketCapRange } from '@/lib/proj
 import { DataTable, BottomSheet, RadioList, Icon, FilterBottomSheet } from '@core3/ui-components';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useMemo } from 'react';
-import CTARow from './CTARow';
 import * as styles from './ProjectRatingsTable.styles';
 import { useCooperationModal } from '@/components/layouts/PlatformLayout';
 import { MobileProjectCard } from './MobileProjectCard';
@@ -120,32 +119,14 @@ function ProjectRatingsTableContent({ data }: ProjectRatingsTableProps) {
 
   const filtersConfig = useMemo(() => createProjectRatingsFiltersConfig({ t }), [t]);
 
-  const customRowRenderer = useCallback(
-    ({ index, totalRows }: { row?: unknown; index: number; totalRows: number }) => {
-      const shouldShowCTA = index === 4 || (index === totalRows - 1 && totalRows < 5);
-      if (!shouldShowCTA) return null;
-
-      return (
-        <CTARow
-          title={t('projects.cta.title', '')}
-          buttonText={t('projects.cta.button', '')}
-          colSpan={columnsConfig.length}
-        />
-      );
-    },
-    [columnsConfig.length, t]
-  );
-
   const mobileCardRenderer = useCallback(
     ({ item, index, totalItems }: { item: ProjectListItem; index: number; totalItems: number }) => {
-      const shouldShowCTA = index === 4 || (index === totalItems - 1 && totalItems < 5);
-
       return (
         <MobileProjectCard
           key={item.project.id}
           item={item}
           index={index}
-          showCTA={shouldShowCTA}
+          showCTA={false}
           t={t}
           onCTAClick={openCooperationModal}
           onProjectClick={handleProjectClick}
@@ -187,7 +168,6 @@ function ProjectRatingsTableContent({ data }: ProjectRatingsTableProps) {
         data={filteredData}
         columnsConfig={columnsConfig}
         filters={filtersConfig}
-        customRowRenderer={customRowRenderer}
         mobileCardRenderer={mobileCardRenderer}
         sorting={sorting}
         onSortingChange={setSorting}
