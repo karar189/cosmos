@@ -2,6 +2,8 @@
 
 Agentic dashboard builder + risk/ratings platform, with an AI backend that recommends widget bundles (Lean / Balanced / Comprehensive) and a frontend “n8n-like” dashboard workspace to customize layouts.
 
+<img width="1433" height="1019" alt="Screenshot 2026-02-08 at 12 04 10 PM" src="https://github.com/user-attachments/assets/848ce339-5a3f-4450-be7c-228863f6616c" />
+
 ![Project overview](docs/screenshots/01-project-overview.png)
 ![Project financial](docs/screenshots/02-project-financial.png)
 ![Proof of Opinion](docs/screenshots/03-proof-of-opinion.png)
