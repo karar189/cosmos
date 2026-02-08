@@ -18,12 +18,11 @@ interface NavItem {
   disabled?: boolean;
 }
 
-// Main navigation items - ArcX Features
+// Main navigation items - ArcX Features (Agentic Builder merged into Compliance Maker)
 const mainNavItems: Omit<NavItem, 'labelKey'>[] = [
   { href: ROUTES.WORKSPACE.COMPLIANCE_MAKER, icon: 'security', disabled: false },
-  { href: ROUTES.WORKSPACE.AGENTIC_BUILDER, icon: 'tools', disabled: false },
   { href: ROUTES.WORKSPACE.ROUTING_ENGINE, icon: 'data-transfer', disabled: false },
-  { href: ROUTES.WORKSPACE.DASHBOARD_BUILDER, icon: 'data-stack', disabled: false },
+  { href: ROUTES.WORKSPACE.DASHBOARD_WORKSPACE, icon: 'data-stack', disabled: false },
   { href: ROUTES.WORKSPACE.PORTFOLIO, icon: 'lock', disabled: true },
   { href: ROUTES.WORKSPACE.ALERTS, icon: 'lock', disabled: true },
   { href: ROUTES.WORKSPACE.CASES, icon: 'lock', disabled: true },
@@ -31,7 +30,6 @@ const mainNavItems: Omit<NavItem, 'labelKey'>[] = [
 
 const mainNavKeys = [
   'workspace.sidebar.main.complianceMaker',
-  'workspace.sidebar.main.agenticBuilder',
   'workspace.sidebar.main.routingEngine',
   'workspace.sidebar.main.dashboardBuilder',
   'workspace.sidebar.main.portfolio',

@@ -1,567 +1,356 @@
 /** @jsxImportSource @emotion/react */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, Core3Button as Button, Input, Select, Icon, Badge, Section } from '@core3/ui-components';
+import { Card, Core3Button as Button, Input, Icon, Badge } from '@core3/ui-components';
 import useTranslation from '@/hooks/useTranslation';
-import { ROUTES } from '@/constants/routes';
+import { makeDraftFromBundle, writeDraft, saveAgenticResponse, type WidgetType } from '@/utils/dashboardWorkspace.storage';
 import * as styles from './page.styles';
 
-const IMPORTED_WIDGETS_STORAGE_KEY = 'cosmops_imported_widgets';
-const COMPLIANCE_SESSION_STORAGE_KEY = 'cosmops_compliance_session';
+type AgenticWidgetCategory = 'remittance' | 'fintech' | 'bank' | 'stablecoin' | 'ngo' | 'rwa' | 'custom';
 
-export interface ComplianceSession {
-  institutionName: string;
-  institutionType: string;
-  institutionTypeLabel?: string;
-  lookingFor: string;
-  existingAudits: string;
-  analysis: string;
-  analysisSource: string;
-  suggestedChecklist: ComplianceWidget[];
-  savedAt: string;
-}
-
-type ImportedComplianceWidget = ComplianceWidget & { institutionType?: string };
-
-function getImportedWidgets(): ImportedComplianceWidget[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(IMPORTED_WIDGETS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function addWidgetToImports(widget: ImportedComplianceWidget) {
-  const list = getImportedWidgets();
-  if (list.some((w) => w.id === widget.id)) return;
-  list.push(widget);
-  window.localStorage.setItem(IMPORTED_WIDGETS_STORAGE_KEY, JSON.stringify(list));
-}
-
-function saveComplianceSession(session: ComplianceSession) {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(COMPLIANCE_SESSION_STORAGE_KEY, JSON.stringify(session));
-  } catch (e) {
-    console.warn('Failed to save compliance session', e);
-  }
-}
-
-function getComplianceSession(): ComplianceSession | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const raw = window.localStorage.getItem(COMPLIANCE_SESSION_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function clearComplianceCache() {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.removeItem(COMPLIANCE_SESSION_STORAGE_KEY);
-    window.localStorage.removeItem(IMPORTED_WIDGETS_STORAGE_KEY);
-  } catch (e) {
-    console.warn('Failed to clear compliance cache', e);
-  }
-}
-
-interface InstitutionType {
-  id: string;
-  name: string;
-  widgets: {
+interface AgenticRecommendationsResponse {
+  source: 'openai' | 'heuristic';
+  business_profile: {
+    inferred_categories: AgenticWidgetCategory[];
+    confidence: number;
+    rationale: string;
+    assumptions: string[];
+  };
+  bundles: Array<{
+    id: string;
     name: string;
     description: string;
-    priority: 'high' | 'medium' | 'low';
-    category: string;
-  }[];
-}
-
-const institutionTypes: InstitutionType[] = [
-  { 
-    id: 'rwa', 
-    name: 'RWA (Real World Assets)', 
-    widgets: [
-      { name: 'Asset Tokenization Tracker', description: 'Real-time monitoring of tokenized assets, on-chain representation, and reserve backing status', priority: 'high', category: 'Monitoring' },
-      { name: 'RWA Compliance Monitor', description: 'Automated regulatory scanning across 40+ jurisdictions for asset classification changes', priority: 'high', category: 'Compliance' },
-      { name: 'Yield Analytics', description: 'Track and report yield distributions with tax reporting and regulatory disclosures', priority: 'medium', category: 'Analytics' },
-      { name: 'Regulatory Reporting', description: 'Auto-generate SEC, MAS, FCA reports with ISO 20022 formatted outputs', priority: 'medium', category: 'Reporting' },
-      { name: 'Proof-of-Reserve Oracle', description: 'On-chain attestation of off-chain collateral via oracle integration', priority: 'high', category: 'Verification' },
-      { name: 'Soroban Enforcement Module', description: 'Smart contract-based freeze/clawback capabilities for regulatory compliance', priority: 'low', category: 'Enforcement' },
-      { name: 'Asset Performance', description: 'Track underlying asset value, price feeds, and volatility with alerts for drawdowns', priority: 'medium', category: 'Analytics' },
-      { name: 'Investor Accreditation', description: 'Accreditation/KYC status tracking for investors with expiry reminders and audit trail', priority: 'high', category: 'Compliance' },
-      { name: 'Secondary Market Activity', description: 'Monitor secondary trading volume, liquidity, and abnormal price impact across venues', priority: 'medium', category: 'Analytics' },
-      { name: 'Asset Valuation Tracker', description: 'Mark-to-market valuations with valuation source transparency and overrides logging', priority: 'medium', category: 'Reporting' },
-      { name: 'Custody Monitor', description: 'Custody status, asset location, and custodian risk alerts with incident timeline', priority: 'high', category: 'Monitoring' },
-    ]
-  },
-  { 
-    id: 'stablecoin', 
-    name: 'Stablecoin / Fiat Issuers', 
-    widgets: [
-      { name: 'Reserve Monitoring', description: 'Real-time fiat reserve tracking, bank balance monitoring, and collateral composition analysis', priority: 'high', category: 'Monitoring' },
-      { name: 'Redemption Tracker', description: 'Monitor redemption requests, processing times, and SLA compliance metrics', priority: 'high', category: 'Operations' },
-      { name: 'Regulatory Compliance', description: 'Multi-jurisdiction engine covering MiCA, NYDFS, MAS, and 30+ frameworks', priority: 'high', category: 'Compliance' },
-      { name: 'Audit Dashboard', description: 'Continuous audit trail with real-time attestation and external auditor integration', priority: 'medium', category: 'Audit' },
-      { name: 'Trustline Analytics', description: 'Holder risk distribution analysis and geo-distribution monitoring', priority: 'medium', category: 'Analytics' },
-      { name: 'Freeze/Unfreeze Panel', description: 'Administrative controls for token freezing with full audit trail', priority: 'low', category: 'Enforcement' },
-      { name: 'Peg Stability Monitor', description: 'Track price deviation from peg with alerts for sustained drift and liquidity stress', priority: 'high', category: 'Monitoring' },
-      { name: 'Mint/Burn Volume', description: 'Daily mint/burn activity trends with anomaly detection and root-cause tagging', priority: 'medium', category: 'Analytics' },
-      { name: 'Circulation Analytics', description: 'Circulating supply breakdown by chain, venue, and wallet segment', priority: 'medium', category: 'Analytics' },
-      { name: 'Attestation Status', description: 'Upcoming attestation deadlines, completion status, and evidence repository links', priority: 'high', category: 'Audit' },
-      { name: 'Bank Balance Monitor', description: 'Bank account balances for fiat reserves with reconciliation and variance alerts', priority: 'high', category: 'Monitoring' },
-    ]
-  },
-  { 
-    id: 'neobank', 
-    name: 'Neobanks', 
-    widgets: [
-      { name: 'KYC/KYB Dashboard', description: 'Centralized identity verification with risk scoring, document verification, and tiered KYC', priority: 'high', category: 'Identity' },
-      { name: 'Transaction Monitoring', description: 'AI-powered real-time monitoring detecting structuring, smurfing, and suspicious patterns', priority: 'high', category: 'Monitoring' },
-      { name: 'Risk Scoring Engine', description: 'Dynamic customer risk scoring based on behavior, geography, and network analysis', priority: 'high', category: 'Risk' },
-      { name: 'Regulatory Reporting', description: 'Automated STR, SAR, CTR generation with compliance deadline tracking', priority: 'medium', category: 'Reporting' },
-      { name: 'Large-Value Transfer Monitor', description: 'Threshold-based monitoring for high-value transactions with escalation workflows', priority: 'medium', category: 'Monitoring' },
-      { name: 'Jurisdiction Rule Engine', description: 'Configurable rules per operating jurisdiction with automatic enforcement', priority: 'low', category: 'Compliance' },
-      { name: 'Account Opening Metrics', description: 'Track onboarding funnel conversion, drop-offs, approval rates, and review SLAs', priority: 'medium', category: 'Analytics' },
-      { name: 'Liquidity Monitor', description: 'Real-time liquidity ratios, intraday inflows/outflows, and stress scenario indicators', priority: 'high', category: 'Monitoring' },
-      { name: 'Customer Segmentation', description: 'Customer distribution by risk tier, geography, product usage, and lifecycle stage', priority: 'medium', category: 'Analytics' },
-      { name: 'Lending Portfolio Health', description: 'Portfolio quality view: delinquency, defaults, vintage curves, and concentration risk', priority: 'medium', category: 'Analytics' },
-    ]
-  },
-  { 
-    id: 'ngo', 
-    name: 'NGOs / Aid Organizations', 
-    widgets: [
-      { name: 'Donation Tracker', description: 'End-to-end tracking of donations with source verification and donor compliance documentation', priority: 'high', category: 'Tracking' },
-      { name: 'Fund Flow Monitor', description: 'Visual mapping of fund flows from receipt to final beneficiary with diversion detection', priority: 'high', category: 'Monitoring' },
-      { name: 'Compliance Checker', description: 'Real-time sanctions screening against OFAC, EU, UN lists with automated blocking', priority: 'high', category: 'Compliance' },
-      { name: 'Transparency Dashboard', description: 'Public-facing reports showing fund utilization rates and beneficiary impact metrics', priority: 'medium', category: 'Reporting' },
-      { name: 'Geo-Risk Scoring', description: 'High-risk region assessment for all operational corridors', priority: 'medium', category: 'Risk' },
-      { name: 'Wallet Behavior Profiler', description: 'Beneficiary verification through transaction pattern analysis', priority: 'low', category: 'Analytics' },
-      { name: 'Beneficiary Verification', description: 'Recipient verification status with watchlist hits, documentation checks, and re-verification cycles', priority: 'high', category: 'Compliance' },
-      { name: 'Impact Metrics', description: 'Program impact KPIs by region/project with funding-to-outcome reporting', priority: 'medium', category: 'Reporting' },
-      { name: 'Donor Compliance', description: 'Know Your Donor (KYD) tracking with risk flags and source-of-funds documentation status', priority: 'high', category: 'Tracking' },
-      { name: 'Regulatory Reporting', description: 'Track reporting obligations and deadlines with exportable evidence packs', priority: 'medium', category: 'Reporting' },
-      { name: 'Expense Ratio Monitor', description: 'Admin vs program expense ratio tracking with trend alerts and drill-downs', priority: 'medium', category: 'Analytics' },
-    ]
-  },
-  { 
-    id: 'remittance', 
-    name: 'Remittance Companies', 
-    widgets: [
-      { name: 'Corridor Risk Monitor', description: 'Real-time risk scoring using FATF data, sanctions lists, and historical transaction analysis', priority: 'high', category: 'Risk' },
-      { name: 'Transaction Limits Engine', description: 'Configurable daily/weekly/monthly limits per customer, corridor, and agent', priority: 'high', category: 'Enforcement' },
-      { name: 'AML Screening', description: 'Real-time screening against OFAC, EU, UN lists with fuzzy matching and alias detection', priority: 'high', category: 'Compliance' },
-      { name: 'Regulatory Compliance', description: 'Multi-jurisdiction money transmitter license tracking and reporting', priority: 'medium', category: 'Compliance' },
-      { name: 'Smurfing Detection', description: 'AI-powered detection of transaction structuring across customer accounts', priority: 'medium', category: 'Detection' },
-      { name: 'Memo Validator', description: 'Enforce memo requirements on all transfers with validation rules', priority: 'low', category: 'Enforcement' },
-      { name: 'Cross-Border Volume', description: 'Volume trends by corridor with spike detection and seasonality insights', priority: 'medium', category: 'Analytics' },
-      { name: 'Settlement Time Tracker', description: 'Track end-to-end settlement times by corridor/provider and SLA compliance', priority: 'medium', category: 'Operations' },
-      { name: 'Agent Network Monitor', description: 'Monitor agent availability, compliance status, and operational capacity by region', priority: 'medium', category: 'Monitoring' },
-      { name: 'Regulatory Alerts', description: 'Corridor-specific regulatory change alerts with required action checklists', priority: 'medium', category: 'Compliance' },
-    ]
-  },
-  { 
-    id: 'fintech', 
-    name: 'Fintech Payment Apps', 
-    widgets: [
-      { name: 'Payment Analytics', description: 'Real-time payment flows, success rates, failure patterns, and ISO 20022 formatting', priority: 'high', category: 'Analytics' },
-      { name: 'Fraud Detection', description: 'AI-powered fraud scoring detecting account takeovers, velocity abuse, and coordinated fraud', priority: 'high', category: 'Detection' },
-      { name: 'Compliance Score', description: 'Organization-wide compliance score across all regulatory frameworks with gap analysis', priority: 'high', category: 'Compliance' },
-      { name: 'User Risk Assessment', description: 'Dynamic risk profiling based on onboarding data, behavior, and device patterns', priority: 'medium', category: 'Risk' },
-      { name: 'Sanctions Screening', description: 'Real-time screening on all payment flows with automated blocking', priority: 'medium', category: 'Compliance' },
-      { name: 'ISO 20022 Formatter', description: 'Auto-format Stellar transactions into ISO 20022 bank messages', priority: 'low', category: 'Integration' },
-      { name: 'Payment Volume by Method', description: 'Breakdown of volume across rails (card, ACH, wire, crypto) with trend lines', priority: 'medium', category: 'Analytics' },
-      { name: 'Chargeback Monitor', description: 'Chargeback rate trends, dispute outcomes, and alerting on threshold breaches', priority: 'medium', category: 'Monitoring' },
-      { name: 'Authorization Rates', description: 'Real-time authorization success metrics with issuer-level drilldowns', priority: 'medium', category: 'Analytics' },
-      { name: 'Payment Routing Optimizer', description: 'Route recommendations to maximize success rate and minimize fees/latency', priority: 'low', category: 'Operations' },
-    ]
-  },
-];
-
-interface ComplianceWidget {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  priority: 'high' | 'medium' | 'low';
-  enabled: boolean;
+    widgets: Array<{
+      id: string;
+      title: string;
+      category: AgenticWidgetCategory;
+      type: 'chart' | 'metric' | 'table' | 'alert';
+      why: string;
+      impact: { time_saved_hours_per_month: number; cost_savings_usd_per_month: number };
+    }>;
+    totals: {
+      time_saved_hours_per_month: number;
+      cost_savings_usd_per_month: number;
+      roi_percent: number | null;
+    };
+  }>;
+  notes: string[];
 }
 
 export default function ComplianceMakerPage() {
   useTranslation('workspace');
-  const [institutionName, setInstitutionName] = useState<string>('');
-  const [institutionType, setInstitutionType] = useState<string>('');
-  const [lookingFor, setLookingFor] = useState<string>('');
-  const [existingAudits, setExistingAudits] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [aiAnalysis, setAiAnalysis] = useState<string>('');
-  const [suggestedChecklist, setSuggestedChecklist] = useState<ComplianceWidget[]>([]);
-  const [analysisSource, setAnalysisSource] = useState<string>('');
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [importedIds, setImportedIds] = useState<Set<string>>(new Set());
-  const [selectedWidgetIds, setSelectedWidgetIds] = useState<Set<string>>(new Set());
   const router = useRouter();
 
-  useEffect(() => {
-    const stored = getImportedWidgets();
-    setImportedIds(new Set(stored.map((w) => w.id)));
-  }, []);
+  // Single form: Business & Metrics (widget combinations)
+  const [agentBusinessName, setAgentBusinessName] = useState<string>('');
+  const [agentBusinessDescription, setAgentBusinessDescription] = useState<string>('');
+  const [agentBusinessTypeHint, setAgentBusinessTypeHint] = useState<string>('');
+  const [agentGeographies, setAgentGeographies] = useState<string>('');
+  const [agentProducts, setAgentProducts] = useState<string>('');
+  const [agentMonthlyTransactions, setAgentMonthlyTransactions] = useState<string>('');
+  const [agentAvgTxnValue, setAgentAvgTxnValue] = useState<string>('');
+  const [agentOpsRate, setAgentOpsRate] = useState<string>('65');
+  const [agentComplianceRate, setAgentComplianceRate] = useState<string>('85');
+  const [agentPlatformCost, setAgentPlatformCost] = useState<string>('');
+  const [agentConstraints, setAgentConstraints] = useState<string>('');
+  const [agentLoading, setAgentLoading] = useState<boolean>(false);
+  const [agentError, setAgentError] = useState<string>('');
+  const [agentResponse, setAgentResponse] = useState<AgenticRecommendationsResponse | null>(null);
 
-  const toggleWidgetSelection = (id: string) => {
-    setSelectedWidgetIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  const businessTypeHintPresets = [
+    'Remittance company',
+    'Fintech payments',
+    'Bank / Neobank',
+    'Stablecoin issuer',
+    'NGO',
+    'RWA platform',
+  ];
+
+  const parseCsv = (s: string) =>
+    (s || '').split(',').map((x) => x.trim()).filter(Boolean);
+  const toOptionalInt = (s: string) => {
+    const v = Number.parseInt((s || '').trim(), 10);
+    return Number.isFinite(v) && v >= 0 ? v : undefined;
   };
-
-  const handleImportSelectedToDashboard = () => {
-    const toImport = suggestedChecklist.filter((w) => selectedWidgetIds.has(w.id));
-    toImport.forEach((w) => addWidgetToImports({ ...w, institutionType }));
-    setImportedIds((prev) => new Set([...prev, ...selectedWidgetIds]));
-    setSelectedWidgetIds(new Set());
-    router.push(ROUTES.WORKSPACE.DASHBOARD_BUILDER);
+  const toOptionalFloat = (s: string) => {
+    const v = Number.parseFloat((s || '').trim());
+    return Number.isFinite(v) && v >= 0 ? v : undefined;
   };
+  const formatUsd = (n: number) =>
+    new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  const formatHours = (n: number) => `${Math.round(n * 10) / 10}h/mo`;
 
-  const handleSubmit = async () => {
-    if (!institutionName?.trim() || !institutionType || !lookingFor) return;
-
-    setIsSubmitting(true);
-    setHasSubmitted(true);
-    setAiAnalysis('');
-    setSuggestedChecklist([]);
-    
-    const selectedInst = institutionTypes.find(t => t.id === institutionType);
-    let analysisText = '';
-    let analysisSourceValue = 'fallback';
-
+  const handleAgenticSubmit = async () => {
+    setAgentError('');
+    setAgentResponse(null);
+    if (!agentBusinessName?.trim() || agentBusinessDescription.trim().length < 20) {
+      setAgentError('Add a business name and a description (at least 20 characters).');
+      return;
+    }
+    const body = {
+      business_name: agentBusinessName.trim(),
+      business_description: agentBusinessDescription.trim(),
+      business_type_hint: agentBusinessTypeHint.trim() || undefined,
+      geographies: parseCsv(agentGeographies),
+      products: parseCsv(agentProducts),
+      monthly_transactions: toOptionalInt(agentMonthlyTransactions),
+      avg_transaction_value_usd: toOptionalFloat(agentAvgTxnValue),
+      ops_hourly_rate_usd: toOptionalFloat(agentOpsRate) ?? 65,
+      compliance_hourly_rate_usd: toOptionalFloat(agentComplianceRate) ?? 85,
+      platform_cost_usd_per_month: toOptionalFloat(agentPlatformCost),
+      constraints: agentConstraints.trim() || undefined,
+    };
+    setAgentLoading(true);
     try {
-      const response = await fetch('/api/compliance/analyze', {
+      const res = await fetch('/api/agentic/widgets/recommendations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ institutionName: institutionName.trim(), institutionType, lookingFor, existingAudits }),
+        body: JSON.stringify(body),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || `API error ${response.status}`);
+      const data = (await res.json()) as AgenticRecommendationsResponse | { error?: string; detail?: unknown };
+      if (!res.ok) {
+        const msg =
+          (data as { error?: string })?.error ||
+          (typeof (data as { detail?: unknown })?.detail === 'string' ? (data as { detail: string }).detail : '') ||
+          `Request failed (${res.status})`;
+        throw new Error(msg);
       }
-
-      analysisText = data.analysis || 'Unable to generate analysis.';
-      analysisSourceValue = data.source || 'ai';
-      setAiAnalysis(analysisText);
-      setAnalysisSource(analysisSourceValue);
-    } catch (error) {
-      console.error('Error calling AI:', error);
-      analysisText = 'Analysis generated from built-in compliance engine. Connect OpenAI for personalized recommendations.';
-      analysisSourceValue = 'fallback';
-      setAiAnalysis(analysisText);
-      setAnalysisSource(analysisSourceValue);
-    } finally {
-      const checklist: ComplianceWidget[] = selectedInst?.widgets.map((widget, index) => ({
-        id: `widget-${institutionType}-${index}`,
-        name: widget.name,
-        category: widget.category,
-        description: widget.description,
-        priority: widget.priority,
-        enabled: true,
-      })) || [];
-      setSuggestedChecklist(checklist);
-      setIsSubmitting(false);
-      saveComplianceSession({
-        institutionName: institutionName.trim(),
-        institutionType,
-        institutionTypeLabel: selectedInst?.name,
-        lookingFor,
-        existingAudits,
-        analysis: analysisText || (checklist.length ? 'Analysis saved.' : ''),
-        analysisSource: analysisSourceValue,
-        suggestedChecklist: checklist,
+      setAgentResponse(data as AgenticRecommendationsResponse);
+      saveAgenticResponse({
+        bundles: (data as AgenticRecommendationsResponse).bundles,
+        businessName: agentBusinessName.trim() || undefined,
         savedAt: new Date().toISOString(),
       });
+    } catch (e) {
+      const raw = e instanceof Error ? e.message : 'Failed to generate recommendations.';
+      const friendly =
+        raw.toLowerCase().includes('failed to fetch')
+          ? 'Failed to reach the Agentic backend. Make sure the FastAPI server is running and try again.'
+          : raw;
+      setAgentError(friendly);
+    } finally {
+      setAgentLoading(false);
     }
   };
 
-  const handleClearCache = () => {
-    clearComplianceCache();
-    setInstitutionName('');
-    setInstitutionType('');
-    setLookingFor('');
-    setExistingAudits('');
-    setAiAnalysis('');
-    setSuggestedChecklist([]);
-    setAnalysisSource('');
-    setHasSubmitted(false);
-    setSelectedWidgetIds(new Set());
-    setImportedIds(new Set());
+  const handleCustomizeBundle = (bundle: AgenticRecommendationsResponse['bundles'][number]) => {
+    const draft = makeDraftFromBundle(bundle);
+    draft.name = `${agentBusinessName.trim() || 'Dashboard'} · ${bundle.name}`;
+    writeDraft(draft);
+    router.push('/dashboard-workspace');
   };
 
-  const priorityColor = (p: string) => {
-    if (p === 'high') return 'red' as const;
-    if (p === 'medium') return 'orange' as const;
-    return 'gray' as const;
+  const handleImportWidgets = () => {
+    if (!agentResponse?.bundles?.length) return;
+    const bundle = agentResponse.bundles[0];
+    const draft = makeDraftFromBundle(bundle);
+    draft.name = `${agentBusinessName.trim() || 'Dashboard'} · ${bundle.name}`;
+    writeDraft(draft);
+    router.push('/dashboard-workspace?import=1');
   };
 
-  const renderAnalysis = (text: string) => {
-    const lines = text.split('\n');
-    return lines.map((line, i) => {
-      const trimmed = line.trim();
-      if (trimmed.startsWith('## ')) {
-        return <h2 key={i} css={styles.analysisH2}>{trimmed.replace('## ', '')}</h2>;
-      }
-      if (trimmed.startsWith('### ')) {
-        return <h3 key={i} css={styles.analysisH3}>{trimmed.replace('### ', '')}</h3>;
-      }
-      if (trimmed.startsWith('- **')) {
-        const match = trimmed.match(/^- \*\*(.+?)\*\*:?\s*(.*)/);
-        if (match) {
-          return (
-            <div key={i} css={styles.analysisBullet}>
-              <span css={styles.bulletDot}>&#8226;</span>
-              <span><strong>{match[1]}</strong>{match[2] ? `: ${match[2]}` : ''}</span>
-            </div>
-          );
-        }
-      }
-      if (trimmed.startsWith('- ')) {
-        return (
-          <div key={i} css={styles.analysisBullet}>
-            <span css={styles.bulletDot}>&#8226;</span>
-            <span>{trimmed.replace('- ', '')}</span>
-          </div>
-        );
-      }
-      if (/^\d+\.\s\*\*/.test(trimmed)) {
-        const match = trimmed.match(/^\d+\.\s\*\*(.+?)\*\*\s*[—–-]?\s*(.*)/);
-        if (match) {
-          return (
-            <div key={i} css={styles.analysisNumbered}>
-              <span css={styles.numberedIcon}><Icon name="check-circle" css={styles.numberedCheckIcon} /></span>
-              <span><strong>{match[1]}</strong> — {match[2]}</span>
-            </div>
-          );
-        }
-      }
-      if (trimmed === '') return <div key={i} css={styles.analysisSpacer} />;
-      return <p key={i} css={styles.analysisParagraph}>{trimmed}</p>;
-    });
-  };
+  const canImportWidgets = Boolean(agentResponse?.bundles?.length);
 
   return (
     <div css={styles.pageContainer}>
-      {/* Section header (project-overview style) */}
       <div css={styles.pageSectionHeader}>
         <div>
           <h1 css={styles.pageSectionTitle}>Compliance Maker</h1>
           <p css={styles.sectionDescription}>
-            Configure your compliance checklist with AI-powered recommendations
+            Describe your business and get the best widget combinations with quantified time + cost savings.
           </p>
+        </div>
+        <div css={styles.pageSectionHeaderActions}>
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={handleImportWidgets}
+            disabled={!canImportWidgets}
+            title={canImportWidgets ? `Import ${agentResponse?.bundles?.[0]?.name ?? 'widgets'} to Dashboard Workspace` : 'Build widget combinations first to import'}
+          >
+            <Icon name="data-transfer" />
+            Import widgets
+          </Button>
         </div>
       </div>
 
       <div css={styles.twoColumnLayout}>
-        {/* Left Column - Form (visual blocks) */}
         <div css={styles.leftColumn}>
-          <section css={styles.institutionOnboardingSection}>
-            <h2 css={styles.institutionOnboardingTitle}>Institution Onboarding</h2>
-            <div css={styles.formContent}>
-              <div css={styles.formBlock}>
-                <label css={styles.label}>
-                  1. Name of the Institute <span css={styles.required}>*</span>
-                </label>
+          <section css={styles.agenticSection}>
+            <h2 css={styles.agenticSectionTitle}>Business & Metrics</h2>
+            <p css={styles.agenticSectionDescription}>
+              Add your business details and metrics to get widget combinations with time + cost savings.
+            </p>
+            <div css={styles.agenticFormGrid}>
+              <div css={[styles.formBlock, styles.agenticFullWidth]}>
+                <label css={styles.label}>Business name <span css={styles.required}>*</span></label>
                 <Input
-                  value={institutionName}
-                  onChange={(e) => setInstitutionName(e.target.value)}
-                  placeholder="e.g. Acme RWA Fund, Stellar Payments Inc."
+                  value={agentBusinessName}
+                  onChange={(e) => setAgentBusinessName(e.target.value)}
+                  placeholder="e.g. StellarPayouts, Acme RWA Fund"
                 />
               </div>
-              <div css={styles.formBlock}>
-                <label css={styles.label}>
-                  2. Type of Institution <span css={styles.required}>*</span>
-                </label>
-                <Select
-                  value={institutionType}
-                  onChange={(val: string | number) => setInstitutionType(String(val))}
-                  options={institutionTypes.map((type) => ({
-                    value: type.id,
-                    label: type.name,
-                  }))}
-                />
-              </div>
-              <div css={styles.formBlock}>
-                <label css={styles.label}>
-                  3. What are you looking for? <span css={styles.required}>*</span>
-                </label>
+              <div css={[styles.formBlock, styles.agenticFullWidth]}>
+                <label css={styles.label}>Business description <span css={styles.required}>*</span></label>
                 <textarea
                   css={styles.textarea}
-                  value={lookingFor}
-                  onChange={(e) => setLookingFor(e.target.value)}
-                  placeholder="Describe your compliance needs, goals, and requirements..."
+                  value={agentBusinessDescription}
+                  onChange={(e) => setAgentBusinessDescription(e.target.value)}
+                  placeholder="What do you do, who are your customers, what do you want to monitor/optimize?"
                   rows={3}
                 />
               </div>
-              <div css={styles.formBlock}>
-                <label css={styles.label}>
-                  4. Existing audits & security rails?
-                </label>
-                <textarea
-                  css={styles.textarea}
-                  value={existingAudits}
-                  onChange={(e) => setExistingAudits(e.target.value)}
-                  placeholder="Describe your current security infrastructure..."
-                  rows={3}
+              <div css={[styles.formBlock, styles.agenticFullWidth]}>
+                <label css={styles.label}>Business type hint</label>
+                <Input
+                  value={agentBusinessTypeHint}
+                  onChange={(e) => setAgentBusinessTypeHint(e.target.value)}
+                  placeholder="Pick a preset below, or type your own…"
                 />
+                <div css={styles.hintSuggestions}>
+                  {businessTypeHintPresets.map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      css={styles.hintSuggestionButton}
+                      onClick={() => setAgentBusinessTypeHint(label)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                  <button type="button" css={styles.hintSuggestionButton} onClick={() => setAgentBusinessTypeHint('')} title="Custom">
+                    Custom
+                  </button>
+                </div>
               </div>
-              <div css={styles.submitButtonWrapper}>
-                <Button
-                  variant="primary"
-                  size="large"
-                  onClick={handleSubmit}
-                  disabled={!institutionName?.trim() || !institutionType || !lookingFor || isSubmitting}
-                >
-                  {isSubmitting ? 'Analyzing...' : 'Submit & Analyze'}
-                  <Icon name="data-transfer" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="medium"
-                  onClick={handleClearCache}
-                  css={styles.clearCacheButton}
-                >
-                  <Icon name="minus-circle" />
-                  Clear cache
-                </Button>
+              <div css={styles.formBlock}>
+                <label css={styles.label}>Geographies (comma-separated)</label>
+                <Input value={agentGeographies} onChange={(e) => setAgentGeographies(e.target.value)} placeholder="e.g. US, IN, PH" />
               </div>
+              <div css={styles.formBlock}>
+                <label css={styles.label}>Products (comma-separated)</label>
+                <Input value={agentProducts} onChange={(e) => setAgentProducts(e.target.value)} placeholder="e.g. cross-border payouts, cards" />
+              </div>
+              <div css={styles.formBlock}>
+                <label css={styles.label}>Monthly transactions</label>
+                <Input value={agentMonthlyTransactions} onChange={(e) => setAgentMonthlyTransactions(e.target.value)} placeholder="e.g. 120000" />
+              </div>
+              <div css={styles.formBlock}>
+                <label css={styles.label}>Avg transaction value (USD)</label>
+                <Input value={agentAvgTxnValue} onChange={(e) => setAgentAvgTxnValue(e.target.value)} placeholder="e.g. 120" />
+              </div>
+              <div css={styles.formBlock}>
+                <label css={styles.label}>Ops hourly rate (USD)</label>
+                <Input value={agentOpsRate} onChange={(e) => setAgentOpsRate(e.target.value)} placeholder="e.g. 65" />
+              </div>
+              <div css={styles.formBlock}>
+                <label css={styles.label}>Compliance hourly rate (USD)</label>
+                <Input value={agentComplianceRate} onChange={(e) => setAgentComplianceRate(e.target.value)} placeholder="e.g. 85" />
+              </div>
+              <div css={styles.formBlock}>
+                <label css={styles.label}>Platform cost (USD/month)</label>
+                <Input value={agentPlatformCost} onChange={(e) => setAgentPlatformCost(e.target.value)} placeholder="e.g. 2500" />
+              </div>
+              <div css={[styles.formBlock, styles.agenticFullWidth]}>
+                <label css={styles.label}>Constraints</label>
+                <Input value={agentConstraints} onChange={(e) => setAgentConstraints(e.target.value)} placeholder="e.g. OFAC screening required, budget-conscious" />
+              </div>
+            </div>
+            {agentError && <p css={styles.agenticError}>{agentError}</p>}
+            <div css={styles.agenticActionsRow}>
+              <Button variant="primary" size="medium" onClick={handleAgenticSubmit} disabled={agentLoading}>
+                {agentLoading ? 'Building…' : 'Build widget combinations'}
+                <Icon name="tools" />
+              </Button>
             </div>
           </section>
         </div>
 
-        {/* Right Column - Section + Cards (project-overview style) */}
         <div css={styles.rightColumn}>
-          <Section
-            id="ai-analysis"
-            showHeader={true}
-            iconName="tools"
-            title="AI Analysis & Recommendations"
-            areas={[['analysis']]}
-            columns={1}
-          >
-            <div css={styles.analysisSectionContent}>
-              {!hasSubmitted ? (
-                <Card css={styles.emptyStateCard}>
-                  <div css={styles.emptyState}>
-                    <Icon name="tools" css={styles.emptyStateIcon} />
-                    <p css={styles.emptyStateText}>
-                      Fill out the form and submit to get AI-powered compliance recommendations.
-                    </p>
-                    <p css={styles.emptyStateSubtext}>
-                      Our engine analyzes your institution name, type, requirements, and infrastructure to generate a personalized checklist and smart contract recommendations (what you might need—or not need—on Stellar/Soroban).
-                    </p>
+          {/* Empty state when no results yet */}
+          {!agentLoading && !agentResponse && (
+            <Card css={styles.emptyStateCard}>
+              <div css={styles.emptyState}>
+                <Icon name="tools" css={styles.emptyStateIcon} />
+                <p css={styles.emptyStateText}>
+                  Fill in Business & Metrics and click Build widget combinations to see recommendations here.
+                </p>
+                <p css={styles.emptyStateSubtext}>
+                  You’ll get a business profile, widget bundles (Lean, Balanced, Comprehensive), and time + cost savings.
+                </p>
+              </div>
+            </Card>
+          )}
+
+          {agentLoading && (
+            <Card css={styles.bundleCard}>
+              <div css={styles.loadingState}>
+                <div css={styles.loadingDots}>
+                  <span css={styles.dot} />
+                  <span css={styles.dot} />
+                  <span css={styles.dot} />
+                </div>
+                <p css={styles.loadingText}>Generating widget combinations…</p>
+              </div>
+            </Card>
+          )}
+          {agentResponse && !agentLoading && (
+            <>
+              <Card css={styles.bundleCard}>
+                <div css={styles.bundleHeader}>
+                  <h3 css={styles.bundleTitle}>Business profile</h3>
+                  <div css={styles.bundleTotals}>
+                    <Badge color="gray">{agentResponse.source === 'openai' ? 'AI' : 'Heuristic'}</Badge>
+                    <Badge color="gray">
+                      Confidence {Math.round((agentResponse.business_profile.confidence || 0) * 100)}%
+                    </Badge>
+                  </div>
+                </div>
+                <p css={styles.widgetWhy}>{agentResponse.business_profile.rationale}</p>
+                <div css={styles.widgetBadges}>
+                  {(agentResponse.business_profile.inferred_categories || []).map((c) => (
+                    <Badge key={c} color="gray">{c}</Badge>
+                  ))}
+                </div>
+              </Card>
+              {agentResponse.bundles.map((bundle) => (
+                <Card key={bundle.id} css={styles.bundleCard} title={bundle.name}>
+                  <div css={styles.bundleHeader}>
+                    <div>
+                      <p css={styles.widgetWhy}>{bundle.description}</p>
+                    </div>
+                    <div css={styles.bundleTotals}>
+                      <Badge color="green">{formatHours(bundle.totals.time_saved_hours_per_month)}</Badge>
+                      <Badge color="green">{formatUsd(bundle.totals.cost_savings_usd_per_month)}/mo</Badge>
+                      {bundle.totals.roi_percent !== null && (
+                        <Badge color="gray">ROI {bundle.totals.roi_percent}%</Badge>
+                      )}
+                      <Button variant="primary" size="small" onClick={() => handleCustomizeBundle(bundle)}>
+                        Customize
+                        <Icon name="data-stack" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div css={styles.widgetList}>
+                    {bundle.widgets.map((w) => (
+                      <div key={w.id} css={styles.widgetRow}>
+                        <div css={styles.widgetRowTop}>
+                          <p css={styles.widgetName}>{w.title}</p>
+                          <div css={styles.widgetBadges}>
+                            <Badge color="gray">{w.category}</Badge>
+                            <Badge color="gray">{w.type}</Badge>
+                            <Badge color="green">{formatHours(w.impact.time_saved_hours_per_month)}</Badge>
+                            <Badge color="green">{formatUsd(w.impact.cost_savings_usd_per_month)}/mo</Badge>
+                          </div>
+                        </div>
+                        <p css={styles.widgetWhy}>{w.why}</p>
+                      </div>
+                    ))}
                   </div>
                 </Card>
-              ) : (
-                <>
-                  {isSubmitting && (
-                    <Card css={styles.loadingCard}>
-                      <div css={styles.loadingState}>
-                        <div css={styles.loadingDots}>
-                          <span css={styles.dot} />
-                          <span css={styles.dot} />
-                          <span css={styles.dot} />
-                        </div>
-                        <p css={styles.loadingText}>Analyzing compliance requirements...</p>
-                      </div>
-                    </Card>
-                  )}
-                  {aiAnalysis && !isSubmitting && (
-                    <Card css={styles.analysisResultCard}>
-                      <div css={styles.aiAnalysisHeader}>
-                        <Icon name="tools" css={styles.aiAnalysisIcon} />
-                        <span css={styles.aiAnalysisLabel}>Compliance Analysis</span>
-                        {analysisSource && (
-                          <Badge color={analysisSource === 'openai' ? 'green' : 'gray'}>
-                            {analysisSource === 'openai' ? 'AI Generated' : 'Built-in Engine'}
-                          </Badge>
-                        )}
-                      </div>
-                      <div css={styles.aiAnalysisBody}>
-                        {renderAnalysis(aiAnalysis)}
-                      </div>
-                    </Card>
-                  )}
-                </>
-              )}
-            </div>
-          </Section>
-
-          {/* Recommended Checklist - Section with card grid + single Import button */}
-          {suggestedChecklist.length > 0 && (
-            <>
-            <Section
-              id="recommended-checklist"
-              showHeader={true}
-              iconName="checkmark"
-              title="Recommended Checklist"
-              headerContent={
-                <p css={styles.checklistSectionNote}>
-                  {suggestedChecklist.length} widgets — select cards, then use Import below
-                  {importedIds.size > 0 && ` (${importedIds.size} already in Dashboard)`}
-                </p>
-              }
-              columns={2}
-              gap="m"
-            >
-              {suggestedChecklist.map((item) => (
-                <div
-                  key={item.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => toggleWidgetSelection(item.id)}
-                  onKeyDown={(e) => e.key === 'Enter' && toggleWidgetSelection(item.id)}
-                  css={[
-                    styles.widgetCardWrapper,
-                    selectedWidgetIds.has(item.id) && styles.widgetCardWrapperSelected,
-                  ]}
-                >
-                  <Card title={item.name} css={styles.widgetCard}>
-                    <div css={styles.widgetCardSelectIndicator}>
-                      {selectedWidgetIds.has(item.id) ? (
-                        <Icon name="check-circle" css={styles.widgetCardSelectIcon} />
-                      ) : (
-                        <span css={styles.widgetCardSelectEmpty} />
-                      )}
-                      <span css={styles.widgetCardSelectLabel}>
-                        {selectedWidgetIds.has(item.id) ? 'Selected' : 'Select'}
-                      </span>
-                    </div>
-                    <p css={styles.widgetCardDescription}>{item.description}</p>
-                    <div css={styles.widgetCardBadges}>
-                      <Badge color={priorityColor(item.priority)}>{item.priority}</Badge>
-                      <Badge color="gray">{item.category}</Badge>
-                    </div>
-                  </Card>
-                </div>
               ))}
-            </Section>
-              <div css={styles.importButtonContainer}>
-                <Button
-                  variant="primary"
-                  size="medium"
-                  onClick={handleImportSelectedToDashboard}
-                  disabled={selectedWidgetIds.size === 0}
-                >
-                  <Icon name="data-transfer" css={styles.importButtonIcon} />
-                  Import to Dashboard {selectedWidgetIds.size > 0 ? `(${selectedWidgetIds.size})` : ''}
-                </Button>
-              </div>
             </>
           )}
         </div>

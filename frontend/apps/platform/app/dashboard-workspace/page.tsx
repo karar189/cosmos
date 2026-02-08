@@ -11,9 +11,12 @@ import {
   type SavedDashboard,
   type WidgetSettings,
   type WidgetType,
+  clearAgenticResponse,
   clearDraft,
   defaultWidgetSettings,
   loadDashboards,
+  makeDraftFromBundle,
+  readAgenticResponse,
   readDraft,
   saveDashboards,
 } from '@/utils/dashboardWorkspace.storage';
@@ -29,6 +32,7 @@ export default function DashboardWorkspacePage() {
   const router = useRouter();
   const search = useSearchParams();
   const dashboardId = search.get('dashboardId');
+  const importParam = search.get('import');
 
   const [dashboardName, setDashboardName] = useState<string>('Untitled dashboard');
   const [widgets, setWidgets] = useState<DashboardWidget[]>([]);
@@ -66,8 +70,8 @@ export default function DashboardWorkspacePage() {
       type: def.type,
       x: 0,
       y: maxBottom + 1,
-      w: 6,
-      h: 10,
+      w: 3,
+      h: 5,
       settings: defaultWidgetSettings(),
     };
 
@@ -78,7 +82,7 @@ export default function DashboardWorkspacePage() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Load existing saved dashboard by id, else load draft from bundle, else empty.
+    // Load existing saved dashboard by id, else load draft from import, else saved agentic response, else empty.
     const saved = loadDashboards();
     if (dashboardId) {
       const found = saved.find((d) => d.id === dashboardId);
@@ -86,6 +90,7 @@ export default function DashboardWorkspacePage() {
         setDashboardName(found.name);
         setWidgets(found.widgets || []);
         setSelectedId(found.widgets?.[0]?.id || null);
+        if (importParam) router.replace('/dashboard-workspace');
         return;
       }
     }
@@ -96,6 +101,20 @@ export default function DashboardWorkspacePage() {
       setWidgets(draft.widgets || []);
       setSelectedId(draft.widgets?.[0]?.id || null);
       clearDraft();
+      if (importParam) router.replace('/dashboard-workspace');
+      return;
+    }
+
+    const agentic = readAgenticResponse();
+    if (agentic?.bundles?.length) {
+      const bundle = agentic.bundles[0];
+      const fromBundle = makeDraftFromBundle(bundle);
+      const name = agentic.businessName ? `${agentic.businessName} · ${bundle.name}` : (fromBundle.name || 'Untitled dashboard');
+      setDashboardName(name);
+      setWidgets(fromBundle.widgets || []);
+      setSelectedId(fromBundle.widgets?.[0]?.id || null);
+      clearAgenticResponse();
+      if (importParam) router.replace('/dashboard-workspace');
       return;
     }
 
@@ -104,7 +123,7 @@ export default function DashboardWorkspacePage() {
     setSelectedId(null);
   }, [dashboardId]);
 
-  const rowHeight = 40;
+  const rowHeight = 32;
   const colWidth = Math.max(48, Math.floor(stageWidth / 12));
 
   useEffect(() => {
@@ -239,7 +258,7 @@ export default function DashboardWorkspacePage() {
                       onResizeStart={() => setSelectedId(w.id)}
                       onResizeStop={(_, __, ref, ___, position) => {
                         const newW = clamp(Math.round(ref.offsetWidth / colWidth), 1, 12);
-                        const newH = clamp(Math.round(ref.offsetHeight / rowHeight), 3, 200);
+                        const newH = clamp(Math.round(ref.offsetHeight / rowHeight), 2, 200);
                         const newX = clamp(Math.round(position.x / colWidth), 0, 12 - newW);
                         const newY = Math.max(0, Math.round(position.y / rowHeight));
                         updateWidget(w.id, { x: newX, y: newY, w: newW, h: newH });
@@ -298,11 +317,11 @@ export default function DashboardWorkspacePage() {
                 {widgets.length === 0 ? (
                   <div>
                     <p css={styles.smallNote}>
-                      No widgets yet. Add one above, or go back to Agentic Builder and pick Lean/Balanced/Comprehensive.
+                      No widgets yet. Add one above, or go to Compliance Maker and build widget combinations (Lean/Balanced/Comprehensive).
                     </p>
-                    <Button variant="secondary" size="small" onClick={() => router.push('/workspace/agentic-builder')}>
+                    <Button variant="secondary" size="small" onClick={() => router.push('/workspace/compliance-maker')}>
                       <Icon name="tools" />
-                      Open Agentic Builder
+                      Open Compliance Maker
                     </Button>
                   </div>
                 ) : (

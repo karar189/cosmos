@@ -29,6 +29,26 @@ export type SavedDashboard = {
 
 export const DASHBOARD_WORKSPACE_DRAFT_KEY = 'cosmops_dashboard_workspace_draft';
 export const MY_DASHBOARDS_KEY = 'cosmops_my_dashboards';
+export const AGENTIC_RESPONSE_KEY = 'cosmops_agentic_response';
+
+export type AgenticBundle = {
+  id: string;
+  name: string;
+  description: string;
+  widgets: Array<{
+    id: string;
+    title: string;
+    type: WidgetType;
+    [key: string]: unknown;
+  }>;
+  [key: string]: unknown;
+};
+
+export type SavedAgenticResponse = {
+  bundles: AgenticBundle[];
+  businessName?: string;
+  savedAt: string;
+};
 
 function safeJsonParse<T>(raw: string | null): T | null {
   if (!raw) return null;
@@ -64,8 +84,8 @@ export function defaultWidgetSettings(): WidgetSettings {
 export function makeDraftFromBundle(bundle: any): SavedDashboard {
   const now = new Date().toISOString();
   const widgets = (bundle?.widgets || []).map((w: any, i: number) => {
-    const col = (i % 2) * 6;
-    const row = Math.floor(i / 2) * 7;
+    const col = (i % 4) * 3;
+    const row = Math.floor(i / 4) * 5;
     return {
       id: `dw-${Date.now()}-${i}`,
       widgetId: String(w.id || `widget-${i}`),
@@ -73,8 +93,8 @@ export function makeDraftFromBundle(bundle: any): SavedDashboard {
       type: (w.type as WidgetType) || 'chart',
       x: col,
       y: row,
-      w: 6,
-      h: 10,
+      w: 3,
+      h: 5,
       settings: defaultWidgetSettings(),
     } satisfies DashboardWidget;
   });
@@ -101,5 +121,20 @@ export function readDraft(): SavedDashboard | null {
 export function clearDraft() {
   if (typeof window === 'undefined') return;
   window.localStorage.removeItem(DASHBOARD_WORKSPACE_DRAFT_KEY);
+}
+
+export function saveAgenticResponse(data: SavedAgenticResponse) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(AGENTIC_RESPONSE_KEY, JSON.stringify({ ...data, savedAt: new Date().toISOString() }));
+}
+
+export function readAgenticResponse(): SavedAgenticResponse | null {
+  if (typeof window === 'undefined') return null;
+  return safeJsonParse<SavedAgenticResponse>(window.localStorage.getItem(AGENTIC_RESPONSE_KEY));
+}
+
+export function clearAgenticResponse() {
+  if (typeof window === 'undefined') return;
+  window.localStorage.removeItem(AGENTIC_RESPONSE_KEY);
 }
 
