@@ -270,6 +270,30 @@
   }
 }
 
+/* DEFFAB colour block at end of hero – overlaps "Made with unicorn.studio" button */
+.heroEndBlock {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: #deffab;
+  z-index: 15;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .heroEndBlock {
+    height: 120px;
+  }
+}
+
+@media (min-width: 768px) {
+  .heroEndBlock {
+    height: 100px;
+  }
+}
+
 /* Waitlist section: full-screen Unicorn embed behind "Join the alpha" */
 .waitlistSection {
   width: 100vw;

@@ -90,6 +90,7 @@ export function LandingPage() {
           </div>
         </div>
         <div className={styles.badgeCover} />
+        <div className={styles.heroEndBlock} aria-hidden />
       </section>
     </>
   );
