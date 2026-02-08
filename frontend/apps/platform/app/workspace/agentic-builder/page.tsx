@@ -138,7 +138,7 @@ export default function AgenticBuilderPage() {
       // When the browser blocks cross-origin requests, fetch often throws "Failed to fetch"
       const friendly =
         raw.toLowerCase().includes('failed to fetch')
-          ? 'Failed to reach the Agentic backend. Make sure the FastAPI server is running and try again.'
+          ? 'Failed to reach the Agentic backend. If you are using Render, the free tier may be sleeping—retry in a few seconds. (Backend URL is configured via COSMOS_AI_URL / NEXT_PUBLIC_COSMOS_AI_URL.)'
           : raw;
       setAgentError(friendly);
     } finally {
