@@ -27,6 +27,7 @@ export const ROUTES = {
     PORTFOLIO: '/workspace/portfolio',
     ALERTS: '/workspace/alerts',
     CASES: '/workspace/cases',
+    MY_DASHBOARDS: '/workspace/my-dashboards',
     AGENTS: '/workspace/agents',
     WORKFLOWS: '/workspace/workflows',
     SETTINGS: '/workspace/settings',

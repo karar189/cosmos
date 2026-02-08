@@ -47,6 +47,45 @@ export const sidebarUtilitySection = css`
   ${spacing.gap.m}
 `;
 
+export const sidebarDashboardsSection = css`
+  ${flex.column}
+  ${spacing.gap.xs}
+  ${spacing.padding.top.m}
+  ${spacing.margin.top.m}
+  border-top: 1px solid ${colors.neutral.gray200};
+`;
+
+export const sectionHeaderRow = css`
+  ${flex.row}
+  ${flex.align.center}
+  ${flex.justify.between}
+  ${spacing.padding.left.s}
+  ${spacing.padding.right.s}
+  ${spacing.padding.bottom.xs}
+`;
+
+export const sectionTitle = css`
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.xs}
+  ${typography.fontWeight.bold}
+  ${coloring.text.variants.secondary.op65}
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+`;
+
+export const viewAllLink = css`
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.xs}
+  ${typography.fontWeight.medium}
+  color: ${colors.semantic.primary};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 /**
  * Sidebar item wrapper
  */
@@ -116,6 +155,18 @@ export const sidebarItemText = css`
   ${typography.letterSpacing.normal}
   ${coloring.text.variants.secondary.op50}
   ${flex.item.grow}
+`;
+
+// My Dashboards items extend base sidebar item styles
+export const dashboardItemWrapper = css`
+  ${sidebarItemWrapper}
+  ${spacing.padding.left.s}
+  ${spacing.padding.right.s}
+`;
+
+export const dashboardItemText = css`
+  ${sidebarItemText}
+  ${coloring.text.variants.secondary.op75}
 `;
 
 /**

@@ -2,8 +2,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, Core3Button as Button, Input, Icon, Badge, Section } from '@core3/ui-components';
 import useTranslation from '@/hooks/useTranslation';
+import { makeDraftFromBundle, writeDraft } from '@/utils/dashboardWorkspace.storage';
 import * as styles from './page.styles';
 
 type AgenticWidgetCategory = 'remittance' | 'fintech' | 'bank' | 'stablecoin' | 'ngo' | 'rwa' | 'custom';
@@ -42,6 +44,7 @@ interface AgenticRecommendationsResponse {
 
 export default function AgenticBuilderPage() {
   useTranslation('workspace');
+  const router = useRouter();
 
   const [agentBusinessName, setAgentBusinessName] = useState<string>('');
   const [agentBusinessDescription, setAgentBusinessDescription] = useState<string>('');
@@ -141,6 +144,14 @@ export default function AgenticBuilderPage() {
     } finally {
       setAgentLoading(false);
     }
+  };
+
+  const handleCustomizeBundle = (bundle: AgenticRecommendationsResponse['bundles'][number]) => {
+    const draft = makeDraftFromBundle(bundle);
+    const base = agentBusinessName.trim() || 'Dashboard';
+    draft.name = `${base} · ${bundle.name}`;
+    writeDraft(draft);
+    router.push('/dashboard-workspace');
   };
 
   return (
@@ -342,6 +353,14 @@ export default function AgenticBuilderPage() {
                       {bundle.totals.roi_percent !== null && (
                         <Badge color="gray">ROI {bundle.totals.roi_percent}%</Badge>
                       )}
+                      <Button
+                        variant="primary"
+                        size="small"
+                        onClick={() => handleCustomizeBundle(bundle)}
+                      >
+                        Customize
+                        <Icon name="data-stack" />
+                      </Button>
                     </div>
                   </div>
 
