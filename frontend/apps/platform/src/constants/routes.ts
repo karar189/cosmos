@@ -34,6 +34,7 @@ export const ROUTES = {
     SUPPORT: '/workspace/support',
     // ArcX Features
     COMPLIANCE_MAKER: '/workspace/compliance-maker',
+    AGENTIC_BUILDER: '/workspace/agentic-builder',
     ROUTING_ENGINE: '/workspace/routing-engine',
     DASHBOARD_BUILDER: '/workspace/dashboard-builder',
   },

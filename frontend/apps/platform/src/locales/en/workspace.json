@@ -8,6 +8,7 @@
     "sidebar": {
       "main": {
         "complianceMaker": "Compliance Maker",
+        "agenticBuilder": "Agentic Builder",
         "routingEngine": "Routing Engine",
         "dashboardBuilder": "Dashboard Builder",
         "dashboard": "Dashboard",

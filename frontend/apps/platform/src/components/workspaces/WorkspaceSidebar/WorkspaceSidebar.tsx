@@ -19,6 +19,7 @@ interface NavItem {
 // Main navigation items - ArcX Features
 const mainNavItems: Omit<NavItem, 'labelKey'>[] = [
   { href: ROUTES.WORKSPACE.COMPLIANCE_MAKER, icon: 'security', disabled: false },
+  { href: ROUTES.WORKSPACE.AGENTIC_BUILDER, icon: 'tools', disabled: false },
   { href: ROUTES.WORKSPACE.ROUTING_ENGINE, icon: 'data-transfer', disabled: false },
   { href: ROUTES.WORKSPACE.DASHBOARD_BUILDER, icon: 'data-stack', disabled: false },
   { href: ROUTES.WORKSPACE.PORTFOLIO, icon: 'lock', disabled: true },
@@ -28,6 +29,7 @@ const mainNavItems: Omit<NavItem, 'labelKey'>[] = [
 
 const mainNavKeys = [
   'workspace.sidebar.main.complianceMaker',
+  'workspace.sidebar.main.agenticBuilder',
   'workspace.sidebar.main.routingEngine',
   'workspace.sidebar.main.dashboardBuilder',
   'workspace.sidebar.main.portfolio',
