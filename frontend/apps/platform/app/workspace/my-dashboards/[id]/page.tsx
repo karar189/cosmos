@@ -1,19 +1,86 @@
 /** @jsxImportSource @emotion/react */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Card, DataValue, Section, Core3Button as Button } from '@core3/ui-components';
-import { loadDashboards, type SavedDashboard, type DashboardWidget } from '@/utils/dashboardWorkspace.storage';
+import {
+  Card,
+  DataList,
+  DataValue,
+  Section,
+  Core3Button as Button,
+  SingleLineChart,
+  formatDateLabel,
+  HeatMap,
+  HeatMapLegend,
+  HeatMapLegendRef,
+  HeatMapRef,
+  type HeatMapPoint,
+} from '@core3/ui-components';
+import type { DataListItemData } from '@core3/ui-components';
+import { loadDashboards, type SavedDashboard } from '@/utils/dashboardWorkspace.storage';
 import TabsSection from '@/components/common/TabsSection/TabsSection';
 import { ProjectOverviewPriceChart, ProjectOverviewPolCategoriesChart } from '@/containers/projects/ProjectOverviewSection';
-import GaugeChart from '@/components/common/Sidebar/ScoreCard/GaugeChart/GaugeChart';
-import DataCoverageIndicator from '@/components/common/Sidebar/ScoreCard/DataCoverageIndicator/DataCoverageIndicator';
 import RiskChangesCard from '@/components/common/Sidebar/ScoreCard/RiskChangesCard/RiskChangesCard';
-import ScoreCardCTA from '@/components/common/Sidebar/ScoreCardCTA/ScoreCardCTA';
+import { GenerateSmartContractModal } from '@/components/common/GenerateSmartContractModal';
 import type { NewsFeed } from '@/types/api/project';
 import * as styles from './page.styles';
 
+const RWA_SMART_CONTRACT_TYPES = [
+  'Tokenization Contract',
+  'Compliance / KYC Contract',
+  'Custody / Escrow Contract',
+  'Governance Contract',
+  'Distribution / Revenue Share Contract',
+] as const;
+
+/** Mock compliance score trend (last 14 days) - like PoL Dynamic in overview */
+function getMockComplianceScoreTrend(): { x: string; value: number }[] {
+  const points: { x: string; value: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    points.push({
+      x: d.toISOString().split('T')[0],
+      value: 5.2 + Math.random() * 1.8 + (13 - i) * 0.04,
+    });
+  }
+  return points;
+}
+
+/** Mock heatmap points (last 28 days) - GitHub-style activity */
+function getMockHeatmapPoints(): HeatMapPoint[] {
+  const points: HeatMapPoint[] = [];
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    points.push({
+      date: d.toISOString().split('T')[0],
+      intensity: Math.floor(Math.random() * 5) * 25,
+    });
+  }
+  return points;
+}
+
+/** Mock line chart data (last 14 days) - for volume / analytics */
+function getMockLineChartData(base = 50, spread = 30): { x: string; value: number }[] {
+  const points: { x: string; value: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    points.push({
+      x: d.toISOString().split('T')[0],
+      value: base + Math.random() * spread,
+    });
+  }
+  return points;
+}
+
+const MOCK_COMPLIANCE_SCORE_TREND = getMockComplianceScoreTrend();
+const MOCK_HEATMAP_POINTS = getMockHeatmapPoints();
+const MOCK_TRANSACTION_VOLUME = getMockLineChartData(80, 40);
+const MOCK_ROUTING_ANALYTICS = getMockLineChartData(60, 35);
+const MOCK_ASSET_DISTRIBUTION = getMockLineChartData(20, 80);
 const MOCK_NEWS_FEED: NewsFeed = {
   topRisks: [
     { date: '2025-11-28', content: 'Missing ISO certification.' },
@@ -39,6 +106,27 @@ export default function DashboardViewPage() {
   const id = typeof params?.id === 'string' ? params.id : '';
   const [dashboard, setDashboard] = useState<SavedDashboard | null>(null);
   const [hash, setHash] = useState<string | null>(null);
+  const heatMapRef = useRef<HeatMapRef>(null);
+  const heatMapLegendRef = useRef<HeatMapLegendRef>(null);
+  const [generateModalOpen, setGenerateModalOpen] = useState(false);
+  const [generateModalContractType, setGenerateModalContractType] = useState('');
+
+  const smartContractsList: DataListItemData[] = RWA_SMART_CONTRACT_TYPES.map((contractType) => ({
+    label: contractType,
+    value: (
+      <Button
+        variant="secondary"
+        size="small"
+        onClick={() => {
+          setGenerateModalContractType(contractType);
+          setGenerateModalOpen(true);
+        }}
+      >
+        Generate
+      </Button>
+    ),
+    checked: false,
+  }));
 
   useEffect(() => {
     const list = loadDashboards();
@@ -139,9 +227,9 @@ export default function DashboardViewPage() {
                       subvalue={{ value: 'Saved from workspace', type: 'secondary' }}
                     />
                   </Card>
-                  <Card>
+                  <Card css={styles.dashboardNameCard}>
                     <DataValue
-                      label="Dashboard"
+                      label=""
                       value={dashboard.name}
                       subvalue={{ value: 'My Dashboards', type: 'secondary' }}
                     />
@@ -155,29 +243,125 @@ export default function DashboardViewPage() {
                 </Section>
               </div>
 
-              {/* Second row: GaugeChart, DataCoverageIndicator, RiskChangesCard (same as overview) */}
-              <div css={styles.secondRowSectionWrapper}>
-                <Section
-                  showHeader={false}
-                  columns={3}
-                  areas={[['gauge', 'coverage', 'risks']]}
-                >
-                  <Card>
-                    <GaugeChart
-                      score={6.62}
-                      rating="AAA"
-                      confidence="EXCEPTIONAL"
-                      change24h={0}
-                    />
-                  </Card>
-                  <Card>
-                    <DataCoverageIndicator percentage={85} />
-                  </Card>
-                  <Card>
-                    <RiskChangesCard data={MOCK_NEWS_FEED} />
-                  </Card>
-                </Section>
+              {/* All catalog cards: visible only when dashboard has that widget (data is being rendered). Overview-relevant first. */}
+              <div css={styles.cardsGridSection}>
+                <div css={styles.cardsGrid}>
+                  {/* Compliance Score Trend (overview: PoL Dynamic) */}
+                  {dashboard.widgets?.some((w) => w.widgetId === 'compliance-score') && (
+                    <Card css={styles.dataCard}>
+                      <div css={styles.chartCardInner}>
+                        <h3 css={styles.chartCardTitle}>Compliance Score Trend</h3>
+                        <SingleLineChart
+                          data={MOCK_COMPLIANCE_SCORE_TREND}
+                          height={160}
+                          xAxisLabelFormatter={formatDateLabel}
+                          xAxisInterval="preserveStartEnd"
+                          margin={{ top: 5, right: 0, left: 0, bottom: 20 }}
+                        />
+                      </div>
+                    </Card>
+                  )}
+                  {/* Risk Heatmap (overview: GitHub activity heatmap) */}
+                  {dashboard.widgets?.some((w) => w.widgetId === 'risk-heatmap') && (
+                    <Card css={styles.dataCard}>
+                      <div css={styles.chartCardInner}>
+                        <h3 css={styles.chartCardTitle}>Risk Heatmap</h3>
+                        <HeatMapLegend
+                          intensities={[0, 25, 50, 75, 100]}
+                          prevLabel="Less"
+                          nextLabel="More"
+                          ref={heatMapLegendRef}
+                          heatMapRef={heatMapRef}
+                        />
+                        <HeatMap
+                          ref={heatMapRef}
+                          points={MOCK_HEATMAP_POINTS}
+                          intensityLevels={[0, 25, 50, 75, 100]}
+                          days={28}
+                          legendRef={heatMapLegendRef}
+                        />
+                      </div>
+                    </Card>
+                  )}
+                  {/* Recent Alerts (overview: RiskChangesCard / Top Risks) */}
+                  {dashboard.widgets?.some((w) => w.widgetId === 'alerts-panel') && (
+                    <Card css={styles.dataCard}>
+                      <RiskChangesCard data={MOCK_NEWS_FEED} />
+                    </Card>
+                  )}
+                  {/* Transaction Volume (overview-style chart) */}
+                  {dashboard.widgets?.some((w) => w.widgetId === 'transaction-volume') && (
+                    <Card css={styles.dataCard}>
+                      <div css={styles.chartCardInner}>
+                        <h3 css={styles.chartCardTitle}>Transaction Volume</h3>
+                        <SingleLineChart
+                          data={MOCK_TRANSACTION_VOLUME}
+                          height={160}
+                          xAxisLabelFormatter={formatDateLabel}
+                          xAxisInterval="preserveStartEnd"
+                          margin={{ top: 5, right: 0, left: 0, bottom: 20 }}
+                        />
+                      </div>
+                    </Card>
+                  )}
+                  {/* Asset Distribution (overview-style metric/chart) */}
+                  {dashboard.widgets?.some((w) => w.widgetId === 'asset-distribution') && (
+                    <Card css={styles.dataCard}>
+                      <div css={styles.chartCardInner}>
+                        <h3 css={styles.chartCardTitle}>Asset Distribution</h3>
+                        <SingleLineChart
+                          data={MOCK_ASSET_DISTRIBUTION}
+                          height={160}
+                          xAxisLabelFormatter={formatDateLabel}
+                          xAxisInterval="preserveStartEnd"
+                          margin={{ top: 5, right: 0, left: 0, bottom: 20 }}
+                        />
+                      </div>
+                    </Card>
+                  )}
+                  {/* Routing Analytics (overview-style chart) */}
+                  {dashboard.widgets?.some((w) => w.widgetId === 'routing-analytics') && (
+                    <Card css={styles.dataCard}>
+                      <div css={styles.chartCardInner}>
+                        <h3 css={styles.chartCardTitle}>Routing Analytics</h3>
+                        <SingleLineChart
+                          data={MOCK_ROUTING_ANALYTICS}
+                          height={160}
+                          xAxisLabelFormatter={formatDateLabel}
+                          xAxisInterval="preserveStartEnd"
+                          margin={{ top: 5, right: 0, left: 0, bottom: 20 }}
+                        />
+                      </div>
+                    </Card>
+                  )}
+                  {/* Active Routes (overview-style DataValue metric) */}
+                  {dashboard.widgets?.some((w) => w.widgetId === 'active-routes') && (
+                    <Card css={styles.dataCard}>
+                      <DataValue
+                        label="Active Routes"
+                        value="12"
+                        subvalue={{ value: 'routes in last 24h', type: 'secondary' }}
+                      />
+                    </Card>
+                  )}
+                  {/* Active Compliance Blocks (overview-style DataValue metric) */}
+                  {dashboard.widgets?.some((w) => w.widgetId === 'compliance-blocks') && (
+                    <Card css={styles.dataCard}>
+                      <DataValue
+                        label="Active Compliance Blocks"
+                        value="8"
+                        subvalue={{ value: 'blocks in workspace', type: 'secondary' }}
+                      />
+                    </Card>
+                  )}
+                </div>
               </div>
+
+              {/* Smart Contracts for RWAs (mandatory section, Documentation-style) */}
+              <Card css={styles.smartContractsCard}>
+                <h3 css={styles.smartContractsTitle}>Smart Contracts for RWAs</h3>
+                <DataList items={smartContractsList} />
+              </Card>
 
               {/* Edit in Workspace CTA (same style as project "Do you own this project?") */}
               <div css={styles.improveScoreContainer}>
@@ -186,28 +370,6 @@ export default function DashboardViewPage() {
                   Edit in Workspace
                 </Button>
               </div>
-
-              {/* Saved dashboard widgets as cards */}
-              {(dashboard.widgets ?? []).length > 0 && (
-                <div css={styles.overviewGrid}>
-                  {(dashboard.widgets ?? []).map((w: DashboardWidget) => (
-                    <Card key={w.id} css={styles.widgetCard}>
-                      <div>
-                        <h3 css={styles.widgetCardTitle}>{w.title}</h3>
-                        <p css={styles.widgetCardType}>{w.type}</p>
-                      </div>
-                      <div css={styles.widgetCardBody}>
-                        <span css={styles.widgetPlaceholder}>
-                          {w.type === 'chart' && 'Chart placeholder'}
-                          {w.type === 'metric' && 'Metric placeholder'}
-                          {w.type === 'table' && 'Table placeholder'}
-                          {w.type === 'alert' && 'Alert placeholder'}
-                        </span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 24 }}>
                 <Button variant="secondary" size="small" onClick={() => router.push('/workspace/my-dashboards')}>
@@ -220,6 +382,12 @@ export default function DashboardViewPage() {
           )
         )}
       </div>
+
+      <GenerateSmartContractModal
+        open={generateModalOpen}
+        onClose={() => setGenerateModalOpen(false)}
+        contractType={generateModalContractType}
+      />
     </div>
   );
 }

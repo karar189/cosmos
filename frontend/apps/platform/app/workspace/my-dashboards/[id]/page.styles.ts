@@ -58,8 +58,60 @@ export const overviewSectionWrapper = css`
   ${spacing.margin.bottom.l}
 `;
 
+export const dashboardNameCard = css`
+  ${spacing.padding.top.xxl}
+`;
+
 export const secondRowSectionWrapper = css`
   ${spacing.margin.bottom.l}
+`;
+
+export const cardsGridSection = css`
+  ${spacing.margin.bottom.l}
+`;
+
+export const cardsGrid = css`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-content: start;
+
+  /* Single column only on narrow viewports (below 600px) */
+  @media (max-width: 599px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const dataCard = css`
+  ${flex.column}
+  min-height: 120px;
+`;
+
+export const chartCardInner = css`
+  ${flex.column}
+  ${spacing.gap.s}
+  ${spacing.padding.m}
+`;
+
+export const chartCardTitle = css`
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.base}
+  ${typography.fontWeight.semibold}
+  ${coloring.text.primary}
+  margin: 0;
+`;
+
+export const smartContractsCard = css`
+  ${flex.column}
+  ${spacing.margin.bottom.l}
+`;
+
+export const smartContractsTitle = css`
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.base}
+  ${typography.fontWeight.bold}
+  ${coloring.text.primary}
+  margin: 0 0 ${spacingValues.s} 0;
 `;
 
 export const improveScoreContainer = css`
