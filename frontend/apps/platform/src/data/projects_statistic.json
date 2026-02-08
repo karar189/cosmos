@@ -147,6 +147,149 @@
       {
         "rank": 1,
         "project": {
+          "id": "5",
+          "name": "Stellar",
+          "ticker": "XLM",
+          "logo": "https://coin-images.coingecko.com/coins/images/100/large/fmpFRHHQ_400x400.jpg?1735231350",
+          "category": "Layer 1"
+        },
+        "chains": [
+          {
+            "name": "Stellar"
+          }
+        ],
+        "compliance": [
+          "Verified Contracts",
+          "BugBounty"
+        ],
+        "certification": {
+          "level": "Absent"
+        },
+        "pol": {
+          "score": 36.22,
+          "grade": "B"
+        },
+        "dataCoverage": {
+          "percentage": 85
+        }
+      },
+      {
+        "rank": 2,
+        "project": {
+          "id": "29",
+          "name": "PayPal USD",
+          "ticker": "PYUSD",
+          "logo": "https://coin-images.coingecko.com/coins/images/31212/large/PYUSD_Token_Logo_2x.png?1765987788",
+          "category": "Stablecoin"
+        },
+        "chains": [
+          {
+            "name": "Stellar"
+          }
+        ],
+        "compliance": [
+          "Verified Contracts",
+          "BugBounty"
+        ],
+        "certification": {
+          "level": "Absent"
+        },
+        "pol": {
+          "score": 40.64,
+          "grade": "B"
+        },
+        "dataCoverage": {
+          "percentage": 85
+        }
+      },
+      {
+        "rank": 3,
+        "project": {
+          "id": "11",
+          "name": "EURC",
+          "ticker": "EURC",
+          "logo": "https://coin-images.coingecko.com/coins/images/26045/large/EURC.png?1769615705",
+          "category": "Stablecoin"
+        },
+        "chains": [
+          {
+            "name": "Stellar"
+          }
+        ],
+        "compliance": [
+          "Audited"
+        ],
+        "certification": {
+          "level": "Absent"
+        },
+        "pol": {
+          "score": 42.61,
+          "grade": "CCC"
+        },
+        "dataCoverage": {
+          "percentage": 85
+        }
+      },
+      {
+        "rank": 4,
+        "project": {
+          "id": "13",
+          "name": "Aquarius",
+          "ticker": "AQUA",
+          "logo": "https://coin-images.coingecko.com/coins/images/20026/large/aqua-logo.png?1696519446",
+          "category": "DeFi"
+        },
+        "chains": [
+          {
+            "name": "Stellar"
+          }
+        ],
+        "compliance": [
+          "Audited"
+        ],
+        "certification": {
+          "level": "Absent"
+        },
+        "pol": {
+          "score": 42.65,
+          "grade": "CCC"
+        },
+        "dataCoverage": {
+          "percentage": 85
+        }
+      },
+      {
+        "rank": 5,
+        "project": {
+          "id": "41",
+          "name": "Velo",
+          "ticker": "VELO",
+          "logo": "https://coin-images.coingecko.com/coins/images/12538/large/Logo_200x_200.png",
+          "category": "Payments"
+        },
+        "chains": [
+          {
+            "name": "Stellar"
+          }
+        ],
+        "compliance": [
+          "Verified Contracts",
+          "BugBounty"
+        ],
+        "certification": {
+          "level": "Absent"
+        },
+        "pol": {
+          "score": 39.82,
+          "grade": "B"
+        },
+        "dataCoverage": {
+          "percentage": 85
+        }
+      },
+      {
+        "rank": 6,
+        "project": {
           "id": "3",
           "name": "Ethereum",
           "ticker": "ETH",
@@ -169,7 +312,7 @@
         }
       },
       {
-        "rank": 2,
+        "rank": 7,
         "project": {
           "id": "21",
           "name": "Chainlink",
@@ -433,7 +576,7 @@
         }
       },
       {
-        "rank": 3,
+        "rank": 8,
         "project": {
           "id": "7",
           "name": "Uniswap",
@@ -498,7 +641,7 @@
         }
       },
       {
-        "rank": 4,
+        "rank": 9,
         "project": {
           "id": "48",
           "name": "AAVE",
@@ -566,7 +709,7 @@
         }
       },
       {
-        "rank": 5,
+        "rank": 10,
         "project": {
           "id": "20",
           "name": "LayerZero",
@@ -606,149 +749,6 @@
         "pol": {
           "score": 29.24,
           "grade": "BBB"
-        },
-        "dataCoverage": {
-          "percentage": 85
-        }
-      },
-      {
-        "rank": 6,
-        "project": {
-          "id": "5",
-          "name": "Stellar",
-          "ticker": "XLM",
-          "logo": "https://coin-images.coingecko.com/coins/images/100/large/fmpFRHHQ_400x400.jpg?1735231350",
-          "category": "Layer 1"
-        },
-        "chains": [
-          {
-            "name": "Stellar"
-          }
-        ],
-        "compliance": [
-          "Verified Contracts",
-          "BugBounty"
-        ],
-        "certification": {
-          "level": "Absent"
-        },
-        "pol": {
-          "score": 36.22,
-          "grade": "B"
-        },
-        "dataCoverage": {
-          "percentage": 85
-        }
-      },
-      {
-        "rank": 11,
-        "project": {
-          "id": "29",
-          "name": "PayPal USD",
-          "ticker": "PYUSD",
-          "logo": "https://coin-images.coingecko.com/coins/images/31212/large/PYUSD_Token_Logo_2x.png?1765987788",
-          "category": "Stablecoin"
-        },
-        "chains": [
-          {
-            "name": "Stellar"
-          }
-        ],
-        "compliance": [
-          "Verified Contracts",
-          "BugBounty"
-        ],
-        "certification": {
-          "level": "Absent"
-        },
-        "pol": {
-          "score": 40.64,
-          "grade": "B"
-        },
-        "dataCoverage": {
-          "percentage": 85
-        }
-      },
-      {
-        "rank": 15,
-        "project": {
-          "id": "11",
-          "name": "EURC",
-          "ticker": "EURC",
-          "logo": "https://coin-images.coingecko.com/coins/images/26045/large/EURC.png?1769615705",
-          "category": "Stablecoin"
-        },
-        "chains": [
-          {
-            "name": "Stellar"
-          }
-        ],
-        "compliance": [
-          "Audited"
-        ],
-        "certification": {
-          "level": "Absent"
-        },
-        "pol": {
-          "score": 42.61,
-          "grade": "CCC"
-        },
-        "dataCoverage": {
-          "percentage": 85
-        }
-      },
-      {
-        "rank": 16,
-        "project": {
-          "id": "13",
-          "name": "Aquarius",
-          "ticker": "AQUA",
-          "logo": "https://coin-images.coingecko.com/coins/images/20026/large/aqua-logo.png?1696519446",
-          "category": "DeFi"
-        },
-        "chains": [
-          {
-            "name": "Stellar"
-          }
-        ],
-        "compliance": [
-          "Audited"
-        ],
-        "certification": {
-          "level": "Absent"
-        },
-        "pol": {
-          "score": 42.65,
-          "grade": "CCC"
-        },
-        "dataCoverage": {
-          "percentage": 85
-        }
-      },
-      {
-        "rank": 12,
-        "project": {
-          "id": "41",
-          "name": "Velo",
-          "ticker": "VELO",
-          "logo": "https://coin-images.coingecko.com/coins/images/12538/large/Logo_200x_200.png",
-          "category": "Payments"
-        },
-        "chains": [
-          {
-            "name": "Stellar"
-          }
-        ],
-        "compliance": [
-          "Verified Contracts",
-          "BugBounty"
-        ],
-        "certification": {
-          "level": "Absent"
-        },
-        "pol": {
-          "score": 39.82,
-          "grade": "B"
         },
         "dataCoverage": {
           "percentage": 85
