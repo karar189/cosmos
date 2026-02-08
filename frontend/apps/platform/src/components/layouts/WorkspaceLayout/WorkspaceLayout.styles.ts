@@ -33,7 +33,7 @@ export const workspaceGrid = css`
 
 
 /**
- * Main content area
+ * Main content area - scrollable so long content (e.g. dashboard overview) scrolls correctly
  */
 export const mainContent = css`
   ${flex.column}
@@ -42,6 +42,8 @@ export const mainContent = css`
   ${coloring.background.project}
   ${size.width.full}
   ${size.minHeight.screen}
+  min-height: 0; /* allow flex child to shrink so overflow-y works */
+  overflow-y: auto; /* scroll inside main content so overview doesn't get stuck */
   ${spacing.gap.l}
   ${position.relative}
   

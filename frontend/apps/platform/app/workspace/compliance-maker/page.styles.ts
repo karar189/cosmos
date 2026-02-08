@@ -26,10 +26,18 @@ export const pageContainer = css`
 
 export const pageSectionHeader = css`
   ${flex.row}
-  ${flex.align.flexStart}
+  ${flex.align.center}
+  ${flex.justify.between}
   ${spacing.gap.m}
   ${spacing.padding.bottom.m}
   ${borders.bottom.gray200}
+  flex-wrap: wrap;
+`;
+
+export const pageSectionHeaderActions = css`
+  ${flex.row}
+  ${flex.align.center}
+  ${spacing.gap.s}
 `;
 
 export const pageSectionTitle = css`
@@ -48,11 +56,15 @@ export const sectionDescription = css`
   margin: 0;
 `;
 
-// ===== Two Column Layout (40% / 60%) =====
+// ===== Two Column Layout (30% form / 70% results) =====
 export const twoColumnLayout = css`
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 24px;
   align-items: flex-start;
+  width: 100%;
+  min-width: 0;
   
   @media (max-width: 640px) {
     flex-direction: column;
@@ -62,24 +74,33 @@ export const twoColumnLayout = css`
 export const leftColumn = css`
   ${flex.column}
   ${spacing.gap.l}
-  width: 40%;
+  flex: 0 0 30%;
+  width: 30%;
+  max-width: 30%;
   min-width: 0;
   position: sticky;
   top: 16px;
+  overflow: hidden;
+  box-sizing: border-box;
   
   @media (max-width: 640px) {
+    flex: 1 1 auto;
     width: 100%;
+    max-width: 100%;
     position: static;
+    overflow: visible;
   }
 `;
 
 export const rightColumn = css`
   ${flex.column}
   ${spacing.gap.l}
-  width: 60%;
+  flex: 1 1 0;
   min-width: 0;
+  box-sizing: border-box;
   
   @media (max-width: 640px) {
+    flex: 1 1 auto;
     width: 100%;
   }
 `;
@@ -133,22 +154,23 @@ export const required = css`
 export const textarea = css`
   ${size.width.full}
   ${spacing.padding.s}
-  ${borders.radius.md}
+  ${borders.radius.lg}
   border: 1px solid rgba(0, 0, 0, 0.12);
-  ${coloring.background.paper}
+  background: #ffffff;
   ${typography.fontFamily.primary}
   ${typography.fontSize.sm}
   ${coloring.text.primary}
   resize: vertical;
   min-height: 72px;
   box-sizing: border-box;
-  
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
   &:focus {
     outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    border-color: rgba(0, 0, 0, 0.24);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
   }
-  
+
   &::placeholder {
     ${coloring.text.variants.secondary.op65}
   }
@@ -509,4 +531,167 @@ export const emptyStateSubtext = css`
   ${coloring.text.variants.secondary.op65}
   margin: 0;
   max-width: 320px;
+`;
+
+// ===== Agentic (Business & Metrics + widget bundles) =====
+export const agenticSection = css`
+  ${flex.column}
+  ${size.width.full}
+  max-width: 100%;
+  min-width: 0;
+  ${spacing.padding.m}
+  ${borders.radius.md}
+  ${borders.bottom.gray200}
+  padding-bottom: 24px;
+  box-sizing: border-box;
+`;
+
+export const agenticSectionTitle = css`
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.xl}
+  ${typography.fontWeight.semibold}
+  ${coloring.text.primary}
+  margin: 0;
+  ${spacing.margin.bottom.xs}
+`;
+
+export const agenticSectionDescription = css`
+  ${typography.fontFamily.display}
+  ${typography.fontSize.sm}
+  ${coloring.text.variants.secondary.op75}
+  margin: 0;
+  ${spacing.margin.bottom.m}
+`;
+
+export const agenticFormGrid = css`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+`;
+
+export const agenticFullWidth = css`
+  grid-column: 1 / -1;
+`;
+
+export const hintSuggestions = css`
+  ${flex.row}
+  ${flex.wrap.wrap}
+  ${spacing.gap.xs}
+  ${spacing.margin.top.xs}
+`;
+
+export const hintSuggestionButton = css`
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: ${coloring.background.paper};
+  ${borders.radius.full}
+  padding: 6px 10px;
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.xs}
+  ${coloring.text.variants.secondary.op75}
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    border-color: rgba(99, 102, 241, 0.45);
+    background: rgba(99, 102, 241, 0.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.35);
+    outline-offset: 2px;
+  }
+`;
+
+export const agenticError = css`
+  ${typography.fontSize.sm}
+  color: #b91c1c;
+  margin: 0;
+  ${spacing.margin.top.s}
+`;
+
+export const agenticActionsRow = css`
+  ${flex.row}
+  ${flex.align.center}
+  ${flex.justify.flexEnd}
+  ${spacing.gap.s}
+  ${spacing.margin.top.m}
+  ${borders.top.gray200}
+  ${spacing.padding.top.m}
+`;
+
+// Bundle cards (right panel)
+export const bundleCard = css`
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+`;
+
+export const bundleHeader = css`
+  ${flex.row}
+  ${flex.align.flexStart}
+  ${flex.justify.between}
+  ${spacing.gap.s}
+  ${spacing.margin.bottom.s}
+  flex-wrap: wrap;
+`;
+
+export const bundleTitle = css`
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.lg}
+  ${typography.fontWeight.bold}
+  ${coloring.text.primary}
+  margin: 0;
+`;
+
+export const bundleTotals = css`
+  ${flex.row}
+  ${flex.align.center}
+  ${spacing.gap.xs}
+  ${flex.wrap.wrap}
+`;
+
+export const widgetList = css`
+  ${flex.column}
+  ${spacing.gap.s}
+  ${spacing.margin.top.s}
+`;
+
+export const widgetRow = css`
+  ${flex.column}
+  ${spacing.gap.xs}
+  ${spacing.padding.s}
+  ${borders.radius.md}
+  ${coloring.background.neutral}
+`;
+
+export const widgetRowTop = css`
+  ${flex.row}
+  ${flex.align.center}
+  ${flex.justify.between}
+  ${spacing.gap.s}
+  flex-wrap: wrap;
+`;
+
+export const widgetName = css`
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.sm}
+  ${typography.fontWeight.semibold}
+  ${coloring.text.primary}
+  margin: 0;
+`;
+
+export const widgetWhy = css`
+  ${typography.fontFamily.display}
+  ${typography.fontSize.sm}
+  ${coloring.text.variants.secondary.op75}
+  margin: 0;
+  line-height: 1.5;
+`;
+
+export const widgetBadges = css`
+  ${flex.row}
+  ${flex.align.center}
+  ${spacing.gap.xs}
+  ${flex.wrap.wrap}
 `;

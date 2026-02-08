@@ -38,6 +38,7 @@ export const ROUTES = {
     AGENTIC_BUILDER: '/workspace/agentic-builder',
     ROUTING_ENGINE: '/workspace/routing-engine',
     DASHBOARD_BUILDER: '/workspace/dashboard-builder',
+    DASHBOARD_WORKSPACE: '/dashboard-workspace',
   },
   external: {
     methodology: 'https://docs.google.com/spreadsheets/d/1WBOJxJn3QAIgceR-vJtgFDO4A8kj4cj1uJZJaqw-qOY/edit?gid=0#gid=0',

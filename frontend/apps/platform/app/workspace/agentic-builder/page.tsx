@@ -1,66 +1,21 @@
-/** @jsxImportSource @emotion/react */
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, Core3Button as Button, Input, Icon, Badge, Section } from '@core3/ui-components';
-import useTranslation from '@/hooks/useTranslation';
-import { makeDraftFromBundle, writeDraft } from '@/utils/dashboardWorkspace.storage';
-import * as styles from './page.styles';
+import { ROUTES } from '@/constants/routes';
 
-type AgenticWidgetCategory = 'remittance' | 'fintech' | 'bank' | 'stablecoin' | 'ngo' | 'rwa' | 'custom';
-
-interface AgenticRecommendationsResponse {
-  source: 'openai' | 'heuristic';
-  business_profile: {
-    inferred_categories: AgenticWidgetCategory[];
-    confidence: number;
-    rationale: string;
-    assumptions: string[];
-  };
-  bundles: Array<{
-    id: string;
-    name: string;
-    description: string;
-    widgets: Array<{
-      id: string;
-      title: string;
-      category: AgenticWidgetCategory;
-      type: 'chart' | 'metric' | 'table' | 'alert';
-      why: string;
-      impact: {
-        time_saved_hours_per_month: number;
-        cost_savings_usd_per_month: number;
-      };
-    }>;
-    totals: {
-      time_saved_hours_per_month: number;
-      cost_savings_usd_per_month: number;
-      roi_percent: number | null;
-    };
-  }>;
-  notes: string[];
-}
-
-export default function AgenticBuilderPage() {
-  useTranslation('workspace');
+/**
+ * Agentic Builder is merged into Compliance Maker.
+ * Redirect legacy /workspace/agentic-builder to Compliance Maker.
+ */
+export default function AgenticBuilderRedirect() {
   const router = useRouter();
 
-  const [agentBusinessName, setAgentBusinessName] = useState<string>('');
-  const [agentBusinessDescription, setAgentBusinessDescription] = useState<string>('');
-  const [agentBusinessTypeHint, setAgentBusinessTypeHint] = useState<string>('');
-  const [agentGeographies, setAgentGeographies] = useState<string>('');
-  const [agentProducts, setAgentProducts] = useState<string>('');
-  const [agentMonthlyTransactions, setAgentMonthlyTransactions] = useState<string>('');
-  const [agentAvgTxnValue, setAgentAvgTxnValue] = useState<string>('');
-  const [agentOpsRate, setAgentOpsRate] = useState<string>('65');
-  const [agentComplianceRate, setAgentComplianceRate] = useState<string>('85');
-  const [agentPlatformCost, setAgentPlatformCost] = useState<string>('');
-  const [agentConstraints, setAgentConstraints] = useState<string>('');
-  const [agentLoading, setAgentLoading] = useState<boolean>(false);
-  const [agentError, setAgentError] = useState<string>('');
-  const [agentResponse, setAgentResponse] = useState<AgenticRecommendationsResponse | null>(null);
+  useEffect(() => {
+    router.replace(ROUTES.WORKSPACE.COMPLIANCE_MAKER);
+  }, [router]);
 
+<<<<<<< Updated upstream
   const businessTypeHintPresets = [
     'Remittance company',
     'Fintech payments',
@@ -388,5 +343,7 @@ export default function AgenticBuilderPage() {
       </Section>
     </div>
   );
+=======
+  return null;
+>>>>>>> Stashed changes
 }
-

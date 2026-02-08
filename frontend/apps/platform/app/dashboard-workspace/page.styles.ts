@@ -147,7 +147,9 @@ export const canvasScroll = css`
   width: 100%;
   height: 920px;
   min-height: 720px;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 
   @media (max-width: 1080px) {
     height: 760px;
@@ -157,14 +159,15 @@ export const canvasScroll = css`
 export const canvasStage = css`
   position: relative;
   width: 100%;
-  min-height: 1600px; /* bigger whiteboard */
+  min-width: 1600px; /* ensures horizontal scroll when viewport is narrower */
+  min-height: 1600px; /* bigger whiteboard, vertical scroll */
   padding: 8px;
   border: 1px solid ${colors.neutral.gray200};
   border-radius: 12px;
   background:
     linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px);
-  background-size: calc(100% / 12) 40px;
+  background-size: calc(100% / 12) 32px;
   background-position: 8px 8px;
 `;
 
