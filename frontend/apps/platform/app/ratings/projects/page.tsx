@@ -60,8 +60,7 @@ export default function ProjectRatingsPage() {
         titleSectionContent={
           <>
             <h1 css={styles.pageTitle}>
-              <strong>{t('projects.title.explore', 'explore')}</strong>{' '}
-              {t('projects.title.rest', '1,000+ projects.')}
+              <strong>{t('projects.title.explore', 'explore')}</strong>
             </h1>
             <div css={styles.listWrapper}>
               <ProjectsPolCard
