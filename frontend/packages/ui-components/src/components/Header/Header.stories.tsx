@@ -310,7 +310,7 @@ export const WithSearch: Story = {
   args: {
     logoSrc: '/images/core3-logo.svg',
     menuItems: [
-      { name: 'Projects', href: '/projects' },
+      { name: 'Exchange Ratings', href: '/projects' },
       { name: 'Exchanges', href: '/exchanges' },
     ],
     searchComponent: (
@@ -340,7 +340,7 @@ export const WithSearch: Story = {
     await userEvent.type(searchInput, 'test query');
     expect(searchInput).toHaveValue('test query');
 
-    expect(canvas.getByText('Projects')).toBeInTheDocument();
+    expect(canvas.getByText('Exchange Ratings')).toBeInTheDocument();
     expect(canvas.getByText('Exchanges')).toBeInTheDocument();
   },
 };
@@ -356,7 +356,7 @@ export const ManyMenuItems: Story = {
     logoSrc: '/images/core3-logo.svg',
     menuItems: [
       { name: 'Home', href: '/' },
-      { name: 'Projects', href: '/projects' },
+      { name: 'Exchange Ratings', href: '/projects' },
       { name: 'Exchanges', href: '/exchanges' },
       { name: 'Methodology', href: '/methodology' },
       { name: 'Research', href: '/research' },
@@ -370,7 +370,7 @@ export const ManyMenuItems: Story = {
     const canvas = within(canvasElement);
 
     expect(canvas.getByText('Home')).toBeInTheDocument();
-    expect(canvas.getByText('Projects')).toBeInTheDocument();
+    expect(canvas.getByText('Exchange Ratings')).toBeInTheDocument();
     expect(canvas.getByText('Exchanges')).toBeInTheDocument();
     expect(canvas.getByText('Methodology')).toBeInTheDocument();
     expect(canvas.getByText('Research')).toBeInTheDocument();

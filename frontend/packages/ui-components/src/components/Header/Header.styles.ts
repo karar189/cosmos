@@ -34,7 +34,7 @@ export const header = css`
 export const headerSticky = css`
   ${position.sticky}
   ${position.top.zero}
-  background: ${colors.background.paper};
+  background: #fff;
 `;
 
 export const container = css`
@@ -54,29 +54,29 @@ export const leftSection = css`
 export const leftSectionUnauthenticated = css`
   ${flex.row}
   ${flex.align.center}
-  ${spacing.gap.l}
+  ${spacing.gap.m}
   flex-shrink: 0;
-  ${breakpoints.md} {
-    ${spacing.gap.l}
-  }
 `;
 
 export const logoContainer = css`
   ${flex.row}
   ${flex.align.center}
   flex-shrink: 0;
-  ${size.width.custom('220px')}
+  width: auto;
+  max-width: 160px;
   ${size.height.custom('20px')}
   
   ${breakpoints.md} {
-    ${size.width.custom('320px')}
+    max-width: 200px;
     ${size.height.custom('24px')}
   }
   
   img {
-    ${size.width.full}
-    ${size.height.full}
+    width: auto;
+    height: 100%;
+    max-width: 100%;
     object-fit: contain;
+    object-position: left center;
   }
 `;
 

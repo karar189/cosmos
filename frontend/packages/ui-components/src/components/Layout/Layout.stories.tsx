@@ -93,7 +93,7 @@ const SampleContent = () => (
       <Card>
         <DataList
           items={[
-            { label: 'Total Projects', value: '1,234' },
+            { label: 'Total Exchange Ratings', value: '1,234' },
             { label: 'Active Users', value: '50K+' },
           ]}
         />
@@ -381,7 +381,7 @@ export const TitleOnly: Story = {
     headerProps: {
       logoSrc: '/images/core3-logo.svg',
       menuItems: [
-        { name: 'Projects', href: '/projects' },
+        { name: 'Exchange Ratings', href: '/projects' },
         { name: 'Exchanges', href: '/exchanges', active: true },
       ],
     },
@@ -400,7 +400,7 @@ export const TitleOnly: Story = {
     const header = canvasElement.querySelector('header');
     expect(header).toBeInTheDocument();
     const headerCanvas = within(header!);
-    expect(headerCanvas.getByText('Projects')).toBeInTheDocument();
+    expect(headerCanvas.getByText('Exchange Ratings')).toBeInTheDocument();
     expect(headerCanvas.getByText('Exchanges')).toBeInTheDocument();
 
     const h1 = canvasElement.querySelector('h1');
@@ -531,7 +531,7 @@ export const StickyHeader: Story = {
       logoSrc: '/images/core3-logo.svg',
       menuItems: [
         { name: 'Dashboard', href: '/dashboard', active: true },
-        { name: 'Projects', href: '/projects' },
+        { name: 'Exchange Ratings', href: '/projects' },
         { name: 'Exchanges', href: '/exchanges' },
       ],
       ctaText: 'Sign In',
@@ -571,7 +571,7 @@ export const StickyHeader: Story = {
 
     const headerCanvas = within(header!);
     expect(headerCanvas.getByText('Dashboard')).toBeInTheDocument();
-    expect(headerCanvas.getByText('Projects')).toBeInTheDocument();
+    expect(headerCanvas.getByText('Exchange Ratings')).toBeInTheDocument();
     expect(headerCanvas.getByText('Exchanges')).toBeInTheDocument();
     expect(headerCanvas.getByText('Sign In')).toBeInTheDocument();
 
