@@ -93,10 +93,12 @@ export default function Footer({
   logoAlt = 'Footer logo',
   tagline,
 }: FooterProps) {
+  const isCompact = menuItems.length === 0 && socialItems.length === 0 && !logoSrc;
+
   return (
-    <footer css={styles.footer}>
+    <footer css={isCompact ? styles.footerCompact : styles.footer}>
       {/* Tagline/Branding Text */}
-      {tagline && <div css={styles.footerText}>{tagline}</div>}
+      {tagline && <div css={isCompact ? styles.footerTextCompact : styles.footerText}>{tagline}</div>}
 
       {/* Links Section */}
       {(menuItems.length > 0 || socialItems.length > 0) && (

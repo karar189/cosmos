@@ -24,6 +24,19 @@ export const footer = css`
   }
 `;
 
+export const footerCompact = css`
+  ${position.relative}
+  background: ${colors.text.primary};
+  ${position.zIndex.dropdown}
+
+  /* Tiny footer: smaller than header, still with breathing room */
+  padding: 10px 16px;
+
+  ${breakpoints.md} {
+    padding: 10px 24px;
+  }
+`;
+
 export const footerText = css`
   color: ${colors.semantic.warning};
   ${typography.fontWeight.medium}
@@ -33,6 +46,20 @@ export const footerText = css`
   span {
     color: ${colors.semantic.success};
   }
+`;
+
+export const footerTextCompact = css`
+  color: ${colors.semantic.warning};
+  ${typography.fontFamily.mono}
+  ${typography.fontWeight.medium}
+  ${typography.textAlign.center}
+
+  /* Really small */
+  ${typography.fontSize.xs}
+  line-height: 1.1;
+
+  /* Extra padding above/below the text (as requested) */
+  padding: 6px 0;
 `;
 
 export const links = css`

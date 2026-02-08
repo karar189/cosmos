@@ -62,11 +62,8 @@ const getDefaultHeaderProps = (_openCooperationModal: () => void): HeaderProps =
 // Default footer configuration builder (without tagline - added in component)
 // No CORE.3 bottom image, no social links, no Methodology/Cooperation
 const getDefaultFooterPropsBase = (_openCooperationModal: () => void): Omit<FooterProps, 'tagline'> => ({
-  menuItems: [
-    { name: 'Dashboard', href: ROUTES.WORKSPACE.ROOT },
-    { name: 'Project Ratings', href: ROUTES.RATINGS.PROJECTS },
-    { name: 'Exchange Ratings', href: ROUTES.RATINGS.EXCHANGES },
-  ],
+  // Keep the footer minimal (no big multi-column link sections)
+  menuItems: [],
   socialItems: [],
 });
 
@@ -291,15 +288,8 @@ export default function PlatformLayout({
     return null;
   };
 
-  // Create footer tagline with translations
-  const footerTagline = (
-    <>
-      {t('common:footer.tagline.line1')} <br />
-      {t('common:footer.tagline.line2')} <br />
-      {t('common:footer.tagline.line3')} <br />
-      <span>{t('common:footer.tagline.line4')}</span>
-    </>
-  );
+  // Minimal footer tagline (single line)
+  const footerTagline = <span>© Built on Stellar by Team Arcgenesis</span>;
 
   // Build More dropdown for authenticated header
   const moreMenuTrigger = (
