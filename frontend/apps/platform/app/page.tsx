@@ -1,6 +1,11 @@
+import { PlatformLayout } from '@/components';
 import { LandingPageClient } from '@/components/landing';
 
 export default function RootPage() {
-  return <LandingPageClient />;
+  return (
+    <PlatformLayout>
+      <LandingPageClient />
+    </PlatformLayout>
+  );
 }
 

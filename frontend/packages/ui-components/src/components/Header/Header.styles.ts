@@ -54,10 +54,10 @@ export const leftSection = css`
 export const leftSectionUnauthenticated = css`
   ${flex.row}
   ${flex.align.center}
-  ${spacing.gap.xxl}
+  ${spacing.gap.l}
   flex-shrink: 0;
   ${breakpoints.md} {
-    ${spacing.gap.xxl}
+    ${spacing.gap.l}
   }
 `;
 
@@ -65,12 +65,12 @@ export const logoContainer = css`
   ${flex.row}
   ${flex.align.center}
   flex-shrink: 0;
-  ${size.width.custom('125px')}
-  ${size.height.custom('16px')}
+  ${size.width.custom('220px')}
+  ${size.height.custom('20px')}
   
   ${breakpoints.md} {
-    ${size.width.custom('140px')}
-    ${size.height.custom('34px')}
+    ${size.width.custom('320px')}
+    ${size.height.custom('24px')}
   }
   
   img {

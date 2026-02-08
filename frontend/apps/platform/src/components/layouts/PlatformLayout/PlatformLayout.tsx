@@ -33,17 +33,7 @@ type HCaptchaInstance = typeof HCaptcha.prototype;
 
 // Default header configuration builder (needs cooperation handler)
 const getDefaultHeaderProps = (_openCooperationModal: () => void): HeaderProps => ({
-  logoElement: (
-    <span css={css`
-      font-family: var(--font-aeonik);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #000;
-      letter-spacing: -0.02em;
-    `}>
-      Cosmos
-    </span>
-  ),
+  logoSrc: '/images/cosmos-logo.png',
   logoHref: ROUTES.HOME,
   logoAlt: 'Cosmos',
   menuItems: [
@@ -305,17 +295,7 @@ export default function PlatformLayout({
 
   // Build authenticated header configuration
   const authenticatedHeaderProps: HeaderProps | null = isAuthenticated && user ? {
-    logoElement: (
-      <span css={css`
-        font-family: var(--font-aeonik);
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #000;
-        letter-spacing: -0.02em;
-      `}>
-      Cosmos
-    </span>
-  ),
+    logoSrc: '/images/cosmos-logo.png',
   logoHref: ROUTES.HOME,
   logoAlt: 'Cosmos',
     isAuthenticated: true,
