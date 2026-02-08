@@ -1,14 +1,10 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
 import UnicornScene from 'unicornstudio-react/next';
-import { ROUTES } from '@/constants/routes';
 import styles from './LandingPage.module.css';
 
 const UNICORN_HERO_PROJECT_ID = 'VAJPJvLTEm86EQJv2Otu';
-/** Waitlist: "Join the alpha" / full-screen animation */
-const UNICORN_WAITLIST_PROJECT_ID = 'kZqalJ7yfFPj2fkAH6Zt';
 
 function hideUnicornBadge() {
   const selectors = [
@@ -54,7 +50,7 @@ export function LandingPage() {
 
   return (
     <>
-      {/* Hero: full-viewport animation only */}
+      {/* Hero: full-viewport animation + left-bottom text block */}
       <section className={styles.section}>
         <UnicornScene
           projectId={UNICORN_HERO_PROJECT_ID}
@@ -63,25 +59,37 @@ export function LandingPage() {
           className={styles.embedWrapper}
           lazyLoad={false}
         />
-        <div className={styles.badgeCover} />
-      </section>
-
-      {/* Waitlist: full-screen animation behind "Join the alpha" */}
-      <section className={styles.waitlistSection}>
-        <UnicornScene
-          projectId={UNICORN_WAITLIST_PROJECT_ID}
-          width="100vw"
-          height="100vh"
-          className={styles.waitlistEmbed}
-          lazyLoad={false}
-        />
-        <div className={styles.waitlistContent}>
-          <h2 className={styles.waitlistHeadline}>Join the alpha</h2>
-          <Link href={ROUTES.RATINGS.PROJECTS} className={styles.ctaButton}>
-            Get access
-          </Link>
+        <div className={styles.heroTextBlock}>
+          <p className={styles.heroSubheading}>Where trust meets data.</p>
+          <h1 className={styles.heroHeadline}>
+            <span className={styles.heroHeadlineLine}>Intelligence</span>
+            <span className={styles.heroHeadlineLine}>that moves markets.</span>
+          </h1>
+          <p className={styles.heroDescription}>
+            Institutional-grade risk ratings and compliance on Stellar.
+          </p>
         </div>
-        <div className={styles.waitlistBadgeCover} />
+        <div className={styles.glassBox}>
+          <div className={styles.glassBoxTop}>
+            <span className={styles.glassBoxIcon} aria-hidden>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <path d="M12 4v16M4 12h16M6 6l12 12M18 6L6 18" />
+              </svg>
+            </span>
+            <span className={styles.glassBoxNav}>
+              <span className={styles.glassBoxChevron}>&lt;</span>
+              <span className={styles.glassBoxChevron}>&gt;</span>
+            </span>
+          </div>
+          <div className={styles.glassBoxBottom}>
+            <span className={styles.glassBoxDot} />
+            <span className={styles.glassBoxLabel}>
+              <span className={styles.glassBoxLabelLine}>STELLAR /</span>
+              <span className={styles.glassBoxLabelLine}>INSTITUTIONAL</span>
+            </span>
+          </div>
+        </div>
+        <div className={styles.badgeCover} />
       </section>
     </>
   );
