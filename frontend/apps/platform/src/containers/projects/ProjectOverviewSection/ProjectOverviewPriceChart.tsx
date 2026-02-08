@@ -18,6 +18,9 @@ import {
 } from '@/data/api/types/coin_gecko/coin_historical';
 import { CHART_HEIGHT, CHART_X_MAX_POINTS } from '@/constants/charts';
 
+/** CoinGecko id for Stellar (XLM) – used when no token/symbol is provided so the chart always shows data */
+const STELLAR_COINGECKO_ID = 'stellar';
+
 interface ProjectOverviewPriceChartProps {
   hasToken?: boolean;
   symbol: string;
@@ -31,6 +34,9 @@ const ProjectOverviewPriceChart: React.FC<ProjectOverviewPriceChartProps> = ({
   const [priceData, setPriceData] = useState<SingleLineChartDataPoint[]>([]);
   const [marketCapData, setMarketCapData] = useState<SingleLineChartDataPoint[]>([]);
   const [isFilteringData, setIsFilteringData] = useState(true);
+
+  // When no symbol (e.g. dashboard), fix the graph to Stellar (XLM) so the chart always has data
+  const effectiveSymbol = symbol?.trim() || STELLAR_COINGECKO_ID;
 
   const chartTypeOptions: ToggleOption<string>[] = [
     { value: 'price', label: t('details.overview.priceChart', 'Price Chart') },
@@ -48,7 +54,7 @@ const ProjectOverviewPriceChart: React.FC<ProjectOverviewPriceChartProps> = ({
 
   const generateParams = () => {
     const params: MarketChartRangeParams = {
-      id: symbol,
+      id: effectiveSymbol,
       vs_currency: 'usd',
       days: timeRange === 'all' ? 'max' : timeRange.toString(),
     };
@@ -61,7 +67,7 @@ const ProjectOverviewPriceChart: React.FC<ProjectOverviewPriceChartProps> = ({
     data: chartData,
     isLoading,
   } = useTokenChart(generateParams(), {
-    enabled: !!symbol, // Only fetch when symbol exists
+    enabled: !!effectiveSymbol,
   });
 
   useEffect(() => {
@@ -192,11 +198,16 @@ const ProjectOverviewPriceChart: React.FC<ProjectOverviewPriceChartProps> = ({
     }
   };
 
+  // Show chart when we have token data or when using Stellar fallback (effectiveSymbol === STELLAR_COINGECKO_ID)
+  const showChart = hasToken || effectiveSymbol === STELLAR_COINGECKO_ID;
+  const chartDataToShow = showChart ? getChartData() : [];
+  const showLoading = showChart && (isLoading || isFilteringData);
+
   return (
     <>
       <div css={styles.toggleContainer}>
         <Toggle size="small" value={chartType} onChange={setChartType} options={chartTypeOptions} />
-        {!hasToken && (
+        {(!hasToken || effectiveSymbol === STELLAR_COINGECKO_ID) && (
           <Toggle
             size="small"
             value={timeRange}
@@ -206,12 +217,10 @@ const ProjectOverviewPriceChart: React.FC<ProjectOverviewPriceChartProps> = ({
         )}
       </div>
       <SingleLineChart
-        data={hasToken ? getChartData() : []}
-        loading={hasToken && (isLoading || isFilteringData)}
-        emptyTitle={t('details.overview.noToken.title', 'Project does not have token yet')
-        }
-        emptyDescription={t('details.overview.noToken.description', 'Project does not have token yet')
-        }
+        data={chartDataToShow}
+        loading={showLoading}
+        emptyTitle={t('details.overview.noToken.title', 'No Data')}
+        emptyDescription={t('details.overview.noToken.description', 'Project does not have token yet')}
         xDataKey="x_axis"
         yDataKey="value"
         yDomain={yDomain}

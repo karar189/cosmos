@@ -19,6 +19,7 @@ import {
 } from '@core3/ui-components';
 import type { DataListItemData } from '@core3/ui-components';
 import { loadDashboards, type SavedDashboard } from '@/utils/dashboardWorkspace.storage';
+import { TransactionAnalyticsWidget } from '@/components/common/TransactionAnalyticsWidget';
 import TabsSection from '@/components/common/TabsSection/TabsSection';
 import { ProjectOverviewPriceChart } from '@/containers/projects/ProjectOverviewSection';
 import { InstitutionComplianceChecklistChart } from '@/components/common/InstitutionComplianceChecklistChart';
@@ -186,6 +187,19 @@ export default function DashboardViewPage() {
   const hasWidget = (id: string) =>
     dashboard.widgets?.some((w) => w.widgetId === id) || showDefaultCharts;
 
+  const transactionAnalyticsWidget = dashboard.widgets?.find((w) => w.widgetId === 'transaction-analytics');
+  const stellarWalletFromSettings =
+    transactionAnalyticsWidget?.settings?.parameters != null
+      ? (() => {
+          try {
+            const p = JSON.parse(transactionAnalyticsWidget.settings.parameters);
+            return typeof p?.stellarWallet === 'string' ? p.stellarWallet : undefined;
+          } catch {
+            return undefined;
+          }
+        })()
+      : undefined;
+
   const updatedLabel = dashboard.updatedAt
     ? new Date(dashboard.updatedAt).toLocaleDateString(undefined, {
         month: 'short',
@@ -345,6 +359,10 @@ export default function DashboardViewPage() {
                         />
                       </div>
                     </Card>
+                  )}
+                  {/* Transaction Analytics (Stellar wallet transactions: bar chart + flow on click) */}
+                  {hasWidget('transaction-analytics') && (
+                    <TransactionAnalyticsWidget stellarWallet={stellarWalletFromSettings} />
                   )}
                   {/* Active Routes (overview-style DataValue metric) */}
                   {hasWidget('active-routes') && (

@@ -51,6 +51,7 @@ export default function DashboardWorkspacePage() {
     { id: 'compliance-score', title: 'Compliance Score Trend', type: 'chart' },
     { id: 'routing-analytics', title: 'Routing Analytics', type: 'chart' },
     { id: 'transaction-volume', title: 'Transaction Volume', type: 'chart' },
+    { id: 'transaction-analytics', title: 'Transaction Analytics', type: 'chart' },
     { id: 'risk-heatmap', title: 'Risk Heatmap', type: 'chart' },
     { id: 'active-routes', title: 'Active Routes', type: 'metric' },
     { id: 'compliance-blocks', title: 'Active Compliance Blocks', type: 'metric' },
@@ -408,6 +409,38 @@ export default function DashboardWorkspacePage() {
                     />
                   </div>
 
+                  {selected.widgetId === 'transaction-analytics' && (
+                    <div css={styles.field}>
+                      <p css={styles.label}>Stellar wallet address</p>
+                      <Input
+                        value={(() => {
+                          try {
+                            const p = JSON.parse(selected.settings.parameters || '{}');
+                            return typeof p.stellarWallet === 'string' ? p.stellarWallet : '';
+                          } catch {
+                            return '';
+                          }
+                        })()}
+                        onChange={(e) => {
+                          const wallet = e.target.value.trim();
+                          try {
+                            const p = JSON.parse(selected.settings.parameters || '{}');
+                            updateSelectedSettings({
+                              parameters: JSON.stringify({ ...p, stellarWallet: wallet }, null, 0),
+                            });
+                          } catch {
+                            updateSelectedSettings({
+                              parameters: JSON.stringify({ stellarWallet: wallet }, null, 0),
+                            });
+                          }
+                        }}
+                        placeholder="e.g. G..."
+                      />
+                      <p css={styles.smallNote}>
+                        Public key (G...) of the Stellar account. Used to fetch transactions in the dashboard.
+                      </p>
+                    </div>
+                  )}
                   <div css={styles.field}>
                     <p css={styles.label}>Parameters</p>
                     <textarea
