@@ -14,8 +14,7 @@ import {
 export const pageContainer = css`
   ${flex.column}
   ${size.width.full}
-  max-width: 1600px;
-  margin: 0 auto;
+  margin: 0;
   ${spacing.padding.x.l}
   ${spacing.padding.y.l}
   min-height: 100vh;
@@ -67,6 +66,12 @@ export const secondRowSectionWrapper = css`
 `;
 
 export const chartsSectionWrapper = css`
+  ${spacing.margin.bottom.l}
+`;
+
+/** Full-width block for widgets that should span the whole dashboard (e.g. User Registry table) */
+export const fullWidthWidgetWrapper = css`
+  ${size.width.full}
   ${spacing.margin.bottom.l}
 `;
 

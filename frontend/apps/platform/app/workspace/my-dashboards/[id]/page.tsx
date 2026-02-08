@@ -20,6 +20,7 @@ import {
 import type { DataListItemData } from '@core3/ui-components';
 import { loadDashboards, type SavedDashboard } from '@/utils/dashboardWorkspace.storage';
 import { TransactionAnalyticsWidget } from '@/components/common/TransactionAnalyticsWidget';
+import { UserRegistryWidget } from '@/components/common/UserRegistryWidget';
 import TabsSection from '@/components/common/TabsSection/TabsSection';
 import { ProjectOverviewPriceChart } from '@/containers/projects/ProjectOverviewSection';
 import { InstitutionComplianceChecklistChart } from '@/components/common/InstitutionComplianceChecklistChart';
@@ -200,6 +201,9 @@ export default function DashboardViewPage() {
         })()
       : undefined;
 
+  const userRegistryWidget = dashboard.widgets?.find((w) => w.widgetId === 'user-registry');
+  const userRegistryParameters = userRegistryWidget?.settings?.parameters ?? null;
+
   const updatedLabel = dashboard.updatedAt
     ? new Date(dashboard.updatedAt).toLocaleDateString(undefined, {
         month: 'short',
@@ -262,6 +266,13 @@ export default function DashboardViewPage() {
                   </Card>
                 </Section>
               </div>
+
+              {/* User Registry: full-width (outside 2-col grid so table uses whole dashboard width) */}
+              {hasWidget('user-registry') && (
+                <div css={styles.fullWidthWidgetWrapper}>
+                  <UserRegistryWidget parameters={userRegistryParameters} />
+                </div>
+              )}
 
               {/* Charts & metrics: Section + Card for each widget */}
               <div css={styles.chartsSectionWrapper}>

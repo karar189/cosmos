@@ -24,9 +24,18 @@ class WidgetDef:
     why_default: str
 
 
-# NOTE: These widget IDs intentionally match the frontend `availableWidgets` ids:
-# `frontend/apps/platform/app/workspace/dashboard-builder/page.tsx`
+# NOTE: These widget IDs intentionally match the frontend widgetCatalog:
+# `frontend/apps/platform/app/dashboard-workspace/page.tsx`
+# User Registry is always available in the dashboard workspace list.
 WIDGETS: dict[str, WidgetDef] = {
+    # ===== Always-available (User Registry) =====
+    "user-registry": WidgetDef(
+        id="user-registry",
+        title="User Registry",
+        category="custom",
+        type="table",
+        why_default="Tracks user wallets with transaction volume, volume change, asset count, and reliability (risk factor) for compliance and monitoring.",
+    ),
     # ===== Custom / generic =====
     "compliance-score": WidgetDef(
         id="compliance-score",

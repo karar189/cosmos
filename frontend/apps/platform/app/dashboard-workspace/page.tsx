@@ -47,7 +47,9 @@ export default function DashboardWorkspacePage() {
     [widgets, selectedId]
   );
 
+  // User Registry is always available regardless of AI-generated bundles
   const widgetCatalog: Array<{ id: string; title: string; type: WidgetType }> = [
+    { id: 'user-registry', title: 'User Registry', type: 'table' },
     { id: 'compliance-score', title: 'Compliance Score Trend', type: 'chart' },
     { id: 'routing-analytics', title: 'Routing Analytics', type: 'chart' },
     { id: 'transaction-volume', title: 'Transaction Volume', type: 'chart' },
@@ -64,6 +66,21 @@ export default function DashboardWorkspacePage() {
     if (!def) return;
 
     const maxBottom = widgets.reduce((acc, w) => Math.max(acc, w.y + w.h), 0);
+    const defaultParams =
+      widgetId === 'user-registry'
+        ? JSON.stringify(
+            {
+              network: 'stellar',
+              wallets: [
+                { address: 'GDBTQ7V63WLGFKUQMWNKJLOFGXVT7XXWBNCF2UULAWJ54Y4X6GVDSWAP' },
+                { address: 'GBRPYHIL2CI3DJ5T3D4VOUKB5E4YGJ2E2LZ6J5DA7MK34F5X2WTFW6AS' },
+              ],
+            },
+            null,
+            2
+          )
+        : defaultWidgetSettings().parameters;
+
     const next: DashboardWidget = {
       id: `dw-${Date.now()}`,
       widgetId: def.id,
@@ -73,7 +90,10 @@ export default function DashboardWorkspacePage() {
       y: maxBottom + 1,
       w: 3,
       h: 5,
-      settings: defaultWidgetSettings(),
+      settings: {
+        ...defaultWidgetSettings(),
+        parameters: defaultParams,
+      },
     };
 
     setWidgets((prev) => [...prev, next]);
@@ -438,6 +458,21 @@ export default function DashboardWorkspacePage() {
                       />
                       <p css={styles.smallNote}>
                         Public key (G...) of the Stellar account. Used to fetch transactions in the dashboard.
+                      </p>
+                    </div>
+                  )}
+                  {selected.widgetId === 'user-registry' && (
+                    <div css={styles.field}>
+                      <p css={styles.label}>Wallets JSON</p>
+                      <textarea
+                        css={styles.textarea}
+                        value={selected.settings.parameters}
+                        onChange={(e) => updateSelectedSettings({ parameters: e.target.value })}
+                        placeholder='{"network":"stellar","wallets":[{"address":"G..."}]}'
+                        rows={8}
+                      />
+                      <p css={styles.smallNote}>
+                        JSON with network and wallets array. Each wallet: {"{ \"address\": \"G...\" }"}. Used when the widget is created.
                       </p>
                     </div>
                   )}
