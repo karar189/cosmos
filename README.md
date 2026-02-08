@@ -1,19 +1,15 @@
 # Cosmos
 
-Agentic dashboard builder + risk/ratings platform, with an AI backend that recommends widget bundles (Lean / Balanced / Comprehensive) and a frontend “n8n-like” dashboard workspace to customize layouts.
+Agentic dashboard builder + risk/ratings platform, with an AI backend that recommends widget bundles (Lean / Balanced / Comprehensive) and a frontend “n8n + powerbi like” dashboard workspace to customize layouts.
 
 <img width="1433" height="1019" alt="Screenshot 2026-02-08 at 12 04 10 PM" src="https://github.com/user-attachments/assets/848ce339-5a3f-4450-be7c-228863f6616c" />
-
-![Project overview](docs/screenshots/01-project-overview.png)
-![Project financial](docs/screenshots/02-project-financial.png)
-![Proof of Opinion](docs/screenshots/03-proof-of-opinion.png)
-![Dashboard Workspace](docs/screenshots/04-dashboard-workspace.png)
-![Compliance Maker](docs/screenshots/05-compliance-maker.png)
 
 ## What’s in this repo
 
 - **`frontend/`**: Next.js app (Cosmos platform UI).
 - **`ai-analyzer/`**: FastAPI service (“Cosmos AI Backend”) powering widget recommendations (OpenAI + heuristic fallback).
+
+![Project overview](docs/screenshots/01-project-overview.png)
 
 ## Key features
 
@@ -29,6 +25,8 @@ Agentic dashboard builder + risk/ratings platform, with an AI backend that recom
 - **AI recommendations**
   - Infers business category hints (remittance / fintech / bank / stablecoin / NGO / RWA / custom)
   - Produces 2–3 bundles with per-widget **why**, **time saved**, **cost savings**, and optional **ROI**
+
+  ![Project financial](docs/screenshots/02-project-financial.png)
 
 ## Tech stack
 
@@ -47,6 +45,8 @@ pnpm dev:platform
 ```
 
 Platform runs at `http://localhost:3000`.
+
+![Proof of Opinion](docs/screenshots/03-proof-of-opinion.png)
 
 ### 2) AI backend (FastAPI)
 
@@ -114,6 +114,8 @@ Notes:
 - If `OPENAI_API_KEY` is not set, the backend responds with `"source": "heuristic"`.
 - Set `OPENAI_MODEL` to override the default model (defaults to `gpt-4o-mini`).
 
+![Dashboard Workspace](docs/screenshots/04-dashboard-workspace.png)
+
 ## Deploy (AI backend on Render)
 
 `ai-analyzer/render.yaml` includes a Render Blueprint for the FastAPI service.
@@ -125,6 +127,8 @@ Notes:
 Required Render env vars:
 - `OPENAI_API_KEY`
 - `CORS_ALLOW_ORIGINS` (comma-separated frontend origins)
+
+![Dashboard Workspace](docs/screenshots/04-dashboard-workspace.png)
 
 ## Repo notes
 
