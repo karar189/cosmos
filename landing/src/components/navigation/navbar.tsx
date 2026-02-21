@@ -1,6 +1,5 @@
 "use client";
 
-import { buttonVariants } from "@/components/ui/button";
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -11,12 +10,55 @@ import {
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn, NAV_LINKS } from "@/utils";
-import { LucideIcon, ZapIcon } from "lucide-react";
+import { useFreighter } from "@/hooks/useFreighter";
+import { LucideIcon } from "lucide-react";
 import Link from "next/link";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "../global/max-width-wrapper";
 import MobileNavbar from "./mobile-navbar";
 import AnimationContainer from "../global/animation-container";
+
+const buttonClass =
+    "hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-700/60 hover:bg-neutral-600/60 text-neutral-200 text-sm font-medium border border-neutral-600/50 shadow-sm transition-colors";
+
+function HeaderFreighterButton() {
+    const { publicKey, connect, disconnect, isConnecting, truncatedAddress } = useFreighter();
+
+    if (publicKey) {
+        return (
+            <>
+                <Link href="/dashboard" className={buttonClass}>
+                    <span className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-neutral-300">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                    </span>
+                    Dashboard
+                </Link>
+                <button
+                    type="button"
+                    onClick={disconnect}
+                    className={buttonClass}
+                    title={publicKey}
+                >
+                    {truncatedAddress ?? "Disconnect"}
+                </button>
+            </>
+        );
+    }
+
+    return (
+        <button
+            type="button"
+            onClick={connect}
+            disabled={isConnecting}
+            className={buttonClass}
+        >
+            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-neutral-300">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </span>
+            {isConnecting ? "Connecting…" : "Sign In"}
+        </button>
+    );
+}
 
 const Navbar = () => {
     const [scroll, setScroll] = useState(false);
@@ -42,21 +84,30 @@ const Navbar = () => {
             scroll && "border-background/80 bg-background/40 backdrop-blur-md"
         )}>
             <AnimationContainer reverse delay={0.1} className="size-full">
-                <MaxWidthWrapper className="flex items-center justify-between">
-                    <div className="flex items-center space-x-12">
-                        <Link href="/#home">
-                            <span className="text-lg font-bold font-heading !leading-none">
+                <MaxWidthWrapper className="relative flex items-center justify-between h-full min-h-24">
+                    {/* 1. Left: logo */}
+                    <div className="flex items-center shrink-0 z-10">
+                        <Link href="/#home" className="flex items-center gap-2 text-neutral-300 hover:text-white transition-colors">
+                            <span className="flex items-center justify-center w-8 h-8 rounded border border-neutral-500/50 bg-neutral-800/50 text-neutral-400" aria-hidden>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M7 17L17 7M17 7h-6M17 7v6" /></svg>
+                            </span>
+                            <span className="text-lg font-semibold font-heading !leading-none text-white/90 hidden sm:inline">
                                 Hypertron
                             </span>
                         </Link>
+                    </div>
 
-                        <NavigationMenu className="hidden lg:flex">
-                            <NavigationMenuList>
+                    {/* 2. Center: nav options (absolutely centered) */}
+                    <nav className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center">
+                        <NavigationMenu>
+                            <NavigationMenuList className="gap-1">
                                 {NAV_LINKS.map((link) => (
                                     <NavigationMenuItem key={link.title}>
                                         {link.menu ? (
                                             <>
-                                                <NavigationMenuTrigger>{link.title}</NavigationMenuTrigger>
+                                                <NavigationMenuTrigger className="text-neutral-400 hover:text-neutral-200 bg-transparent text-sm font-medium">
+                                                    {link.title}
+                                                </NavigationMenuTrigger>
                                                 <NavigationMenuContent>
                                                     <ul className={cn(
                                                         "grid gap-1 p-4 md:w-[400px] lg:w-[500px] rounded-xl",
@@ -95,7 +146,7 @@ const Navbar = () => {
                                             </>
                                         ) : (
                                             <Link href={link.href} legacyBehavior passHref>
-                                                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-neutral-400 hover:text-neutral-200 bg-transparent text-sm font-medium")}>
                                                     {link.title}
                                                 </NavigationMenuLink>
                                             </Link>
@@ -104,20 +155,13 @@ const Navbar = () => {
                                 ))}
                             </NavigationMenuList>
                         </NavigationMenu>
+                    </nav>
 
+                    {/* 3. Right: Freighter connect / dashboard */}
+                    <div className="flex items-center gap-2 shrink-0 z-10">
+                        <HeaderFreighterButton />
+                        <MobileNavbar />
                     </div>
-
-                    <div className="hidden lg:flex items-center gap-x-4">
-                        <Link href="/auth/sign-in" className={buttonVariants({ size: "sm", variant: "ghost" })}>
-                            Sign In
-                        </Link>
-                        <Link href="/auth/sign-up" className={buttonVariants({ size: "sm", })}>
-                            Get Started
-                            <ZapIcon className="size-3.5 ml-1.5 text-orange-500 fill-orange-500" />
-                        </Link>
-                    </div>
-
-                    <MobileNavbar />
 
                 </MaxWidthWrapper>
             </AnimationContainer>

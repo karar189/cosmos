@@ -1,0 +1,17 @@
+[package]
+name = "escrowengine"
+version = "0.1.0"
+description = "EscrowEngine: milestone-based escrow (Soroban v25)"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+overflow-checks = true
+
+[dependencies]
+soroban-sdk = "25.0"
+
+[dev-dependencies]
+soroban-sdk = { version = "25.0", features = ["testutils"] }

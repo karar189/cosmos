@@ -29,7 +29,7 @@ const HomePage = async () => {
                 aria-hidden
             />
             {/* Companies Section - full width, overlaps bottom of hero to cover Unicorn badge */}
-            <section className="relative z-20 w-full -mt-28 pt-24 pb-14 bg-[#050a12] px-4 sm:px-6 md:px-8">
+            <section className="relative z-20 w-full -mt-28 pt-24 pb-14 bg-black px-4 sm:px-6 md:px-8">
                 <AnimationContainer delay={0.2}>
                     <div className="py-2 w-full">
                         <div className="mt-0">

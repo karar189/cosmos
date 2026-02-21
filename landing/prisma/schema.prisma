@@ -72,3 +72,14 @@ model LinkTag {
   @@unique([name, projectId])
   @@index(projectId)
 }
+
+model PaymentLink {
+  id                 String   @id @map("_id")
+  creatorPublicKey   String
+  amount             String
+  memo               String?
+  destinationAddress String
+  createdAt          DateTime @default(now())
+
+  @@index(creatorPublicKey)
+}
