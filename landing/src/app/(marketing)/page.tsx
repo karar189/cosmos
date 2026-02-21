@@ -28,34 +28,29 @@ const HomePage = async () => {
                 }}
                 aria-hidden
             />
-            {/* Companies Section - overlaps bottom of hero to cover Unicorn badge */}
-            <MaxWidthWrapper className="relative z-20 -mt-32 pt-24 pb-14 bg-[#050a12]">
+            {/* Companies Section - full width, overlaps bottom of hero to cover Unicorn badge */}
+            <section className="relative z-20 w-full -mt-28 pt-24 pb-14 bg-[#050a12] px-4 sm:px-6 md:px-8">
                 <AnimationContainer delay={0.2}>
-                    <div className="py-6">
-                        <div className="mx-auto px-4 md:px-8">
-                            <h2 className="text-center text-sm font-medium font-heading text-blue-200/80 uppercase tracking-wider">
-                                Built for agencies, RWA companies, and service providers
-                            </h2>
-                            <div className="mt-8">
-                                <ul className="flex flex-wrap items-center gap-x-6 gap-y-6 md:gap-x-16 justify-center">
-                                    {COMPANIES.map((company) => (
-                                        <li key={company.name}>
-                                            <Image
-                                                src={company.logo}
-                                                alt={company.name}
-                                                width={80}
-                                                height={80}
-                                                quality={100}
-                                                className="w-28 h-auto"
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                    <div className="py-2 w-full">
+                        <div className="mt-0">
+                            <ul className="flex flex-wrap items-center gap-x-6 gap-y-6 md:gap-x-16 justify-center">
+                                {COMPANIES.map((company) => (
+                                    <li key={company.name}>
+                                        <Image
+                                            src={company.logo}
+                                            alt={company.name}
+                                            width={80}
+                                            height={80}
+                                            quality={100}
+                                            className="w-28 h-auto"
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
                 </AnimationContainer>
-            </MaxWidthWrapper>
+            </section>
 
             {/* Dashboard preview section */}
             <MaxWidthWrapper className="relative z-10 mt-0">
