@@ -20,6 +20,9 @@ import Providers from "./providers/providers";
 import Sidebar from "./dashboard/sidebar";
 import DashboardNavbar from "./dashboard/dashboard-navbar";
 
+// payment
+import { PaymentLinkGenerator } from "./payment-link-generator";
+
 // pricing
 import PricingCards from "./pricing-cards";
 
@@ -42,6 +45,8 @@ export {
 
     Sidebar,
     DashboardNavbar,
+
+    PaymentLinkGenerator,
 
     PricingCards,
 

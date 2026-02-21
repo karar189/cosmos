@@ -46,7 +46,7 @@ const LinkShorteningPage = () => {
                     </div>
                 </AnimationContainer>
                 <AnimationContainer delay={0.3} className="w-full">
-                    <div className="py-14">
+                    <div className="py-14 bg-black rounded-lg -mx-4 md:-mx-8 px-4 md:px-8">
                         <div className="mx-auto px-4 md:px-8">
                             <h2 className="text-center text-sm font-medium font-heading text-neutral-400 uppercase">
                                 Trusted by the best in the industry

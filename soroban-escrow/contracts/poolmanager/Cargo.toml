@@ -1,0 +1,18 @@
+[package]
+name = "poolmanager"
+version = "0.1.0"
+description = "PoolManager: Poseidon + BN254 commitments (Soroban v25)"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+overflow-checks = true
+
+[dependencies]
+soroban-sdk = "25.0"
+soroban-poseidon = "25.0"
+
+[dev-dependencies]
+soroban-sdk = { version = "25.0", features = ["testutils"] }
