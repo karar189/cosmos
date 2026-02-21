@@ -1,4 +1,4 @@
-import { AnimationContainer, MaxWidthWrapper, PricingCards } from "@/components";
+import { AnimationContainer, HeroWithUnicorn, MaxWidthWrapper, PricingCards } from "@/components";
 import { BentoCard, BentoGrid, CARDS } from "@/components/ui/bento-grid";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ import Link from "next/link";
 const HomePage = async () => {
     return (
         <div className="overflow-x-hidden scrollbar-hide size-full bg-[#050a12] -mt-40 min-h-screen relative">
+            {/* First section: full-viewport Unicorn embed + hero overlay (frontend-inspired) */}
+            <HeroWithUnicorn />
             {/* Hero blue gradient - extends into dashboard area for smooth transition */}
             <div
                 className="absolute inset-x-0 top-0 h-[210vh] min-h-[48rem] pointer-events-none z-0 "
@@ -26,60 +28,10 @@ const HomePage = async () => {
                 }}
                 aria-hidden
             />
-            {/* Hero Section */}
-            <MaxWidthWrapper className="relative z-10 mt-60">
-                <div className="flex flex-col items-center justify-center w-full text-center">
-                    <AnimationContainer className="flex flex-col items-center justify-center w-full text-center">
-                        <div className="group inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-transparent px-4 py-1.5 text-sm text-blue-100">
-                            <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" /></span>
-                            B2B onboarding & payments for Web3
-                            <ArrowRightIcon className="ml-0.5 size-3.5 text-blue-400 transition-transform duration-300 group-hover:translate-x-0.5" />
-                        </div>
-                        <h1 className="text-foreground text-center py-6 text-3xl font-medium tracking-normal text-balance sm:text-4xl md:text-5xl lg:text-6xl !leading-[1.15] w-full font-heading">
-                            The Fastest Way to Onboard <span className="text-transparent bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text inline-bloc">
-                                Clients and Get Paid in Web3
-                            </span>
-                        </h1>
-                        <p className="mb-12 text-sm tracking-tight text-muted-foreground md:text-base text-balance">
-                            Replace manual processes with automated workflows, escrow, approvals, and real-time tracking.
-                        </p>
-                        <div className="flex items-center justify-center whitespace-nowrap gap-4 z-50">
-                            <Button asChild className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25">
-                                <Link href="/auth/sign-in" className="flex items-center">
-                                    Get started for free
-                                    <ArrowRightIcon className="w-4 h-4 ml-2" />
-                                </Link>
-                            </Button>
-                        </div>
-                    </AnimationContainer>
-
-                    <AnimationContainer delay={0.2} className="relative pt-20 pb-20 md:py-32 px-2 bg-transparent w-full">
-                        <div className="absolute md:top-[10%] left-1/2 gradient w-3/4 -translate-x-1/2 h-1/4 md:h-1/3 inset-0 blur-[5rem] animate-image-glow opacity-70"></div>
-                        <div className="-m-2 rounded-xl p-2 lg:-m-4 lg:rounded-2xl bg-blue-950/30 backdrop-blur-3xl shadow-[0_0_80px_-20px_rgba(59,130,246,0.25),0_0_0_1px_rgba(59,130,246,0.08),inset_0_0_60px_-20px_rgba(0,0,0,0.4)]">
-                            <BorderBeam
-                                size={250}
-                                duration={12}
-                                delay={9}
-                            />
-                            <Image
-                                src="/assets/dashboard-dark.svg"
-                                alt="Dashboard"
-                                width={1200}
-                                height={1200}
-                                quality={100}
-                                className="rounded-md lg:rounded-xl bg-foreground/10 ring-1 ring-border"
-                            />
-                            <div className="absolute -bottom-4 inset-x-0 w-full h-1/2 bg-gradient-to-t from-[#050a12] z-40"></div>
-                            <div className="absolute bottom-0 md:-bottom-8 inset-x-0 w-full h-1/4 bg-gradient-to-t from-[#050a12] z-50"></div>
-                        </div>
-                    </AnimationContainer>
-                </div>
-            </MaxWidthWrapper >
-
-            {/* Companies Section */}
-            <MaxWidthWrapper>
-                <AnimationContainer delay={0.4}>
-                    <div className="py-14">
+            {/* Companies Section - overlaps bottom of hero to cover Unicorn badge */}
+            <MaxWidthWrapper className="relative z-20 -mt-32 pt-24 pb-14 bg-[#050a12]">
+                <AnimationContainer delay={0.2}>
+                    <div className="py-6">
                         <div className="mx-auto px-4 md:px-8">
                             <h2 className="text-center text-sm font-medium font-heading text-blue-200/80 uppercase tracking-wider">
                                 Built for agencies, RWA companies, and service providers
@@ -104,6 +56,32 @@ const HomePage = async () => {
                     </div>
                 </AnimationContainer>
             </MaxWidthWrapper>
+
+            {/* Dashboard preview section */}
+            <MaxWidthWrapper className="relative z-10 mt-0">
+                <div className="flex flex-col items-center justify-center w-full text-center">
+                    <AnimationContainer delay={0.2} className="relative pt-12 pb-20 md:py-32 px-2 bg-transparent w-full">
+                        <div className="absolute md:top-[10%] left-1/2 gradient w-3/4 -translate-x-1/2 h-1/4 md:h-1/3 inset-0 blur-[5rem] animate-image-glow opacity-70"></div>
+                        <div className="-m-2 rounded-xl p-2 lg:-m-4 lg:rounded-2xl bg-blue-950/30 backdrop-blur-3xl shadow-[0_0_80px_-20px_rgba(59,130,246,0.25),0_0_0_1px_rgba(59,130,246,0.08),inset_0_0_60px_-20px_rgba(0,0,0,0.4)]">
+                            <BorderBeam
+                                size={250}
+                                duration={12}
+                                delay={9}
+                            />
+                            <Image
+                                src="/assets/dashboard-dark.svg"
+                                alt="Dashboard"
+                                width={1200}
+                                height={1200}
+                                quality={100}
+                                className="rounded-md lg:rounded-xl bg-foreground/10 ring-1 ring-border"
+                            />
+                            <div className="absolute -bottom-4 inset-x-0 w-full h-1/2 bg-gradient-to-t from-[#050a12] z-40"></div>
+                            <div className="absolute bottom-0 md:-bottom-8 inset-x-0 w-full h-1/4 bg-gradient-to-t from-[#050a12] z-50"></div>
+                        </div>
+                    </AnimationContainer>
+                </div>
+            </MaxWidthWrapper >
 
             {/* Features Section */}
             <MaxWidthWrapper className="pt-10">
