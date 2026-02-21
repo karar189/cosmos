@@ -3,15 +3,24 @@
         "project": "Probability of Loss",
         "exchange": "Security Score",
         "projectTooltip": "The probability that a project will experience an adverse event combined with the severity of the consequences if that event occurs",
-        "exchangeTooltip": "Security metrics total score"
+        "exchangeTooltip": "Security metrics total score",
+        "launchReadiness": "Launch Readiness",
+        "launchReadinessTooltip": "Operational status — not a risk score"
+    },
+    "sections": {
+        "aboutTitle": "About",
+        "disclosuresTitle": "Disclosures",
+        "launchReadinessTitle": "Launch Readiness"
+    },
+    "launchReadiness": {
+        "contract": "Smart contract deployed",
+        "kyc": "KYC module active",
+        "registration": "Regulatory registration pending",
+        "routing": "Routing corridor configured"
     },
     "gauge": {
         "confidence": "Confidence:",
         "change24h": "24h change:"
-    },
-    "sections": {
-        "aboutTitle": "About",
-        "disclosuresTitle": "Disclosures"
     },
     "dataCoverage": "Data Coverage",
     "dataCoverageTooltip": "The percentage of metrics our team was able to cover through open-source research",

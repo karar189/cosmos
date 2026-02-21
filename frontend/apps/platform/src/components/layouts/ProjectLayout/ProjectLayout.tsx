@@ -92,7 +92,9 @@ export default function ProjectLayout({
         ticker: projectData.projectDetails.ticker,
         icon: projectData.projectDetails.logo,
         rank: projectData.projectDetails.rank ?? 0,
-        certification: projectData.projectDetails.certification.level || '',
+        certification: projectData.projectDetails.certification?.level || '',
+        launchStage: 'Live',
+        regulatoryTier: 'Tier 2 (Informational)',
       }
     : null;
 

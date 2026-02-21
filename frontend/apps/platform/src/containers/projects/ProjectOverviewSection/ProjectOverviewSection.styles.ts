@@ -115,3 +115,30 @@ export const mobileSidebarContent = css`
   }
 `;
 
+export const assetOverviewList = css`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const assetOverviewRow = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const assetOverviewLabel = css`
+  font-size: 0.8125rem;
+  color: ${colors.neutral.gray600};
+`;
+
+export const assetOverviewValue = css`
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: ${colors.neutral.black};
+`;
+
+export const chartCard = css`
+  grid-column: span 3;
+`;

@@ -162,9 +162,10 @@ export const starsWrapper = css`
   div {
     ${spacing.gap.xxs}
   }
-  
-  svg {
-    width: ${STAR_SIZE};
-    height: ${STAR_SIZE};
-  }
+`;
+
+export const regulatoryTierValue = css`
+  ${typography.fontSize.xs}
+  ${typography.fontWeight.medium}
+  color: ${colors.text.primary};
 `;
