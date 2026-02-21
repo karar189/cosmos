@@ -34,6 +34,7 @@ interface AgenticRecommendationsResponse {
       time_saved_hours_per_month: number;
       cost_savings_usd_per_month: number;
       roi_percent: number | null;
+      estimated_monthly_cost_usd?: number | null;
     };
   }>;
   notes: string[];
@@ -250,8 +251,8 @@ export default function ComplianceMakerPage() {
                 <Input value={agentComplianceRate} onChange={(e) => setAgentComplianceRate(e.target.value)} placeholder="e.g. 85" />
               </div>
               <div css={styles.formBlock}>
-                <label css={styles.label}>Platform cost (USD/month)</label>
-                <Input value={agentPlatformCost} onChange={(e) => setAgentPlatformCost(e.target.value)} placeholder="e.g. 2500" />
+                <label css={styles.label}>Monthly budget (USD)</label>
+                <Input value={agentPlatformCost} onChange={(e) => setAgentPlatformCost(e.target.value)} placeholder="e.g. 2500 — only bundles within this cost are shown" />
               </div>
               <div css={[styles.formBlock, styles.agenticFullWidth]}>
                 <label css={styles.label}>Constraints</label>
@@ -315,15 +316,39 @@ export default function ComplianceMakerPage() {
                   ))}
                 </div>
               </Card>
-              {agentResponse.bundles.map((bundle) => (
+              {agentResponse.bundles.map((bundle) => {
+                const budget = toOptionalFloat(agentPlatformCost);
+                const estCost = bundle.totals.estimated_monthly_cost_usd;
+                const withinBudget = budget != null && budget > 0 && estCost != null && estCost <= budget;
+                const difference =
+                  budget != null && budget > 0 && estCost != null
+                    ? budget - estCost
+                    : null;
+                return (
                 <Card key={bundle.id} css={styles.bundleCard} title={bundle.name}>
                   <div css={styles.bundleHeader}>
                     <div>
                       <p css={styles.widgetWhy}>{bundle.description}</p>
+                      {/* Actual cost to run this bundle (APIs/integrations) — not the savings number */}
+                      {estCost != null && (
+                        <p css={styles.bundleCostLine}>
+                          <strong>Est. cost to run this bundle: {formatUsd(estCost)}/mo</strong>
+                          {difference != null && (
+                            <>
+                              {' — '}
+                              {difference >= 0 ? (
+                                <span css={styles.withinBudgetLabel}>{formatUsd(difference)} under your budget</span>
+                              ) : (
+                                <span css={styles.overBudgetLabel}>{formatUsd(-difference)} over budget</span>
+                              )}
+                            </>
+                          )}
+                        </p>
+                      )}
                     </div>
                     <div css={styles.bundleTotals}>
                       <Badge color="green">{formatHours(bundle.totals.time_saved_hours_per_month)}</Badge>
-                      <Badge color="green">{formatUsd(bundle.totals.cost_savings_usd_per_month)}/mo</Badge>
+                      <Badge color="green">{formatUsd(bundle.totals.cost_savings_usd_per_month)}/mo value (saved)</Badge>
                       {bundle.totals.roi_percent !== null && (
                         <Badge color="gray">ROI {bundle.totals.roi_percent}%</Badge>
                       )}
@@ -334,23 +359,32 @@ export default function ComplianceMakerPage() {
                     </div>
                   </div>
                   <div css={styles.widgetList}>
-                    {bundle.widgets.map((w) => (
+                    {bundle.widgets.map((w) => {
+                      const widgetCostShare =
+                        estCost != null && bundle.widgets.length > 0
+                          ? Math.round(estCost / bundle.widgets.length)
+                          : null;
+                      return (
                       <div key={w.id} css={styles.widgetRow}>
                         <div css={styles.widgetRowTop}>
                           <p css={styles.widgetName}>{w.title}</p>
                           <div css={styles.widgetBadges}>
                             <Badge color="gray">{w.category}</Badge>
                             <Badge color="gray">{w.type}</Badge>
-                            <Badge color="green">{formatHours(w.impact.time_saved_hours_per_month)}</Badge>
-                            <Badge color="green">{formatUsd(w.impact.cost_savings_usd_per_month)}/mo</Badge>
+                            {widgetCostShare != null && (
+                              <Badge color="gray">~{formatUsd(widgetCostShare)}/mo cost</Badge>
+                            )}
+                            <Badge color="green">{formatHours(w.impact.time_saved_hours_per_month)} saved</Badge>
                           </div>
                         </div>
                         <p css={styles.widgetWhy}>{w.why}</p>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </Card>
-              ))}
+              );
+              })}
             </>
           )}
         </div>

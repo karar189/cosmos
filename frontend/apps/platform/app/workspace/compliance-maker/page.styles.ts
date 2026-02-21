@@ -651,6 +651,24 @@ export const bundleTotals = css`
   ${flex.wrap.wrap}
 `;
 
+export const bundleCostLine = css`
+  ${typography.fontFamily.primary}
+  ${typography.fontSize.sm}
+  ${coloring.text.primary}
+  margin: 0;
+  ${spacing.margin.top.xs}
+`;
+
+export const withinBudgetLabel = css`
+  color: #059669;
+  font-weight: 600;
+`;
+
+export const overBudgetLabel = css`
+  color: #dc2626;
+  font-weight: 600;
+`;
+
 export const widgetList = css`
   ${flex.column}
   ${spacing.gap.s}
