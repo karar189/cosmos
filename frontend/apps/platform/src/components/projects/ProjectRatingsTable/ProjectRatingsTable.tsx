@@ -3,13 +3,12 @@
 
 import { ROUTES } from '@/constants/routes';
 import useTranslation from '@/hooks/useTranslation';
-import { useProjectSort } from '@/hooks/useProjectSort';
 import { useProjectFilters } from '@/hooks/useProjectFilters';
 import { ProjectListItem } from '@/types/api/projectsStatistic';
 import { saveNavigationState } from '@/utils/navigationState';
-import { createProjectRatingsColumnsConfig } from '@/lib/projectRatingsColumnsConfig';
-import { createProjectRatingsFiltersConfig, getMarketCapRange } from '@/lib/projectRatingsFiltersConfig';
-import { DataTable, BottomSheet, RadioList, Icon, FilterBottomSheet } from '@core3/ui-components';
+import { createProjectRegulatoryColumnsConfig } from '@/lib/projectRegulatoryColumnsConfig';
+import { createProjectRegulatoryFiltersConfig } from '@/lib/projectRegulatoryFiltersConfig';
+import { DataTable, Icon, FilterBottomSheet } from '@core3/ui-components';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useMemo } from 'react';
 import * as styles from './ProjectRatingsTable.styles';
@@ -21,22 +20,10 @@ interface ProjectRatingsTableProps {
 }
 
 function ProjectRatingsTableContent({ data }: ProjectRatingsTableProps) {
-  const { t } = useTranslation(['ratings']);
+  const { t } = useTranslation(['regulatory']);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { openCooperationModal } = useCooperationModal();
-
-  const {
-    sorting,
-    setSorting,
-    pendingSort,
-    sortOptions,
-    sortBottomSheetOpen,
-    setSortBottomSheetOpen,
-    handleSortChange,
-    handleSortApply,
-    handleSortCancel,
-  } = useProjectSort({ t });
 
   const {
     filterBottomSheetOpen,
@@ -55,27 +42,20 @@ function ProjectRatingsTableContent({ data }: ProjectRatingsTableProps) {
     if (totalSelectedCount === 0) return data;
 
     return data.filter((item) => {
-      if (appliedFilters['project.category'].length > 0) {
+      if (appliedFilters['project.category']?.length > 0) {
         if (!appliedFilters['project.category'].includes(item.project.category)) {
           return false;
         }
       }
 
-      if (appliedFilters.marketCap.length > 0) {
-        const range = getMarketCapRange(item.marketData?.market_cap);
-        if (range === 'N/A' || !appliedFilters.marketCap.includes(range)) {
-          return false;
-        }
-      }
-
-      if (appliedFilters.chains.length > 0) {
+      if (appliedFilters.chains?.length > 0) {
         const chainNames = item.chains.map((chain) => chain.name);
         if (!appliedFilters.chains.some((chain) => chainNames.includes(chain))) {
           return false;
         }
       }
 
-      if (appliedFilters.compliance.length > 0) {
+      if (appliedFilters.compliance?.length > 0) {
         if (!appliedFilters.compliance.some((signal) => item.compliance.includes(signal))) {
           return false;
         }
@@ -103,7 +83,7 @@ function ProjectRatingsTableContent({ data }: ProjectRatingsTableProps) {
 
   const columnsConfig = useMemo(
     () =>
-      createProjectRatingsColumnsConfig({
+      createProjectRegulatoryColumnsConfig({
         t,
         onProjectClick: handleProjectClick,
         styles: {
@@ -117,7 +97,7 @@ function ProjectRatingsTableContent({ data }: ProjectRatingsTableProps) {
     [t, handleProjectClick]
   );
 
-  const filtersConfig = useMemo(() => createProjectRatingsFiltersConfig({ t }), [t]);
+  const filtersConfig = useMemo(() => createProjectRegulatoryFiltersConfig({ t }), [t]);
 
   const mobileCardRenderer = useCallback(
     ({ item, index, totalItems }: { item: ProjectListItem; index: number; totalItems: number }) => {
@@ -142,25 +122,15 @@ function ProjectRatingsTableContent({ data }: ProjectRatingsTableProps) {
       <div css={styles.mobileFiltersContainer} data-mobile-filters>
         <button
           css={styles.filterButton}
-          aria-label={t('projects.filters.mobileButtons.filters', '')}
+          aria-label={t('regulatory.filters.mobileButtons.filters', 'Filters')}
           onClick={() => setFilterBottomSheetOpen(true)}
         >
           <Icon name="filter" />
-          <span>{t('projects.filters.mobileButtons.filters', '')}</span>
+          <span>{t('regulatory.filters.mobileButtons.filters', 'Filters')}</span>
           {totalSelectedCount > 0 && (
             <span css={styles.filterBadge}>{totalSelectedCount}</span>
           )}
           <Icon name={filterBottomSheetOpen ? 'chevron-up' : 'chevron-down'} />
-        </button>
-
-        <button
-          css={styles.filterButton}
-          aria-label={t('projects.filters.mobileButtons.sorting', '')}
-          onClick={() => setSortBottomSheetOpen(true)}
-        >
-          <Icon name="sorting" />
-          <span>{t('projects.filters.mobileButtons.sorting', '')}</span>
-          <Icon name={sortBottomSheetOpen ? 'chevron-up' : 'chevron-down'} />
         </button>
       </div>
 
@@ -169,46 +139,25 @@ function ProjectRatingsTableContent({ data }: ProjectRatingsTableProps) {
         columnsConfig={columnsConfig}
         filters={filtersConfig}
         mobileCardRenderer={mobileCardRenderer}
-        sorting={sorting}
-        onSortingChange={setSorting}
+        sorting={[]}
+        onSortingChange={() => {}}
         loading={false}
       />
-
-      <BottomSheet
-        open={sortBottomSheetOpen}
-        onClose={() => setSortBottomSheetOpen(false)}
-        title={t('projects.sort.title', '')}
-      >
-        <RadioList 
-          options={sortOptions} 
-          value={pendingSort} 
-          onChange={handleSortChange} 
-          allowDeselect={true}
-        />
-        <div css={styles.bottomSheetActions}>
-          <button css={styles.cancelButton} onClick={handleSortCancel}>
-            {t('projects.sort.buttons.cancel', '')}
-          </button>
-          <button css={styles.applyButton} onClick={handleSortApply}>
-            <span>{t('projects.sort.buttons.apply', '')}</span>
-          </button>
-        </div>
-      </BottomSheet>
 
       <FilterBottomSheet
         open={filterBottomSheetOpen}
         onClose={handleFilterCancel}
-        title={t('projects.filters.title', '')}
+        title={t('regulatory.filters.title', 'Filters')}
         categories={filterCategories}
         values={pendingFilters}
         onChange={handleFilterChange}
         onApply={handleFilterApply}
         onClear={handleFilterClear}
-        clearAllText={t('projects.filters.buttons.clearAll', '')}
-        clearText={t('projects.filters.buttons.clear', '')}
-        applyText={t('projects.filters.buttons.apply', '')}
-        ariaCloseLabel={t('common.aria.close', '')}
-        ariaBackLabel={t('common.aria.goBack', '')}
+        clearAllText={t('regulatory.filters.buttons.clearAll', 'Clear All')}
+        clearText={t('regulatory.filters.buttons.clear', 'Clear')}
+        applyText={t('regulatory.filters.buttons.apply', 'Apply')}
+        ariaCloseLabel={t('common.aria.close', 'Close')}
+        ariaBackLabel={t('common.aria.goBack', 'Go Back')}
       />
     </div>
   );

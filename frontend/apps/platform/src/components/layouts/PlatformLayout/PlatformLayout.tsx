@@ -39,7 +39,6 @@ const getDefaultHeaderProps = (_openCooperationModal: () => void): HeaderProps =
   menuItems: [
     { name: 'DASHBOARD', href: ROUTES.WORKSPACE.ROOT },
     { name: 'PROJECT RATINGS', href: ROUTES.RATINGS.PROJECTS },
-    { name: 'DIRECTORY', href: ROUTES.RATINGS.EXCHANGES },
   ],
   ctaText: 'CONNECT WALLET',
   ctaTextMobile: 'CONNECT',
@@ -321,7 +320,6 @@ export default function PlatformLayout({
     menuItems: [
       // { name: 'WORKSPACE', href: ROUTES.WORKSPACE.ROOT }, // Temporarily hidden
       { name: 'PROJECT RATINGS', href: ROUTES.RATINGS.PROJECTS },
-      { name: 'DIRECTORY', href: ROUTES.RATINGS.EXCHANGES },
     ],
     searchComponent: headerProps?.searchComponent ?? <PlatformSearch onOpenSearch={openSearchModal} />,
     sticky: true,

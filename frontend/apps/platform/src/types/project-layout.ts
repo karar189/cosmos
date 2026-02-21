@@ -7,8 +7,14 @@ export interface ProjectHeaderData {
   name: string;
   ticker: string;
   icon: string;
+  /** @deprecated COSMOS uses launchStage instead */
   rank: number;
-  certification: string; // gold, silver, bronze
+  /** @deprecated COSMOS uses regulatoryTier instead */
+  certification: string;
+  /** Operational: Draft | In Progress | Live */
+  launchStage?: string;
+  /** Informational tier, not a score */
+  regulatoryTier?: string;
 }
 
 export interface ProjectLayoutState {

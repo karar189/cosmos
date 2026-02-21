@@ -5,7 +5,7 @@ import { motion, MotionConfig } from "motion/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-import { Icon, Stars } from "@core3/ui-components";
+import { Icon } from "@core3/ui-components";
 import useTranslation from "@/hooks/useTranslation";
 import { ProjectHeaderData } from "@/types/project-layout";
 import { ROUTES } from "@/constants/routes";
@@ -16,7 +16,6 @@ import {
 import { generateProjectGradient } from "@/utils/gradientGenerator";
 import { useProjectHeaderScroll } from "@/hooks/useProjectHeaderScroll";
 import * as styles from "./ProjectHeader.styles";
-import { getProjectCertificationLevel } from "@/utils/certification";
 
 const MotionHeader = motion.header;
 const MotionDiv = motion.div;
@@ -168,21 +167,18 @@ export default function ProjectHeader({
               }}
             >
               <MotionDiv css={styles.badges} style={{ opacity: badgesOpacity }}>
-                {/* Rank Badge */}
+                {/* Launch Stage - operational, not a score */}
                 <div css={styles.projectBadge}>
                   <span>
-                    {t("header.rank", "Rank")}: <b>#{data.rank}</b>
+                    {t("header.launchStage", "Launch Stage")}: <b>{data.launchStage ?? "—"}</b>
                   </span>
                 </div>
-
-                {/* Certification - Plain text + stars */}
+                {/* Regulatory Tier - informational only */}
                 <div css={styles.projectBadge}>
                   <span css={styles.certificationLabel}>
-                    {t("header.certification", "Certification")}:
+                    {t("header.regulatoryTier", "Regulatory Tier")}:
                   </span>
-                  <div css={styles.starsWrapper}>
-                    <Stars value={getProjectCertificationLevel(data.certification)} />
-                  </div>
+                  <span css={styles.regulatoryTierValue}>{data.regulatoryTier ?? "—"}</span>
                 </div>
               </MotionDiv>
             </MotionDiv>

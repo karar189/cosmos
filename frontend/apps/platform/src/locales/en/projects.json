@@ -12,6 +12,8 @@
   "header": {
     "rank": "Rank",
     "certification": "Certification",
+    "launchStage": "Launch Stage",
+    "regulatoryTier": "Regulatory Tier",
     "aria": {
       "projectHeader": "Project header"
     }
@@ -25,7 +27,14 @@
       "reputational": "Reputational",
       "regulatory": "Regulatory",
       "dependency": "Dependency",
-      "proofOfOpinion": "Proof of Opinion"
+      "proofOfOpinion": "Proof of Opinion",
+      "cosmos": {
+        "regulatoryPath": "Regulatory Path",
+        "complianceBuilder": "Compliance Builder",
+        "routing": "Routing",
+        "registry": "Registry",
+        "reports": "Reports"
+      }
     },
     "improveScore": {
       "title": "Do you own this project?",
@@ -42,6 +51,34 @@
       "polCategoriesDynamic": "PoL Categories Dynamic",
       "priceChart": "Price Chart",
       "marketCapChart": "Market Cap Chart"
+    },
+    "cosmos": {
+      "assetOverview": {
+        "title": "Asset Overview",
+        "assetType": "Asset Type",
+        "jurisdiction": "Jurisdiction",
+        "targetInvestor": "Target Investor Class",
+        "tokenStandard": "Token Standard",
+        "launchStage": "Launch Stage",
+        "regulatoryTier": "Regulatory Tier"
+      },
+      "regulatoryPath": {
+        "title": "Regulatory Path",
+        "completion": "Compliance Completion",
+        "progressNote": "Progress ≠ Risk Score. Completion status only."
+      },
+      "complianceBuilder": {
+        "title": "Compliance Controls",
+        "soroban": "Enforcement Contract",
+        "sorobanNote": "Generate a Soroban contract that enforces the controls above on-chain.",
+        "generate": "Generate Soroban Enforcement Contract"
+      },
+      "routing": { "title": "Routing Engine" },
+      "registry": { "title": "Investor / Wallet Registry" },
+      "reports": {
+        "title": "Reporting & Export",
+        "download": "Download"
+      }
     },
     "security": {
       "title": "Security",

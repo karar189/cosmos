@@ -224,8 +224,8 @@ export function useTokenBasicListPaginated(
             );
             return response.data;
           } catch (error) {
-            console.error(`Error fetching token list page ${page}:`, error);
-            throw error;
+            // Fail gracefully: return empty page so UI still renders without market data
+            return [];
           }
         },
         staleTime: STALE_TIME, // 5 minutes
