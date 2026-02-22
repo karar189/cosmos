@@ -1,141 +1,271 @@
-# Cosmos
 
-Agentic dashboard builder + risk/ratings platform, with an AI backend that recommends widget bundles (Lean / Balanced / Comprehensive) and a frontend “n8n + powerbi like” dashboard workspace to customize layouts.
+#<img width="1376" height="913" alt="Screenshot 2026-02-22 at 6 44 18 PM" src="https://github.com/user-attachments/assets/96739bf1-0daa-4abe-ab1a-178076e255e1" />
+ 🪩 Hypertron Privacy Layer
 
-<img width="1433" height="1019" alt="Screenshot 2026-02-08 at 12 04 10 PM" src="https://github.com/user-attachments/assets/848ce339-5a3f-4450-be7c-228863f6616c" />
+Private Onboarding + Payments + Darkpool-Style Settlement
+Built on the Stellar Development Foundation network
 
-## What’s in this repo
+![Image](https://www.mdpi.com/sensors/sensors-21-00772/article_deploy/html/images/sensors-21-00772-g010.png)
 
-- **`frontend/`**: Next.js app (Cosmos platform UI).
-- **`ai-analyzer/`**: FastAPI service (“Cosmos AI Backend”) powering widget recommendations (OpenAI + heuristic fallback).
+![Image](https://s3.ap-northeast-1.amazonaws.com/gimg.gateimg.com/learn/3e4db590322d54f45798896f54e34f4bed041921.png)
 
-![Project overview](docs/screenshots/01-project-overview.png)
-
-## Key features
-
-- **Rankings & profiles**
-  - Project Ratings list + detailed project profiles (PoL breakdown, categories, charts).
-  - Directory (Exchange Ratings) list.
-- **Workspaces**
-  - Compliance Maker
-  - Routing Engine
-  - Agentic Builder (business inputs → widget bundle recommendations)
-  - Dashboard Workspace (drag, resize, configure widgets; save dashboards to `localStorage`)
-  - My Dashboards (saved dashboards list in sidebar)
-- **AI recommendations**
-  - Infers business category hints (remittance / fintech / bank / stablecoin / NGO / RWA / custom)
-  - Produces 2–3 bundles with per-widget **why**, **time saved**, **cost savings**, and optional **ROI**
-
-  ![Project financial](docs/screenshots/02-project-financial.png)
-
-## Tech stack
-
-- **Frontend**: Next.js (App Router), React 18, Emotion, TanStack Query, `react-rnd`
-- **UI**: `@core3/ui-components` (workspace package)
-- **Backend**: FastAPI + Uvicorn, Pydantic, OpenAI SDK, python-dotenv
-
-## Quickstart (local dev)
-
-### 1) Frontend
-
-```bash
-cd frontend
-pnpm install
-pnpm dev:platform
-```
-
-Platform runs at `http://localhost:3000`.
-
-![Proof of Opinion](docs/screenshots/03-proof-of-opinion.png)
-
-### 2) AI backend (FastAPI)
-
-```bash
-cd ai-analyzer
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8001
-```
-
-Health check:
-
-```bash
-curl -sS http://localhost:8001/health
-```
-
-## Connecting frontend ↔ AI backend
-
-The frontend calls a **same-origin Next.js proxy**:
-
-- **Frontend endpoint**: `POST /api/agentic/widgets/recommendations`
-- **Upstream**: `POST {COSMOS_AI_URL}/api/widgets/recommendations`
-
-Configure the upstream backend URL:
-
-- **`COSMOS_AI_URL`** (preferred, server-only)
-- **`NEXT_PUBLIC_COSMOS_AI_URL`** (fallback)
-
-If you don’t set anything, the proxy uses the default configured in the repo (can be updated to your Render URL).
-
-### Example `.env.local` (frontend)
-
-Create `frontend/apps/platform/.env.local`:
-
-```bash
-COSMOS_AI_URL=http://localhost:8001
-```
-
-## API reference (AI backend)
-
-### `GET /health`
-
-Returns:
-
-```json
-{ "status": "ok" }
-```
-
-### `POST /api/widgets/recommendations`
-
-Minimal request:
-
-```bash
-curl -sS -X POST "http://localhost:8001/api/widgets/recommendations" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "business_name": "Acme Remit",
-    "business_description": "We are a cross-border remittance company operating in US and India. We do bank and wallet payouts. Need compliance monitoring, routing performance, and alerting.",
-    "business_type_hint": "Remittance company"
-  }'
-```
-
-Notes:
-- If `OPENAI_API_KEY` is not set, the backend responds with `"source": "heuristic"`.
-- Set `OPENAI_MODEL` to override the default model (defaults to `gpt-4o-mini`).
-
-![Dashboard Workspace](docs/screenshots/04-dashboard-workspace.png)
-
-## Deploy (AI backend on Render)
-
-`ai-analyzer/render.yaml` includes a Render Blueprint for the FastAPI service.
-
-- **Build**: `pip install -r requirements.txt`
-- **Start**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-- **Health check**: `/health`
-
-Required Render env vars:
-- `OPENAI_API_KEY`
-- `CORS_ALLOW_ORIGINS` (comma-separated frontend origins)
-
-![Dashboard Workspace](docs/screenshots/04-dashboard-workspace.png)
-
-## Repo notes
-
-- Dashboards are currently saved to **browser `localStorage`** (hackathon-mode).
-- The dashboard workspace uses **grid snapping** + `react-rnd` resizing/dragging.
+![Image](https://www.researchgate.net/publication/359994923/figure/fig1/AS%3A1146856436441088%401650443290427/Layered-Architecture-diagram-for-E-commerce-in-Blockchain-technology.ppm)
 
 ---
 
-© Built on Stellar by Team Arcgenesis
+## 🚀 Overview
+
+Hypertron enables **private, workflow-native payments** for businesses—powered by Stellar Protocol 25 (X-Ray), Poseidon commitments, and a custom Privacy Relay Layer.
+
+Businesses can:
+
+* Create custom onboarding flows
+* Collect payments privately
+* Avoid exposing payer wallet addresses
+* Withdraw funds without on-chain linkability
+* Maintain an auditable history via commitments + nullifiers
+
+Hypertron brings **darkpool-style privacy** to **B2B onboarding + payments**, without requiring an L2 or MPC.
+
+---
+
+## ✨ Features
+
+### 🔹 **Custom Onboarding Flows**
+
+* Forms, documents, agreements, borrower steps
+* All combined into a single workflow link
+* Auto-generates payment links after onboarding completion
+
+### 🔹 **Private Payments**
+
+* Client pays via Stellar
+* Payment enters a shared pool
+* Business **never** sees payer address
+* Memo-based attribution
+
+### 🔹 **ZK-Friendly Commitment Layer**
+
+Using Stellar X-Ray primitives:
+
+* Poseidon hashing
+* BN254 operations
+* Commitment + nullifier storage
+* Prevents double-spend
+* Keeps attribution private
+
+### 🔹 **Privacy Relay Layer (Darkpool Settlement)**
+
+Withdrawals routed through:
+
+* One-time ephemeral wallets
+* Multi-hop randomized routing
+* Batching
+* Timing obfuscation
+* Amount jitter (±0.000001 XLM)
+
+This breaks on-chain graph correlation.
+
+### 🔹 **Virtual Balances**
+
+Businesses see:
+
+* Total received
+* Pending withdrawals
+* Completed payouts
+  But never any on-chain flows.
+
+---
+
+## 🧱 Architecture Diagram (Mermaid)
+
+```mermaid
+flowchart TD
+
+    subgraph ClientSide["Client"]
+        CP(Client Pays via Wallet)
+    end
+
+    subgraph Stellar["Stellar Public Chain (L1)"]
+        POOLA((Pool A))
+        POOLB((Pool B))
+        POOLC((Pool C))
+        EWA1((Ephemeral Wallet 1))
+        EWA2((Ephemeral Wallet 2))
+        EWA3((Ephemeral Wallet 3))
+    end
+
+    subgraph Backend["Hypertron Backend"]
+        HZ(Horizon Watcher<br/>Detect Payment by Memo)
+        ATTR(Attribute Payment<br/>Generate Commitment + Nullifier)
+        PRL["Privacy Relay Layer<br/>(Routing Engine)"]
+        VH(Virtual Balance Engine)
+        WD(Withdrawal Coordinator)
+    end
+
+    subgraph Contract["Soroban PoolManager Contract"]
+        COMMIT(Store Commitment)
+        NULLIFIER(Register Nullifier<br/>Prevent Double Spend)
+    end
+
+    subgraph Business["Business Dashboard"]
+        BDASH(Workflow Payments<br/>Paid ✔ Status)
+        BWITH(Withdraw Request)
+    end
+
+
+    %% Client pays → Pool
+    CP -->|XLM + Memo| POOLA
+
+    %% Pool payment detection
+    POOLA --> HZ
+    HZ --> ATTR
+
+    %% Contract writes
+    ATTR -->|commit()| COMMIT
+    ATTR -->|register_nullifier()| NULLIFIER
+
+    %% Dashboard sees Paid ✔
+    ATTR --> VH --> BDASH
+
+    %% Withdrawal
+    BWITH --> WD
+    WD --> PRL
+
+    %% Privacy routing paths
+    PRL -->|Route 1| EWA1
+    PRL -->|Route 2| EWA2
+    PRL -->|Multi-hop| EWA3
+
+    %% Complete withdrawal
+    EWA1 -->|Final Transfer| Business
+    EWA2 -->|Final Transfer| Business
+    EWA3 -->|Final Transfer| Business
+```
+
+---
+
+## 🔁 End-to-End Flow (Sequence)
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Pool as Pool Account(s)
+    participant Backend as Hypertron Backend
+    participant Contract as Soroban PoolManager
+    participant Router as Privacy Relay Layer
+    participant EWA as Ephemeral Wallet
+    participant Biz as Business Wallet
+
+    %% Payment
+    Client->>Pool: Pay XLM (memo: hpl_123)
+    Pool->>Backend: Horizon event detected
+
+    %% Attribution
+    Backend->>Backend: Generate Poseidon Commitment
+    Backend->>Backend: Generate Nullifier
+    Backend->>Contract: commit(commitment, nullifier)
+    Contract-->>Backend: ok
+
+    %% Dashboard
+    Backend->>Backend: Update Virtual Balance
+    Backend->>Biz: Show "Paid ✔"
+
+    %% Withdrawal
+    Biz->>Backend: Request withdrawal
+    Backend->>Router: Execute Privacy Routing
+
+    %% Routing
+    Router->>EWA: Create ephemeral wallet
+    Router->>EWA: Send pooled funds
+    EWA->>Biz: Final transfer (unlinkable)
+
+    %% Nullifier Spend
+    Backend->>Contract: spend_nullifier(nullifier)
+    Contract-->>Backend: ok
+```
+
+---
+
+## 🧩 Core Components
+
+### **1. Payment Links**
+
+* Business configures workflow & amount
+* Client pays to shared pool
+* Memo tags identify workflow
+
+### **2. Attribution Engine**
+
+* Matches memo → workflow
+* Creates zk-friendly commitment
+* Registers nullifier
+
+### **3. PoolManager Contract**
+
+* Stores commitments
+* Tracks nullifiers
+* Enforces double-spend protection
+* Does *not* reveal balances
+
+### **4. Privacy Relay Layer**
+
+* Multi-hop routing
+* Ephemeral wallets
+* Batching
+* Time randomization
+* Amount jitter
+* Breaks blockchain graph analysis
+
+### **5. Business Dashboard**
+
+* Virtual balance
+* Payment events
+* Withdrawals
+* Workflow history
+
+---
+
+## 🛡 Security Model
+
+### Privacy Guarantees
+
+| Actor    | Can See                         | Cannot See                    |
+| -------- | ------------------------------- | ----------------------------- |
+| Business | Paid ✔ events, amount, workflow | Payer wallet, pool outflows   |
+| Client   | Payment sent                    | Business balances/withdrawals |
+| Observer | Pool inflow/outflow             | Mapping between them          |
+| Contract | Commitments, nullifiers         | Identities, balances          |
+
+### Integrity Guarantees
+
+* Commitments must match real payments
+* Nullifiers prevent double withdrawals
+* Routing engine cannot break protocol rules
+
+---
+
+## 🧰 Tech Stack
+
+* **Backend**: Node.js / TypeScript
+* **Smart Contracts**: Soroban (Rust)
+* **Hash Functions**: Poseidon / Poseidon2
+* **Curves**: BN254 via Protocol 25
+* **Routing Layer**: Multi-hop ephemeral wallets
+* **Frontend**: React / Next.js
+
+---
+
+## 🗺 Roadmap
+
+* [x] Payment link attribution
+* [x] Commitment + nullifier registry
+* [x] Onboarding flow builder
+* [x] Virtual balance engine
+* [x] Ephemeral withdrawal accounts
+* [ ] Batch withdrawal system
+* [ ] Multi-pool routing
+* [ ] Full ZK proof-of-withdrawal
+* [ ] Audit ZK attestations
+
 
