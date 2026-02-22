@@ -3,7 +3,8 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { useFreighter } from "@/hooks/useFreighter";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQRCode } from "next-qrcode";
 import {
   buildPaymentXdr,
   submitSignedTransaction,
@@ -19,9 +20,43 @@ export default function PayPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const { publicKey, connect, isConnecting } = useFreighter();
-  const amount = searchParams.get("amount") || "—";
-  const memo = searchParams.get("memo") || "";
-  const destination = searchParams.get("dest") || (process.env.NEXT_PUBLIC_MERCHANT_RECIPIENT?.trim() || null);
+  const linkId = typeof params.id === "string" ? params.id : "";
+  const { Canvas: QRCanvas } = useQRCode();
+  const [payPageUrl, setPayPageUrl] = useState("");
+  useEffect(() => {
+    if (linkId && typeof window !== "undefined")
+      setPayPageUrl(`${window.location.origin}/pay/${linkId}`);
+  }, [linkId]);
+
+  const [fetchedLink, setFetchedLink] = useState<{
+    amount: string;
+    memo: string;
+    destinationAddress: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!linkId || linkId.startsWith("pl_")) return;
+    fetch(`/api/payment-link/${linkId}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.amount != null && data?.destinationAddress) {
+          setFetchedLink({
+            amount: data.amount,
+            memo: data.memo || "",
+            destinationAddress: data.destinationAddress,
+          });
+        }
+      })
+      .catch(() => {});
+  }, [linkId]);
+
+  const amount =
+    fetchedLink?.amount ?? searchParams.get("amount") ?? "—";
+  const memo = fetchedLink?.memo ?? searchParams.get("memo") ?? "";
+  const destination =
+    fetchedLink?.destinationAddress ??
+    searchParams.get("dest") ??
+    (process.env.NEXT_PUBLIC_MERCHANT_RECIPIENT?.trim() || null);
 
   const [payStatus, setPayStatus] = useState<"idle" | "building" | "signing" | "submitting" | "success" | "error">("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -98,8 +133,21 @@ export default function PayPage() {
         )}
         <p className="text-muted-foreground text-xs">ID: {params.id}</p>
 
+        {payPageUrl && (
+          <div className="flex flex-col items-center gap-2 py-2">
+            <p className="text-muted-foreground text-sm">Scan to open link</p>
+            <div className="rounded-lg border border-border bg-white p-2 inline-block">
+              <QRCanvas
+                text={payPageUrl}
+                options={{ errorCorrectionLevel: "M", width: 180 }}
+              />
+            </div>
+          </div>
+        )}
+
+        <p className="text-muted-foreground text-sm font-medium">Pay with Stellar wallet</p>
         {!publicKey && (
-          <Button onClick={connect} disabled={isConnecting} className="mt-4 w-full">
+          <Button onClick={connect} disabled={isConnecting} className="mt-2 w-full">
             {isConnecting ? "Connecting…" : "Connect wallet to pay"}
           </Button>
         )}

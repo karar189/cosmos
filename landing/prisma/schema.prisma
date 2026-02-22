@@ -73,13 +73,51 @@ model LinkTag {
   @@index(projectId)
 }
 
-model PaymentLink {
-  id                 String   @id @map("_id")
-  creatorPublicKey   String
-  amount             String
-  memo               String?
-  destinationAddress String
-  createdAt          DateTime @default(now())
+// Phase 1: business identity + payment links with attribution (pool + memo)
+model Business {
+  id              String    @id @default(cuid()) @map("_id")
+  walletAddress   String    @unique // Stellar G... address from Freighter
+  receiveAddress  String?   // Stellar G... where this business receives payments (user-set)
+  createdAt       DateTime  @default(now())
+  paymentLinks    PaymentLink[]
+  withdrawals     Withdrawal[]
+}
 
-  @@index(creatorPublicKey)
+model PaymentLink {
+  id                 String    @id @default(cuid()) @map("_id")
+  businessId         String
+  business           Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  amount             String
+  purpose            String?   // e.g. "Invoice", "Deposit"
+  clientName         String?
+  workflowStage      String?   // e.g. "pending", "signed", "delivered"
+  linkMemo           String    @unique // unique memo for attribution when client pays to pool
+  destinationAddress String    // pool address (from env when created)
+  paidAt             DateTime?
+  paymentTxHash      String?
+  // Phase 2: ZK commitment (payment → commit on-chain)
+  payerAddress       String?   // Stellar G... who paid (from tx source)
+  nonce              String?   // random nonce used to derive nullifier
+  nullifier          String?   // stored for withdraw (mark spent)
+  commitmentTxHash   String?   // Soroban tx that added the commitment
+  createdAt          DateTime  @default(now())
+
+  @@index(businessId)
+  @@index([businessId, paidAt])
+}
+
+// Phase 4: Withdrawals — track used nullifiers and payouts from pool
+model Withdrawal {
+  id               String    @id @default(cuid()) @map("_id")
+  businessId       String
+  business         Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  amount           String    // XLM amount withdrawn
+  nullifiers       String[]  // nullifiers marked as spent (from PaymentLinks)
+  recipientAddress String    // Stellar G... where funds were sent
+  status           String    // "pending" | "completed" | "failed"
+  payoutTxHash     String?   // Stellar tx that sent funds from pool to recipient
+  contractTxHash   String?   // Soroban withdraw tx (if contract marks nullifiers)
+  createdAt        DateTime  @default(now())
+
+  @@index(businessId)
 }

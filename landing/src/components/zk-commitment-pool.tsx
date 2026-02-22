@@ -1,0 +1,199 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  fetchPoolState,
+  prepareInitialize,
+  prepareCommit,
+  randomU256,
+  getNetworkPassphrase,
+  type PoolState,
+  type StellarNetwork,
+} from "@/lib/soroban-poolmanager";
+
+const NETWORK = (process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet") as StellarNetwork;
+const CONTRACT_ID = process.env.NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID || "";
+
+/** Stellar classic account (G...) required for Soroban getAccount. */
+function isValidStellarAccountId(value: string): boolean {
+  return /^G[A-Z2-7]{55}$/.test(value) === true;
+}
+
+function normalizePoolError(message: string): string {
+  if (message.includes("accountId is invalid") || message.includes("accountId is an M-address")) {
+    return "Use a standard Stellar account (G...). Muxed accounts (M...) are not supported for this action.";
+  }
+  if (message.includes("Account not found")) {
+    return "Account not found on this network. Fund it with testnet XLM first (e.g. via Friendbot).";
+  }
+  return message;
+}
+
+async function signWithFreighter(xdr: string, address: string): Promise<string> {
+  const Freighter = (await import("@stellar/freighter-api")).default;
+  const result = await Freighter.signTransaction(xdr, {
+    networkPassphrase: getNetworkPassphrase(NETWORK),
+    address,
+  });
+  if (result?.error || !result?.signedTxXdr) {
+    throw new Error(result?.error?.message ?? "Wallet declined or signing failed");
+  }
+  return result.signedTxXdr;
+}
+
+interface ZkCommitmentPoolProps {
+  /** Connected wallet public key (for init + commit). */
+  publicKey: string;
+}
+
+export function ZkCommitmentPool({ publicKey }: ZkCommitmentPoolProps) {
+  const [poolState, setPoolState] = useState<PoolState | null | "loading">("loading");
+  const [error, setError] = useState<string | null>(null);
+  const [txStatus, setTxStatus] = useState<"idle" | "signing" | "sending" | "success" | "error">("idle");
+  const [txMessage, setTxMessage] = useState<string | null>(null);
+
+  const loadState = useCallback(async () => {
+    if (!CONTRACT_ID) {
+      setPoolState(null);
+      setError("NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID not set");
+      return;
+    }
+    setError(null);
+    setPoolState("loading");
+    try {
+      const state = await fetchPoolState(CONTRACT_ID, NETWORK);
+      setPoolState(state);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      setPoolState(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadState();
+  }, [loadState]);
+
+  async function handleInitialize() {
+    if (!CONTRACT_ID || !publicKey) return;
+    if (!isValidStellarAccountId(publicKey)) {
+      setTxMessage("Use a standard Stellar account (G...). This wallet address format is not supported.");
+      setTxStatus("error");
+      return;
+    }
+    setTxStatus("signing");
+    setTxMessage(null);
+    try {
+      const prep = await prepareInitialize(CONTRACT_ID, NETWORK, publicKey);
+      if (!prep.success) {
+        setTxMessage(normalizePoolError(prep.error));
+        setTxStatus("error");
+        return;
+      }
+      const signedXdr = await signWithFreighter(prep.xdr, publicKey);
+      setTxStatus("sending");
+      const send = await prep.signAndSend(signedXdr);
+      if (!send.success) {
+        setTxMessage(normalizePoolError(send.error));
+        setTxStatus("error");
+        return;
+      }
+      setTxMessage(`Initialized. Tx: ${send.hash}`);
+      setTxStatus("success");
+      await loadState();
+    } catch (e) {
+      setTxMessage(normalizePoolError(e instanceof Error ? e.message : String(e)));
+      setTxStatus("error");
+    }
+  }
+
+  async function handleAddCommitment() {
+    if (!CONTRACT_ID || !publicKey) return;
+    if (!isValidStellarAccountId(publicKey)) {
+      setTxMessage("Use a standard Stellar account (G...). This wallet address format is not supported.");
+      setTxStatus("error");
+      return;
+    }
+    setTxStatus("signing");
+    setTxMessage(null);
+    try {
+      const secret = randomU256();
+      const nullifier = randomU256();
+      const prep = await prepareCommit(CONTRACT_ID, NETWORK, publicKey, secret, nullifier);
+      if (!prep.success) {
+        setTxMessage(normalizePoolError(prep.error));
+        setTxStatus("error");
+        return;
+      }
+      const signedXdr = await signWithFreighter(prep.xdr, publicKey);
+      setTxStatus("sending");
+      const send = await prep.signAndSend(signedXdr);
+      if (!send.success) {
+        setTxMessage(normalizePoolError(send.error));
+        setTxStatus("error");
+        return;
+      }
+      setTxMessage(`Committed. Tx: ${send.hash}`);
+      setTxStatus("success");
+      await loadState();
+    } catch (e) {
+      setTxMessage(normalizePoolError(e instanceof Error ? e.message : String(e)));
+      setTxStatus("error");
+    }
+  }
+
+  if (!CONTRACT_ID) {
+    return (
+      <Card className="max-w-md">
+        <CardHeader>
+          <CardTitle>ZK commitment pool</CardTitle>
+          <CardDescription>
+            Set NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID in .env to use the commitment pool.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="max-w-md">
+      <CardHeader>
+        <CardTitle>ZK commitment pool</CardTitle>
+        <CardDescription>
+          Commit to the pool (Poseidon leaf). Later: prove knowledge and withdraw (proof not wired yet).
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {poolState === "loading" && <p className="text-muted-foreground text-sm">Loading pool state…</p>}
+        {error && <p className="text-destructive text-sm">{error}</p>}
+        {poolState && poolState !== "loading" && (
+          <div className="text-sm space-y-1">
+            <p>
+              <span className="text-muted-foreground">Root:</span>{" "}
+              <code className="break-all">{poolState.root}</code>
+            </p>
+            <p>
+              <span className="text-muted-foreground">Size:</span> {poolState.size}
+            </p>
+          </div>
+        )}
+        {poolState !== "loading" && poolState === null && (
+          <Button onClick={handleInitialize} disabled={txStatus === "signing" || txStatus === "sending"}>
+            {txStatus === "signing" ? "Approve in Freighter…" : txStatus === "sending" ? "Sending…" : "Initialize pool"}
+          </Button>
+        )}
+        {poolState && poolState !== "loading" && poolState !== null && (
+          <Button onClick={handleAddCommitment} disabled={txStatus === "signing" || txStatus === "sending"}>
+            {txStatus === "signing" ? "Approve in Freighter…" : txStatus === "sending" ? "Sending…" : "Add commitment"}
+          </Button>
+        )}
+        {(txStatus === "success" || txStatus === "error") && txMessage && (
+          <p className={txStatus === "error" ? "text-destructive text-sm" : "text-muted-foreground text-sm"}>
+            {txMessage}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
