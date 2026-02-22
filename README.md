@@ -1,17 +1,9 @@
 
-#<img width="1376" height="913" alt="Screenshot 2026-02-22 at 6 44 18 PM" src="https://github.com/user-attachments/assets/96739bf1-0daa-4abe-ab1a-178076e255e1" />
+<img width="1376" height="913" alt="Screenshot 2026-02-22 at 6 44 18 PM" src="https://github.com/user-attachments/assets/96739bf1-0daa-4abe-ab1a-178076e255e1" />
  🪩 Hypertron Privacy Layer
 
 Private Onboarding + Payments + Darkpool-Style Settlement
 Built on the Stellar Development Foundation network
-
-![Image](https://www.mdpi.com/sensors/sensors-21-00772/article_deploy/html/images/sensors-21-00772-g010.png)
-
-![Image](https://s3.ap-northeast-1.amazonaws.com/gimg.gateimg.com/learn/3e4db590322d54f45798896f54e34f4bed041921.png)
-
-![Image](https://www.researchgate.net/publication/359994923/figure/fig1/AS%3A1146856436441088%401650443290427/Layered-Architecture-diagram-for-E-commerce-in-Blockchain-technology.ppm)
-
----
 
 ## 🚀 Overview
 
