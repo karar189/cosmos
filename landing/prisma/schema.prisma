@@ -74,13 +74,18 @@ model LinkTag {
 }
 
 // Phase 1: business identity + payment links with attribution (pool + memo)
+// Wallet = identity (no password). Profile from onboarding/settings stored here.
 model Business {
-  id              String    @id @default(cuid()) @map("_id")
-  walletAddress   String    @unique // Stellar G... address from Freighter
-  receiveAddress  String?   // Stellar G... where this business receives payments (user-set)
-  createdAt       DateTime  @default(now())
-  paymentLinks    PaymentLink[]
-  withdrawals     Withdrawal[]
+  id               String    @id @default(cuid()) @map("_id")
+  walletAddress    String    @unique // Stellar G... = username / login identity
+  receiveAddress   String?   // Stellar G... where this business receives payments (user-set)
+  name             String?   // from onboarding/settings
+  email            String?   // from onboarding/settings
+  businessNature   String?   // e.g. agency, fintech, saas
+  selectedWidgets  String[]  // widget ids from onboarding/settings
+  createdAt        DateTime  @default(now())
+  paymentLinks     PaymentLink[]
+  withdrawals      Withdrawal[]
 }
 
 model PaymentLink {
@@ -104,6 +109,19 @@ model PaymentLink {
 
   @@index(businessId)
   @@index([businessId, paidAt])
+}
+
+// Dark pool: one-time memo hash for payment attribution (opaque on-chain).
+// prepare-pay creates a row; when we see a payment with this memo hash we attribute to the link.
+model PendingPaymentMemo {
+  id        String   @id @default(cuid()) @map("_id")
+  linkId    String
+  memoHash  String   // 32-byte hash as hex (64 chars)
+  amount    String
+  createdAt DateTime @default(now())
+
+  @@index(memoHash)
+  @@index(linkId)
 }
 
 // Phase 4: Withdrawals — track used nullifiers and payouts from pool

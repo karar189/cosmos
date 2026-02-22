@@ -17,9 +17,9 @@ export function DashboardMain({
     <main
       data-layout={fixed ? "fixed" : "auto"}
       className={cn(
-        "px-4 py-6",
+        "flex-1 px-4 py-6 md:px-6",
         fixed && "flex grow flex-col overflow-hidden",
-        !fluid && "mx-auto w-full max-w-7xl",
+        !fluid && "mx-auto w-full max-w-6xl",
         className
       )}
       {...props}

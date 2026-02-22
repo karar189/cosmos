@@ -45,7 +45,7 @@ export const sidebarData: SidebarData = {
         },
         {
           title: "Settings",
-          url: "/dashboard",
+          url: "/dashboard/settings",
           icon: Settings,
         },
       ],

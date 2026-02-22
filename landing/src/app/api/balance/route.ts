@@ -28,12 +28,13 @@ export async function GET(req: NextRequest) {
       completed.flatMap((w) => w.nullifiers)
     );
 
-    // Paid links whose nullifier is not yet used
+    // Paid links with successful on-chain commit (same logic as withdraw)
     const paidLinks = await db.paymentLink.findMany({
       where: {
         businessId: bid,
         paidAt: { not: null },
         nullifier: { not: null },
+        commitmentTxHash: { not: null },
       },
       select: { amount: true, nullifier: true },
     });

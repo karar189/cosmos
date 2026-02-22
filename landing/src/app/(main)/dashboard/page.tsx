@@ -14,7 +14,7 @@ import { CreatePaymentLinkForm } from "@/components/create-payment-link-form";
 import { PaymentLinkList } from "@/components/payment-link-list";
 import { ZkCommitmentPool } from "@/components/zk-commitment-pool";
 import { useFreighter } from "@/hooks/useFreighter";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
 import { ThemeSwitch } from "@/components/dashboard/theme-switch";
@@ -27,8 +27,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 
+const VALID_TABS = ["overview", "analytics", "payment-links", "receive-address", "withdraw", "zk-pool"] as const;
+
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabFromUrl = searchParams.get("tab");
+  const defaultTab = tabFromUrl && VALID_TABS.includes(tabFromUrl as (typeof VALID_TABS)[number]) ? tabFromUrl : "overview";
   const { publicKey, connect, disconnect, isConnecting } = useFreighter();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [receiveAddress, setReceiveAddress] = useState<string | null>(null);
@@ -112,15 +117,15 @@ export default function DashboardPage() {
   }
 
   return (
-    <OnboardingGate when={!!publicKey}>
+    <OnboardingGate when={!!publicKey} walletAddress={publicKey}>
     <>
       <DashboardHeader fixed>
         <div className="flex flex-1 items-center gap-2">
-          <h1 className="text-lg font-semibold tracking-tight">Dashboard</h1>
+          <span className="text-sm font-medium text-muted-foreground">Dashboard</span>
         </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1">
           <ThemeSwitch />
-          <Button variant="outline" size="sm" onClick={() => router.push("/")}>
+          <Button variant="ghost" size="sm" onClick={() => router.push("/")}>
             Home
           </Button>
           <Button variant="ghost" size="sm" onClick={disconnect}>
@@ -130,43 +135,77 @@ export default function DashboardPage() {
       </DashboardHeader>
 
       <DashboardMain>
-        <div className="mb-4 flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Overview</h2>
-        </div>
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Manage payment links, view revenue, and withdraw to your address.
+            </p>
+          </div>
 
         {businessError && (
-          <p className="mb-4 rounded-lg border border-border bg-card p-3 text-sm text-destructive">
+          <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
             {businessError}. Ensure DATABASE_URL in .env is correct and run: npx prisma generate
           </p>
         )}
 
-        <Tabs defaultValue="overview" className="space-y-4">
-          <div className="w-full overflow-x-auto pb-2">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="payment-links">Payment Links</TabsTrigger>
-              <TabsTrigger value="receive-address">Receive Address</TabsTrigger>
-              <TabsTrigger value="withdraw">Withdraw</TabsTrigger>
-              <TabsTrigger value="zk-pool">ZK Pool</TabsTrigger>
+        <Tabs defaultValue={defaultTab} className="space-y-6">
+          <div className="flex flex-wrap items-center gap-2 border-b border-border pb-2">
+            <TabsList className="h-auto w-auto rounded-lg bg-transparent p-0 gap-1">
+              <TabsTrigger
+                value="overview"
+                className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger
+                value="analytics"
+                className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger
+                value="payment-links"
+                className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Payment Links
+              </TabsTrigger>
+              <TabsTrigger
+                value="receive-address"
+                className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Receive Address
+              </TabsTrigger>
+              <TabsTrigger
+                value="withdraw"
+                className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Withdraw
+              </TabsTrigger>
+              <TabsTrigger
+                value="zk-pool"
+                className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                ZK Pool
+              </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="overview" className="space-y-4">
+          <TabsContent value="overview" className="space-y-6">
             <OverviewStats businessId={businessId} />
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-              <Card className="col-span-1 lg:col-span-4">
-                <CardHeader>
-                  <CardTitle>Revenue overview</CardTitle>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-7">
+              <Card className="col-span-1 rounded-xl border-border lg:col-span-4">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Overview</CardTitle>
                   <CardDescription>Monthly received (XLM)</CardDescription>
                 </CardHeader>
-                <CardContent className="ps-2">
+                <CardContent className="pl-2">
                   <OverviewChart />
                 </CardContent>
               </Card>
-              <Card className="col-span-1 lg:col-span-3">
-                <CardHeader>
-                  <CardTitle>Recent payments</CardTitle>
+              <Card className="col-span-1 rounded-xl border-border lg:col-span-3">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Recent payments</CardTitle>
                   <CardDescription>
                     Latest payments to your links
                   </CardDescription>
@@ -250,6 +289,7 @@ export default function DashboardPage() {
             <ZkCommitmentPool publicKey={publicKey} />
           </TabsContent>
         </Tabs>
+        </div>
       </DashboardMain>
     </>
     </OnboardingGate>

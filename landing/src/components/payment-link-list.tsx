@@ -77,7 +77,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
       <CardHeader>
         <CardTitle>Your payment links</CardTitle>
         <CardDescription>
-          When a client pays via the link, funds go to the privacy pool. You see proof you were paid (amount, Paid ✔) — we never show your client’s wallet address. Use “Check status” to refresh.
+          When a client pays via the link, funds go to the privacy pool with an opaque memo (dark pool). You see proof you were paid (amount, Paid ✔) — we never show your client’s wallet address. Use “Check status” to refresh.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

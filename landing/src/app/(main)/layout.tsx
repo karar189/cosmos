@@ -29,7 +29,7 @@ export default function MainLayout({
         onDisconnect={disconnect}
         user={user}
       />
-      <SidebarInset className={cn("flex flex-1 flex-col")}>
+      <SidebarInset className={cn("flex flex-1 flex-col dashboard-dark-bg")}>
         {children}
       </SidebarInset>
     </SidebarProvider>

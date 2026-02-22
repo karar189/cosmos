@@ -72,13 +72,41 @@ export default function PayPage() {
     const horizonUrl = getHorizonUrl(STELLAR_NETWORK);
     const networkPassphrase = getNetworkPassphrase(STELLAR_NETWORK);
 
+    // Dark pool: get one-time opaque memo (hash) so on-chain only hash is visible
+    let memoHashBase64: string | undefined;
+    try {
+      const amountPayload = String(amount).replace(/\s*XLM$/i, "").trim();
+      const prepRes = await fetch(`/api/payment-link/${linkId}/prepare-pay`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: amountPayload || undefined }),
+      });
+      const errBody = await prepRes.json().catch(() => ({}));
+      if (prepRes.ok) {
+        if (errBody.memoHashBase64) memoHashBase64 = errBody.memoHashBase64;
+      } else {
+        setPayError(
+          typeof errBody?.error === "string"
+            ? errBody.error
+            : `Prepare payment failed (${prepRes.status})`
+        );
+        setPayStatus("error");
+        return;
+      }
+    } catch (e) {
+      setPayError(e instanceof Error ? e.message : "Prepare payment failed");
+      setPayStatus("error");
+      return;
+    }
+
     const buildResult = await buildPaymentXdr({
       horizonUrl,
       networkPassphrase,
       sourcePublicKey: publicKey,
       destinationPublicKey: destination,
       amountXlm: String(amount),
-      memo: memo || undefined,
+      memo: memoHashBase64 ? undefined : (memo || undefined),
+      memoHashBase64,
     });
 
     if (!buildResult.success) {
@@ -128,9 +156,7 @@ export default function PayPage() {
         <p className="text-muted-foreground">
           Amount: <strong className="text-foreground">{amount}</strong> XLM
         </p>
-        {memo && (
-          <p className="text-muted-foreground text-sm">Memo: {memo}</p>
-        )}
+        {/* Don't show memo on pay page (dark pool: we use opaque hash) */}
         <p className="text-muted-foreground text-xs">ID: {params.id}</p>
 
         {payPageUrl && (

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { LampContainer } from "@/components/ui/lamp";
 import MagicBadge from "@/components/ui/magic-badge";
 import MagicCard from "@/components/ui/magic-card";
-import { COMPANIES, PROCESS } from "@/utils";
+import { PROCESS } from "@/utils";
 import { REVIEWS } from "@/utils/constants/misc";
 import { ArrowRightIcon, CreditCardIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
@@ -28,30 +28,6 @@ const HomePage = async () => {
                 }}
                 aria-hidden
             />
-            {/* Companies Section - full width, overlaps bottom of hero to cover Unicorn badge */}
-            <section className="relative z-20 w-full -mt-28 pt-24 pb-14 bg-black px-4 sm:px-6 md:px-8">
-                <AnimationContainer delay={0.2}>
-                    <div className="py-2 w-full">
-                        <div className="mt-0">
-                            <ul className="flex flex-wrap items-center gap-x-6 gap-y-6 md:gap-x-16 justify-center">
-                                {COMPANIES.map((company) => (
-                                    <li key={company.name}>
-                                        <Image
-                                            src={company.logo}
-                                            alt={company.name}
-                                            width={80}
-                                            height={80}
-                                            quality={100}
-                                            className="w-28 h-auto"
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </AnimationContainer>
-            </section>
-
             {/* Dashboard preview section */}
             <MaxWidthWrapper className="relative z-10 mt-0">
                 <div className="flex flex-col items-center justify-center w-full text-center">

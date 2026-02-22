@@ -7,7 +7,9 @@ const PAYMENT_POOL_ADDRESS = (
   ""
 ).trim();
 
-/** Get a payment link by id (for pay page and attribution). When pool is set, always return pool as destination so payments go to pool (not stored receive address). */
+const RELAYER_PUBLIC_KEY = (process.env.NEXT_PUBLIC_RELAYER_PUBLIC_KEY ?? "").trim();
+
+/** Get a payment link by id (for pay page and attribution). When relayer is set, return relayer so clients pay relayer (backend forwards to pool). Otherwise pool address. */
 export async function GET(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -20,7 +22,7 @@ export async function GET(
     if (!link) {
       return NextResponse.json({ error: "Payment link not found" }, { status: 404 });
     }
-    const destinationAddress = PAYMENT_POOL_ADDRESS || link.destinationAddress;
+    const destinationAddress = RELAYER_PUBLIC_KEY || PAYMENT_POOL_ADDRESS || link.destinationAddress;
     return NextResponse.json({
       id: link.id,
       amount: link.amount,

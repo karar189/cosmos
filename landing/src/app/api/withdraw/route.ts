@@ -88,6 +88,7 @@ export async function POST(req: NextRequest) {
         businessId: bid,
         paidAt: { not: null },
         nullifier: { not: null },
+        commitmentTxHash: { not: null },
       },
       select: { id: true, amount: true, nullifier: true },
       orderBy: { paidAt: "desc" },

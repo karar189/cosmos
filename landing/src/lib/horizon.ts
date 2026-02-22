@@ -55,6 +55,19 @@ async function getTransactionMemo(
   return decodeMemo(tx);
 }
 
+/** Get memo hash from tx as hex (32 bytes). For memo_type "hash", memo is base64. */
+function getMemoHashHex(tx: { memo_type?: string; memo?: string }): string | null {
+  if (tx.memo_type !== "hash" || !tx.memo) return null;
+  try {
+    const raw = String(tx.memo).trim();
+    const buf = Buffer.from(raw, "base64");
+    if (buf.length !== 32) return null;
+    return buf.toString("hex");
+  } catch {
+    return null;
+  }
+}
+
 /** Get the source (payer) account of a transaction. */
 export async function getTransactionSourceAccount(
   txHash: string,
@@ -117,4 +130,50 @@ export async function findPaymentToAccountByMemo(
     return { txHash, memo: memo.trim(), sourceAccount };
   }
   return null;
+}
+
+/** Incoming payment with hash memo (for dark pool). */
+export interface PaymentWithHashMemo {
+  txHash: string;
+  memoHashHex: string;
+  sourceAccount: string;
+  amount: string;
+}
+
+/**
+ * Fetch recent incoming payments to the pool that have a hash memo.
+ * Used to match dark-pool payments to PendingPaymentMemo.
+ */
+export async function findPaymentsToAccountWithHashMemo(
+  accountId: string,
+  network: StellarNetwork,
+  limit = 100
+): Promise<PaymentWithHashMemo[]> {
+  const base = getHorizonUrl(network);
+  const pool = accountId.trim();
+  const url = `${base}/accounts/${encodeURIComponent(pool)}/payments?limit=${limit}&order=desc&join=transactions`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) return [];
+
+  const data = (await res.json()) as { _embedded?: { records?: HorizonPayment[] } };
+  const records = data._embedded?.records ?? [];
+  const out: PaymentWithHashMemo[] = [];
+
+  for (const payment of records) {
+    if (payment.type !== "payment") continue;
+    if (payment.to !== pool) continue;
+    const memoHashHex = payment.transaction
+      ? getMemoHashHex(payment.transaction)
+      : null;
+    if (!memoHashHex) continue;
+    const sourceAccount =
+      payment.from ?? (await getTransactionSourceAccount(payment.transaction_hash, network)) ?? "";
+    out.push({
+      txHash: payment.transaction_hash,
+      memoHashHex,
+      sourceAccount,
+      amount: (payment as { amount?: string }).amount ?? "0",
+    });
+  }
+  return out;
 }

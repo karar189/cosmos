@@ -30,22 +30,15 @@ export function DashboardHeader({
   return (
     <header
       className={cn(
-        "z-50 h-16",
+        "z-50 h-14 border-b border-border bg-background",
         fixed && "sticky top-0 w-full peer/header",
-        offset > 10 && fixed ? "shadow" : "shadow-none",
+        offset > 10 && fixed && "bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60",
         className
       )}
       {...props}
     >
-      <div
-        className={cn(
-          "relative flex h-full items-center gap-3 px-4 sm:gap-4",
-          offset > 10 &&
-            fixed &&
-            "after:absolute after:inset-0 after:-z-10 after:bg-background/80 after:backdrop-blur-lg"
-        )}
-      >
-        <SidebarTrigger variant="outline" className="max-md:scale-125" />
+      <div className="relative flex h-full items-center gap-3 px-4 sm:gap-4">
+        <SidebarTrigger variant="ghost" size="icon" className="max-md:scale-125" />
         <Separator orientation="vertical" className="h-6" />
         {children}
       </div>

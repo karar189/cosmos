@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-import { findPaymentToAccountByMemo } from "@/lib/horizon";
+import {
+  findPaymentToAccountByMemo,
+  findPaymentsToAccountWithHashMemo,
+} from "@/lib/horizon";
 import {
   executeCommit,
   hashToScalar,
 } from "@/lib/soroban-commit-server";
+import { isRelayerConfigured, processRelayerInbox } from "@/lib/relayer";
 import { randomBytes } from "crypto";
 
 const STELLAR_NETWORK = (process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet") as "testnet" | "public";
@@ -27,6 +31,11 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
+
+    if (isRelayerConfigured()) {
+      await processRelayerInbox(STELLAR_NETWORK);
+    }
+
     const link = await db.paymentLink.findUnique({
       where: { id },
       include: { business: true },
@@ -56,18 +65,39 @@ export async function GET(
       });
     }
 
-    const found = await findPaymentToAccountByMemo(
-      pool,
-      link.linkMemo,
-      STELLAR_NETWORK
-    );
+    let found: { txHash: string; sourceAccount: string } | null =
+      await findPaymentToAccountByMemo(
+        pool,
+        link.linkMemo,
+        STELLAR_NETWORK
+      );
+
+    // Dark pool: match by hash memo via PendingPaymentMemo
+    if (!found) {
+      const hashPayments = await findPaymentsToAccountWithHashMemo(
+        pool,
+        STELLAR_NETWORK
+      );
+      const pendingForLink = await db.pendingPaymentMemo.findMany({
+        where: { linkId: id },
+        select: { memoHash: true, amount: true },
+      });
+      const pendingSet = new Set(pendingForLink.map((p) => p.memoHash));
+      for (const hp of hashPayments) {
+        if (!pendingSet.has(hp.memoHashHex)) continue;
+        found = { txHash: hp.txHash, sourceAccount: hp.sourceAccount };
+        await db.pendingPaymentMemo.deleteMany({
+          where: { linkId: id, memoHash: hp.memoHashHex },
+        });
+        break;
+      }
+    }
+
     if (!found) {
       if (process.env.NODE_ENV === "development") {
         console.warn(
           "[Payment status] No match yet. Pool:",
           pool.slice(0, 8) + "..." + pool.slice(-4),
-          "| Memo:",
-          link.linkMemo,
           "| Link ID:",
           id
         );
@@ -75,9 +105,8 @@ export async function GET(
       const destHint = pool ? `${pool.slice(0, 8)}...${pool.slice(-4)}` : "(not set)";
       return NextResponse.json({
         status: "pending" as const,
-        hint: `No payment found to ${destHint} with memo "${link.linkMemo}". Wait 10–20 sec for the ledger and Horizon to update, then click Check status again.`,
+        hint: `No payment found to ${destHint}. Wait 10–20 sec for the ledger and Horizon to update, then click Check status again.`,
         destination: pool,
-        memo: link.linkMemo,
         network: STELLAR_NETWORK,
       });
     }

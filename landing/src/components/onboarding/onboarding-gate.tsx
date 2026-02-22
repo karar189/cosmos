@@ -7,10 +7,12 @@ type OnboardingGateProps = {
   children: React.ReactNode;
   /** Show modal only when this is true (e.g. wallet connected). Omit to show on first visit regardless. */
   when?: boolean;
+  /** Wallet address (G...) to save profile to DB when onboarding completes. */
+  walletAddress?: string | null;
   onComplete?: (data: OnboardingData) => void;
 };
 
-export function OnboardingGate({ children, when = true, onComplete }: OnboardingGateProps) {
+export function OnboardingGate({ children, when = true, walletAddress, onComplete }: OnboardingGateProps) {
   const [showModal, setShowModal] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -38,6 +40,7 @@ export function OnboardingGate({ children, when = true, onComplete }: Onboarding
         open={showModal}
         onOpenChange={setShowModal}
         onComplete={handleComplete}
+        walletAddress={walletAddress ?? undefined}
       />
     </>
   );

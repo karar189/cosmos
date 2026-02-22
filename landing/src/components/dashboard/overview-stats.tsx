@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DollarSign, Link2, CheckCircle, Clock } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -54,39 +55,45 @@ export function OverviewStats({ businessId }: OverviewStatsProps) {
     };
   }, [businessId]);
 
+  const cardClass = "rounded-xl border-border";
+
   if (loading || !stats) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className={cardClass}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Received</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">— XLM</div>
             <p className="text-xs text-muted-foreground">All-time from payment links</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className={cardClass}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Payment Links</CardTitle>
+            <Link2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">—</div>
             <p className="text-xs text-muted-foreground">Active links</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className={cardClass}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">—</div>
             <p className="text-xs text-muted-foreground">Successful payments</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className={cardClass}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">—</div>
@@ -99,36 +106,40 @@ export function OverviewStats({ businessId }: OverviewStatsProps) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <Card>
+      <Card className={cardClass}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Received</CardTitle>
+          <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalReceivedXlm} XLM</div>
           <p className="text-xs text-muted-foreground">All-time from payment links</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className={cardClass}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Payment Links</CardTitle>
+          <Link2 className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.linkCount}</div>
           <p className="text-xs text-muted-foreground">Active links</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className={cardClass}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Completed</CardTitle>
+          <CheckCircle className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.completed}</div>
           <p className="text-xs text-muted-foreground">Successful payments</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className={cardClass}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Pending</CardTitle>
+          <Clock className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.pending}</div>

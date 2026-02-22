@@ -24,7 +24,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-const BUSINESS_NATURES = [
+export const BUSINESS_NATURES = [
   { value: "agency", label: "Agency" },
   { value: "rwa", label: "RWA (Real World Assets)" },
   { value: "fintech", label: "Fintech" },
@@ -33,7 +33,7 @@ const BUSINESS_NATURES = [
   { value: "other", label: "Other" },
 ] as const;
 
-const WIDGETS: { id: string; label: string; description: string; icon: LucideIcon }[] = [
+export const WIDGETS: { id: string; label: string; description: string; icon: LucideIcon }[] = [
   { id: "payments", label: "Payments solution", description: "Accept and manage payments", icon: CreditCard },
   { id: "doc-hub", label: "Doc hub", description: "Store and manage documents", icon: FileText },
   { id: "ai-assistant", label: "AI assistant", description: "Smart automation and support", icon: Bot },
@@ -79,16 +79,31 @@ export function setOnboardingCompleted(data?: OnboardingData): void {
   }
 }
 
+export function getOnboardingData(): OnboardingData | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(ONBOARDING_DATA_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as OnboardingData;
+    return data && typeof data.name === "string" ? data : null;
+  } catch {
+    return null;
+  }
+}
+
 type OnboardingModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onComplete?: (data: OnboardingData) => void;
+  /** When set, profile is saved to DB (keyed by wallet) on complete. */
+  walletAddress?: string;
 };
 
 export function OnboardingModal({
   open,
   onOpenChange,
   onComplete,
+  walletAddress,
 }: OnboardingModalProps) {
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
@@ -126,6 +141,19 @@ export function OnboardingModal({
         ...(importFile && { importFileName: importFile.name }),
       };
       setOnboardingCompleted(data);
+      if (walletAddress?.trim().length === 56 && walletAddress.startsWith("G")) {
+        fetch("/api/business/profile", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            walletAddress: walletAddress.trim(),
+            name: data.name,
+            email: data.email,
+            businessNature: data.businessNature || null,
+            selectedWidgets: data.selectedWidgets,
+          }),
+        }).catch(() => {});
+      }
       onComplete?.(data);
       onOpenChange(false);
     }

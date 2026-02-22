@@ -63,26 +63,31 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {events.map((ev, i) => (
-        <div key={ev.linkId} className="flex items-center gap-4">
-          <Avatar className="h-9 w-9">
-            <AvatarFallback className="rounded-lg bg-muted text-xs">
-              {String(i + 1)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-1 flex-wrap items-center justify-between gap-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Paid ✔</p>
-              <p className="text-sm text-muted-foreground">
-                {ev.workflowStage ? `${ev.workflowStage} · ` : ""}
-                {new Date(ev.paidAt).toLocaleDateString()}
-              </p>
+    <div className="space-y-1">
+      <p className="mb-4 text-sm text-muted-foreground">
+        You received {events.length} payment{events.length !== 1 ? "s" : ""} to your links.
+      </p>
+      <div className="space-y-6">
+        {events.map((ev, i) => (
+          <div key={ev.linkId} className="flex items-center gap-4">
+            <Avatar className="h-9 w-9 shrink-0">
+              <AvatarFallback className="rounded-full bg-muted text-xs font-medium">
+                {String(i + 1)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium leading-none">Paid ✓</p>
+                <p className="text-xs text-muted-foreground">
+                  {ev.workflowStage ? `${ev.workflowStage} · ` : ""}
+                  {new Date(ev.paidAt).toLocaleDateString()}
+                </p>
+              </div>
+              <span className="shrink-0 font-semibold text-primary">+{ev.amount} XLM</span>
             </div>
-            <span className="font-medium text-primary">+{ev.amount} XLM</span>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

@@ -124,8 +124,8 @@ export function HeroWithUnicorn() {
         </div>
       </div>
 
-      {/* Bottom cover to hide Unicorn badge */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/80 to-transparent z-[5] pointer-events-none" aria-hidden />
+      {/* Black block to hide Unicorn "Made with" badge */}
+      <div className="absolute bottom-0 left-0 right-0 h-28 bg-black z-[5] pointer-events-none" aria-hidden />
     </section>
   );
 }
