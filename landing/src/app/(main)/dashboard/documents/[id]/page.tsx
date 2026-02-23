@@ -1,0 +1,321 @@
+"use client";
+
+import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
+import {
+  BarChart3,
+  Activity,
+  LayoutGrid,
+  AlertTriangle,
+  FileText,
+  Wrench,
+  ArrowLeft,
+} from "lucide-react";
+import { DashboardHeader } from "@/components/dashboard/layout/header";
+import { DashboardMain } from "@/components/dashboard/layout/main";
+import { ThemeSwitch } from "@/components/dashboard/theme-switch";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useFreighter } from "@/hooks/useFreighter";
+import { getTemplateById, type SavedTemplate, type DashboardWidget } from "@/lib/my-templates-storage";
+import { cn } from "@/utils";
+
+function formatDate(iso: string) {
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return "—";
+  }
+}
+
+const TIME_FRAMES = ["1D", "7D", "30D", "90D", "All"] as const;
+const TIME_FRAMES_ALT = ["1W", "1M", "6M", "1Y", "All"] as const;
+
+function ChartWidgetCard({ widget }: { widget: DashboardWidget }) {
+  const [activeTab, setActiveTab] = useState(0);
+  const [timeFrame, setTimeFrame] = useState(4); // All
+  const tabs = widget.type === "chart" ? ["Chart", "Data"] : ["Summary"];
+  const frames = widget.widgetId?.includes("compliance") ? TIME_FRAMES_ALT : TIME_FRAMES;
+
+  return (
+    <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+      <CardHeader className="space-y-3 pb-2">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <CardTitle className="text-base font-semibold">{widget.title}</CardTitle>
+          <Badge variant="secondary" className="rounded-full text-xs font-medium">
+            {widget.type}
+          </Badge>
+        </div>
+        {widget.type === "chart" && tabs.length > 1 && (
+          <div className="flex rounded-lg bg-muted/50 p-0.5">
+            {tabs.map((tab, i) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(i)}
+                className={cn(
+                  "flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                  activeTab === i
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="flex flex-wrap gap-1">
+          {frames.map((label, i) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => setTimeFrame(i)}
+              className={cn(
+                "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                timeFrame === i
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted/60 text-muted-foreground hover:bg-muted"
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="min-h-[220px] rounded-xl border border-border bg-muted/20 flex flex-col items-center justify-center p-6">
+          <BarChart3 className="h-12 w-12 text-muted-foreground/50 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">Chart analysis</p>
+          <p className="text-xs text-muted-foreground/70 mt-1">
+            Data source: {widget.settings?.dataSource ?? "mock"} · {widget.settings?.refresh ?? "5m"}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function MetricWidgetCard({ widget }: { widget: DashboardWidget }) {
+  return (
+    <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-base font-semibold">{widget.title}</CardTitle>
+          <Badge variant="secondary" className="rounded-full text-xs">
+            {widget.type}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="min-h-[140px] rounded-xl border border-border bg-muted/20 flex flex-col items-center justify-center p-6">
+          <Activity className="h-10 w-10 text-muted-foreground/50 mb-2" />
+          <p className="text-sm text-muted-foreground">Metric summary</p>
+          <p className="text-xs text-muted-foreground/70 mt-1">
+            {widget.settings?.dataSource ?? "mock"} · {widget.settings?.refresh ?? "5m"}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AlertWidgetCard({ widget }: { widget: DashboardWidget }) {
+  return (
+    <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-base font-semibold">{widget.title}</CardTitle>
+          <Badge variant="secondary" className="rounded-full text-xs">
+            {widget.type}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="min-h-[140px] rounded-xl border border-border bg-muted/20 flex flex-col items-center justify-center p-6">
+          <AlertTriangle className="h-10 w-10 text-muted-foreground/50 mb-2" />
+          <p className="text-sm text-muted-foreground">Alerts</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TableWidgetCard({ widget }: { widget: DashboardWidget }) {
+  return (
+    <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-base font-semibold">{widget.title}</CardTitle>
+          <Badge variant="secondary" className="rounded-full text-xs">
+            {widget.type}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="min-h-[140px] rounded-xl border border-border bg-muted/20 flex flex-col items-center justify-center p-6">
+          <LayoutGrid className="h-10 w-10 text-muted-foreground/50 mb-2" />
+          <p className="text-sm text-muted-foreground">Table data</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function WidgetCard({ widget }: { widget: DashboardWidget }) {
+  if (widget.type === "chart") return <ChartWidgetCard widget={widget} />;
+  if (widget.type === "metric") return <MetricWidgetCard widget={widget} />;
+  if (widget.type === "alert") return <AlertWidgetCard widget={widget} />;
+  return <TableWidgetCard widget={widget} />;
+}
+
+export default function DashboardViewPage() {
+  const router = useRouter();
+  const params = useParams();
+  const id = typeof params?.id === "string" ? params.id : null;
+  const { publicKey, disconnect, isConnecting } = useFreighter();
+
+  const [template, setTemplate] = useState<SavedTemplate | null>(null);
+
+  useEffect(() => {
+    if (!id || typeof window === "undefined") return;
+    setTemplate(getTemplateById(id));
+  }, [id]);
+
+  const widgets = useMemo(() => {
+    const list = template?.widgets ?? [];
+    return [...list].sort((a, b) => (a.y !== b.y ? a.y - b.y : a.x - b.x));
+  }, [template?.widgets]);
+
+  if (!publicKey) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4">
+        <p className="text-muted-foreground text-center">Connect your wallet to view this page.</p>
+        <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
+      </div>
+    );
+  }
+
+  if (!id || (!template && id)) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4">
+        <p className="text-muted-foreground text-center">Template not found.</p>
+        <Button onClick={() => router.push("/dashboard/documents")}>My Templates</Button>
+      </div>
+    );
+  }
+
+  if (!template) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-muted-foreground">Loading…</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <DashboardHeader fixed>
+        <div className="flex flex-1 items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground">Dashboard</span>
+        </div>
+        <div className="ml-auto flex items-center gap-1">
+          <ThemeSwitch />
+          <Button variant="ghost" size="sm" onClick={() => router.push("/")}>
+            Home
+          </Button>
+          <Button variant="ghost" size="sm" onClick={disconnect} disabled={isConnecting}>
+            Disconnect
+          </Button>
+        </div>
+      </DashboardHeader>
+      <DashboardMain>
+        <div className="mx-auto max-w-[1400px] space-y-8 px-4 pb-10">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push("/dashboard/documents")}
+            className="text-muted-foreground -ml-1"
+          >
+            <ArrowLeft className="mr-1.5 h-4 w-4" />
+            My Templates
+          </Button>
+
+          {/* Header: three summary cards (COSMOS-style) */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Card className="rounded-2xl border-border bg-card shadow-sm">
+              <CardContent className="flex flex-col gap-0.5 p-5">
+                <p className="text-sm font-medium text-muted-foreground">Widgets</p>
+                <p className="text-2xl font-bold tracking-tight">{widgets.length}</p>
+                <p className="text-sm text-muted-foreground">widgets in this dashboard</p>
+              </CardContent>
+            </Card>
+            <Card className="rounded-2xl border-border bg-card shadow-sm">
+              <CardContent className="flex flex-col gap-0.5 p-5">
+                <p className="text-sm font-medium text-muted-foreground">Last updated</p>
+                <p className="text-2xl font-bold tracking-tight">{formatDate(template.savedAt)}</p>
+                <p className="text-sm text-muted-foreground">Saved from workspace</p>
+              </CardContent>
+            </Card>
+            <Card className="rounded-2xl border-border bg-card shadow-sm flex flex-col justify-between">
+              <CardContent className="flex flex-col gap-0.5 p-5">
+                <p className="text-xl font-bold tracking-tight">{template.name}</p>
+                <button
+                  type="button"
+                  onClick={() => router.push("/dashboard/documents")}
+                  className="text-sm text-muted-foreground hover:text-foreground text-left underline-offset-2 hover:underline"
+                >
+                  My Templates
+                </button>
+              </CardContent>
+              <div className="px-5 pb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                  onClick={() => router.push(`/dashboard/workspace?template=${encodeURIComponent(template.id)}`)}
+                >
+                  <Wrench className="mr-2 h-4 w-4" />
+                  Edit in workspace
+                </Button>
+              </div>
+            </Card>
+          </div>
+
+          {/* Charts & metrics section */}
+          <section>
+            <h2 className="text-lg font-semibold tracking-tight mb-4">Charts & metrics</h2>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {widgets.map((w) => (
+                <WidgetCard key={w.id} widget={w} />
+              ))}
+            </div>
+            {widgets.length === 0 && (
+              <Card className="rounded-2xl border-dashed border-border bg-card">
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <FileText className="h-14 w-14 text-muted-foreground/50 mb-4" />
+                  <p className="text-muted-foreground font-medium">No widgets in this dashboard yet.</p>
+                  <p className="text-sm text-muted-foreground mt-1">Edit in workspace to add widgets.</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                    onClick={() => router.push(`/dashboard/workspace?template=${encodeURIComponent(template.id)}`)}
+                  >
+                    <Wrench className="mr-2 h-4 w-4" />
+                    Edit to add widgets
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </section>
+        </div>
+      </DashboardMain>
+    </>
+  );
+}

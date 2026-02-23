@@ -9,13 +9,14 @@ import {
   FolderArchive,
   CreditCard,
   ShieldCheck,
+  UserPlus,
 } from "lucide-react";
 import type { NavGroup, SidebarData } from "@/components/dashboard/layout/types";
 
 /** Widget id (from settings) -> sidebar link. Used to show only selected widgets in FEATURES. */
 export const FEATURES_BY_WIDGET: { widgetId: string; title: string; url: string; icon: typeof Users }[] = [
   { widgetId: "payments", title: "Payment Solution", url: "/dashboard/payments", icon: CreditCard },
-  { widgetId: "doc-hub", title: "Templates", url: "/dashboard/documents", icon: FileText },
+  { widgetId: "doc-hub", title: "My Templates", url: "/dashboard/documents", icon: FileText },
   { widgetId: "ai-assistant", title: "Custom AI Assistant", url: "/dashboard/ai-assistant", icon: Bot },
   { widgetId: "employee-mgmt", title: "Employee Management", url: "/dashboard/employee-management", icon: Users },
   { widgetId: "compliance", title: "Compliance checker", url: "/dashboard/compliance-checker", icon: ShieldCheck },
@@ -27,6 +28,7 @@ export const DASHBOARD_GROUP: NavGroup = {
   items: [
     { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
     { title: "Payment Links", url: "/dashboard", icon: Link2 },
+    { title: "Onboarding", url: "/dashboard/onboarding", icon: UserPlus },
     { title: "Settings", url: "/dashboard/settings", icon: Settings },
   ],
 };
