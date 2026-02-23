@@ -75,6 +75,35 @@ cargo build --target wasm32v1-none --release
 
 3. Save the printed contract IDs (`C...`) for your app (e.g. `POOLMANAGER_CONTRACT_ID`, `ESCROW_ENGINE_CONTRACT_ID`).
 
+**Deploy from CLI (mainnet)**
+
+1. Use a **mainnet** key with XLM (real funds). There is no mainnet faucet.
+
+   ```bash
+   stellar keys generate deployer-mainnet --network mainnet
+   # Fund the account with XLM via an exchange or wallet.
+   ```
+
+2. Build WASM (same as testnet), then deploy:
+
+   ```bash
+   cd soroban/contracts
+   cargo build --target wasm32v1-none --release
+   chmod +x deploy-mainnet.sh
+   ./deploy-mainnet.sh deployer-mainnet
+   ```
+
+   Or deploy one by one:
+
+   ```bash
+   stellar contract deploy --wasm target/wasm32v1-none/release/poolmanager.wasm --network mainnet --source deployer-mainnet
+   stellar contract deploy --wasm target/wasm32v1-none/release/escrowengine.wasm --network mainnet --source deployer-mainnet
+   ```
+
+3. Save the printed contract IDs and set them in `landing/.env` (and any backend env) for mainnet. Use mainnet RPC (`https://soroban-mainnet.stellar.org`) and mainnet explorer (`https://steexp.com/contract/<id>`).
+
+**Mainnet RPC issues (DNS/connection errors):** Override the RPC URL, e.g. `SOROBAN_RPC_MAINNET=https://soroban-rpc.mainnet.stellar.gateway.fm ./deploy-mainnet.sh deployer-mainnet`. Use `https://`, no typos in the domain. If behind a firewall/VPN, test with `curl -s -o /dev/null -w "%{http_code}" https://soroban-mainnet.stellar.org` or try the gateway.fm URL above.
+
 ---
 
 ## Frontend (landing app only)
