@@ -1,14 +1,12 @@
-import { AnimationContainer, HeroWithUnicorn, MaxWidthWrapper, PricingCards } from "@/components";
+import { AnimationContainer, HeroWithUnicorn, MaxWidthWrapper } from "@/components";
 import { BentoCard, BentoGrid, CARDS } from "@/components/ui/bento-grid";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { LampContainer } from "@/components/ui/lamp";
 import MagicBadge from "@/components/ui/magic-badge";
 import MagicCard from "@/components/ui/magic-card";
 import { PROCESS } from "@/utils";
-import { REVIEWS } from "@/utils/constants/misc";
-import { ArrowRightIcon, CreditCardIcon, StarIcon } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,7 +26,30 @@ const HomePage = async () => {
                 }}
                 aria-hidden
             />
-            {/* Features Section - right after hero */}
+            {/* CTA Section - right after hero */}
+            <MaxWidthWrapper className="relative z-10 mt-20 max-w-[100vw] overflow-x-hidden scrollbar-hide">
+                <AnimationContainer delay={0.1}>
+                    <LampContainer>
+                        <div className="flex flex-col items-center justify-center relative w-full text-center">
+                            <h2 className="bg-gradient-to-b from-blue-100 to-cyan-200 py-4 bg-clip-text text-center text-4xl md:text-7xl !leading-[1.15] font-medium font-heading tracking-tight text-transparent mt-8">
+                                Onboarding and payments, unified
+                            </h2>
+                            <p className="text-blue-100/80 mt-6 max-w-md mx-auto">
+                                Your users get clarity. You get faster conversions. Payments become automatic. Operations become seamless.
+                            </p>
+                            <div className="mt-6">
+                                <Button asChild className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25">
+                                    <Link href="/auth/sign-up" className="flex items-center">
+                                        Get started for free
+                                        <ArrowRightIcon className="w-4 h-4 ml-2" />
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                    </LampContainer>
+                </AnimationContainer>
+            </MaxWidthWrapper>
+            {/* Features Section */}
             <MaxWidthWrapper className="relative z-10 pt-6 pb-4 md:pt-10">
                 <AnimationContainer delay={0.1}>
                     <div className="flex flex-col w-full items-center lg:items-center justify-center py-6 md:py-8">
@@ -111,159 +132,6 @@ const HomePage = async () => {
                         </AnimationContainer>
                     ))}
                 </div>
-            </MaxWidthWrapper>
-
-            {/* Pricing Section */}
-            <MaxWidthWrapper className="py-10">
-                <AnimationContainer delay={0.1}>
-                    <div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
-                        <MagicBadge title="Simple Pricing" />
-                        <h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-                            Choose a plan that works for you
-                        </h2>
-                        <p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-                            Get started with Hypertron and scale onboarding and payments with your business.
-                        </p>
-                    </div>
-                </AnimationContainer>
-                <AnimationContainer delay={0.2}>
-                    <PricingCards />
-                </AnimationContainer>
-                <AnimationContainer delay={0.3}>
-                    <div className="flex flex-wrap items-start md:items-center justify-center lg:justify-evenly gap-6 mt-12 max-w-5xl mx-auto w-full">
-                        <div className="flex items-center gap-2">
-                            <CreditCardIcon className="w-5 h-5 text-foreground" />
-                            <span className="text-muted-foreground">
-                                No credit card required
-                            </span>
-                        </div>
-                    </div>
-                </AnimationContainer>
-            </MaxWidthWrapper>
-
-            {/* Reviews Section */}
-            <MaxWidthWrapper className="py-10">
-                <AnimationContainer delay={0.1}>
-                    <div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
-                        <MagicBadge title="Our Customers" />
-                        <h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-                            What our customers are saying
-                        </h2>
-                        <p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-                            Here&apos;s what agencies and teams say about Hypertron.
-                        </p>
-                    </div>
-                </AnimationContainer>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-start gap-4 md:gap-8 py-10">
-                    <div className="flex flex-col items-start h-min gap-6">
-                        {REVIEWS.slice(0, 3).map((review, index) => (
-                            <AnimationContainer delay={0.2 * index} key={index}>
-                                <MagicCard key={index} className="md:p-0">
-                                    <Card className="flex flex-col w-full border-none h-min">
-                                        <CardHeader className="space-y-0">
-                                            <CardTitle className="text-lg font-medium text-muted-foreground">
-                                                {review.name}
-                                            </CardTitle>
-                                            <CardDescription>
-                                                {review.username}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4 pb-4">
-                                            <p className="text-muted-foreground">
-                                                {review.review}
-                                            </p>
-                                        </CardContent>
-                                        <CardFooter className="w-full space-x-1 mt-auto">
-                                            {Array.from({ length: review.rating }, (_, i) => (
-                                                <StarIcon key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                                            ))}
-                                        </CardFooter>
-                                    </Card>
-                                </MagicCard>
-                            </AnimationContainer>
-                        ))}
-                    </div>
-                    <div className="flex flex-col items-start h-min gap-6">
-                        {REVIEWS.slice(3, 6).map((review, index) => (
-                            <AnimationContainer delay={0.2 * index} key={index}>
-                                <MagicCard key={index} className="md:p-0">
-                                    <Card className="flex flex-col w-full border-none h-min">
-                                        <CardHeader className="space-y-0">
-                                            <CardTitle className="text-lg font-medium text-muted-foreground">
-                                                {review.name}
-                                            </CardTitle>
-                                            <CardDescription>
-                                                {review.username}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4 pb-4">
-                                            <p className="text-muted-foreground">
-                                                {review.review}
-                                            </p>
-                                        </CardContent>
-                                        <CardFooter className="w-full space-x-1 mt-auto">
-                                            {Array.from({ length: review.rating }, (_, i) => (
-                                                <StarIcon key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                                            ))}
-                                        </CardFooter>
-                                    </Card>
-                                </MagicCard>
-                            </AnimationContainer>
-                        ))}
-                    </div>
-                    <div className="flex flex-col items-start h-min gap-6">
-                        {REVIEWS.slice(6, 9).map((review, index) => (
-                            <AnimationContainer delay={0.2 * index} key={index}>
-                                <MagicCard key={index} className="md:p-0">
-                                    <Card className="flex flex-col w-full border-none h-min">
-                                        <CardHeader className="space-y-0">
-                                            <CardTitle className="text-lg font-medium text-muted-foreground">
-                                                {review.name}
-                                            </CardTitle>
-                                            <CardDescription>
-                                                {review.username}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4 pb-4">
-                                            <p className="text-muted-foreground">
-                                                {review.review}
-                                            </p>
-                                        </CardContent>
-                                        <CardFooter className="w-full space-x-1 mt-auto">
-                                            {Array.from({ length: review.rating }, (_, i) => (
-                                                <StarIcon key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                                            ))}
-                                        </CardFooter>
-                                    </Card>
-                                </MagicCard>
-                            </AnimationContainer>
-                        ))}
-                    </div>
-                </div>
-            </MaxWidthWrapper>
-
-            {/* CTA Section */}
-            <MaxWidthWrapper className="mt-20 max-w-[100vw] overflow-x-hidden scrollbar-hide">
-                <AnimationContainer delay={0.1}>
-                    <LampContainer>
-                        <div className="flex flex-col items-center justify-center relative w-full text-center">
-                            <h2 className="bg-gradient-to-b from-blue-100 to-cyan-200 py-4 bg-clip-text text-center text-4xl md:text-7xl !leading-[1.15] font-medium font-heading tracking-tight text-transparent mt-8">
-                                Onboarding and payments, unified
-                            </h2>
-                            <p className="text-blue-100/80 mt-6 max-w-md mx-auto">
-                                Your users get clarity. You get faster conversions. Payments become automatic. Operations become seamless.
-                            </p>
-                            <div className="mt-6">
-                                <Button asChild className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25">
-                                    <Link href="/auth/sign-up" className="flex items-center">
-                                        Get started for free
-                                        <ArrowRightIcon className="w-4 h-4 ml-2" />
-                                    </Link>
-                                </Button>
-                            </div>
-                        </div>
-                    </LampContainer>
-                </AnimationContainer>
             </MaxWidthWrapper>
 
         </div>
