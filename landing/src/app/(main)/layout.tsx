@@ -24,14 +24,16 @@ export default function MainLayout({
     : sidebarData.user;
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar
-        onDisconnect={disconnect}
-        user={user}
-      />
-      <SidebarInset className={cn("flex flex-1 flex-col dashboard-dark-bg")}>
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="relative min-h-screen dashboard-gradient-bg">
+      <SidebarProvider defaultOpen={defaultOpen} className="!bg-transparent">
+        <AppSidebar
+          onDisconnect={disconnect}
+          user={user}
+        />
+        <SidebarInset className={cn("flex flex-1 flex-col bg-transparent min-h-screen")}>
+          {children}
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }

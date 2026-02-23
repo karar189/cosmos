@@ -14,6 +14,7 @@ import {
   Briefcase,
   ShoppingCart,
   ArrowDownWideNarrow,
+  FolderArchive,
 } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
@@ -162,6 +163,15 @@ export default function DocumentsPage() {
             <p className="text-muted-foreground">
               Choose a template for your business or customer segment.
             </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 w-fit"
+              onClick={() => router.push("/dashboard/document-vault")}
+            >
+              <FolderArchive className="mr-2 h-4 w-4" />
+              Document vault — saved compliance checklists
+            </Button>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

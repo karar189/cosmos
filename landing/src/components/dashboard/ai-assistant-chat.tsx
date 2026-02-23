@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bot, Send, Plus } from "lucide-react";
+import { Bot, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -116,33 +116,7 @@ export function AiAssistantChat() {
   const empty = messages.length === 0;
 
   return (
-    <div className="flex min-h-0 w-full flex-1">
-      {/* Left: chat history sidebar (ChatGPT-style) */}
-      <aside className="hidden w-56 shrink-0 border-r border-border md:flex md:flex-col">
-        <Button
-          variant="outline"
-          className="mx-2 mt-2 gap-2"
-          onClick={() => setMessages([])}
-        >
-          <Plus className="h-4 w-4" />
-          New chat
-        </Button>
-        <div className="mt-2 flex-1 overflow-hidden px-2">
-          <p className="px-2 text-xs font-medium text-muted-foreground">
-            Recent
-          </p>
-          <div className="mt-1 space-y-0.5">
-            {empty && (
-              <p className="px-2 py-4 text-xs text-muted-foreground">
-                No conversations yet.
-              </p>
-            )}
-          </div>
-        </div>
-      </aside>
-
-      {/* Right: messages + input */}
-      <div className="flex min-w-0 flex-1 flex-col">
+    <div className="flex min-h-0 w-full flex-1 flex-col">
         <ScrollArea className="flex-1">
           <div className="mx-auto max-w-3xl">
             {empty ? (
@@ -221,7 +195,6 @@ export function AiAssistantChat() {
             </p>
           </div>
         </div>
-      </div>
     </div>
   );
 }

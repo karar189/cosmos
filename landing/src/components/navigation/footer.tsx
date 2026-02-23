@@ -14,12 +14,6 @@ const Footer = () => {
                         <div className="flex items-start">
                             <Icons.logo className="w-7 h-7" />
                         </div>
-                        <p className="text-muted-foreground mt-4 text-sm text-start">
-                            Manage your links with ease.
-                        </p>
-                        <span className="mt-4 text-neutral-200 text-sm flex items-center">
-                            Made by <Link href="https://shreyas-sihasane.vercel.app/" className="font-semibold ml-1">Shreyas</Link>
-                        </span>
                     </div>
                 </AnimationContainer>
 

@@ -86,6 +86,20 @@ model Business {
   createdAt        DateTime  @default(now())
   paymentLinks     PaymentLink[]
   withdrawals      Withdrawal[]
+  vaultItems       DocumentVaultItem[]
+}
+
+// Document vault: saved compliance checklists and other todo lists (from Compliance checker).
+model DocumentVaultItem {
+  id         String   @id @default(cuid()) @map("_id")
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  type       String   // e.g. "compliance_checklist"
+  title      String
+  itemsJson  String   // JSON array of { id, text, done }
+  createdAt  DateTime @default(now())
+
+  @@index(businessId)
 }
 
 model PaymentLink {

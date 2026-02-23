@@ -6,6 +6,7 @@ import {
   Users,
   Bot,
   FileText,
+  FolderArchive,
   CreditCard,
   ShieldCheck,
 } from "lucide-react";
@@ -17,7 +18,8 @@ export const FEATURES_BY_WIDGET: { widgetId: string; title: string; url: string;
   { widgetId: "doc-hub", title: "Templates", url: "/dashboard/documents", icon: FileText },
   { widgetId: "ai-assistant", title: "Custom AI Assistant", url: "/dashboard/ai-assistant", icon: Bot },
   { widgetId: "employee-mgmt", title: "Employee Management", url: "/dashboard/employee-management", icon: Users },
-  { widgetId: "compliance", title: "Compliance checker", url: "/dashboard/settings", icon: ShieldCheck },
+  { widgetId: "compliance", title: "Compliance checker", url: "/dashboard/compliance-checker", icon: ShieldCheck },
+  { widgetId: "document-vault", title: "Document vault", url: "/dashboard/document-vault", icon: FolderArchive },
 ];
 
 export const DASHBOARD_GROUP: NavGroup = {

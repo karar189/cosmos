@@ -12,6 +12,7 @@ import {
 import { cn, NAV_LINKS } from "@/utils";
 import { useFreighter } from "@/hooks/useFreighter";
 import { LucideIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import MaxWidthWrapper from "../global/max-width-wrapper";
@@ -21,27 +22,27 @@ import AnimationContainer from "../global/animation-container";
 const buttonClass =
     "hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-700/60 hover:bg-neutral-600/60 text-neutral-200 text-sm font-medium border border-neutral-600/50 shadow-sm transition-colors";
 
+function WalletIconSvg({ className }: { className?: string }) {
+    return (
+        <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+            <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
+        </svg>
+    );
+}
+
 function HeaderFreighterButton() {
-    const { publicKey, connect, disconnect, isConnecting, truncatedAddress } = useFreighter();
+    const { publicKey, connect, isConnecting } = useFreighter();
 
     if (publicKey) {
         return (
-            <>
-                <Link href="/dashboard" className={buttonClass}>
-                    <span className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-neutral-300">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                    </span>
-                    Dashboard
-                </Link>
-                <button
-                    type="button"
-                    onClick={disconnect}
-                    className={buttonClass}
-                    title={publicKey}
-                >
-                    {truncatedAddress ?? "Disconnect"}
-                </button>
-            </>
+            <Link href="/dashboard" className={buttonClass}>
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-neutral-300">
+                    <WalletIconSvg className="w-4 h-4" />
+                </span>
+                Dashboard
+            </Link>
         );
     }
 
@@ -53,7 +54,7 @@ function HeaderFreighterButton() {
             className={buttonClass}
         >
             <span className="flex items-center justify-center w-7 h-7 rounded-full bg-black text-neutral-300">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                <WalletIconSvg className="w-4 h-4" />
             </span>
             {isConnecting ? "Connecting…" : "Sign In"}
         </button>
@@ -88,9 +89,7 @@ const Navbar = () => {
                     {/* 1. Left: logo */}
                     <div className="flex items-center shrink-0 z-10">
                         <Link href="/#home" className="flex items-center gap-2 text-neutral-300 hover:text-white transition-colors">
-                            <span className="flex items-center justify-center w-8 h-8 rounded border border-neutral-500/50 bg-neutral-800/50 text-neutral-400" aria-hidden>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M7 17L17 7M17 7h-6M17 7v6" /></svg>
-                            </span>
+                            <Image src="/logo.png" alt="Hypertron" width={32} height={32} className="w-8 h-8 object-contain" />
                             <span className="text-lg font-semibold font-heading !leading-none text-white/90 hidden sm:inline">
                                 Hypertron
                             </span>

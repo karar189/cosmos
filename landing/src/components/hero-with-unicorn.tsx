@@ -94,21 +94,21 @@ export function HeroWithUnicorn() {
       {/* Hero content: same horizontal padding & max-width as navbar (MaxWidthWrapper) */}
       <div className="absolute inset-0 z-10 mx-auto w-full max-w-full md:max-w-screen-xl px-4 md:px-12 lg:px-20 ">
         {/* Hero text block: three-tier layout (small top, large headline, small bottom-right) */}
-        <div className="absolute left-4 md:left-12 lg:left-20 bottom-0 z-10 flex flex-col items-start justify-end max-w-[42rem] pointer-events-none pb-28 md:pb-36 lg:pb-44 pt-8">
+        <div className="absolute left-4 md:left-12 lg:left-20 -bottom-24 z-10 flex flex-col items-start justify-end max-w-[42rem] pointer-events-none pb-16 md:pb-24 lg:pb-32 pt-8">
           {/* Top: small subheading, left-aligned, light grey */}
           <p className="text-sm text-white/50 tracking-wide mb-6 md:mb-4">
             B2B onboarding & payments for Web3
           </p>
           {/* Main: very large stacked headline, left-aligned */}
           <h1 className="font-heading text-white font-semibold tracking-tight leading-[1.15] mb-0">
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-4xl">The Fastest Way to</span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-4xl">Onboard Clients and </span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-4xl text-white/60">Get Paid in Web3</span>
+            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-6xl">The Fastest Way to</span>
+            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-6xl">Onboard Clients and </span>
+            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-6xl text-white/60">Get Paid in Web3</span>
           </h1>
         </div>
 
         {/* Right glassmorphic container: small right-aligned description (like bottom block in reference) */}
-        <div className="absolute right-4 md:right-12 lg:right-20 bottom-28 md:bottom-36 z-10 w-[280px] sm:w-[320px] md:w-[360px] p-5 md:p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex flex-col gap-4 pointer-events-auto items-end text-right">
+        <div className="absolute right-4 md:right-12 lg:right-20 bottom-4  z-10 w-[280px] sm:w-[320px] md:w-[360px] p-5 md:p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex flex-col gap-4 pointer-events-auto items-end text-right">
         <p className="text-sm text-white/50 leading-relaxed">
           Replace manual processes with automated workflows, escrow, approvals, and real-time tracking.
         </p>
@@ -124,8 +124,12 @@ export function HeroWithUnicorn() {
         </div>
       </div>
 
-      {/* Black block to hide Unicorn "Made with" badge */}
-      <div className="absolute bottom-0 left-0 right-0 h-28 bg-black z-[5] pointer-events-none" aria-hidden />
+      {/* Gradient block to hide Unicorn "Made with" badge – black to #050625 */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-28 z-[5] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, #000000 0%, #060B13 100%)' }}
+        aria-hidden
+      />
     </section>
   );
 }

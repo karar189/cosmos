@@ -14,7 +14,7 @@ import Link from "next/link";
 
 const HomePage = async () => {
     return (
-        <div className="overflow-x-hidden scrollbar-hide size-full bg-[#050a12] -mt-40 min-h-screen relative">
+        <div id="about" className="overflow-x-hidden scrollbar-hide size-full bg-[#050a12] -mt-40 min-h-screen relative">
             {/* First section: full-viewport Unicorn embed + hero overlay (frontend-inspired) */}
             <HeroWithUnicorn />
             {/* Hero blue gradient - extends into dashboard area for smooth transition */}
@@ -28,6 +28,28 @@ const HomePage = async () => {
                 }}
                 aria-hidden
             />
+            {/* Features Section - right after hero */}
+            <MaxWidthWrapper className="relative z-10 pt-6 pb-4 md:pt-10">
+                <AnimationContainer delay={0.1}>
+                    <div className="flex flex-col w-full items-center lg:items-center justify-center py-6 md:py-8">
+                        <MagicBadge title="Features" />
+                        <h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
+                            One workflow link. Onboarding, payments, and tracking.
+                        </h2>
+                        <p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
+                            Hypertron gives you a unified way to run client onboarding and payments through one powerful workflow link.
+                        </p>
+                    </div>
+                </AnimationContainer>
+                <AnimationContainer delay={0.2}>
+                    <BentoGrid className="py-6 md:py-8">
+                        {CARDS.map((feature, idx) => (
+                            <BentoCard key={idx} {...feature} />
+                        ))}
+                    </BentoGrid>
+                </AnimationContainer>
+            </MaxWidthWrapper>
+
             {/* Dashboard preview section */}
             <MaxWidthWrapper className="relative z-10 mt-0">
                 <div className="flex flex-col items-center justify-center w-full text-center">
@@ -53,28 +75,6 @@ const HomePage = async () => {
                     </AnimationContainer>
                 </div>
             </MaxWidthWrapper >
-
-            {/* Features Section */}
-            <MaxWidthWrapper className="pt-10">
-                <AnimationContainer delay={0.1}>
-                    <div className="flex flex-col w-full items-center lg:items-center justify-center py-8">
-                        <MagicBadge title="Features" />
-                        <h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-                            One workflow link. Onboarding, payments, and tracking.
-                        </h2>
-                        <p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-                            Hypertron gives you a unified way to run client onboarding and payments through one powerful workflow link.
-                        </p>
-                    </div>
-                </AnimationContainer>
-                <AnimationContainer delay={0.2}>
-                    <BentoGrid className="py-8">
-                        {CARDS.map((feature, idx) => (
-                            <BentoCard key={idx} {...feature} />
-                        ))}
-                    </BentoGrid>
-                </AnimationContainer>
-            </MaxWidthWrapper>
 
             {/* Process Section */}
             <MaxWidthWrapper className="py-10">

@@ -1,6 +1,7 @@
 import { FileTextIcon, LineChartIcon, Link2Icon, WalletIcon } from "lucide-react";
 
 export const NAV_LINKS = [
+    { title: "About", href: "/#about" },
     {
         title: "Features",
         href: "/features",
@@ -11,8 +12,5 @@ export const NAV_LINKS = [
             { title: "Tracking", tagline: "Real-time progress and completion status.", href: "/features/qr-codes", icon: LineChartIcon },
         ],
     },
-    {
-        title: "Pricing",
-        href: "/pricing",
-    },
+    { title: "Pricing", href: "/pricing" },
 ];
