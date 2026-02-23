@@ -3,6 +3,12 @@
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
+const STELLAR_NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
+const EXPLORER_TX =
+  STELLAR_NETWORK === "testnet"
+    ? "https://stellar.expert/explorer/testnet/tx"
+    : "https://stellar.expert/explorer/public/tx";
+
 export interface PaymentEvent {
   linkId: string;
   businessId: string;
@@ -77,11 +83,21 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
             </Avatar>
             <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
               <div className="space-y-0.5">
-                <p className="text-sm font-medium leading-none">Paid ✓</p>
+                <p className="text-sm font-medium leading-none">Payment received</p>
                 <p className="text-xs text-muted-foreground">
                   {ev.workflowStage ? `${ev.workflowStage} · ` : ""}
                   {new Date(ev.paidAt).toLocaleDateString()}
                 </p>
+                {ev.commitmentId && (
+                  <a
+                    href={`${EXPLORER_TX}/${ev.commitmentId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    On-chain proof
+                  </a>
+                )}
               </div>
               <span className="shrink-0 font-semibold text-primary">+{ev.amount} XLM</span>
             </div>

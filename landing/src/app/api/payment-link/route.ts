@@ -116,6 +116,7 @@ export async function GET(req: NextRequest) {
         linkMemo: true,
         paidAt: true,
         paymentTxHash: true,
+        commitmentTxHash: true,
         createdAt: true,
       },
     });

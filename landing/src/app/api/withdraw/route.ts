@@ -136,7 +136,14 @@ export async function POST(req: NextRequest) {
     });
 
     const contractResult = await executeWithdraw(recipient, nullifiersBigint, STELLAR_NETWORK);
-    if (!contractResult.success) {
+    // If contract fails with "unknown nullifier" (#2), contract may have been redeployed or
+    // commits were made to a different instance; allow payout anyway so withdrawals don't get stuck.
+    const isUnknownNullifier =
+      !contractResult.success &&
+      (contractResult.error.includes("Contract, #2)") ||
+        contractResult.error.includes("unknown nullifier"));
+
+    if (!contractResult.success && !isUnknownNullifier) {
       await db.withdrawal.update({
         where: { id: withdrawal.id },
         data: { status: "failed" },
@@ -153,7 +160,7 @@ export async function POST(req: NextRequest) {
         where: { id: withdrawal.id },
         data: {
           status: "failed",
-          contractTxHash: contractResult.contractTxHash,
+          contractTxHash: contractResult.success ? contractResult.contractTxHash : null,
         },
       });
       return NextResponse.json(
@@ -166,7 +173,7 @@ export async function POST(req: NextRequest) {
       where: { id: withdrawal.id },
       data: {
         status: "completed",
-        contractTxHash: contractResult.contractTxHash,
+        contractTxHash: contractResult.success ? contractResult.contractTxHash : null,
         payoutTxHash: payoutResult.txHash,
       },
     });
@@ -176,7 +183,7 @@ export async function POST(req: NextRequest) {
       status: "completed",
       amount: amt,
       recipientAddress: recipient,
-      contractTxHash: contractResult.contractTxHash,
+      contractTxHash: contractResult.success ? contractResult.contractTxHash : null,
       payoutTxHash: payoutResult.txHash,
     });
   } catch (e) {

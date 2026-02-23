@@ -21,13 +21,10 @@ import { ThemeSwitch } from "@/components/dashboard/theme-switch";
 import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { OverviewStats } from "@/components/dashboard/overview-stats";
 import { RecentPayments } from "@/components/dashboard/recent-payments";
-import { AnalyticsTab } from "@/components/dashboard/analytics-tab";
 import { WithdrawTab } from "@/components/dashboard/withdraw-tab";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 
-const VALID_TABS = ["overview", "analytics", "payment-links", "receive-address", "withdraw", "zk-pool"] as const;
+const VALID_TABS = ["overview", "payment-links", "withdraw", "zk-pool"] as const;
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -38,9 +35,6 @@ export default function DashboardPage() {
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [receiveAddress, setReceiveAddress] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
-  const [receiveAddressInput, setReceiveAddressInput] = useState("");
-  const [receiveAddressSaving, setReceiveAddressSaving] = useState(false);
-  const [receiveAddressError, setReceiveAddressError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!publicKey) {
@@ -61,7 +55,6 @@ export default function DashboardPage() {
         if (data.businessId) {
           setBusinessId(data.businessId);
           setReceiveAddress(data.receiveAddress ?? null);
-          setReceiveAddressInput(data.receiveAddress ?? "");
         } else setBusinessError(data.error || "Could not load business");
       })
       .catch(() => {
@@ -71,33 +64,6 @@ export default function DashboardPage() {
       cancelled = true;
     };
   }, [publicKey]);
-
-  async function saveReceiveAddress() {
-    if (!publicKey || !receiveAddressInput.trim()) return;
-    setReceiveAddressError(null);
-    setReceiveAddressSaving(true);
-    try {
-      const res = await fetch("/api/business/link", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          walletAddress: publicKey,
-          receiveAddress: receiveAddressInput.trim(),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setReceiveAddressError(data.error || "Failed to save");
-        return;
-      }
-      setReceiveAddress(data.receiveAddress ?? null);
-      setReceiveAddressInput(data.receiveAddress ?? "");
-    } catch {
-      setReceiveAddressError("Request failed");
-    } finally {
-      setReceiveAddressSaving(false);
-    }
-  }
 
   if (!publicKey) {
     return (
@@ -159,22 +125,10 @@ export default function DashboardPage() {
                 Overview
               </TabsTrigger>
               <TabsTrigger
-                value="analytics"
-                className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger
                 value="payment-links"
                 className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
                 Payment Links
-              </TabsTrigger>
-              <TabsTrigger
-                value="receive-address"
-                className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                Receive Address
               </TabsTrigger>
               <TabsTrigger
                 value="withdraw"
@@ -186,7 +140,7 @@ export default function DashboardPage() {
                 value="zk-pool"
                 className="rounded-lg px-4 py-2 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
-                ZK Pool
+                Secure vault
               </TabsTrigger>
             </TabsList>
           </div>
@@ -217,68 +171,21 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-4">
-            <AnalyticsTab />
-          </TabsContent>
-
           <TabsContent value="payment-links" className="space-y-4">
             {businessId && (
-              <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 <CreatePaymentLinkForm businessId={businessId} onCreated={() => {}} />
                 <PaymentLinkList businessId={businessId} />
-              </>
+              </div>
             )}
             {!businessId && !businessError && (
               <p className="text-muted-foreground">Loading…</p>
             )}
           </TabsContent>
 
-          <TabsContent value="receive-address" className="space-y-4">
-            {businessId && (
-              <Card className="max-w-md">
-                <CardHeader>
-                  <CardTitle>Receive address</CardTitle>
-                  <CardDescription>
-                    Stellar address (G...) where you receive payments. Payments from links will go here; memo identifies the link.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="receiveAddress">Your payment receive address</Label>
-                    <Input
-                      id="receiveAddress"
-                      value={receiveAddressInput}
-                      onChange={(e) => setReceiveAddressInput(e.target.value)}
-                      placeholder="G..."
-                      className="bg-background font-mono text-sm"
-                    />
-                  </div>
-                  {receiveAddressError && (
-                    <p className="text-sm text-destructive">{receiveAddressError}</p>
-                  )}
-                  <Button
-                    type="button"
-                    onClick={saveReceiveAddress}
-                    disabled={
-                      receiveAddressSaving ||
-                      receiveAddressInput.trim().length < 56
-                    }
-                  >
-                    {receiveAddressSaving ? "Saving…" : "Save receive address"}
-                  </Button>
-                  {receiveAddress && (
-                    <p className="text-xs text-muted-foreground">
-                      Saved. New payment links will use this address.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-
           <TabsContent value="withdraw" className="space-y-4">
             {businessId && (
-              <WithdrawTab businessId={businessId} receiveAddress={receiveAddress} />
+              <WithdrawTab businessId={businessId} walletAddress={publicKey} receiveAddress={receiveAddress} />
             )}
             {!businessId && !businessError && (
               <p className="text-muted-foreground">Loading…</p>

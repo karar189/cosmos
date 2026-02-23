@@ -1,15 +1,43 @@
 import {
   LayoutDashboard,
   Link2,
-  Wallet,
   Settings,
   Zap,
   Users,
   Bot,
   FileText,
   CreditCard,
+  ShieldCheck,
 } from "lucide-react";
-import type { SidebarData } from "@/components/dashboard/layout/types";
+import type { NavGroup, SidebarData } from "@/components/dashboard/layout/types";
+
+/** Widget id (from settings) -> sidebar link. Used to show only selected widgets in FEATURES. */
+export const FEATURES_BY_WIDGET: { widgetId: string; title: string; url: string; icon: typeof Users }[] = [
+  { widgetId: "payments", title: "Payment Solution", url: "/dashboard/payments", icon: CreditCard },
+  { widgetId: "doc-hub", title: "Templates", url: "/dashboard/documents", icon: FileText },
+  { widgetId: "ai-assistant", title: "Custom AI Assistant", url: "/dashboard/ai-assistant", icon: Bot },
+  { widgetId: "employee-mgmt", title: "Employee Management", url: "/dashboard/employee-management", icon: Users },
+  { widgetId: "compliance", title: "Compliance checker", url: "/dashboard/settings", icon: ShieldCheck },
+];
+
+export const DASHBOARD_GROUP: NavGroup = {
+  title: "Dashboard",
+  items: [
+    { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
+    { title: "Payment Links", url: "/dashboard", icon: Link2 },
+    { title: "Settings", url: "/dashboard/settings", icon: Settings },
+  ],
+};
+
+/** Build FEATURES nav group showing only links for selected widget ids. If none selected, show all. */
+export function getFeaturesNavGroup(selectedWidgets: string[]): NavGroup {
+  const set = new Set(selectedWidgets);
+  const items =
+    set.size === 0
+      ? FEATURES_BY_WIDGET.map(({ title, url, icon }) => ({ title, url, icon }))
+      : FEATURES_BY_WIDGET.filter((f) => set.has(f.widgetId)).map(({ title, url, icon }) => ({ title, url, icon }));
+  return { title: "FEATURES", items };
+}
 
 export const sidebarData: SidebarData = {
   user: {
@@ -25,55 +53,7 @@ export const sidebarData: SidebarData = {
     },
   ],
   navGroups: [
-    {
-      title: "Dashboard",
-      items: [
-        {
-          title: "Overview",
-          url: "/dashboard",
-          icon: LayoutDashboard,
-        },
-        {
-          title: "Payment Links",
-          url: "/dashboard",
-          icon: Link2,
-        },
-        {
-          title: "Receive Address",
-          url: "/dashboard",
-          icon: Wallet,
-        },
-        {
-          title: "Settings",
-          url: "/dashboard/settings",
-          icon: Settings,
-        },
-      ],
-    },
-    {
-      title: "FEATURES",
-      items: [
-        {
-          title: "Employee Management",
-          url: "/dashboard/employee-management",
-          icon: Users,
-        },
-        {
-          title: "Custom AI Assistant",
-          url: "/dashboard/ai-assistant",
-          icon: Bot,
-        },
-        {
-          title: "Templates + Document Vault",
-          url: "/dashboard/documents",
-          icon: FileText,
-        },
-        {
-          title: "Payment Solution",
-          url: "/dashboard/payments",
-          icon: CreditCard,
-        },
-      ],
-    },
+    DASHBOARD_GROUP,
+    getFeaturesNavGroup([]), // default: show all when no preference
   ],
 };

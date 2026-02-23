@@ -28,7 +28,7 @@ export function PlaceholderPage({ title, description, icon: Icon }: PlaceholderP
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">
-            You can use the main Dashboard for payment links, receive address, withdraw, and ZK pool.
+            You can use the main Dashboard for payment links, receive address, withdraw, and secure vault.
           </p>
           <Button asChild variant="outline" size="sm" className="w-fit">
             <Link href="/dashboard">Go to Dashboard</Link>

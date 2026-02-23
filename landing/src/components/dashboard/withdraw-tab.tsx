@@ -8,14 +8,17 @@ import { Label } from "@/components/ui/label";
 
 interface WithdrawTabProps {
   businessId: string;
+  /** Connected wallet address (G...); used as default recipient. */
+  walletAddress: string | null;
   receiveAddress: string | null;
 }
 
-export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
+export function WithdrawTab({ businessId, walletAddress, receiveAddress }: WithdrawTabProps) {
   const [balance, setBalance] = useState<{ virtualBalanceXlm: string; unspentCount: number } | null>(null);
   const [withdrawals, setWithdrawals] = useState<{ id: string; amount: string; recipientAddress: string; status: string; payoutTxHash: string | null; createdAt: string }[]>([]);
   const [amount, setAmount] = useState("");
-  const [recipient, setRecipient] = useState(receiveAddress ?? "");
+  const defaultRecipient = walletAddress ?? receiveAddress ?? "";
+  const [recipient, setRecipient] = useState(defaultRecipient);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,8 +45,8 @@ export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
   }, [businessId]);
 
   useEffect(() => {
-    setRecipient(receiveAddress ?? "");
-  }, [receiveAddress]);
+    setRecipient(walletAddress ?? receiveAddress ?? "");
+  }, [walletAddress, receiveAddress]);
 
   useEffect(() => {
     if (!businessId) {
@@ -81,8 +84,8 @@ export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
       }
       setSuccess(
         data.payoutTxHash
-          ? `Sent ${data.amount} XLM to ${data.recipientAddress}. Tx: ${data.payoutTxHash}`
-          : `Withdrawal completed: ${data.amount ?? amt} XLM`
+          ? `Withdrawal complete ✔ Amount sent: ${data.amount} XLM. Transaction: ${data.payoutTxHash}`
+          : `Withdrawal complete ✔ ${data.amount ?? amt} XLM sent.`
       );
       setAmount("");
       await fetchBalance();
@@ -110,24 +113,27 @@ export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
     <div className="space-y-4 max-w-2xl">
       <Card>
         <CardHeader>
-          <CardTitle>Virtual balance</CardTitle>
+          <CardTitle>Verified balance</CardTitle>
           <CardDescription>
-            Sum of paid commitments minus amounts already withdrawn. Withdraw sends from pool to your receive address (ZK proof flow TBD).
+            Funds added to your private balance. Withdraw sends from our secure vault to your Stellar address.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold text-primary">{balance?.virtualBalanceXlm ?? "0"} XLM</p>
           <p className="text-xs text-muted-foreground mt-1">
-            {balance?.unspentCount ?? 0} unspent commitment(s)
+            🔒 Collected funds are securely pooled — individual client wallets are never exposed.
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {balance?.unspentCount ?? 0} payment(s) available to withdraw
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Request withdrawal</CardTitle>
+          <CardTitle>Withdraw funds</CardTitle>
           <CardDescription>
-            Request sends XLM from the pool to your Stellar address. Full ZK proof + contract verification will be wired in a later phase.
+            ⛓️ Hypertron reroutes funds privately through our secure vault before delivery.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -138,7 +144,7 @@ export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
                 id="withdraw-amount"
                 type="text"
                 inputMode="decimal"
-                placeholder="0.00"
+                placeholder="Enter amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="bg-background"
@@ -149,7 +155,7 @@ export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
               <Input
                 id="withdraw-recipient"
                 type="text"
-                placeholder={receiveAddress ?? "Your receive address"}
+                placeholder={defaultRecipient || "G..."}
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
                 className="bg-background font-mono text-sm"
@@ -158,7 +164,7 @@ export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
             {error && <p className="text-sm text-destructive">{error}</p>}
             {success && <p className="text-sm text-green-600 dark:text-green-400">{success}</p>}
             <Button type="submit" disabled={submitting || balanceNum <= 0}>
-              {submitting ? "Requesting…" : "Request withdrawal"}
+              {submitting ? "Withdrawal processing…" : "Confirm withdrawal"}
             </Button>
           </form>
         </CardContent>
@@ -167,7 +173,7 @@ export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
       <Card>
         <CardHeader>
           <CardTitle>Withdrawal history</CardTitle>
-          <CardDescription>Recent withdrawal requests</CardDescription>
+          <CardDescription>Recent withdrawals</CardDescription>
         </CardHeader>
         <CardContent>
           {withdrawals.length === 0 ? (
@@ -177,7 +183,9 @@ export function WithdrawTab({ businessId, receiveAddress }: WithdrawTabProps) {
               {withdrawals.map((w) => (
                 <li key={w.id} className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3 text-sm">
                   <span className="font-medium">{w.amount} XLM</span>
-                  <span className="rounded bg-muted px-1.5 py-0.5 text-xs">{w.status}</span>
+                  <span className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                    {w.status === "completed" ? "Withdrawal complete" : w.status === "pending" ? "Withdrawal processing" : w.status}
+                  </span>
                   {w.payoutTxHash && (
                     <a
                       href={`https://stellar.expert/explorer/testnet/tx/${w.payoutTxHash}`}

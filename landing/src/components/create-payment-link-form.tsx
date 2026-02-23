@@ -65,7 +65,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
       <CardHeader>
         <CardTitle>Create payment link</CardTitle>
         <CardDescription>
-          Client will pay to your pool address; include the memo so we can attribute the payment.
+          Client pays to your secure vault. We attribute each payment to this link automatically.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

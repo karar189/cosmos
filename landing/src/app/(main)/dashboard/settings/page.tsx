@@ -101,6 +101,7 @@ export default function SettingsPage() {
             setOnboardingCompleted(data);
             setSaved(true);
             setTimeout(() => setSaved(false), 3000);
+            if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("profile-updated"));
           }
         })
         .catch(() => {});

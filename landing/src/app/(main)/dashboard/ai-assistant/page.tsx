@@ -1,11 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Bot } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
 import { ThemeSwitch } from "@/components/dashboard/theme-switch";
-import { PlaceholderPage } from "@/components/dashboard/placeholder-page";
+import { AiAssistantChat } from "@/components/dashboard/ai-assistant-chat";
 import { Button } from "@/components/ui/button";
 import { useFreighter } from "@/hooks/useFreighter";
 
@@ -34,12 +33,8 @@ export default function AiAssistantPage() {
           <Button variant="ghost" size="sm" onClick={disconnect} disabled={isConnecting}>Disconnect</Button>
         </div>
       </DashboardHeader>
-      <DashboardMain>
-        <PlaceholderPage
-          title="Custom AI Assistant"
-          description="Configure and use an AI assistant for your business."
-          icon={Bot}
-        />
+      <DashboardMain fixed fluid className="flex min-h-0 flex-col">
+        <AiAssistantChat />
       </DashboardMain>
     </>
   );

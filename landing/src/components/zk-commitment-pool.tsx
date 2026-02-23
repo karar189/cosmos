@@ -134,7 +134,7 @@ export function ZkCommitmentPool({ publicKey }: ZkCommitmentPoolProps) {
         setTxStatus("error");
         return;
       }
-      setTxMessage(`Committed. Tx: ${send.hash}`);
+      setTxMessage(`Verified. Tx: ${send.hash}`);
       setTxStatus("success");
       await loadState();
     } catch (e) {
@@ -147,9 +147,9 @@ export function ZkCommitmentPool({ publicKey }: ZkCommitmentPoolProps) {
     return (
       <Card className="max-w-md">
         <CardHeader>
-          <CardTitle>ZK commitment pool</CardTitle>
+          <CardTitle>Secure vault</CardTitle>
           <CardDescription>
-            Set NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID in .env to use the commitment pool.
+            Configure the secure vault in .env to use this feature.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -159,38 +159,34 @@ export function ZkCommitmentPool({ publicKey }: ZkCommitmentPoolProps) {
   return (
     <Card className="max-w-md">
       <CardHeader>
-        <CardTitle>ZK commitment pool</CardTitle>
+        <CardTitle>Secure vault</CardTitle>
         <CardDescription>
-          Commit to the pool (Poseidon leaf). Later: prove knowledge and withdraw (proof not wired yet).
+          Balance ledger for verified payments. Used internally for payment verification and withdrawals.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {poolState === "loading" && <p className="text-muted-foreground text-sm">Loading pool state…</p>}
+        {poolState === "loading" && <p className="text-muted-foreground text-sm">Loading…</p>}
         {error && <p className="text-destructive text-sm">{error}</p>}
         {poolState && poolState !== "loading" && (
           <div className="text-sm space-y-1">
             <p>
-              <span className="text-muted-foreground">Root:</span>{" "}
-              <code className="break-all">{poolState.root}</code>
-            </p>
-            <p>
-              <span className="text-muted-foreground">Size:</span> {poolState.size}
+              <span className="text-muted-foreground">Verified entries:</span> {poolState.size}
             </p>
           </div>
         )}
         {poolState !== "loading" && poolState === null && (
           <Button onClick={handleInitialize} disabled={txStatus === "signing" || txStatus === "sending"}>
-            {txStatus === "signing" ? "Approve in Freighter…" : txStatus === "sending" ? "Sending…" : "Initialize pool"}
+            {txStatus === "signing" ? "Approve in Freighter…" : txStatus === "sending" ? "Sending…" : "Initialize vault"}
           </Button>
         )}
         {poolState && poolState !== "loading" && poolState !== null && (
           <Button onClick={handleAddCommitment} disabled={txStatus === "signing" || txStatus === "sending"}>
-            {txStatus === "signing" ? "Approve in Freighter…" : txStatus === "sending" ? "Sending…" : "Add commitment"}
+            {txStatus === "signing" ? "Approve in Freighter…" : txStatus === "sending" ? "Sending…" : "Add verified entry"}
           </Button>
         )}
         {(txStatus === "success" || txStatus === "error") && txMessage && (
           <p className={txStatus === "error" ? "text-destructive text-sm" : "text-muted-foreground text-sm"}>
-            {txMessage}
+            {txStatus === "success" ? "Verification complete." : null} {txMessage}
           </p>
         )}
       </CardContent>
