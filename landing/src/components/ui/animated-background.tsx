@@ -64,15 +64,17 @@ export function AnimatedBackground({
         );
     };
 
-    // Update squares to animate in
+    // Update squares to animate in (generateSquares is stable per dimensions/numSquares)
     useEffect(() => {
         if (dimensions.width && dimensions.height) {
             setSquares(generateSquares(numSquares));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- generateSquares depends on dimensions, already in deps via effect trigger
     }, [dimensions, numSquares]);
 
     // Resize observer to update container dimensions
     useEffect(() => {
+        const node = containerRef.current;
         const resizeObserver = new ResizeObserver((entries) => {
             for (let entry of entries) {
                 setDimensions({
@@ -82,16 +84,16 @@ export function AnimatedBackground({
             }
         });
 
-        if (containerRef.current) {
-            resizeObserver.observe(containerRef.current);
+        if (node) {
+            resizeObserver.observe(node);
         }
 
         return () => {
-            if (containerRef.current) {
-                resizeObserver.unobserve(containerRef.current);
+            if (node) {
+                resizeObserver.unobserve(node);
             }
         };
-    }, [containerRef]);
+    }, []);
 
     return (
         <svg

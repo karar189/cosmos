@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Phase 3: Dashboard stats for overview cards.
  * GET /api/dashboard-stats?businessId=...

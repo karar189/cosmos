@@ -35,7 +35,7 @@ function base64ToBytes(base64: string): Uint8Array {
 
 /** Bytes to 64-char hex (Stellar Memo.hash expects Buffer or hex string). */
 function bytesToHex(bytes: Uint8Array): string {
-  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /** Normalize amount to 7 decimals (Stellar format). */

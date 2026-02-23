@@ -84,7 +84,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
       <CardHeader>
         <CardTitle>Your payment links</CardTitle>
         <CardDescription>
-          When a client pays, funds are added to your verified balance. You see Payment Received (amount, Paid ✔) — we never show your client’s wallet. Use “Check status” to refresh. ⚡ Your client's identity stays private.
+          When a client pays, funds are added to your verified balance. You see Payment Received (amount, Paid ✔) — we never show your client’s wallet. Use “Check status” to refresh. ⚡ Your client&apos;s identity stays private.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 flex flex-col">

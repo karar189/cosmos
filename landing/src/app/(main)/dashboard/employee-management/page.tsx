@@ -386,7 +386,7 @@ export default function EmployeeManagementPage() {
                       mid.add(i);
                     pages.push(1);
                     if (page > 3) pages.push("ellipsis");
-                    [...mid].sort((a, b) => a - b).forEach((n) => pages.push(n));
+                    Array.from(mid).sort((a, b) => a - b).forEach((n) => pages.push(n));
                     if (page < totalPages - 2) pages.push("ellipsis");
                     if (totalPages > 1) pages.push(totalPages);
                   }

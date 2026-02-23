@@ -79,14 +79,17 @@ const Particles: React.FC<ParticlesProps> = ({
         return () => {
             window.removeEventListener("resize", initCanvas);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- initCanvas/animate intentionally run only on mount and color change
     }, [color]);
 
     useEffect(() => {
         onMouseMove();
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- onMouseMove reads refs, only re-run on position change
     }, [mousePosition.x, mousePosition.y]);
 
     useEffect(() => {
         initCanvas();
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- initCanvas intentionally run only when refresh toggles
     }, [refresh]);
 
     const initCanvas = () => {

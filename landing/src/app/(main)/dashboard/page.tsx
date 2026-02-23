@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,7 +26,7 @@ import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 
 const VALID_TABS = ["overview", "payment-links", "withdraw", "zk-pool"] as const;
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabFromUrl = searchParams.get("tab");
@@ -200,5 +200,19 @@ export default function DashboardPage() {
       </DashboardMain>
     </>
     </OnboardingGate>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <p className="text-muted-foreground">Loading…</p>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }

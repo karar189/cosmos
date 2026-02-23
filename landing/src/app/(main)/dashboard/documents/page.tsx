@@ -216,7 +216,7 @@ export default function DocumentsPage() {
                       </div>
                       <Button
                         size="sm"
-                        variant={item.connected ? "default" : "secondary"}
+                        variant={item.connected ? "primary" : "outline"}
                         className={cn(
                           "shrink-0",
                           item.connected && "bg-primary text-primary-foreground"
