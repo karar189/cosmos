@@ -34,15 +34,17 @@ export async function POST(req: NextRequest) {
       purpose,
       clientName,
       workflowStage,
+      flexibleAmount,
     } = body;
 
     const bid = typeof businessId === "string" ? businessId.trim() : "";
-    const amt = typeof amount === "string" ? amount.trim() : String(amount ?? "").trim();
+    const isFlexible = flexibleAmount === true || flexibleAmount === "true";
+    const amt = isFlexible ? "" : (typeof amount === "string" ? amount.trim() : String(amount ?? "").trim());
     if (!bid) {
       return NextResponse.json({ error: "businessId required" }, { status: 400 });
     }
-    if (!amt) {
-      return NextResponse.json({ error: "amount required" }, { status: 400 });
+    if (!isFlexible && !amt) {
+      return NextResponse.json({ error: "amount required (or set flexibleAmount: true for pay-any-amount link)" }, { status: 400 });
     }
 
     const business = await db.business.findUnique({ where: { id: bid } });
@@ -73,7 +75,7 @@ export async function POST(req: NextRequest) {
     const link = await db.paymentLink.create({
       data: {
         businessId: bid,
-        amount: amt,
+        amount: amt || "",
         purpose: purpose ? String(purpose).trim() : null,
         clientName: clientName ? String(clientName).trim() : null,
         workflowStage: workflowStage ? String(workflowStage).trim() : null,

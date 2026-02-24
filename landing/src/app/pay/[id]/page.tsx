@@ -47,9 +47,9 @@ export default function PayPage() {
     fetch(`/api/payment-link/${linkId}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data?.amount != null && data?.destinationAddress) {
+        if (data?.destinationAddress) {
           setFetchedLink({
-            amount: data.amount,
+            amount: data.amount != null ? String(data.amount) : "",
             memo: data.memo || "",
             destinationAddress: data.destinationAddress,
           });
@@ -58,8 +58,12 @@ export default function PayPage() {
       .catch(() => {});
   }, [linkId]);
 
+  const [customAmount, setCustomAmount] = useState("");
+  const isAnyAmountLink = fetchedLink && (fetchedLink.amount === "" || fetchedLink.amount == null);
   const amount =
-    fetchedLink?.amount ?? searchParams.get("amount") ?? "—";
+    isAnyAmountLink
+      ? (customAmount || searchParams.get("amount") || "—").trim()
+      : (fetchedLink?.amount ?? searchParams.get("amount") ?? "—");
   const memo = fetchedLink?.memo ?? searchParams.get("memo") ?? "";
   const destination =
     fetchedLink?.destinationAddress ??
@@ -163,9 +167,24 @@ export default function PayPage() {
         {/* Left: payment info + QR */}
         <div className="rounded-xl border border-border bg-card p-8 w-full text-center space-y-4">
           <h1 className="text-xl font-semibold text-foreground">Payment link</h1>
-          <p className="text-muted-foreground">
-            Amount: <strong className="text-foreground">{amount}</strong> XLM
-          </p>
+          {isAnyAmountLink ? (
+            <div className="space-y-2 text-left">
+              <Label htmlFor="pay-amount" className="text-muted-foreground">Amount (XLM)</Label>
+              <Input
+                id="pay-amount"
+                type="text"
+                inputMode="decimal"
+                placeholder="e.g. 10 or 2.5"
+                value={customAmount || searchParams.get("amount") || ""}
+                onChange={(e) => setCustomAmount(e.target.value.trim())}
+                className="bg-background"
+              />
+            </div>
+          ) : (
+            <p className="text-muted-foreground">
+              Amount: <strong className="text-foreground">{amount}</strong> XLM
+            </p>
+          )}
           <p className="text-muted-foreground text-xs">ID: {params.id}</p>
 
           {payPageUrl && (

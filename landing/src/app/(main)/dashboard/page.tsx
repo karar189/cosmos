@@ -12,6 +12,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreatePaymentLinkForm } from "@/components/create-payment-link-form";
 import { PaymentLinkList } from "@/components/payment-link-list";
+import { PayAnyAmountCard } from "@/components/pay-any-amount-card";
 import { ZkCommitmentPool } from "@/components/zk-commitment-pool";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -173,10 +174,13 @@ function DashboardContent() {
 
           <TabsContent value="payment-links" className="space-y-4">
             {businessId && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                <CreatePaymentLinkForm businessId={businessId} onCreated={() => {}} />
-                <PaymentLinkList businessId={businessId} />
-              </div>
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                  <CreatePaymentLinkForm businessId={businessId} onCreated={() => {}} />
+                  <PaymentLinkList businessId={businessId} />
+                </div>
+                <PayAnyAmountCard businessId={businessId} onCreated={() => {}} />
+              </>
             )}
             {!businessId && !businessError && (
               <p className="text-muted-foreground">Loading…</p>

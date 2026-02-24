@@ -104,7 +104,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
                   key={link.id}
                   className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3 text-sm"
                 >
-                  <span className="font-medium">{link.amount} XLM</span>
+                  <span className="font-medium">{link.amount ? `${link.amount} XLM` : "Any amount"}</span>
                   {link.purpose && <span className="text-muted-foreground">— {link.purpose}</span>}
                   {link.clientName && (
                     <span className="text-muted-foreground">({link.clientName})</span>

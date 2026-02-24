@@ -29,7 +29,11 @@ export async function POST(
     const amt = match ? match[0] : "";
     if (!amt || Number.parseFloat(amt) <= 0) {
       return NextResponse.json(
-        { error: "Valid amount required (e.g. 2 or 2.5)" },
+        {
+          error: link.amount == null || String(link.amount).trim() === ""
+            ? "Enter the amount you want to pay (e.g. 2 or 2.5)"
+            : "Valid amount required (e.g. 2 or 2.5)",
+        },
         { status: 400 }
       );
     }
