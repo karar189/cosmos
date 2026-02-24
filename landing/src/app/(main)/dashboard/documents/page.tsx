@@ -86,7 +86,7 @@ export default function MyTemplatesPage() {
                     Build one in Compliance Maker (Onboarding) and save it here.
                   </p>
                   <Button
-                    variant="default"
+                    variant="primary"
                     size="sm"
                     className="mt-4"
                     onClick={() => router.push("/dashboard/onboarding")}
@@ -114,7 +114,7 @@ export default function MyTemplatesPage() {
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         <Button
-                          variant="default"
+                          variant="primary"
                           size="sm"
                           onClick={() => openTemplate(t.id)}
                         >
