@@ -3,9 +3,16 @@ import { db } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ||
+const PRODUCTION_BASE = "https://www.hypertron.space";
+const rawBase =
+  process.env.NEXT_PUBLIC_APP_URL?.trim() ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+const isProductionOrMain =
+  process.env.NODE_ENV === "production" || process.env.VERCEL_GIT_COMMIT_REF === "main";
+const BASE_URL =
+  isProductionOrMain && (!rawBase || rawBase.includes("localhost"))
+    ? PRODUCTION_BASE
+    : rawBase;
 
 /**
  * Phase 3: Per-business event stream. Returns only safe fields — no client/payer address, no pool balance.
