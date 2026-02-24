@@ -10,7 +10,6 @@ import {
   CreditCard,
   ShieldCheck,
   UserPlus,
-  Scale,
 } from "lucide-react";
 import type { NavGroup, SidebarData } from "@/components/dashboard/layout/types";
 
@@ -32,11 +31,6 @@ export const DASHBOARD_GROUP: NavGroup = {
     { title: "Onboarding", url: "/dashboard/onboarding", icon: UserPlus },
     { title: "Settings", url: "/dashboard/settings", icon: Settings },
   ],
-};
-
-export const REGINTEL_GROUP: NavGroup = {
-  title: "Regulatory",
-  items: [{ title: "Regulatory Path", url: "/regintel/path", icon: Scale }],
 };
 
 /** Build FEATURES nav group showing only links for selected widget ids. If none selected, show all. */
@@ -65,6 +59,5 @@ export const sidebarData: SidebarData = {
   navGroups: [
     DASHBOARD_GROUP,
     getFeaturesNavGroup([]), // default: show all when no preference
-    REGINTEL_GROUP,
   ],
 };
