@@ -1,18 +1,9 @@
-import { Icons, SignUpForm } from "@/components";
+import { SignUpForm } from "@/components";
 import Link from "next/link";
 
 const SignUpPage = () => {
     return (
         <div className="flex flex-col items-start max-w-sm mx-auto h-dvh overflow-hidden pt-4 md:pt-20">
-            <div className="flex items-center w-full py-8 border-b border-border/80">
-                <Link href="/#home" className="flex items-center gap-x-2">
-                    <Icons.logo className="w-6 h-6" />
-                    <h1 className="text-lg font-medium">
-                        linkify
-                    </h1>
-                </Link>
-            </div>
-
             <SignUpForm />
 
             <div className="flex flex-col items-start w-full">
