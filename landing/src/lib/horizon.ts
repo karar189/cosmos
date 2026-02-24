@@ -177,3 +177,54 @@ export async function findPaymentsToAccountWithHashMemo(
   }
   return out;
 }
+
+/** Daily aggregate of incoming payments (for transaction analytics). */
+export interface DailyPaymentStats {
+  date: string; // YYYY-MM-DD
+  count: number;
+  totalAmount: number;
+}
+
+/**
+ * Fetch incoming payments to the account from Stellar Horizon and aggregate by day.
+ * Used for dashboard transaction analytics (daily payments received).
+ */
+export async function getDailyIncomingPayments(
+  accountId: string,
+  network: StellarNetwork,
+  options: { days?: number; limit?: number } = {}
+): Promise<DailyPaymentStats[]> {
+  const { days = 30, limit = 200 } = options;
+  const base = getHorizonUrl(network);
+  const pool = accountId.trim();
+  const url = `${base}/accounts/${encodeURIComponent(pool)}/payments?limit=${limit}&order=desc`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) return [];
+
+  const data = (await res.json()) as { _embedded?: { records?: HorizonPayment[] } };
+  const records = data._embedded?.records ?? [];
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  cutoff.setHours(0, 0, 0, 0);
+
+  const byDay = new Map<string, { count: number; totalAmount: number }>();
+
+  for (const payment of records) {
+    if (payment.type !== "payment") continue;
+    if (payment.to !== pool) continue;
+    const created = new Date(payment.created_at);
+    if (created < cutoff) continue;
+    const dateKey = payment.created_at.slice(0, 10);
+    const amount = parseFloat((payment as { amount?: string }).amount ?? "0") || 0;
+    const existing = byDay.get(dateKey) ?? { count: 0, totalAmount: 0 };
+    byDay.set(dateKey, {
+      count: existing.count + 1,
+      totalAmount: existing.totalAmount + amount,
+    });
+  }
+
+  const sorted = Array.from(byDay.entries())
+    .map(([date, v]) => ({ date, count: v.count, totalAmount: v.totalAmount }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  return sorted;
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
 
 /** Stellar public keys are G..., 56 chars. */
 function isValidStellarAddress(addr: string): boolean {
@@ -49,6 +50,10 @@ export async function POST(req: NextRequest) {
       receiveAddress: business.receiveAddress ?? null,
     });
   } catch (e) {
+    if (isPrismaConnectionError(e)) {
+      console.warn("Business link POST: database unavailable");
+      return NextResponse.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+    }
     console.error("Business link error:", e);
     const message =
       process.env.NODE_ENV === "development" && e instanceof Error
@@ -89,6 +94,10 @@ export async function PATCH(req: NextRequest) {
     });
     return NextResponse.json({ businessId: updated.id, receiveAddress: updated.receiveAddress });
   } catch (e) {
+    if (isPrismaConnectionError(e)) {
+      console.warn("Business link PATCH: database unavailable");
+      return NextResponse.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+    }
     console.error("Business PATCH error:", e);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

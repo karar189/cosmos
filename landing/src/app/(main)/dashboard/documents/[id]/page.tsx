@@ -20,6 +20,15 @@ import { Badge } from "@/components/ui/badge";
 import { useFreighter } from "@/hooks/useFreighter";
 import { getTemplateById, type SavedTemplate, type DashboardWidget } from "@/lib/my-templates-storage";
 import { cn } from "@/utils";
+import {
+  ComplianceScoreTrendChart,
+  RiskHeatmapChart,
+  ProjectRatingsBarChart,
+  ActiveRoutesMetric,
+  PortfolioTotalValueChart,
+  IndividualAssetsChart,
+  TransactionAnalyticsChart,
+} from "@/components/dashboard/charts";
 
 function formatDate(iso: string) {
   try {
@@ -287,32 +296,59 @@ export default function DashboardViewPage() {
             </Card>
           </div>
 
-          {/* Charts & metrics section */}
+          {/* Main portfolio chart: total assets valuation from wallet */}
           <section>
-            <h2 className="text-lg font-semibold tracking-tight mb-4">Charts & metrics</h2>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {widgets.map((w) => (
-                <WidgetCard key={w.id} widget={w} />
-              ))}
-            </div>
-            {widgets.length === 0 && (
-              <Card className="rounded-2xl border-dashed border-border bg-card">
-                <CardContent className="flex flex-col items-center justify-center py-16">
-                  <FileText className="h-14 w-14 text-muted-foreground/50 mb-4" />
-                  <p className="text-muted-foreground font-medium">No widgets in this dashboard yet.</p>
-                  <p className="text-sm text-muted-foreground mt-1">Edit in workspace to add widgets.</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-4"
-                    onClick={() => router.push(`/dashboard/workspace?template=${encodeURIComponent(template.id)}`)}
-                  >
-                    <Wrench className="mr-2 h-4 w-4" />
-                    Edit to add widgets
-                  </Button>
+            <h2 className="text-lg font-semibold tracking-tight mb-4">Portfolio</h2>
+            <div className="space-y-6">
+              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                <CardContent className="p-5">
+                  <PortfolioTotalValueChart />
                 </CardContent>
               </Card>
-            )}
+              {/* Individual assets: filter by token, historical data per asset (XLM, PayPal US, EURC) */}
+              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                <CardContent className="p-5">
+                  <IndividualAssetsChart />
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+
+          {/* Compliance Parameters section – Cosmos-style chart components (wire APIs via props) */}
+          <section>
+            <h2 className="text-lg font-semibold tracking-tight mb-4">Compliance Parameters</h2>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {/* Project ratings bar chart (Dependency, Financial, Operational, etc.) */}
+              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm lg:col-span-2">
+                <CardContent className="p-5">
+                  <ProjectRatingsBarChart />
+                </CardContent>
+              </Card>
+              {/* Compliance Score Trend – line chart */}
+              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                <CardContent className="p-5">
+                  <ComplianceScoreTrendChart />
+                </CardContent>
+              </Card>
+              {/* Risk Heatmap – GitHub-style activity grid */}
+              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                <CardContent className="p-5">
+                  <RiskHeatmapChart />
+                </CardContent>
+              </Card>
+              {/* Active Routes metric */}
+              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                <CardContent className="p-0">
+                  <ActiveRoutesMetric />
+                </CardContent>
+              </Card>
+              {/* Transaction Analytics: daily payments received from Stellar (integrated wallet) */}
+              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm lg:col-span-2">
+                <CardContent className="p-5">
+                  <TransactionAnalyticsChart walletAddress={publicKey ?? null} />
+                </CardContent>
+              </Card>
+            </div>
           </section>
         </div>
       </DashboardMain>

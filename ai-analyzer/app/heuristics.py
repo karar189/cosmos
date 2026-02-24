@@ -136,6 +136,32 @@ def recommend_with_heuristics(req: RecommendationsRequest) -> RecommendationsRes
         total_hours = round(sum(w.impact.time_saved_hours_per_month for w in rec_widgets), 1)
         total_cost = round(sum(w.impact.cost_savings_usd_per_month for w in rec_widgets), 2)
 
+        # Cap bundle cost to user's budget so sum of widget costs never exceeds budget
+        budget = req.platform_cost_usd_per_month
+        if budget is not None and budget > 0 and total_cost > budget:
+            scale = budget / total_cost
+            scaled_widgets: list[RecommendedWidget] = []
+            for w in rec_widgets:
+                scaled_widgets.append(
+                    RecommendedWidget(
+                        id=w.id,
+                        title=w.title,
+                        category=w.category,
+                        type=w.type,
+                        why=w.why,
+                        impact=WidgetImpact(
+                            time_saved_hours_per_month=w.impact.time_saved_hours_per_month,
+                            cost_savings_usd_per_month=round(
+                                w.impact.cost_savings_usd_per_month * scale, 2
+                            ),
+                        ),
+                    )
+                )
+            rec_widgets = scaled_widgets
+            total_cost = round(
+                sum(w.impact.cost_savings_usd_per_month for w in rec_widgets), 2
+            )
+
         roi = None
         if req.platform_cost_usd_per_month and req.platform_cost_usd_per_month > 0:
             roi = round(((total_cost - req.platform_cost_usd_per_month) / req.platform_cost_usd_per_month) * 100, 1)

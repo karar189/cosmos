@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
 
 /** GET /api/vault?businessId=... | ?walletAddress=... — list Document vault items. */
 export async function GET(req: NextRequest) {
@@ -37,6 +38,10 @@ export async function GET(req: NextRequest) {
     }));
     return NextResponse.json({ items: parsed });
   } catch (e) {
+    if (isPrismaConnectionError(e)) {
+      console.warn("Vault GET: database unavailable");
+      return NextResponse.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+    }
     console.error("Vault list error:", e);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
@@ -87,6 +92,10 @@ export async function POST(req: NextRequest) {
       createdAt: vault.createdAt.toISOString(),
     });
   } catch (e) {
+    if (isPrismaConnectionError(e)) {
+      console.warn("Vault POST: database unavailable");
+      return NextResponse.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+    }
     console.error("Vault save error:", e);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
