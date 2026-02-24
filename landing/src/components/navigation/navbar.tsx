@@ -89,8 +89,8 @@ const Navbar = () => {
                     {/* 1. Left: logo */}
                     <div className="flex items-center shrink-0 z-10">
                         <Link href="/#home" className="flex items-center gap-2 text-neutral-300 hover:text-white transition-colors">
-                            <Image src="/logo.png" alt="Hypertron" width={32} height={32} className="w-8 h-8 object-contain" />
-                            <span className="text-lg font-semibold font-heading !leading-none text-white/90 hidden sm:inline">
+                            <Image src="/logo.png" alt="Hypertron" width={20} height={20} className="w-16 h-16 object-contain" />
+                            <span className="text-xl font-semibold font-heading !leading-none text-white/90 hidden sm:inline">
                                 Hypertron
                             </span>
                         </Link>
