@@ -139,6 +139,13 @@ export async function GET(req: NextRequest) {
     });
   } catch (e) {
     console.error("Payment link list error:", e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const message =
+      process.env.NODE_ENV === "development" && e instanceof Error
+        ? e.message
+        : "Server error";
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
   }
 }

@@ -1,19 +1,21 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Copy, ExternalLink, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const STELLAR_NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
-const EXPLORER_TX =
-  STELLAR_NETWORK === "testnet"
-    ? "https://stellar.expert/explorer/testnet/tx"
-    : "https://stellar.expert/explorer/public/tx";
+import { getExplorerTxUrl } from "@/lib/stellar-explorer";
+
+function truncate(str: string, head = 8, tail = 6) {
+  if (str.length <= head + tail + 3) return str;
+  return `${str.slice(0, head)}…${str.slice(-tail)}`;
+}
 
 export interface PaymentLinkItem {
   id: string;
   url: string;
-  amount: string;
+  amount: string | null;
   purpose: string | null;
   clientName: string | null;
   workflowStage: string | null;
@@ -40,7 +42,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
       const res = await fetch(`/api/payment-link?businessId=${encodeURIComponent(businessId)}`);
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Failed to load links");
+        setError(data.error || `Failed to load links (${res.status})`);
         return;
       }
       setLinks(data.links ?? []);
@@ -81,11 +83,17 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
 
   return (
     <Card className="w-full max-w-2xl lg:max-w-none">
-      <CardHeader>
-        <CardTitle>Your payment links</CardTitle>
-        <CardDescription>
-          When a client pays, funds are added to your verified balance. You see Payment Received (amount, Paid ✔) — we never show your client’s wallet. Use “Check status” to refresh. ⚡ Your client&apos;s identity stays private.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+        <div>
+          <CardTitle>Your payment links</CardTitle>
+          <CardDescription>
+            Payments to these links go to your verified balance. Client identity stays private.
+          </CardDescription>
+        </div>
+        <Button variant="outline" size="sm" onClick={fetchLinks} className="shrink-0">
+          <RefreshCw className="h-4 w-4 mr-1.5" />
+          Refresh
+        </Button>
       </CardHeader>
       <CardContent className="space-y-4 flex flex-col">
         {error && <p className="text-destructive text-sm">{error}</p>}
@@ -95,63 +103,79 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
           </p>
         )}
         {links.length === 0 ? (
-          <p className="text-muted-foreground text-sm">No payment links yet. Create one above.</p>
+          <p className="text-muted-foreground text-sm">No payment links yet. Create one in the form to the left.</p>
         ) : (
           <div className="max-h-[50vh] min-h-0 overflow-y-auto rounded-md border border-border pr-1">
             <ul className="space-y-3 py-1">
               {links.map((link) => (
                 <li
                   key={link.id}
-                  className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3 text-sm"
+                  className="rounded-lg border border-border p-3 text-sm space-y-2"
                 >
-                  <span className="font-medium">{link.amount ? `${link.amount} XLM` : "Any amount"}</span>
-                  {link.purpose && <span className="text-muted-foreground">— {link.purpose}</span>}
-                  {link.clientName && (
-                    <span className="text-muted-foreground">({link.clientName})</span>
-                  )}
-                  {link.workflowStage && (
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-xs">{link.workflowStage}</span>
-                  )}
-                  {link.paidAt ? (
-                    <span className="text-green-600 dark:text-green-400 font-medium">Payment received</span>
-                  ) : (
-                    <span className="text-muted-foreground">Pending</span>
-                  )}
-                  {link.paidAt && link.commitmentTxHash && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold text-base">
+                      {link.amount ? `${link.amount} XLM` : "Any amount"}
+                    </span>
+                    {link.paidAt ? (
+                      <span className="rounded-full bg-green-500/15 text-green-600 dark:text-green-400 px-2 py-0.5 text-xs font-medium">
+                        Paid
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-muted text-muted-foreground px-2 py-0.5 text-xs font-medium">
+                        Pending
+                      </span>
+                    )}
+                    {link.purpose && (
+                      <span className="text-muted-foreground text-xs">— {link.purpose}</span>
+                    )}
+                    {link.clientName && (
+                      <span className="text-muted-foreground text-xs">({link.clientName})</span>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => checkStatus(link.id)}
+                      className="ml-auto h-7 text-xs"
+                    >
+                      Check status
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
                     <a
-                      href={`${EXPLORER_TX}/${link.commitmentTxHash}`}
+                      href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-primary hover:underline"
+                      className="text-primary text-xs font-mono hover:underline inline-flex items-center gap-1 max-w-full min-w-0"
+                      title={link.url}
                     >
-                      On-chain proof
+                      <span className="truncate">{truncate(link.url, 32, 12)}</span>
+                      <ExternalLink className="h-3 w-3 shrink-0" />
                     </a>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => checkStatus(link.id)}
-                    className="ml-auto"
-                  >
-                    Check status
-                  </Button>
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary text-xs break-all hover:underline w-full"
-                  >
-                    {link.url}
-                  </a>
-                  <span className="text-muted-foreground text-xs">ID: {link.id}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={() => navigator.clipboard.writeText(link.url)}
+                      title="Copy link"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                    {link.paidAt && link.commitmentTxHash && (
+                      <a
+                        href={getExplorerTxUrl(link.commitmentTxHash)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline"
+                      >
+                        On-chain proof
+                      </a>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
           </div>
         )}
-        <Button variant="outline" size="sm" onClick={fetchLinks} className="shrink-0">
-          Refresh list
-        </Button>
       </CardContent>
     </Card>
   );

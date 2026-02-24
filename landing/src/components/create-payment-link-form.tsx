@@ -65,7 +65,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
       <CardHeader>
         <CardTitle>Create payment link</CardTitle>
         <CardDescription>
-          Client pays to your secure vault. We attribute each payment to this link automatically.
+          Set an amount and optional details. Share the link — payments go to your vault and are attributed to this link.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -75,9 +75,10 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
             <Input
               id="amount"
               type="text"
+              inputMode="decimal"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="100"
+              placeholder="e.g. 100"
               required
               className="bg-background"
             />
@@ -89,7 +90,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
               type="text"
               value={purpose}
               onChange={(e) => setPurpose(e.target.value)}
-              placeholder="Invoice #123"
+              placeholder="e.g. Invoice #123"
               className="bg-background"
             />
           </div>
@@ -100,7 +101,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
               type="text"
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              placeholder="Acme Corp"
+              placeholder="e.g. Acme Corp"
               className="bg-background"
             />
           </div>
@@ -111,7 +112,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
               type="text"
               value={workflowStage}
               onChange={(e) => setWorkflowStage(e.target.value)}
-              placeholder="pending, signed, delivered"
+              placeholder="e.g. pending, signed, delivered"
               className="bg-background"
             />
           </div>
@@ -121,27 +122,27 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
           </Button>
         </form>
         {result && (
-          <div className="pt-4 border-t border-border space-y-2">
+          <div className="pt-4 border-t border-border space-y-3">
             <p className="text-sm font-medium text-foreground">Link created</p>
-            <p className="text-muted-foreground text-xs">Memo (client must include this when paying): {result.memo}</p>
-            <a
-              href={result.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary text-sm break-all hover:underline block"
-            >
-              {result.url}
-            </a>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                navigator.clipboard.writeText(result.url);
-              }}
-            >
-              Copy link
-            </Button>
+            <p className="text-muted-foreground text-xs">
+              Memo (client must include when paying): <code className="rounded bg-muted px-1">{result.memo}</code>
+            </p>
+            <div className="flex items-center gap-2 min-w-0">
+              <Input
+                readOnly
+                value={result.url}
+                className="font-mono text-xs bg-muted/50 flex-1 min-w-0 truncate"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => navigator.clipboard.writeText(result.url)}
+                className="shrink-0"
+              >
+                Copy
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>

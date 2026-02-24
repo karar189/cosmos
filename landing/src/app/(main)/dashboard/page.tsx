@@ -175,11 +175,11 @@ function DashboardContent() {
           <TabsContent value="payment-links" className="space-y-4">
             {businessId && (
               <>
+                <PaymentLinkList businessId={businessId} />
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                  <PayAnyAmountCard businessId={businessId} onCreated={() => {}} />
                   <CreatePaymentLinkForm businessId={businessId} onCreated={() => {}} />
-                  <PaymentLinkList businessId={businessId} />
                 </div>
-                <PayAnyAmountCard businessId={businessId} onCreated={() => {}} />
               </>
             )}
             {!businessId && !businessError && (

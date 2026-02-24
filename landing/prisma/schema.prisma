@@ -106,7 +106,7 @@ model PaymentLink {
   id                 String    @id @default(cuid()) @map("_id")
   businessId         String
   business           Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  amount             String
+  amount             String?   // null = pay any amount (flexible)
   purpose            String?   // e.g. "Invoice", "Deposit"
   clientName         String?
   workflowStage      String?   // e.g. "pending", "signed", "delivered"

@@ -160,7 +160,7 @@ export async function processRelayerInbox(network: StellarNetwork): Promise<numb
 
     const relayerAddress = relayerPub;
     const nonce = randomBytes(16).toString("hex");
-    const secret = hashToScalar(relayerAddress, link.businessId, link.amount);
+    const secret = hashToScalar(relayerAddress, link.businessId, link.amount ?? "");
     const nullifier = hashToScalar(nonce, link.id);
 
     const commitResult = await executeCommit(secret, nullifier, network);

@@ -113,7 +113,7 @@ export async function GET(
 
     const payerAddress = found.sourceAccount || "";
     const nonce = randomBytes(16).toString("hex");
-    const secret = hashToScalar(payerAddress, link.businessId, link.amount);
+    const secret = hashToScalar(payerAddress, link.businessId, link.amount ?? "");
     const nullifier = hashToScalar(nonce, link.id);
 
     const commitResult = await executeCommit(secret, nullifier, STELLAR_NETWORK);

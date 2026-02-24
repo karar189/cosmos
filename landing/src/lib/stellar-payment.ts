@@ -38,6 +38,9 @@ function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/** Minimum XLM to create a new account on Stellar (base reserve). */
+const MIN_CREATE_ACCOUNT_XLM = 1;
+
 /** Normalize amount to 7 decimals (Stellar format). */
 function normalizeAmount(amount: string): string {
   const n = parseFloat(amount);
@@ -90,8 +93,15 @@ export async function buildPaymentXdr(
       networkPassphrase,
     });
 
+    let destinationExists: boolean;
     try {
       await server.loadAccount(destinationPublicKey);
+      destinationExists = true;
+    } catch {
+      destinationExists = false;
+    }
+
+    if (destinationExists) {
       builder.addOperation(
         Operation.payment({
           destination: destinationPublicKey,
@@ -99,7 +109,14 @@ export async function buildPaymentXdr(
           amount: amountStr,
         })
       );
-    } catch {
+    } else {
+      const amountNum = parseFloat(amountStr);
+      if (amountNum < MIN_CREATE_ACCOUNT_XLM) {
+        return {
+          success: false,
+          error: `Recipient account doesn't exist on this network. To create it, Stellar requires a minimum of ${MIN_CREATE_ACCOUNT_XLM} XLM. Please pay at least ${MIN_CREATE_ACCOUNT_XLM} XLM, or ask the recipient to activate their account first.`,
+        };
+      }
       builder.addOperation(
         Operation.createAccount({
           destination: destinationPublicKey,

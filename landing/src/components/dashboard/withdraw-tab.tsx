@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { getExplorerTxUrl } from "@/lib/stellar-explorer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +16,7 @@ interface WithdrawTabProps {
 
 export function WithdrawTab({ businessId, walletAddress, receiveAddress }: WithdrawTabProps) {
   const [balance, setBalance] = useState<{ virtualBalanceXlm: string; unspentCount: number } | null>(null);
-  const [withdrawals, setWithdrawals] = useState<{ id: string; amount: string; recipientAddress: string; status: string; payoutTxHash: string | null; createdAt: string }[]>([]);
+  const [withdrawals, setWithdrawals] = useState<{ id: string; amount: string; recipientAddress: string; status: string; payoutTxHash: string | null; contractTxHash: string | null; createdAt: string }[]>([]);
   const [amount, setAmount] = useState("");
   const defaultRecipient = walletAddress ?? receiveAddress ?? "";
   const [recipient, setRecipient] = useState(defaultRecipient);
@@ -186,15 +187,29 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
                   <span className="rounded bg-muted px-1.5 py-0.5 text-xs">
                     {w.status === "completed" ? "Withdrawal complete" : w.status === "pending" ? "Withdrawal processing" : w.status}
                   </span>
-                  {w.payoutTxHash && (
-                    <a
-                      href={`https://stellar.expert/explorer/testnet/tx/${w.payoutTxHash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary text-xs hover:underline"
-                    >
-                      Tx
-                    </a>
+                  {(w.payoutTxHash || w.contractTxHash) && (
+                    <span className="flex items-center gap-2">
+                      {w.contractTxHash && (
+                        <a
+                          href={getExplorerTxUrl(w.contractTxHash)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary text-xs hover:underline"
+                        >
+                          Contract
+                        </a>
+                      )}
+                      {w.payoutTxHash && (
+                        <a
+                          href={getExplorerTxUrl(w.payoutTxHash)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary text-xs hover:underline"
+                        >
+                          Payout
+                        </a>
+                      )}
+                    </span>
                   )}
                   <span className="text-muted-foreground text-xs">
                     {new Date(w.createdAt).toLocaleString()}

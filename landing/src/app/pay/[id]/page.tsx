@@ -14,9 +14,7 @@ import {
   getNetworkPassphrase,
   type StellarNetwork,
 } from "@/lib/stellar-payment";
-
-const STELLAR_NETWORK: StellarNetwork =
-  (process.env.NEXT_PUBLIC_STELLAR_NETWORK as StellarNetwork) || "testnet";
+import { getExplorerTxUrl, STELLAR_NETWORK } from "@/lib/stellar-explorer";
 
 export default function PayPage() {
   const params = useParams();
@@ -156,10 +154,7 @@ export default function PayPage() {
     }
   }
 
-  const explorerUrl =
-    STELLAR_NETWORK === "testnet"
-      ? `https://stellar.expert/explorer/testnet/tx/${txHash}`
-      : `https://stellar.expert/explorer/public/tx/${txHash}`;
+  const explorerUrl = getExplorerTxUrl(txHash);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-background">

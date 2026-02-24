@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-const STELLAR_NETWORK = process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet";
-const EXPLORER_TX =
-  STELLAR_NETWORK === "testnet"
-    ? "https://stellar.expert/explorer/testnet/tx"
-    : "https://stellar.expert/explorer/public/tx";
+import { getExplorerTxUrl } from "@/lib/stellar-explorer";
 
 export interface PaymentEvent {
   linkId: string;
@@ -90,7 +85,7 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
                 </p>
                 {ev.commitmentId && (
                   <a
-                    href={`${EXPLORER_TX}/${ev.commitmentId}`}
+                    href={getExplorerTxUrl(ev.commitmentId)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-primary hover:underline"
