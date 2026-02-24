@@ -105,6 +105,8 @@ sequenceDiagram
 ```
 
 ---
+<img width="1214" height="845" alt="Screenshot 2026-02-24 at 9 32 12 AM" src="https://github.com/user-attachments/assets/11b9d58f-78d7-47e4-99f3-0cb4e7069783" />
+
 
 ## 🧩 Core Components
 
