@@ -1,9 +1,5 @@
 
 <img width="1376" height="913" alt="Screenshot 2026-02-22 at 6 44 18 PM" src="https://github.com/user-attachments/assets/96739bf1-0daa-4abe-ab1a-178076e255e1" />
- 🪩 Hypertron Privacy Layer
-
-Private Onboarding + Payments + Darkpool-Style Settlement
-Built on the Stellar Development Foundation network
 
 ## 🚀 Overview
 
