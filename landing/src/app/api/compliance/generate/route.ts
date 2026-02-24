@@ -1,14 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
 
 function isValidStellarAddress(addr: string): boolean {
   const s = (addr || "").trim();
   return s.length === 56 && s.startsWith("G");
 }
 
+/** Optional compliance form payload (from request body or DB complianceForm). */
+interface ComplianceFormPayload {
+  businessName?: string;
+  basedOutOf?: string;
+  businessType?: string;
+  geographies?: string;
+  products?: string;
+  monthlyTransactions?: string;
+  avgTransactionValueUsd?: string;
+  opsHourlyRateUsd?: string;
+  complianceHourlyRateUsd?: string;
+  platformCostUsdMonth?: string;
+  constraints?: string;
+}
+
+/** Python API base URL (e.g. http://localhost:8001). When set, we proxy to Python RegIntel /profile + /analyze. */
+const COMPLIANCE_PYTHON_API_URL = process.env.COSMOS_AI_URL?.trim() || process.env.COMPLIANCE_PYTHON_API_URL?.trim() || "";
+
 /**
  * POST /api/compliance/generate
- * Body: { walletAddress: string }
+ * Body: { walletAddress: string, ...ComplianceFormPayload } (form fields optional; if omitted, use saved profile)
  * Uses OpenAI to generate a regulatory & compliance checklist for the business.
  * Returns { items: { id: string, text: string }[] }
  */
@@ -23,20 +42,90 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const business = await db.business.findUnique({
-      where: { walletAddress },
-      select: { id: true, name: true, email: true, businessNature: true },
-    });
+    let business: { id: string; name: string | null; email: string | null; businessNature: string | null; complianceForm?: unknown } | null = null;
+    try {
+      business = await db.business.findUnique({
+        where: { walletAddress },
+        select: { id: true, name: true, email: true, businessNature: true, complianceForm: true },
+      });
+    } catch (dbErr) {
+      console.error("Compliance generate: DB read error", dbErr);
+      // Continue without saved profile; use body only
+    }
 
-    const profile = business ?? {
-      id: "",
-      name: null,
-      email: null,
-      businessNature: null,
+    const savedForm = (business?.complianceForm != null && typeof business.complianceForm === "object")
+      ? (business.complianceForm as ComplianceFormPayload)
+      : null;
+    const form: ComplianceFormPayload = {
+      businessName: body.businessName ?? savedForm?.businessName ?? business?.name ?? "",
+      basedOutOf: body.basedOutOf ?? savedForm?.basedOutOf ?? "",
+      businessType: body.businessType ?? savedForm?.businessType ?? body.businessNature ?? savedForm?.businessType ?? business?.businessNature ?? "",
+      geographies: body.geographies ?? savedForm?.geographies ?? "",
+      products: body.products ?? savedForm?.products ?? "",
+      monthlyTransactions: body.monthlyTransactions ?? savedForm?.monthlyTransactions ?? "",
+      avgTransactionValueUsd: body.avgTransactionValueUsd ?? savedForm?.avgTransactionValueUsd ?? "",
+      opsHourlyRateUsd: body.opsHourlyRateUsd ?? savedForm?.opsHourlyRateUsd ?? "",
+      complianceHourlyRateUsd: body.complianceHourlyRateUsd ?? savedForm?.complianceHourlyRateUsd ?? "",
+      platformCostUsdMonth: body.platformCostUsdMonth ?? savedForm?.platformCostUsdMonth ?? "",
+      constraints: body.constraints ?? savedForm?.constraints ?? "",
     };
-    const name = profile.name || "Your business";
-    const nature = profile.businessNature || "general business";
-    const email = profile.email ? ` (contact: ${profile.email})` : "";
+
+    // If Python backend (e.g. localhost:8001) is configured, proxy to simple compliance checklist API
+    if (COMPLIANCE_PYTHON_API_URL) {
+      const base = COMPLIANCE_PYTHON_API_URL.replace(/\/$/, "");
+      const payload = {
+        walletAddress: walletAddress,
+        businessName: form.businessName || undefined,
+        email: body.email ?? undefined,
+        basedOutOf: form.basedOutOf || undefined,
+        businessType: form.businessType || undefined,
+        geographies: form.geographies || undefined,
+        products: form.products || undefined,
+        monthlyTransactions: form.monthlyTransactions || undefined,
+        avgTransactionValueUsd: form.avgTransactionValueUsd || undefined,
+        opsHourlyRateUsd: form.opsHourlyRateUsd || undefined,
+        complianceHourlyRateUsd: form.complianceHourlyRateUsd || undefined,
+        platformCostUsdMonth: form.platformCostUsdMonth || undefined,
+        constraints: form.constraints || undefined,
+      };
+      try {
+        const res = await fetch(`${base}/api/compliance/checklist`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          console.error("Compliance checklist API error:", res.status, errText);
+          let errMsg = "Python compliance API failed.";
+          try {
+            const errJson = JSON.parse(errText);
+            if (errJson.detail) errMsg = typeof errJson.detail === "string" ? errJson.detail : JSON.stringify(errJson.detail);
+          } catch {
+            if (errText) errMsg = errText.slice(0, 200);
+          }
+          return NextResponse.json(
+            { error: errMsg },
+            { status: 502 }
+          );
+        }
+        const data = (await res.json()) as { items?: Array<{ id: string; text: string }> };
+        const items = data?.items ?? [];
+        if (items.length === 0) {
+          return NextResponse.json(
+            { error: "Python API returned no checklist items." },
+            { status: 502 }
+          );
+        }
+        return NextResponse.json({ items });
+      } catch (e) {
+        console.error("Compliance Python proxy error:", e);
+        return NextResponse.json(
+          { error: "Could not reach Python compliance API at " + base + ". Is it running on port 8001?" },
+          { status: 502 }
+        );
+      }
+    }
 
     const apiKey = process.env.OPENAI_API_KEY?.trim();
     if (!apiKey) {
@@ -46,8 +135,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const systemPrompt = `You are a regulatory and compliance advisor. Given a business profile, produce a concise checklist of regulatory and compliance actions the business should take to operate in a legally compliant manner. Output only a JSON array of strings, each string being one actionable item (e.g. "Register for data protection authority if processing EU personal data"). No other text. Example: ["Item one", "Item two"]`;
-    const userPrompt = `Business: ${name}${email}. Nature: ${nature}. Generate a professional, actionable regulatory and compliance checklist (8–15 items) for this business to become fully legally compliant. Return only a JSON array of strings.`;
+    const parts: string[] = [];
+    if (form.businessName) parts.push(`Business name: ${form.businessName}`);
+    if (form.basedOutOf) parts.push(`Based out of: ${form.basedOutOf}`);
+    if (form.businessType) parts.push(`Type / sector: ${form.businessType}`);
+    if (form.geographies) parts.push(`Geographical location(s): ${form.geographies}`);
+    if (form.products) parts.push(`Products / services: ${form.products}`);
+    if (form.monthlyTransactions) parts.push(`Monthly transactions (volume): ${form.monthlyTransactions}`);
+    if (form.avgTransactionValueUsd) parts.push(`Average transaction value (USD): ${form.avgTransactionValueUsd}`);
+    if (form.opsHourlyRateUsd) parts.push(`Ops hourly rate (USD): ${form.opsHourlyRateUsd}`);
+    if (form.complianceHourlyRateUsd) parts.push(`Compliance hourly rate (USD): ${form.complianceHourlyRateUsd}`);
+    if (form.platformCostUsdMonth) parts.push(`Platform cost (USD/month): ${form.platformCostUsdMonth}`);
+    if (form.constraints) parts.push(`Constraints / requirements: ${form.constraints}`);
+    const context = parts.length > 0 ? parts.join(". ") : "General business (no additional details provided).";
+
+    const systemPrompt = `You are a regulatory and compliance advisor. Given a business profile, produce a concise checklist of regulatory and compliance actions the business should take to operate in a legally compliant manner in their jurisdictions and sector. Output only a JSON array of strings, each string being one actionable item (e.g. "Register for data protection authority if processing EU personal data"). No other text. Example: ["Item one", "Item two"]`;
+    const userPrompt = `Business profile: ${context}. Generate a professional, actionable regulatory and compliance checklist (8–15 items) for this business to become fully legally compliant. Consider geography, sector, transaction volume, and any constraints. Return only a JSON array of strings.`;
 
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -92,6 +195,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ items });
   } catch (e) {
+    if (isPrismaConnectionError(e)) {
+      console.warn("Compliance generate: database unavailable");
+      return NextResponse.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+    }
     console.error("Compliance generate error:", e);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

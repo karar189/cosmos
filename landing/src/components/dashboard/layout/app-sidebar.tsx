@@ -12,6 +12,7 @@ import {
   sidebarData,
   DASHBOARD_GROUP,
   getFeaturesNavGroup,
+  REGINTEL_GROUP,
 } from "@/components/dashboard/layout/data/sidebar-data";
 import { NavGroup } from "@/components/dashboard/layout/nav-group";
 import { NavUser } from "@/components/dashboard/layout/nav-user";
@@ -69,6 +70,7 @@ export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
   const navGroups = [
     DASHBOARD_GROUP,
     getFeaturesNavGroup(selectedWidgets),
+    REGINTEL_GROUP,
   ];
 
   return (

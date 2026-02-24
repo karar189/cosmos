@@ -30,4 +30,5 @@ export const aeonik = localFont({
 export const inter = Inter({
     subsets: ["latin"],
     variable: "--font-inter",
+    display: "optional", // Avoid blocking: use font if loaded in time, else system fallback (reduces AbortError on slow networks)
 });

@@ -83,6 +83,7 @@ model Business {
   email            String?   // from onboarding/settings
   businessNature   String?   // e.g. agency, fintech, saas
   selectedWidgets  String[]  // widget ids from onboarding/settings
+  complianceForm   Json?     // extended compliance form: type, geographies, monthlyTx, etc.
   createdAt        DateTime  @default(now())
   paymentLinks     PaymentLink[]
   withdrawals      Withdrawal[]

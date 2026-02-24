@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
 
 function isValidStellarAddress(addr: string): boolean {
   const s = (addr || "").trim();
@@ -31,6 +32,7 @@ export async function GET(req: NextRequest) {
         businessNature: true,
         selectedWidgets: true,
         receiveAddress: true,
+        complianceForm: true,
       },
     });
 
@@ -44,6 +46,7 @@ export async function GET(req: NextRequest) {
           businessNature: true,
           selectedWidgets: true,
           receiveAddress: true,
+          complianceForm: true,
         },
       });
     }
@@ -55,8 +58,13 @@ export async function GET(req: NextRequest) {
       businessNature: business.businessNature ?? "",
       selectedWidgets: business.selectedWidgets ?? [],
       receiveAddress: business.receiveAddress ?? null,
+      complianceForm: business.complianceForm ?? null,
     });
   } catch (e) {
+    if (isPrismaConnectionError(e)) {
+      console.warn("Business profile GET: database unavailable");
+      return NextResponse.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+    }
     console.error("Business profile GET error:", e);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
@@ -84,6 +92,7 @@ export async function PATCH(req: NextRequest) {
     const selectedWidgets = Array.isArray(body.selectedWidgets)
       ? body.selectedWidgets.filter((w: unknown) => typeof w === "string")
       : undefined;
+    const complianceForm = body.complianceForm !== undefined ? body.complianceForm : undefined;
 
     let business = await db.business.findUnique({
       where: { walletAddress: walletAddress },
@@ -97,14 +106,22 @@ export async function PATCH(req: NextRequest) {
           ...(email != null && { email: email || null }),
           ...(businessNature != null && { businessNature: businessNature || null }),
           ...(selectedWidgets != null && { selectedWidgets: selectedWidgets }),
+          ...(complianceForm != null && { complianceForm: complianceForm as object }),
         },
       });
     } else {
-      const update: { name?: string | null; email?: string | null; businessNature?: string | null; selectedWidgets?: string[] } = {};
+      const update: {
+        name?: string | null;
+        email?: string | null;
+        businessNature?: string | null;
+        selectedWidgets?: string[];
+        complianceForm?: object | null;
+      } = {};
       if (name !== undefined) update.name = name || null;
       if (email !== undefined) update.email = email || null;
       if (businessNature !== undefined) update.businessNature = businessNature || null;
       if (selectedWidgets !== undefined) update.selectedWidgets = selectedWidgets;
+      if (complianceForm !== undefined) update.complianceForm = complianceForm as object | null;
       if (Object.keys(update).length > 0) {
         business = await db.business.update({
           where: { id: business.id },
@@ -119,8 +136,13 @@ export async function PATCH(req: NextRequest) {
       email: business.email ?? "",
       businessNature: business.businessNature ?? "",
       selectedWidgets: business.selectedWidgets ?? [],
+      complianceForm: business.complianceForm ?? null,
     });
   } catch (e) {
+    if (isPrismaConnectionError(e)) {
+      console.warn("Business profile PATCH: database unavailable");
+      return NextResponse.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+    }
     console.error("Business profile PATCH error:", e);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
