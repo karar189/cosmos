@@ -28,10 +28,17 @@ export const generateMetadata = ({
     image?: string | null;
     icons?: Metadata["icons"];
     noIndex?: boolean;
-} = {}): Metadata => ({
+} = {}): Metadata => {
+    const metadataBase =
+      process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+      (process.env.NODE_ENV === "production"
+        ? "https://www.hypertron.space"
+        : "http://localhost:3000");
+    return {
     title,
     description,
     icons,
+    metadataBase: new URL(metadataBase),
     openGraph: {
         title,
         description,
@@ -43,6 +50,6 @@ export const generateMetadata = ({
         ...(image && { card: "summary_large_image", images: [image] }),
         creator: "@shreyassihasane",
     },
-    // metadataBase: new URL(process.env.APP_DOMAIN!),
     ...(noIndex && { robots: { index: false, follow: false } }),
-});
+    };
+};

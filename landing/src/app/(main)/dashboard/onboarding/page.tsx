@@ -457,7 +457,7 @@ export default function OnboardingComplianceMakerPage() {
                               <Badge variant="secondary">ROI {bundle.totals.roi_percent}%</Badge>
                             )}
                             <Button
-                              variant="secondary"
+                              variant="outline"
                               size="sm"
                               onClick={() => {
                                 saveTemplate({

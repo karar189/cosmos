@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Rnd } from "react-rnd";
 import { Upload, Wrench, Trash2, Plus } from "lucide-react";
@@ -48,7 +48,7 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
-export default function WorkspacePage() {
+function WorkspacePageContent() {
   const router = useRouter();
   const search = useSearchParams();
   const templateId = search.get("template");
@@ -568,5 +568,13 @@ export default function WorkspacePage() {
         </div>
       </DashboardMain>
     </>
+  );
+}
+
+export default function WorkspacePage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-muted-foreground">Loading workspace…</div>}>
+      <WorkspacePageContent />
+    </Suspense>
   );
 }
