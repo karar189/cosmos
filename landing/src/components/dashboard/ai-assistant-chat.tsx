@@ -125,7 +125,7 @@ export function AiAssistantChat() {
                   <Bot className="h-8 w-8 text-primary" />
                 </div>
                 <h2 className="mb-1 text-xl font-semibold">
-                  Custom AI Assistant
+                  Agentic Assistant
                 </h2>
                 <p className="mb-8 max-w-sm text-sm text-muted-foreground">
                   Ask anything about payments, compliance, or your business.
