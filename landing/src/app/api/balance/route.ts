@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     for (const link of paidLinks) {
       const n = link.nullifier!;
       if (usedNullifiers.has(n)) continue;
-      const amt = parseFloat(link.amount);
+      const amt = parseFloat(link.amount ?? '');
       if (Number.isFinite(amt) && amt > 0) {
         totalXlm += amt;
         unspentAmounts.push({ amount: amt, nullifier: n });
