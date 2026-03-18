@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     const unspent: { id: string; amount: number; nullifier: string }[] = [];
     for (const link of paidLinks) {
       if (usedNullifiers.has(link.nullifier!)) continue;
-      const a = parseFloat(link.amount);
+      const a = parseFloat(link.amount ?? '');
       if (Number.isFinite(a) && a > 0) {
         unspent.push({
           id: link.id,

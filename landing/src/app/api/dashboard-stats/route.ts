@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     const pending = links.length - completed;
     let totalReceived = 0;
     for (const p of paidLinks) {
-      const amt = parseFloat(p.amount);
+      const amt = parseFloat(p.amount ?? '');
       if (Number.isFinite(amt)) totalReceived += amt;
     }
 

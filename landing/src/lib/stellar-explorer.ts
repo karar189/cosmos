@@ -9,7 +9,8 @@ const EXPLORER_TX_BASE =
     ? "https://stellar.expert/explorer/testnet/tx"
     : "https://stellar.expert/explorer/public/tx";
 
-/** Full StellarExpert URL for a transaction (mainnet or testnet from env). */
-export function getExplorerTxUrl(txHash: string): string {
+/** Full StellarExpert URL for a transaction (mainnet or testnet from env). Returns empty string if txHash is null. */
+export function getExplorerTxUrl(txHash: string | null | undefined): string {
+  if (!txHash) return '';
   return `${EXPLORER_TX_BASE}/${txHash}`;
 }

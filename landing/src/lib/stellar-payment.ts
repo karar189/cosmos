@@ -1,10 +1,6 @@
 /**
  * Build and submit a Stellar XLM payment (or createAccount if destination is new).
  * Used on the pay page: build unsigned XDR -> Freighter signs -> submit to Horizon.
- *
- * Optional escrow: For milestone-based flows, wire to soroban-escrow (EscrowEngine.create,
- * approve_milestone) via Soroban RPC and Contract.getFootprint(); use @stellar/stellar-sdk
- * contract client and Freighter for signing Soroban auth entries.
  */
 
 const HORIZON_TESTNET = "https://horizon-testnet.stellar.org";
