@@ -37,8 +37,8 @@ const HomePage = async () => {
                             </p>
                             <div className="mt-6">
                                 <Button asChild className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25">
-                                    <Link href="/auth/sign-up" className="flex items-center">
-                                        Get started for free
+                                    <Link href="https://calendly.com/kararsweta/30min" target="_blank" rel="noopener noreferrer" className="flex items-center">
+                                        Book a Demo
                                         <ArrowRightIcon className="w-4 h-4 ml-2" />
                                     </Link>
                                 </Button>

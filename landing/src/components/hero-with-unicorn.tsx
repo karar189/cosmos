@@ -116,8 +116,8 @@ export function HeroWithUnicorn() {
           asChild
           className="w-full sm:w-auto bg-white/90 hover:bg-white text-black border-0 shadow-lg font-medium"
         >
-          <Link href="/auth/sign-in" className="flex items-center justify-center">
-            Get started for free
+          <Link href="https://calendly.com/kararsweta/30min" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+            Book a Demo
             <ArrowRightIcon className="w-4 h-4 ml-2" />
           </Link>
         </Button>
