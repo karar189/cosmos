@@ -1,0 +1,9 @@
+{
+  "name": "day2-poseidon",
+  "version": "1.0.0",
+  "description": "Day 2: Poseidon preimage circuit — the Hypertron commitment scheme",
+  "dependencies": {
+    "circomlib": "^2.0.5",
+    "circomlibjs": "^0.1.7"
+  }
+}

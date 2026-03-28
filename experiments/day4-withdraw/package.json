@@ -1,0 +1,9 @@
+{
+  "name": "day4-withdraw",
+  "version": "1.0.0",
+  "description": "Day 4: Complete Hypertron withdrawal circuit — Poseidon + Merkle + nullifier binding",
+  "dependencies": {
+    "circomlib": "^2.0.5",
+    "circomlibjs": "^0.1.7"
+  }
+}
