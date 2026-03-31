@@ -10,6 +10,7 @@ import {
   CreditCard,
   ShieldCheck,
   UserPlus,
+  ScanSearch,
 } from "lucide-react";
 import type { NavGroup, SidebarData } from "@/components/dashboard/layout/types";
 
@@ -19,6 +20,7 @@ export const FEATURES_BY_WIDGET: { widgetId: string; title: string; url: string;
   { widgetId: "ai-assistant", title: "Custom AI Assistant", url: "/dashboard/ai-assistant", icon: Bot },
   { widgetId: "employee-mgmt", title: "Employee Management", url: "/dashboard/employee-management", icon: Users },
   { widgetId: "compliance", title: "Compliance checker", url: "/dashboard/compliance-checker", icon: ShieldCheck },
+  { widgetId: "compliance-analysis", title: "Compliance Analysis", url: "/dashboard/compliance-analysis", icon: ScanSearch },
   { widgetId: "document-vault", title: "Document vault", url: "/dashboard/document-vault", icon: FolderArchive },
 ];
 
@@ -29,6 +31,7 @@ export const DASHBOARD_GROUP: NavGroup = {
     { title: "Payment Links", url: "/dashboard/payment-links", icon: Link2 },
     { title: "Withdraw", url: "/dashboard/withdraw", icon: CreditCard },
     { title: "Secure Vault", url: "/dashboard/secure-vault", icon: ShieldCheck },
+    { title: "Compliance Analysis", url: "/dashboard/compliance-analysis", icon: ScanSearch },
     { title: "Onboarding", url: "/dashboard/onboarding", icon: UserPlus },
     { title: "Settings", url: "/dashboard/settings", icon: Settings },
   ],
