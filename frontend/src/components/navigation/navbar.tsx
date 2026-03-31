@@ -61,7 +61,12 @@ function HeaderFreighterButton() {
     );
 }
 
-const Navbar = () => {
+type NavbarProps = {
+    /** Hide Freighter Sign In / Dashboard (e.g. marketing pages). */
+    hideWallet?: boolean;
+};
+
+const Navbar = ({ hideWallet = false }: NavbarProps) => {
     const [scroll, setScroll] = useState(false);
 
     const handleScroll = () => {
@@ -156,9 +161,9 @@ const Navbar = () => {
                         </NavigationMenu>
                     </nav>
 
-                    {/* 3. Right: Freighter connect / dashboard */}
+                    {/* 3. Right: Freighter connect / dashboard (optional) */}
                     <div className="flex items-center gap-2 shrink-0 z-10">
-                        <HeaderFreighterButton />
+                        {!hideWallet ? <HeaderFreighterButton /> : null}
                         <MobileNavbar />
                     </div>
 

@@ -1,4 +1,4 @@
-import { Inter, DM_Sans } from "next/font/google";
+import { Instrument_Serif, Inter } from "next/font/google";
 import localFont from "next/font/local";
 
 export const aeonik = localFont({
@@ -31,4 +31,12 @@ export const inter = Inter({
     subsets: ["latin"],
     variable: "--font-inter",
     display: "optional", // Avoid blocking: use font if loaded in time, else system fallback (reduces AbortError on slow networks)
+});
+
+export const instrumentSerif = Instrument_Serif({
+    subsets: ["latin"],
+    weight: "400",
+    style: ["normal", "italic"],
+    variable: "--font-instrument-serif",
+    display: "swap",
 });

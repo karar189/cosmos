@@ -64,6 +64,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        heroSubtitle: "hsl(var(--hero-subtitle))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -73,6 +74,7 @@ const config = {
       fontFamily: {
         "heading": ["var(--font-aeonik)"],
         "default": ["var(--font-inter)"],
+        "serif": ["var(--font-instrument-serif)", "Georgia", "serif"],
       },
       keyframes: {
         "accordion-down": {
@@ -219,8 +221,11 @@ const config = {
 
 function addVariablesForColors({ addBase, theme }: any) {
   let allColors = flattenColorPalette(theme("colors"));
+  // Skip hsl(var(--token)) entries — writing them on :root creates circular refs and breaks bg-background, etc.
   let newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+    Object.entries(allColors).filter(
+      ([, val]) => typeof val === "string" && !String(val).includes("var(")
+    ).map(([key, val]) => [`--${key}`, val])
   );
 
   addBase({

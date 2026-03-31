@@ -1,83 +1,39 @@
 "use client";
 
-import * as React from "react";
-import { ChevronsUpDown, Zap } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import Image from "next/image";
+import { ChevronLeft } from "lucide-react";
+import { SidebarMenu, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 
-type TeamSwitcherProps = {
-  teams: {
-    name: string;
-    logo: React.ElementType;
-    plan: string;
-  }[];
-};
-
-export function TeamSwitcher({ teams }: TeamSwitcherProps) {
-  const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0] ?? {
-    name: "Stellar Payments",
-    logo: Zap,
-    plan: "Payment links",
-  });
-  const Logo = activeTeam?.logo ?? Zap;
+export function TeamSwitcher() {
+  const { open, toggleSidebar } = useSidebar();
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <Logo className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {activeTeam?.name ?? "Stellar Payments"}
-                </span>
-                <span className="truncate text-xs">{activeTeam?.plan ?? "Payment links"}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="min-w-[--radix-dropdown-menu-trigger-width] w-56 rounded-lg"
-            align="start"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
+        <div className="flex items-center gap-3 px-2 py-3">
+          <div
+            className={`flex size-8 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-violet-700/80 ring-1 ring-white/10 ${!open ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+            onClick={!open ? toggleSidebar : undefined}
           >
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              App
-            </DropdownMenuLabel>
-            {(teams.length ? teams : [{ name: "Stellar Payments", logo: Zap, plan: "Payment links" }]).map((team) => (
-              <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
-                className="gap-2 p-2"
+            <Image src="/logo.png" alt="Hypertron" width={28} height={28} className="object-contain" />
+          </div>
+
+          {open && (
+            <>
+              <div className="flex flex-1 flex-col text-left leading-tight min-w-0">
+                <span className="text-sm font-semibold tracking-tight truncate">Hypertron</span>
+                <span className="text-[11px] text-white/40 truncate">B2B Onboarding & Payments</span>
+              </div>
+              <button
+                onClick={toggleSidebar}
+                className="ml-auto shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-colors"
               >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
-                </div>
-                {team.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </button>
+            </>
+          )}
+        </div>
+        {open && <div className="mx-2 mb-1 h-px bg-white/[0.06]" />}
       </SidebarMenuItem>
     </SidebarMenu>
   );

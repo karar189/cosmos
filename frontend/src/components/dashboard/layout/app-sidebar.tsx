@@ -6,7 +6,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import {
   sidebarData,
@@ -72,9 +71,9 @@ export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
   ];
 
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
-        <TeamSwitcher teams={sidebarData.teams} />
+        <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
         {navGroups.map((props) => (
@@ -84,7 +83,6 @@ export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
       <SidebarFooter>
         <NavUser user={displayUser} onDisconnect={onDisconnect} />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

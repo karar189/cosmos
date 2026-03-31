@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { QrCode, Copy, ExternalLink, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQRCode } from "next-qrcode";
 
 interface PayAnyAmountCardProps {
@@ -15,6 +15,7 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ url: string; linkId: string } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function handleCreate() {
     setError(null);
@@ -24,16 +25,10 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
       const res = await fetch("/api/payment-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          businessId,
-          flexibleAmount: true,
-        }),
+        body: JSON.stringify({ businessId, flexibleAmount: true }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Failed to create link");
-        return;
-      }
+      if (!res.ok) { setError(data.error || "Failed to create link"); return; }
       setResult({ url: data.url, linkId: data.linkId });
       onCreated?.();
     } catch (err) {
@@ -43,53 +38,91 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
     }
   }
 
+  function copyLink() {
+    if (!result) return;
+    navigator.clipboard.writeText(result.url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  }
+
   return (
-    <Card className="max-w-md">
-      <CardHeader>
-        <CardTitle>Pay any amount (QR link)</CardTitle>
-        <CardDescription>
-          One link and QR you can share with anyone. They open it and pay you any amount — no fixed amount. Private and reusable.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {error && <p className="text-destructive text-sm">{error}</p>}
-        {!result ? (
-          <Button onClick={handleCreate} disabled={loading}>
-            {loading ? "Creating…" : "Create & show QR"}
-          </Button>
-        ) : (
-          <div className="space-y-4 pt-2 border-t border-border">
-            <p className="text-sm font-medium text-foreground">Share this QR or link</p>
-            <div className="flex flex-col items-center gap-3">
-              <div className="rounded-lg border border-border bg-white p-3">
-                <QRCanvas
-                  text={result.url}
-                  options={{ errorCorrectionLevel: "M", width: 200 }}
-                />
-              </div>
-              <a
-                href={result.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary text-sm break-all hover:underline text-center"
-              >
-                {result.url}
-              </a>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => navigator.clipboard.writeText(result.url)}
-              >
-                Copy link
-              </Button>
+    <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-4">
+      {/* Header */}
+      <div className="flex items-start gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 border border-violet-500/20">
+          <QrCode className="h-4 w-4 text-violet-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-white">Pay any amount</p>
+          <p className="text-xs text-white/35 mt-0.5 leading-relaxed">
+            One reusable link — clients pay any amount they choose. Private and shareable.
+          </p>
+        </div>
+      </div>
+
+      {error && <p className="text-red-400 text-xs">{error}</p>}
+
+      {!result ? (
+        <Button
+          onClick={handleCreate}
+          disabled={loading}
+          className="w-full bg-violet-600 hover:bg-violet-500 text-white border-0"
+        >
+          {loading ? "Creating…" : "Create & show QR"}
+        </Button>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {/* QR */}
+          <div className="flex justify-center">
+            <div className="rounded-xl border border-white/[0.08] bg-white p-3 shadow-lg shadow-black/30">
+              <QRCanvas
+                text={result.url}
+                options={{ errorCorrectionLevel: "M", width: 180 }}
+              />
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setResult(null)}>
-              Create another
+          </div>
+
+          {/* URL row */}
+          <div className="flex items-center gap-2 rounded-lg border border-white/[0.07] bg-white/[0.03] px-3 py-2 min-w-0">
+            <a
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 truncate text-xs font-mono text-violet-400/80 hover:text-violet-300 transition-colors min-w-0"
+            >
+              {result.url}
+            </a>
+            <a
+              href={result.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 text-white/25 hover:text-white/60 transition-colors"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={copyLink}
+              className={`flex-1 border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-white/70 hover:text-white text-xs ${copied ? "text-emerald-400 border-emerald-500/30" : ""}`}
+            >
+              <Copy className="h-3.5 w-3.5 mr-1.5" />
+              {copied ? "Copied!" : "Copy link"}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setResult(null)}
+              className="text-white/30 hover:text-white/60 hover:bg-white/[0.04] text-xs px-3"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
             </Button>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 }

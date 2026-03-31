@@ -2,12 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { DollarSign, Link2, CheckCircle, Clock } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 interface Stats {
   totalReceivedXlm: string;
@@ -20,18 +14,39 @@ interface OverviewStatsProps {
   businessId: string | null;
 }
 
+function StatCard({
+  label,
+  sub,
+  icon: Icon,
+  value,
+}: {
+  label: string;
+  sub: string;
+  icon: React.ElementType;
+  value: string;
+}) {
+  return (
+    <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] p-5 flex flex-col gap-4 hover:bg-white/[0.05] transition-colors">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-medium text-white/35 tracking-widest uppercase">{label}</span>
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.06]">
+          <Icon className="h-3.5 w-3.5 text-white/40" />
+        </div>
+      </div>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-2xl font-semibold tracking-tight">{value}</span>
+        <span className="text-xs text-white/30">{sub}</span>
+      </div>
+    </div>
+  );
+}
+
 export function OverviewStats({ businessId }: OverviewStatsProps) {
   const [stats, setStats] = useState<Stats | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!businessId) {
-      setStats(null);
-      setLoading(false);
-      return;
-    }
+    if (!businessId) { setStats(null); return; }
     let cancelled = false;
-    setLoading(true);
     fetch(`/api/dashboard-stats?businessId=${encodeURIComponent(businessId)}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
@@ -42,110 +57,19 @@ export function OverviewStats({ businessId }: OverviewStatsProps) {
             completed: data.completed ?? 0,
             pending: data.pending ?? 0,
           });
-        else if (!cancelled) setStats(null);
       })
-      .catch(() => {
-        if (!cancelled) setStats(null);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
+      .catch(() => {});
+    return () => { cancelled = true; };
   }, [businessId]);
 
-  const cardClass = "rounded-xl border-border";
-
-  if (loading || !stats) {
-    return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Received</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">— XLM</div>
-            <p className="text-xs text-muted-foreground">All-time from payment links</p>
-          </CardContent>
-        </Card>
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Payment Links</CardTitle>
-            <Link2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">Active links</p>
-          </CardContent>
-        </Card>
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">Successful payments</p>
-          </CardContent>
-        </Card>
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">Awaiting payment</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const d = stats ?? { totalReceivedXlm: "—", linkCount: 0, completed: 0, pending: 0 };
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <Card className={cardClass}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Received</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalReceivedXlm} XLM</div>
-          <p className="text-xs text-muted-foreground">All-time from payment links</p>
-        </CardContent>
-      </Card>
-      <Card className={cardClass}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Payment Links</CardTitle>
-          <Link2 className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.linkCount}</div>
-          <p className="text-xs text-muted-foreground">Active links</p>
-        </CardContent>
-      </Card>
-      <Card className={cardClass}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Completed</CardTitle>
-          <CheckCircle className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.completed}</div>
-          <p className="text-xs text-muted-foreground">Successful payments</p>
-        </CardContent>
-      </Card>
-      <Card className={cardClass}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Pending</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.pending}</div>
-          <p className="text-xs text-muted-foreground">Awaiting payment</p>
-        </CardContent>
-      </Card>
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <StatCard label="Total Received" sub="All-time from payment links" icon={DollarSign} value={`${d.totalReceivedXlm} XLM`} />
+      <StatCard label="Payment Links" sub="Active links" icon={Link2} value={String(d.linkCount || "—")} />
+      <StatCard label="Completed" sub="Successful payments" icon={CheckCircle} value={String(d.completed || "—")} />
+      <StatCard label="Pending" sub="Awaiting payment" icon={Clock} value={String(d.pending || "—")} />
     </div>
   );
 }

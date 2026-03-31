@@ -15,7 +15,6 @@ import type { NavGroup, SidebarData } from "@/components/dashboard/layout/types"
 
 /** Widget id (from settings) -> sidebar link. Used to show only selected widgets in FEATURES. */
 export const FEATURES_BY_WIDGET: { widgetId: string; title: string; url: string; icon: typeof Users }[] = [
-  { widgetId: "payments", title: "Payment Solution", url: "/dashboard/payments", icon: CreditCard },
   { widgetId: "doc-hub", title: "My Templates", url: "/dashboard/documents", icon: FileText },
   { widgetId: "ai-assistant", title: "Custom AI Assistant", url: "/dashboard/ai-assistant", icon: Bot },
   { widgetId: "employee-mgmt", title: "Employee Management", url: "/dashboard/employee-management", icon: Users },
@@ -27,7 +26,9 @@ export const DASHBOARD_GROUP: NavGroup = {
   title: "Dashboard",
   items: [
     { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
-    { title: "Payment Links", url: "/dashboard", icon: Link2 },
+    { title: "Payment Links", url: "/dashboard/payment-links", icon: Link2 },
+    { title: "Withdraw", url: "/dashboard/withdraw", icon: CreditCard },
+    { title: "Secure Vault", url: "/dashboard/secure-vault", icon: ShieldCheck },
     { title: "Onboarding", url: "/dashboard/onboarding", icon: UserPlus },
     { title: "Settings", url: "/dashboard/settings", icon: Settings },
   ],
@@ -51,9 +52,9 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: "Stellar Payments",
+      name: "Hypertron",
       logo: Zap,
-      plan: "Payment links",
+      plan: "B2B Onboarding & Payments",
     },
   ],
   navGroups: [

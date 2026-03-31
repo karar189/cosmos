@@ -21,6 +21,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -103,21 +104,29 @@ export function NavUser({ user, onDisconnect }: NavUserProps) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/dashboard">
+                <Link href="/dashboard/settings">
                   <Settings className="size-4" />
                   Settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={() => setSignOutOpen(true)}
-              >
-                <LogOut className="size-4" />
-                Disconnect
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+
+      <SidebarSeparator className="opacity-30" />
+
+      {/* Disconnect button */}
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            tooltip="Disconnect wallet"
+            className="text-red-400/80 hover:text-red-400 hover:bg-red-500/10"
+            onClick={() => setSignOutOpen(true)}
+          >
+            <LogOut className="size-4" />
+            <span>Disconnect</span>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
 
