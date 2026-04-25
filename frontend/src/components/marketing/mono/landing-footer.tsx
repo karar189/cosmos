@@ -13,8 +13,11 @@ export function LandingFooter() {
         <Link href="/terms" className="transition-colors hover:text-foreground">
           Terms
         </Link>
+        <Link href="mailto:kararsweta@gmail.com" className="transition-colors hover:text-foreground">
+          Email
+        </Link>
         <Link href="https://calendly.com/kararsweta/30min" className="transition-colors hover:text-foreground">
-          Contact
+          Book a demo
         </Link>
       </div>
     </footer>

@@ -140,14 +140,14 @@ function buildBundles(categories: WidgetCategory[], opsRate: number, complianceR
   const fallback = WIDGET_LIBRARY.custom;
   const pool = allWidgets.length >= 3 ? allWidgets : [...allWidgets, ...fallback].slice(0, 6);
 
-  const computeTotals = (widgets: WidgetDef__): Bundle["totals"] => {
+  const computeTotals = (widgets: WidgetDef__[]): Bundle["totals"] => {
     const time = widgets.reduce((s, w) => s + w.impact.time_saved_hours_per_month, 0);
     const cost = widgets.reduce((s, w) => s + w.impact.cost_savings_usd_per_month, 0);
     return { time_saved_hours_per_month: time, cost_savings_usd_per_month: cost, roi_percent: Math.round((cost / Math.max(opsRate * time, 1)) * 100) };
   };
 
   // Compliance checker is always present in every bundle
-  const withCompliance = (widgets: WidgetDef__): WidgetDef__ =>
+  const withCompliance = (widgets: WidgetDef__[]): WidgetDef__[] =>
     widgets.some((w) => w.id === COMPLIANCE_WIDGET.id) ? widgets : [...widgets, COMPLIANCE_WIDGET];
 
   const lean = withCompliance(pool.slice(0, Math.min(3, pool.length)));
@@ -442,7 +442,7 @@ export default function OnboardingComplianceMakerPage() {
                   Fill in your business details and click <span className="text-white/60 font-medium">Build widget combinations</span> to see personalised recommendations here.
                 </p>
                 <p className="text-xs text-white/20 mt-2">
-                  You'll get Lean, Balanced and Comprehensive bundles with time + cost savings.
+                  You&apos;ll get Lean, Balanced and Comprehensive bundles with time + cost savings.
                 </p>
               </div>
             )}
