@@ -1,1 +1,0 @@
-/Users/swetakarar/Desktop/code/stellar/soroban-escrow/contracts/target/wasm32-unknown-unknown/release/escrowengine.wasm: /Users/swetakarar/Desktop/code/stellar/soroban-escrow/contracts/escrowengine/src/lib.rs

@@ -1,0 +1,5 @@
+# Soroban test snapshots (auto-generated, not meant to be committed)
+**/test_snapshots/
+
+# Rust build artifacts
+**/target/
