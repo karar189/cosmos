@@ -8,6 +8,7 @@ from openai import OpenAI
 
 from .catalog import WIDGETS, WidgetCategory
 from .heuristics import recommend_with_heuristics
+from .integration_pricing import estimated_monthly_cost_usd as integration_based_cost
 from .models import (
     BusinessProfile,
     BundleTotals,
@@ -17,6 +18,52 @@ from .models import (
     WidgetBundle,
     WidgetImpact,
 )
+
+
+def _cap_bundle_to_budget(bundle: WidgetBundle, budget: float) -> WidgetBundle:
+    """Scale per-widget costs and bundle total down to fit budget when over."""
+    total_cost = sum(w.impact.cost_savings_usd_per_month for w in bundle.widgets)
+    if total_cost <= 0 or total_cost <= budget:
+        return bundle
+    scale = budget / total_cost
+    scaled_widgets: list[RecommendedWidget] = []
+    for w in bundle.widgets:
+        scaled_widgets.append(
+            RecommendedWidget(
+                id=w.id,
+                title=w.title,
+                category=w.category,
+                type=w.type,
+                why=w.why,
+                impact=WidgetImpact(
+                    time_saved_hours_per_month=w.impact.time_saved_hours_per_month,
+                    cost_savings_usd_per_month=round(
+                        w.impact.cost_savings_usd_per_month * scale, 2
+                    ),
+                ),
+            )
+        )
+    new_total_cost = round(
+        sum(w.impact.cost_savings_usd_per_month for w in scaled_widgets), 2
+    )
+    roi = None
+    if budget > 0:
+        roi = round(((new_total_cost - budget) / budget) * 100, 1)
+    est = bundle.totals.estimated_monthly_cost_usd
+    if est is not None and est > budget:
+        est = round(min(est, budget), 2)
+    return WidgetBundle(
+        id=bundle.id,
+        name=bundle.name,
+        description=bundle.description,
+        widgets=scaled_widgets,
+        totals=BundleTotals(
+            time_saved_hours_per_month=bundle.totals.time_saved_hours_per_month,
+            cost_savings_usd_per_month=new_total_cost,
+            roi_percent=roi,
+            estimated_monthly_cost_usd=est,
+        ),
+    )
 
 
 def _get_api_key() -> str | None:
@@ -207,6 +254,15 @@ def recommend_with_openai(req: RecommendationsRequest) -> RecommendationsRespons
                 )
 
             totals = b["totals"]
+            # Real cost from APIs/integrations those widgets use (screening, KYC, payment rails, etc.)
+            est_cost = round(
+                integration_based_cost(
+                    [w.id for w in widgets],
+                    monthly_transactions=req.monthly_transactions,
+                    kyc_verifications_per_month=None,
+                ),
+                2,
+            )
             bundles.append(
                 WidgetBundle(
                     id=str(b["id"]),
@@ -217,11 +273,31 @@ def recommend_with_openai(req: RecommendationsRequest) -> RecommendationsRespons
                         time_saved_hours_per_month=float(totals["time_saved_hours_per_month"]),
                         cost_savings_usd_per_month=float(totals["cost_savings_usd_per_month"]),
                         roi_percent=totals.get("roi_percent", None),
+                        estimated_monthly_cost_usd=est_cost,
                     ),
                 )
             )
 
+        budget = req.platform_cost_usd_per_month
+        # Scale each bundle's costs down to fit budget so widget costs don't exceed it
+        if budget is not None and budget > 0:
+            bundles = [_cap_bundle_to_budget(b, budget) for b in bundles]
+
+        # When user provides a monthly budget, only return bundles within budget
+        if budget is not None and budget > 0:
+            within_budget = [b for b in bundles if (b.totals.estimated_monthly_cost_usd or 0) <= budget]
+            if within_budget:
+                bundles = within_budget
+            else:
+                bundles = sorted(bundles, key=lambda b: b.totals.estimated_monthly_cost_usd or 0)[:2]
+
         notes = list(data.get("notes") or [])
+        if budget is not None and budget > 0 and bundles:
+            est = bundles[0].totals.estimated_monthly_cost_usd
+            if est is not None and est <= budget:
+                notes.append(f"Bundles above are within your ${budget:,.0f}/mo budget (estimated cost shown per bundle).")
+            else:
+                notes.append(f"No bundle fits your ${budget:,.0f}/mo budget; showing cheapest options. Consider increasing budget or starting with the Lean bundle.")
 
         return RecommendationsResponse(
             source="openai",

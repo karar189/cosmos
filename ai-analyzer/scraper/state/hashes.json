@@ -1,0 +1,11 @@
+{
+  "https://sanctionslistservice.ofac.treas.gov/api/publicationpreview/exports/sdn.xml": "867e90107e9144eb673b29e7f895f9ba71cb2899e3c4f9d419cf3e7276809c7a",
+  "https://www.fincen.gov/resources/statutes-regulations": "e2331d76533782539b322ce8f4d9cb0d77e320c3ef39a53c7855f790a2369ab4",
+  "https://www.fincen.gov/news": "b563ee3baa505cb000b7823becb670c5e1c8b416348685317cc2c77f577ffcb5",
+  "https://efts.sec.gov/LATEST/search-index?q=%22digital+assets%22+%22crypto%22&forms=S-1,10-K,8-K&dateRange=custom&startdt=2024-01-01": "49e26a43361a05d990f74c01d55aef965449bbb9b049aa0082cdad4f6964ff1c",
+  "https://www.fatf-gafi.org/content/dam/fatf-gafi/guidance/Guidance-RBA-VA-VASPs.pdf.coredownload.inline.pdf": "8c210bd583b7f6dca8c74493eaca574327a2a46ae8d0bc36ae3c829cc8d090a5",
+  "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica": "54b66545a6461df1496e36dc1019bd91ef623b8a6f8e509b5b67eea0c3de856d",
+  "https://edpb.europa.eu/our-work-tools/general-guidance/guidelines-recommendations-best-practices_en": "e2b114722c86410272dbc075251c556ff1ab5f8f9fad635f315c3989787c92c3",
+  "https://www.vara.ae/en/regulations/regulatory-notices/": "e31bda8ed43ff42b9ea60f6873b682f7a4251a355562c1fc8753952b206268d0",
+  "https://www.mas.gov.sg/regulation/payments": "0b1d942c1793cbb8753405c2ef507ea0bf02b566f1d1eec9def748dda4f54280"
+}
