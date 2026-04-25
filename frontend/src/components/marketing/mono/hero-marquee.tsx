@@ -1,16 +1,16 @@
 "use client";
 
-import { Workflow, Shield, FileText, BarChart2, Coins, Milestone, Link2, Layers } from "lucide-react";
+import { Workflow, Shield, FileText, BarChart2, Coins, Link2, Layers, Network } from "lucide-react";
 
 const ITEMS = [
-  { label: "Workflow Builder",      Icon: Workflow   },
-  { label: "Escrow & Settlements",  Icon: Coins      },
-  { label: "Document Vault",        Icon: FileText   },
-  { label: "Real-time Tracking",    Icon: BarChart2  },
-  { label: "KYB Compliance",        Icon: Shield     },
-  { label: "Milestone Releases",    Icon: Milestone  },
-  { label: "One workflow link",     Icon: Link2      },
-  { label: "Stellar Blockchain",    Icon: Layers     },
+  { label: "Privacy pool", Icon: Layers },
+  { label: "Receivables", Icon: Link2 },
+  { label: "Workflow builder", Icon: Workflow },
+  { label: "AI-assisted ops", Icon: BarChart2 },
+  { label: "KYB & compliance", Icon: Shield },
+  { label: "Pool & payout", Icon: Coins },
+  { label: "Document vault", Icon: FileText },
+  { label: "Stellar network", Icon: Network },
 ];
 
 // Duplicate for seamless loop
@@ -20,7 +20,7 @@ export function HeroMarquee() {
   return (
     <div className="w-full border-t border-b border-white/[0.06] py-4 overflow-hidden">
       <p className="text-center text-[10px] font-medium tracking-[0.2em] uppercase text-white/25 mb-4">
-        Built for modern B2B teams
+        Built for B2B teams on Stellar
       </p>
 
       <div className="relative flex">

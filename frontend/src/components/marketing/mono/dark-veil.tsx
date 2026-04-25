@@ -85,12 +85,13 @@ type Props = {
   resolutionScale?: number;
 };
 
+/** Defaults match React Bits “blue” Dark Veil preset (cool / cyan-blue field). */
 export function DarkVeil({
-  hueShift = 0,
+  hueShift = 32,
   noiseIntensity = 0,
   scanlineIntensity = 0,
-  speed = 0.5,
-  scanlineFrequency = 0,
+  speed = 1.3,
+  scanlineFrequency = 2.1,
   warpAmount = 0,
   resolutionScale = 1,
 }: Props) {
@@ -129,7 +130,7 @@ export function DarkVeil({
       const h = parent.clientHeight;
       renderer.setSize(w * resolutionScale, h * resolutionScale);
       program.uniforms.uResolution.value.set(w, h);
-      // OGL sets canvas.style.width/height to px values — override to keep CSS fill
+      // OGL sets canvas.style.width/height to px values; override to keep CSS fill
       canvas.style.width = "100%";
       canvas.style.height = "100%";
     };

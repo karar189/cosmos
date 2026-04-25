@@ -58,7 +58,7 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
   if (events.length === 0) {
     return (
       <p className="text-sm text-white/30 py-2">
-        No payments yet. They'll appear here when clients pay a link.
+        No payments yet. They&apos;ll appear here when clients pay a link.
       </p>
     );
   }

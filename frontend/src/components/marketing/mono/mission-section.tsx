@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  motion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { useScroll, useTransform, type MotionValue, motion } from "framer-motion";
 import { useRef } from "react";
 
 const MISSION_VIDEO =
@@ -14,28 +9,28 @@ const MISSION_VIDEO =
 const P1: { w: string; em?: boolean }[] = [
   { w: "We're" },
   { w: "building" },
-  { w: "a" },
-  { w: "space" },
   { w: "where" },
-  { w: "onboarding", em: true },
-  { w: "meets", em: true },
-  { w: "payment", em: true },
-  { w: "where" },
+  { w: "onboarding,", em: true },
+  { w: "capital,", em: true },
+  { w: "and", em: true },
+  { w: "compliance", em: true },
+  { w: "share" },
+  { w: "one" },
+  { w: "Stellar-native", em: true },
+  { w: "rail," },
+  { w: "so" },
   { w: "teams" },
-  { w: "find" },
-  { w: "clarity,", em: true },
-  { w: "clients" },
-  { w: "move" },
-  { w: "faster,", em: true },
-  { w: "and" },
-  { w: "every" },
-  { w: "workflow" },
-  { w: "link" },
-  { w: "becomes" },
-  { w: "something" },
+  { w: "ship" },
+  { w: "end-to-end", em: true },
+  { w: "flows" },
+  { w: "with" },
+  { w: "privacy", em: true },
   { w: "you" },
   { w: "can" },
-  { w: "trust." },
+  { w: "prove", em: true },
+  { w: "when" },
+  { w: "it" },
+  { w: "matters." },
 ];
 
 function RevealWord({
@@ -96,16 +91,6 @@ export function MissionSection() {
             />
           ))}
         </p>
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
-          className="mt-10 text-xl font-medium text-heroSubtitle md:text-2xl lg:text-3xl text-center"
-        >
-          A platform where content, capital, and compliance flow together with less noise, less friction, and
-          more certainty for everyone involved.
-        </motion.p>
       </div>
     </section>
   );

@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-
-const PRODUCTION_BASE = "https://www.hypertron.space";
-const rawBase =
-  process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-const isProductionOrMain =
-  process.env.NODE_ENV === "production" || process.env.VERCEL_GIT_COMMIT_REF === "main";
-const BASE_URL =
-  isProductionOrMain && (!rawBase || rawBase.includes("localhost"))
-    ? PRODUCTION_BASE
-    : rawBase;
+import { resolveAppBaseUrl } from "@/lib/app-base-url";
 
 /** Pool address where payment-link funds are sent. When set, all links pay here (business.receiveAddress is for withdraws only). */
 const PAYMENT_POOL_ADDRESS = (
@@ -84,7 +74,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const url = `${BASE_URL}/pay/${link.id}`;
+    const baseUrl = resolveAppBaseUrl(req);
+    const url = `${baseUrl}/pay/${link.id}`;
     const qrPayload = url;
 
     return NextResponse.json({
@@ -130,7 +121,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const baseUrl = BASE_URL;
+    const baseUrl = resolveAppBaseUrl(req);
     return NextResponse.json({
       links: links.map((l) => ({
         ...l,

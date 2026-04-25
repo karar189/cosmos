@@ -316,7 +316,7 @@ export default function SettingsPage() {
               <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-3">
                 <div>
                   <p className="text-sm font-medium text-white">Display</p>
-                  <p className="text-xs text-white/35 mt-0.5">Control what's displayed in the dashboard.</p>
+                  <p className="text-xs text-white/35 mt-0.5">Control what&apos;s displayed in the dashboard.</p>
                 </div>
                 <p className="text-sm text-white/30">Display options coming soon.</p>
               </div>

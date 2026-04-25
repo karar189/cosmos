@@ -1,25 +1,12 @@
 "use client";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/utils";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-const SERVICES_LINKS = [
-  { label: "Solution overview", href: "/#solution" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Feature: workflows", href: "/features/link-shortening" },
-  { label: "Feature: documents", href: "/features/password-protection" },
-] as const;
-
-const CONTACT_HREF = "https://calendly.com/kararsweta/30min";
+const CONTACT_HREF = "https://x.com/hypertron_hq";
 
 export function LandingNavbar() {
   const [open, setOpen] = useState(false);
@@ -66,25 +53,6 @@ export function LandingNavbar() {
             >
               Home
             </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-0.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground outline-none ring-offset-background transition-opacity hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
-                Services
-                <ChevronDown className="h-4 w-4 opacity-70" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="min-w-[14rem]">
-                {SERVICES_LINKS.map((item) => (
-                  <DropdownMenuItem key={item.href} asChild>
-                    <Link href={item.href}>{item.label}</Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link
-              href="/#reviews"
-              className="px-2 py-1.5 text-sm font-medium text-muted-foreground transition-opacity hover:text-foreground"
-            >
-              Reviews
-            </Link>
             <Link
               href={CONTACT_HREF}
               target="_blank"
@@ -128,23 +96,6 @@ export function LandingNavbar() {
             onClick={() => setOpen(false)}
           >
             Home
-          </Link>
-          {SERVICES_LINKS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <Link
-            href="/#reviews"
-            className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-            onClick={() => setOpen(false)}
-          >
-            Reviews
           </Link>
           <Link
             href={CONTACT_HREF}
