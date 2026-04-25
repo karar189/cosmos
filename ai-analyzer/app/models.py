@@ -25,6 +25,9 @@ class BundleTotals(BaseModel):
     time_saved_hours_per_month: float = Field(..., ge=0)
     cost_savings_usd_per_month: float = Field(..., ge=0)
     roi_percent: float | None = Field(default=None, description="Optional ROI% if platform_cost_usd_per_month provided")
+    estimated_monthly_cost_usd: float | None = Field(
+        default=None, ge=0, description="Estimated monthly platform cost for this bundle; used for budget filtering"
+    )
 
 
 class WidgetBundle(BaseModel):

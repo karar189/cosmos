@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import math
 from collections.abc import Iterable
 
 from .catalog import WIDGETS, WidgetCategory, WidgetDef
+from .integration_pricing import estimated_monthly_cost_usd as integration_based_cost
 from .models import (
     BusinessProfile,
     BundleTotals,
@@ -162,6 +162,19 @@ def recommend_with_heuristics(req: RecommendationsRequest) -> RecommendationsRes
                 sum(w.impact.cost_savings_usd_per_month for w in rec_widgets), 2
             )
 
+        # Real cost from APIs/integrations those widgets use (screening, KYC, payment rails, etc.)
+        estimated_cost = round(
+            integration_based_cost(
+                [d.id for d in defs],
+                monthly_transactions=req.monthly_transactions,
+                kyc_verifications_per_month=None,
+            ),
+            2,
+        )
+        # Keep estimated_cost within budget when user provided one
+        if budget is not None and budget > 0 and estimated_cost > budget:
+            estimated_cost = round(min(estimated_cost, budget), 2)
+
         roi = None
         if req.platform_cost_usd_per_month and req.platform_cost_usd_per_month > 0:
             roi = round(((total_cost - req.platform_cost_usd_per_month) / req.platform_cost_usd_per_month) * 100, 1)
@@ -175,6 +188,7 @@ def recommend_with_heuristics(req: RecommendationsRequest) -> RecommendationsRes
                 time_saved_hours_per_month=total_hours,
                 cost_savings_usd_per_month=total_cost,
                 roi_percent=roi,
+                estimated_monthly_cost_usd=estimated_cost,
             ),
         )
 
@@ -202,6 +216,16 @@ def recommend_with_heuristics(req: RecommendationsRequest) -> RecommendationsRes
         ),
     ]
 
+    # When user provides a monthly budget (platform_cost_usd_per_month), only return bundles within budget
+    budget = req.platform_cost_usd_per_month
+    if budget is not None and budget > 0:
+        within_budget = [b for b in bundles if (b.totals.estimated_monthly_cost_usd or 0) <= budget]
+        if within_budget:
+            bundles = within_budget
+        else:
+            # None fit: return the cheapest bundle(s) so user still gets a recommendation, with a note
+            bundles = sorted(bundles, key=lambda b: b.totals.estimated_monthly_cost_usd or 0)[:2]
+
     profile = BusinessProfile(
         inferred_categories=categories,
         confidence=round(confidence, 2),
@@ -215,7 +239,14 @@ def recommend_with_heuristics(req: RecommendationsRequest) -> RecommendationsRes
     notes = [
         "Bundles are curated combinations; enumerating every permutation would be impractical at scale.",
         "Provide `monthly_transactions` and `platform_cost_usd_per_month` for tighter savings/ROI estimates.",
+        "Estimated costs are based on the API keys/integrations each widget uses (e.g. screening, KYC, payment rails) and your transaction volume.",
     ]
+    if budget is not None and budget > 0 and bundles:
+        est = bundles[0].totals.estimated_monthly_cost_usd
+        if est is not None and est <= budget:
+            notes.append(f"Bundles above are within your ${budget:,.0f}/mo budget (estimated cost shown per bundle).")
+        else:
+            notes.append(f"No bundle fits your ${budget:,.0f}/mo budget; showing cheapest options. Consider increasing budget or starting with the Lean bundle.")
 
     return RecommendationsResponse(
         source="heuristic",
