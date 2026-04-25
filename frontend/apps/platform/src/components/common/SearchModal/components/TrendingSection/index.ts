@@ -1,2 +1,0 @@
-export { TrendingSection } from './TrendingSection';
-

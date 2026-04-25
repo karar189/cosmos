@@ -1,0 +1,495 @@
+openapi: 3.0.3
+
+info:
+  title: Hypertron — Compliance Scraper API
+  description: |
+    Autonomous compliance scraper system for Hypertron. Crawls 8 government regulatory
+    sources across 4 jurisdictions (US, EU, UAE, Singapore), normalizes raw content via
+    Claude API, detects changes via SHA256 hash diffing, and serves structured regulation
+    data from MongoDB.
+
+    **Base URL:** `http://localhost:8000`
+
+    **Sources:** `OFAC` · `FinCEN` · `SEC` · `FATF` · `MiCA/ESMA` · `GDPR/EDPB` · `VARA` · `MAS`
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local development
+
+tags:
+  - name: General
+    description: Health and discovery endpoints
+  - name: Run Scrapers
+    description: Trigger raw content scraping for one or all sources
+  - name: Normalize
+    description: Run LLM normalization (Claude API) on scraped content. Only processes sources whose content hash has changed.
+  - name: Raw Content
+    description: Retrieve the raw scraped content for a specific source
+  - name: Regulations
+    description: Query normalized regulation records stored in MongoDB
+  - name: Admin
+    description: Reset hash state and clear stored regulations
+
+paths:
+
+  # ─────────────────────────────────────────────
+  # General
+  # ─────────────────────────────────────────────
+
+  /health:
+    get:
+      tags: [General]
+      summary: Health check
+      description: Returns 200 if the service is running.
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/scraper/sources:
+    get:
+      tags: [General]
+      summary: List available scrapers
+      description: Returns the list of all registered scraper source names.
+      operationId: listSources
+      responses:
+        '200':
+          description: List of available sources
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sources:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SourceName'
+                    example: [OFAC, FinCEN, SEC, FATF, "MiCA/ESMA", "GDPR/EDPB", VARA, MAS]
+
+  # ─────────────────────────────────────────────
+  # Run Scrapers
+  # ─────────────────────────────────────────────
+
+  /api/scraper/run/all:
+    post:
+      tags: [Run Scrapers]
+      summary: Run all scrapers
+      description: |
+        Concurrently runs all 8 scrapers. Fetches raw content from each source,
+        computes SHA256 hash, and updates `state/hashes.json` if content has changed.
+      operationId: runAllScrapers
+      responses:
+        '200':
+          description: Run results for all sources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultiRunResult'
+
+  /api/scraper/run/{source}:
+    post:
+      tags: [Run Scrapers]
+      summary: Run a single scraper
+      description: |
+        Runs the scraper for the specified source. Fetches raw content, computes SHA256,
+        and records whether content has changed since the last run.
+      operationId: runScraper
+      parameters:
+        - $ref: '#/components/parameters/source'
+      responses:
+        '200':
+          description: Run result for the specified source
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleRunResult'
+        '404':
+          description: Source not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ─────────────────────────────────────────────
+  # Normalize (LLM)
+  # ─────────────────────────────────────────────
+
+  /api/scraper/normalize/all:
+    post:
+      tags: [Normalize]
+      summary: Normalize all sources (changed only)
+      description: |
+        Runs LLM normalization via Claude API for all sources whose content hash has
+        changed since the last run. Sources with no detected change are skipped to
+        minimize API costs.
+      operationId: normalizeAll
+      responses:
+        '200':
+          description: Normalization results for all changed sources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultiNormalizeResult'
+
+  /api/scraper/normalize/{source}:
+    post:
+      tags: [Normalize]
+      summary: Normalize a single source
+      description: |
+        Runs LLM normalization via Claude API for the specified source, regardless of
+        whether the hash has changed. Useful for re-processing or testing the pipeline.
+      operationId: normalizeSource
+      parameters:
+        - $ref: '#/components/parameters/source'
+      responses:
+        '200':
+          description: Normalized regulation record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NormalizedRegulation'
+        '404':
+          description: Source not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ─────────────────────────────────────────────
+  # Raw Content
+  # ─────────────────────────────────────────────
+
+  /api/scraper/run/{source}/raw:
+    get:
+      tags: [Raw Content]
+      summary: Get raw scraped content
+      description: |
+        Returns the raw content (HTML, XML, or text) fetched from the source's
+        official website. This is the pre-normalization blob used as input to the
+        LLM pipeline and stored as the audit record.
+      operationId: getRawContent
+      parameters:
+        - $ref: '#/components/parameters/source'
+      responses:
+        '200':
+          description: Raw content for the specified source
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RawContentResult'
+        '404':
+          description: Source not found or not yet scraped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ─────────────────────────────────────────────
+  # Regulations (MongoDB)
+  # ─────────────────────────────────────────────
+
+  /api/scraper/regulations:
+    get:
+      tags: [Regulations]
+      summary: List regulations
+      description: |
+        Returns normalized regulation records from MongoDB. Supports filtering by
+        jurisdiction, category, and business type (`applies_to`). All filters are
+        optional and combinable.
+      operationId: listRegulations
+      parameters:
+        - name: jurisdiction
+          in: query
+          required: false
+          description: Filter by jurisdiction code
+          schema:
+            type: string
+            enum: [US, EU, UAE, SG]
+          example: US
+        - name: category
+          in: query
+          required: false
+          description: Filter by regulation category
+          schema:
+            type: string
+            enum: [KYC, AML, Licensing, Tax, Privacy, sanctions]
+          example: AML
+        - name: applies_to
+          in: query
+          required: false
+          description: Filter by business type the regulation applies to (partial match)
+          schema:
+            type: string
+          example: exchange
+      responses:
+        '200':
+          description: List of matching regulation records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 12
+                  regulations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NormalizedRegulation'
+
+    delete:
+      tags: [Admin]
+      summary: Delete all regulations
+      description: |
+        Permanently deletes all regulation records from MongoDB.
+        **Use with caution** — this cannot be undone. Intended for dev/reset only.
+      operationId: deleteAllRegulations
+      responses:
+        '200':
+          description: All regulation records deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: integer
+                    description: Number of records deleted
+                    example: 8
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ─────────────────────────────────────────────
+  # Admin — Reset
+  # ─────────────────────────────────────────────
+
+  /api/scraper/hashes:
+    delete:
+      tags: [Admin]
+      summary: Delete hash state
+      description: |
+        Clears the SHA256 hash state file (`state/hashes.json`). On the next scraper
+        run, all sources will be treated as changed and re-processed through the full
+        pipeline — including LLM normalization. Use this to force a full re-scrape.
+      operationId: deleteHashes
+      responses:
+        '200':
+          description: Hash state cleared
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hash state cleared. Next run will re-scrape all sources.
+
+# ─────────────────────────────────────────────
+# Components
+# ─────────────────────────────────────────────
+
+components:
+
+  parameters:
+    source:
+      name: source
+      in: path
+      required: true
+      description: Regulatory source identifier
+      schema:
+        $ref: '#/components/schemas/SourceName'
+
+  schemas:
+
+    SourceName:
+      type: string
+      description: Regulatory source identifier
+      enum:
+        - OFAC
+        - FinCEN
+        - SEC
+        - FATF
+        - MiCA/ESMA
+        - GDPR/EDPB
+        - VARA
+        - MAS
+      example: OFAC
+
+    SingleRunResult:
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/SourceName'
+        changed:
+          type: boolean
+          description: Whether the content hash differs from the previous run
+          example: true
+        hash:
+          type: string
+          description: SHA256 hash of the fetched content
+          example: "a3f1c2d4e5b6..."
+        scraped_at:
+          type: string
+          format: date-time
+          example: "2026-03-28T02:00:00Z"
+        status:
+          type: string
+          enum: [success, error]
+          example: success
+        error:
+          type: string
+          nullable: true
+          description: Error message if status is error
+          example: null
+
+    MultiRunResult:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SingleRunResult'
+        changed_count:
+          type: integer
+          description: Number of sources where content changed
+          example: 2
+        error_count:
+          type: integer
+          example: 0
+
+    NormalizedRegulation:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: MongoDB document ID
+          example: "65f3a1b2c3d4e5f6a7b8c9d0"
+        source_name:
+          $ref: '#/components/schemas/SourceName'
+        jurisdiction:
+          type: string
+          enum: [US, EU, UAE, SG, Global]
+          example: US
+        category:
+          type: string
+          enum: [KYC, AML, Licensing, Tax, Privacy, sanctions]
+          example: AML
+        title:
+          type: string
+          example: "BSA Requirements for Crypto MSBs"
+        summary:
+          type: string
+          example: "FinCEN requires crypto money services businesses to register, maintain a written AML program, and file SARs for suspicious transactions above $2,000."
+        requirements:
+          type: array
+          items:
+            type: string
+          example:
+            - "Register with FinCEN as a Money Services Business"
+            - "Implement a written AML compliance program"
+            - "File SARs for suspicious transactions above $2,000"
+        applies_to:
+          type: array
+          items:
+            type: string
+          description: Business types this regulation applies to
+          example: ["MSB", "VASP", "Crypto Exchange", "Payment Provider"]
+        effective_date:
+          type: string
+          format: date
+          nullable: true
+          example: "2026-01-01"
+        source_url:
+          type: string
+          format: uri
+          example: "https://www.fincen.gov/resources/statutes-regulations/bank-secrecy-act"
+        content_hash:
+          type: string
+          description: SHA256 hash of the raw content at time of normalization
+          example: "a3f1c2d4e5b6..."
+        scraped_at:
+          type: string
+          format: date-time
+          example: "2026-03-28T02:00:00Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-03-28T02:01:34Z"
+
+    MultiNormalizeResult:
+      type: object
+      properties:
+        processed:
+          type: integer
+          description: Number of sources that were normalized (had content changes)
+          example: 2
+        skipped:
+          type: integer
+          description: Number of sources skipped (no hash change detected)
+          example: 6
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                $ref: '#/components/schemas/SourceName'
+              status:
+                type: string
+                enum: [normalized, skipped, error]
+                example: normalized
+              regulation_id:
+                type: string
+                nullable: true
+                description: MongoDB ID of the saved regulation (null if skipped/error)
+                example: "65f3a1b2c3d4e5f6a7b8c9d0"
+              error:
+                type: string
+                nullable: true
+                example: null
+
+    RawContentResult:
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/SourceName'
+        content:
+          type: string
+          description: Raw HTML, XML, or text content fetched from the source
+          example: "<html>...</html>"
+        content_type:
+          type: string
+          description: Content type returned by the source
+          example: "text/html"
+        hash:
+          type: string
+          description: SHA256 hash of this content
+          example: "a3f1c2d4e5b6..."
+        scraped_at:
+          type: string
+          format: date-time
+          example: "2026-03-28T02:00:00Z"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Source 'XYZ' not found"
+        detail:
+          type: string
+          nullable: true
+          example: null

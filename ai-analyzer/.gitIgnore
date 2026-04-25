@@ -1,0 +1,70 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.pkl
+
+# ---- Environments ----
+.env
+.env.*
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# ---- FastAPI / Uvicorn ----
+*.pid
+
+# ---- Logs & Temp ----
+*.log
+*.out
+*.err
+logs/
+tmp/
+temp/
+*.sqlite3
+
+# ---- IDE / Editor ----
+.vscode/
+.code-workspace
+.idea/
+
+# ---- OS Files ----
+.DS_Store
+Thumbs.db
+
+# ---- Build / Distribution ----
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---- Testing ----
+.coverage
+htmlcov/
+pytest_cache/
+.cache/
+
+# ---- Type Checking ----
+mypy_cache/
+pyrightconfig.json
+dmypy.json
+
+# ---- Docker ----
+docker-compose.override.yml
+
+# ---- Node (if you have frontend bundled) ----
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# ---- Other Common ----
+*.bak
+*.tmp
+
+# ---- Markdown ----
+*.md

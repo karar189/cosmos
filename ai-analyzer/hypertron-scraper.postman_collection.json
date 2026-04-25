@@ -1,0 +1,449 @@
+{
+  "info": {
+    "name": "Hypertron — Compliance Scraper",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" }
+  ],
+  "item": [
+    {
+      "name": "General",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
+          }
+        },
+        {
+          "name": "List Available Scrapers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/sources", "host": ["{{base_url}}"], "path": ["api", "scraper", "sources"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Run Scrapers",
+      "item": [
+        {
+          "name": "Run ALL Scrapers",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/all", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "all"] }
+          }
+        },
+        {
+          "name": "Run — OFAC (US Sanctions)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/OFAC", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "OFAC"] }
+          }
+        },
+        {
+          "name": "Run — FinCEN (US AML)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/FinCEN", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "FinCEN"] }
+          }
+        },
+        {
+          "name": "Run — SEC (US Crypto)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/SEC", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "SEC"] }
+          }
+        },
+        {
+          "name": "Run — FATF (Global AML)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/FATF", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "FATF"] }
+          }
+        },
+        {
+          "name": "Run — MiCA/ESMA (EU Crypto)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/MiCA%2FESMA", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "MiCA%2FESMA"] }
+          }
+        },
+        {
+          "name": "Run — GDPR/EDPB (EU Privacy)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/GDPR%2FEDPB", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "GDPR%2FEDPB"] }
+          }
+        },
+        {
+          "name": "Run — VARA (UAE)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/VARA", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "VARA"] }
+          }
+        },
+        {
+          "name": "Run — MAS (Singapore)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/MAS", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "MAS"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Normalize (LLM)",
+      "item": [
+        {
+          "name": "Normalize ALL (changed only)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/all", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "all"] }
+          }
+        },
+        {
+          "name": "Normalize — OFAC",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/OFAC", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "OFAC"] }
+          }
+        },
+        {
+          "name": "Normalize — FinCEN",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/FinCEN", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "FinCEN"] }
+          }
+        },
+        {
+          "name": "Normalize — SEC",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/SEC", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "SEC"] }
+          }
+        },
+        {
+          "name": "Normalize — FATF",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/FATF", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "FATF"] }
+          }
+        },
+        {
+          "name": "Normalize — MiCA/ESMA",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/MiCA%2FESMA", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "MiCA%2FESMA"] }
+          }
+        },
+        {
+          "name": "Normalize — GDPR/EDPB",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/GDPR%2FEDPB", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "GDPR%2FEDPB"] }
+          }
+        },
+        {
+          "name": "Normalize — VARA",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/VARA", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "VARA"] }
+          }
+        },
+        {
+          "name": "Normalize — MAS",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/normalize/MAS", "host": ["{{base_url}}"], "path": ["api", "scraper", "normalize", "MAS"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Raw Content",
+      "item": [
+        {
+          "name": "Raw — OFAC (full content)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/OFAC/raw", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "OFAC", "raw"] }
+          }
+        },
+        {
+          "name": "Raw — FinCEN (full content)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/FinCEN/raw", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "FinCEN", "raw"] }
+          }
+        },
+        {
+          "name": "Raw — SEC (full content)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/SEC/raw", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "SEC", "raw"] }
+          }
+        },
+        {
+          "name": "Raw — FATF (full content)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/FATF/raw", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "FATF", "raw"] }
+          }
+        },
+        {
+          "name": "Raw — MiCA/ESMA (full content)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/MiCA%2FESMA/raw", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "MiCA%2FESMA", "raw"] }
+          }
+        },
+        {
+          "name": "Raw — GDPR/EDPB (full content)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/GDPR%2FEDPB/raw", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "GDPR%2FEDPB", "raw"] }
+          }
+        },
+        {
+          "name": "Raw — VARA (full content)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/VARA/raw", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "VARA", "raw"] }
+          }
+        },
+        {
+          "name": "Raw — MAS (full content)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/scraper/run/MAS/raw", "host": ["{{base_url}}"], "path": ["api", "scraper", "run", "MAS", "raw"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Regulations (MongoDB)",
+      "item": [
+        {
+          "name": "Get All Regulations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"]
+            }
+          }
+        },
+        {
+          "name": "Filter by Jurisdiction — US",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?jurisdiction=US",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [{ "key": "jurisdiction", "value": "US" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by Jurisdiction — EU",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?jurisdiction=EU",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [{ "key": "jurisdiction", "value": "EU" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by Jurisdiction — UAE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?jurisdiction=UAE",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [{ "key": "jurisdiction", "value": "UAE" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by Jurisdiction — SG",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?jurisdiction=SG",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [{ "key": "jurisdiction", "value": "SG" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by Category — AML",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?category=AML",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [{ "key": "category", "value": "AML" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by Category — sanctions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?category=sanctions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [{ "key": "category", "value": "sanctions" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by applies_to — exchange",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?applies_to=exchange",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [{ "key": "applies_to", "value": "exchange" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by applies_to — payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?applies_to=payments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [{ "key": "applies_to", "value": "payments" }]
+            }
+          }
+        },
+        {
+          "name": "Combined Filter — US + AML",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?jurisdiction=US&category=AML",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [
+                { "key": "jurisdiction", "value": "US" },
+                { "key": "category", "value": "AML" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Combined Filter — EU + exchange (example)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations?jurisdiction=EU&applies_to=exchange",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"],
+              "query": [
+                { "key": "jurisdiction", "value": "EU" },
+                { "key": "applies_to", "value": "exchange" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Reset",
+      "item": [
+        {
+          "name": "Delete Hash State (force re-scrape)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/hashes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "hashes"]
+            }
+          }
+        },
+        {
+          "name": "Delete All Regulations (clear MongoDB)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/regulations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "regulations"]
+            }
+          }
+        },
+        {
+          "name": "Full Reset (delete hashes + regulations)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/scraper/hashes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scraper", "hashes"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
