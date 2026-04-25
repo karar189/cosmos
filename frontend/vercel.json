@@ -1,4 +1,14 @@
 {
   "installCommand": "npm install",
-  "buildCommand": "npm run build"
+  "buildCommand": "npm run build",
+  "rewrites": [
+    {
+      "source": "/docs",
+      "destination": "https://swetakararenterprises.mintlify.dev/docs"
+    },
+    {
+      "source": "/docs/:match*",
+      "destination": "https://swetakararenterprises.mintlify.dev/docs/:match*"
+    }
+  ]
 }
