@@ -84,7 +84,7 @@ export function MonoHero() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.5 }}
-        className="relative z-10 mt-24 w-full max-w-5xl px-4 translate-y-[82%] md:mt-20 lg:mt-32"
+        className="relative z-10 mt-24 hidden w-full max-w-5xl translate-y-[82%] px-4 md:mt-20 md:block lg:mt-32"
       >
         {/* Glow beneath the frame */}
         <div
