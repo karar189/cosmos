@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter, useParams } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useRouter, useParams, usePathname } from "next/navigation";
+import { useEffect, useState, useMemo, useTransition } from "react";
 import {
   BarChart3,
   Activity,
@@ -10,6 +10,7 @@ import {
   FileText,
   Wrench,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
@@ -185,11 +186,20 @@ function WidgetCard({ widget }: { widget: DashboardWidget }) {
 
 export default function DashboardViewPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : null;
   const { publicKey, disconnect, isConnecting } = useFreighter();
+  const [, startTransition] = useTransition();
+  const [workspaceNavPending, setWorkspaceNavPending] = useState(false);
 
   const [template, setTemplate] = useState<SavedTemplate | null>(null);
+
+  useEffect(() => {
+    if (pathname?.startsWith("/dashboard/workspace")) {
+      setWorkspaceNavPending(false);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (!id || typeof window === "undefined") return;
@@ -284,13 +294,31 @@ export default function DashboardViewPage() {
               </CardContent>
               <div className="px-5 pb-4">
                 <Button
+                  type="button"
                   variant="outline"
                   size="sm"
-                  className="w-full sm:w-auto"
-                  onClick={() => router.push(`/dashboard/workspace?template=${encodeURIComponent(template.id)}`)}
+                  className="w-full sm:w-auto rounded-full border-white/15"
+                  disabled={workspaceNavPending}
+                  onClick={() => {
+                    setWorkspaceNavPending(true);
+                    startTransition(() => {
+                      router.push(
+                        `/dashboard/workspace?template=${encodeURIComponent(template.id)}`
+                      );
+                    });
+                  }}
+                  onMouseEnter={() =>
+                    router.prefetch(
+                      `/dashboard/workspace?template=${encodeURIComponent(template.id)}`
+                    )
+                  }
                 >
-                  <Wrench className="mr-2 h-4 w-4" />
-                  Edit in workspace
+                  {workspaceNavPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                  ) : (
+                    <Wrench className="mr-2 h-4 w-4" aria-hidden />
+                  )}
+                  {workspaceNavPending ? "Opening workspace…" : "Edit in workspace"}
                 </Button>
               </div>
             </Card>

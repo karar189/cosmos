@@ -58,3 +58,6 @@ export const fallbackWithdrawals = withdrawals.withdrawals as Array<{
   contractTxHash: string | null;
   createdAt: string;
 }>;
+
+
+export const USE_MOCK_DASHBOARD_DATA = true;

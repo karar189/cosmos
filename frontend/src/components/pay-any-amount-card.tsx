@@ -49,8 +49,8 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
     <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 border border-violet-500/20">
-          <QrCode className="h-4 w-4 text-violet-400" />
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-amber-400/25 bg-amber-400/10">
+          <QrCode className="h-4 w-4 text-amber-300" />
         </div>
         <div>
           <p className="text-sm font-medium text-white">Pay any amount</p>
@@ -66,7 +66,7 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
         <Button
           onClick={handleCreate}
           disabled={loading}
-          className="w-full bg-violet-600 hover:bg-violet-500 text-white border-0"
+          className="w-full rounded-full border border-sky-500/30 bg-sky-600 font-semibold text-white hover:bg-sky-500"
         >
           {loading ? "Creating…" : "Create & show QR"}
         </Button>
@@ -88,7 +88,7 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
               href={result.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 truncate text-xs font-mono text-violet-400/80 hover:text-violet-300 transition-colors min-w-0"
+              className="min-w-0 flex-1 truncate font-mono text-xs text-sky-300/90 transition-colors hover:text-sky-200"
             >
               {result.url}
             </a>

@@ -40,22 +40,9 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
   const fetchLinks = useCallback(async () => {
     setError(null);
     setLoading(true);
-    try {
-      const res = await fetch(`/api/payment-link?businessId=${encodeURIComponent(businessId)}`);
-      const data = await res.json();
-      if (!res.ok) {
-        setError("Live payment links are unavailable right now.");
-        setLinks(fallbackPaymentLinks);
-        return;
-      }
-      setLinks((data.links ?? []).length > 0 ? data.links : fallbackPaymentLinks);
-    } catch (err) {
-      setError("Live payment links are unavailable right now.");
-      setLinks(fallbackPaymentLinks);
-    } finally {
-      setLoading(false);
-    }
-  }, [businessId]);
+    setLinks(fallbackPaymentLinks);
+    setLoading(false);
+  }, []);
 
   useEffect(() => { fetchLinks(); }, [fetchLinks]);
 
@@ -101,9 +88,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
 
       {/* Body */}
       <div className="px-5 py-3">
-        {error && (
-          <p className="text-red-400 text-xs py-3">Showing fallback demo links while live data is unavailable.</p>
-        )}
+        
         {statusHint && (
           <p className="text-white/40 text-xs rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 mb-3">
             {statusHint}
@@ -166,7 +151,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-violet-400/70 text-xs font-mono hover:text-violet-300 inline-flex items-center gap-1 min-w-0 transition-colors"
+                    className="inline-flex min-w-0 items-center gap-1 font-mono text-xs text-sky-300/80 transition-colors hover:text-sky-200"
                     title={link.url}
                   >
                     <span className="truncate">{truncate(link.url)}</span>
@@ -186,7 +171,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
                       href={getExplorerTxUrl(link.commitmentTxHash)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-2 text-[11px] text-violet-400/60 hover:text-violet-300 transition-colors"
+                      className="ml-2 text-[11px] text-sky-300/75 transition-colors hover:text-sky-200"
                     >
                       On-chain proof ↗
                     </a>

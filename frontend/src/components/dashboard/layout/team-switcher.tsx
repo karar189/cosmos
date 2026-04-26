@@ -12,7 +12,7 @@ export function TeamSwitcher() {
       <SidebarMenuItem>
         <div className="flex items-center gap-3 px-2 py-3">
           <div
-            className={`flex size-8 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-violet-700/80 ring-1 ring-white/10 ${!open ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+            className={`flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/12 bg-white/[0.08] ring-1 ring-white/10 ${!open ? "cursor-pointer transition-opacity hover:opacity-80" : ""}`}
             onClick={!open ? toggleSidebar : undefined}
           >
             <Image src="/logo.png" alt="Hypertron" width={28} height={28} className="object-contain" />

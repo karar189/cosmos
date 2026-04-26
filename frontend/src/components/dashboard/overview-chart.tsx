@@ -27,7 +27,23 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   );
 }
 
-export function OverviewChart() {
+type OverviewChartProps = {
+  /** When true, show empty state instead of chart (onboarding not completed). */
+  onboardingIncomplete?: boolean;
+};
+
+export function OverviewChart({ onboardingIncomplete }: OverviewChartProps) {
+  if (onboardingIncomplete) {
+    return (
+      <div className="flex h-[300px] flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.12] bg-white/[0.02] px-6 text-center">
+        <p className="text-sm font-medium text-white/50">No revenue data yet</p>
+        <p className="mt-2 max-w-sm text-xs leading-relaxed text-white/35">
+          Complete the onboarding quiz to unlock your dashboard metrics and charts.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data} barSize={18}>

@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter } from "next/navigation";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { CreatePaymentLinkForm } from "@/components/create-payment-link-form";
 import { PaymentLinkList } from "@/components/payment-link-list";
 import { PayAnyAmountCard } from "@/components/pay-any-amount-card";
-import { fallbackBusiness } from "@/data/fallback";
+import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
 
 export default function PaymentLinksPage() {
   const router = useRouter();
@@ -18,33 +19,19 @@ export default function PaymentLinksPage() {
   const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
-    if (!publicKey) { setBusinessId(null); return; }
-    let cancelled = false;
-    fetch("/api/business/link", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ walletAddress: publicKey }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled) return;
-        if (data.businessId) {
-          setBusinessId(data.businessId);
-          setBusinessError(null);
-          setUsingFallback(false);
-          return;
-        }
-        setBusinessId(fallbackBusiness.businessId);
-        setBusinessError(data.error || "Database unavailable");
-        setUsingFallback(true);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setBusinessId(fallbackBusiness.businessId);
-        setBusinessError("Could not connect to backend");
-        setUsingFallback(true);
-      });
-    return () => { cancelled = true; };
+    if (!publicKey) {
+      setBusinessId(null);
+      setBusinessError(null);
+      setUsingFallback(false);
+      return;
+    }
+
+    if (USE_MOCK_DASHBOARD_DATA) {
+      setBusinessId(fallbackBusiness.businessId);
+      setBusinessError(null);
+      setUsingFallback(true);
+      return;
+    }
   }, [publicKey]);
 
   if (!publicKey) {
@@ -59,11 +46,11 @@ export default function PaymentLinksPage() {
   return (
     <DashboardMain>
       <div className="flex flex-col gap-8">
-        {/* Page heading */}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Payment Links</h1>
-          <p className="mt-1 text-sm text-white/40">Create and manage your Stellar payment links.</p>
-        </div>
+        <DashboardPageHeader
+          eyebrow="Payments"
+          title="Payment links"
+          description="Create and manage your Stellar payment links."
+        />
 
         {businessId ? (
           <div className="flex flex-col gap-6">

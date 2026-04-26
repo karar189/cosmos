@@ -16,31 +16,34 @@ export interface PaymentEvent {
 
 interface RecentPaymentsProps {
   businessId: string | null;
+  /** When true, show NA / empty state instead of activity (onboarding not completed). */
+  onboardingIncomplete?: boolean;
 }
 
-export function RecentPayments({ businessId }: RecentPaymentsProps) {
+export function RecentPayments({ businessId, onboardingIncomplete }: RecentPaymentsProps) {
   const [events, setEvents] = useState<PaymentEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!businessId) {
-      setEvents(fallbackEvents.slice(0, 8));
+    if (onboardingIncomplete) {
+      setEvents([]);
       setLoading(false);
       return;
     }
-    let cancelled = false;
-    setLoading(true);
-    fetch(`/api/events?businessId=${encodeURIComponent(businessId)}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        const paid = (data?.events ?? []).filter((e: PaymentEvent) => e.paidAt).slice(0, 8);
-        if (cancelled) return;
-        setEvents(paid.length > 0 ? paid : fallbackEvents.slice(0, 8));
-      })
-      .catch(() => { if (!cancelled) setEvents(fallbackEvents.slice(0, 8)); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, [businessId]);
+    setEvents(fallbackEvents.slice(0, 8));
+    setLoading(false);
+  }, [businessId, onboardingIncomplete]);
+
+  if (onboardingIncomplete) {
+    return (
+      <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.12] bg-white/[0.02] px-4 py-8 text-center">
+        <p className="text-sm font-medium text-white/50">Activity: NA</p>
+        <p className="mt-2 max-w-xs text-xs leading-relaxed text-white/35">
+          Recent payments will appear here after you finish onboarding.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -98,7 +101,7 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
                         href={getExplorerTxUrl(ev.commitmentId)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-0.5 text-violet-400/60 hover:text-violet-400 transition-colors"
+                        className="inline-flex items-center gap-0.5 text-cyan-400/80 transition-colors hover:text-cyan-300"
                       >
                         proof <ArrowUpRight className="h-2.5 w-2.5" />
                       </a>
@@ -109,7 +112,7 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
             </div>
 
             {/* Right: amount */}
-            <span className="text-sm font-semibold text-violet-400 shrink-0 ml-4">
+            <span className="ml-4 shrink-0 text-sm font-semibold text-cyan-300/90">
               +{ev.amount} XLM
             </span>
           </div>

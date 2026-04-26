@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User, Settings as SettingsIcon, Palette, Bell, Monitor, Plus, CheckCheck } from "lucide-react";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +31,8 @@ const navItems: { id: SettingsSection; label: string; icon: React.ElementType }[
   { id: "display",       label: "Display",        icon: Monitor },
 ];
 
-const inputCls = "bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 h-9";
+const inputCls =
+  "h-9 border border-white/[0.1] bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:border-white/25 focus:ring-0";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -124,10 +126,10 @@ export default function SettingsPage() {
       onClick={handleUpdateProfile}
       disabled={loading}
       className={cn(
-        "min-w-[130px] transition-all",
+        "min-w-[130px] rounded-full font-semibold transition-all",
         saved
-          ? "bg-emerald-600 hover:bg-emerald-600 text-white border-0"
-          : "bg-violet-600 hover:bg-violet-500 text-white border-0"
+          ? "border-0 bg-emerald-600 text-white hover:bg-emerald-600"
+          : "border border-white/10 bg-foreground text-background hover:opacity-90"
       )}
     >
       {saved ? <><CheckCheck className="h-4 w-4 mr-1.5" /> Saved</> : label}
@@ -137,10 +139,11 @@ export default function SettingsPage() {
   return (
     <DashboardMain>
       <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-          <p className="mt-1 text-sm text-white/40">Manage your account settings and preferences.</p>
-        </div>
+        <DashboardPageHeader
+          eyebrow="Workspace"
+          title="Settings"
+          description="Manage your account, appearance, and notifications."
+        />
 
         <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
 
@@ -152,10 +155,10 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => setSection(id)}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors whitespace-nowrap",
+                  "flex items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm transition-colors whitespace-nowrap",
                   section === id
-                    ? "bg-violet-500/15 text-white font-medium"
-                    : "text-white/40 hover:text-white/70 hover:bg-white/[0.04]"
+                    ? "border border-white/12 bg-white/[0.08] font-medium text-foreground"
+                    : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -194,7 +197,7 @@ export default function SettingsPage() {
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="Tell us a little about yourself…"
-                      className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 min-h-[80px] resize-none"
+                      className="min-h-[80px] resize-none border border-white/[0.1] bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:border-white/25 focus:ring-0"
                     />
                   </div>
 
@@ -219,10 +222,10 @@ export default function SettingsPage() {
 
             {/* Account */}
             {section === "account" && (
-              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-5">
+              <div className="flex flex-col gap-5 rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl">
                 <div>
-                  <p className="text-sm font-medium text-white">Account</p>
-                  <p className="text-xs text-white/35 mt-0.5">Business nature and feature preferences.</p>
+                  <p className="text-sm font-medium text-foreground">Account</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Business nature and feature preferences.</p>
                 </div>
 
                 <div className="flex flex-col gap-5">
@@ -235,8 +238,8 @@ export default function SettingsPage() {
                           className={cn(
                             "flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-sm transition-colors",
                             businessNature === value
-                              ? "border-violet-500/40 bg-violet-500/10 text-white"
-                              : "border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.12] hover:text-white/70"
+                              ? "border-white/20 bg-white/[0.08] text-foreground"
+                              : "border-white/[0.08] bg-white/[0.02] text-muted-foreground hover:border-white/[0.14] hover:text-foreground"
                           )}
                         >
                           <input type="radio" name="businessNature" value={value} checked={businessNature === value} onChange={() => setBusinessNature(value)} className="sr-only" />
@@ -259,8 +262,8 @@ export default function SettingsPage() {
                             className={cn(
                               "flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors",
                               checked
-                                ? "border-violet-500/30 bg-violet-500/08 text-white"
-                                : "border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.12]"
+                                ? "border-white/18 bg-white/[0.07] text-foreground"
+                                : "border-white/[0.08] bg-white/[0.02] text-muted-foreground hover:border-white/[0.14]"
                             )}
                           >
                             <Checkbox checked={checked} onCheckedChange={() => toggleWidget(w.id)} className="mt-0.5 border-white/20" />
