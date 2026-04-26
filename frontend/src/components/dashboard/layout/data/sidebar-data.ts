@@ -18,7 +18,7 @@ export const FEATURES_BY_WIDGET: { widgetId: string; title: string; url: string;
   { widgetId: "doc-hub", title: "My Templates", url: "/dashboard/documents", icon: FileText },
   { widgetId: "ai-assistant", title: "Custom AI Assistant", url: "/dashboard/ai-assistant", icon: Bot },
   { widgetId: "employee-mgmt", title: "Employee Management", url: "/dashboard/employee-management", icon: Users },
-  { widgetId: "compliance", title: "Compliance checker", url: "/dashboard/compliance-checker", icon: ShieldCheck },
+  { widgetId: "compliance", title: "Compliance Agent", url: "/dashboard/compliance-agent", icon: ShieldCheck },
   { widgetId: "document-vault", title: "Document vault", url: "/dashboard/document-vault", icon: FolderArchive },
 ];
 
@@ -40,7 +40,9 @@ export function getFeaturesNavGroup(selectedWidgets: string[]): NavGroup {
   const items =
     set.size === 0
       ? FEATURES_BY_WIDGET.map(({ title, url, icon }) => ({ title, url, icon }))
-      : FEATURES_BY_WIDGET.filter((f) => set.has(f.widgetId)).map(({ title, url, icon }) => ({ title, url, icon }));
+      : FEATURES_BY_WIDGET
+          .filter((f) => set.has(f.widgetId) || f.widgetId === "compliance")
+          .map(({ title, url, icon }) => ({ title, url, icon }));
   return { title: "FEATURES", items };
 }
 

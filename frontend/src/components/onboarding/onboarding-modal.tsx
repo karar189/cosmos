@@ -38,7 +38,7 @@ export const WIDGETS: { id: string; label: string; description: string; icon: Lu
   { id: "doc-hub", label: "Doc hub", description: "Store and manage documents", icon: FileText },
   { id: "ai-assistant", label: "AI assistant", description: "Smart automation and support", icon: Bot },
   { id: "employee-mgmt", label: "Employee management", description: "Team and HR tools", icon: Users },
-  { id: "compliance", label: "Compliance checker", description: "Regulatory and policy checks", icon: ShieldCheck },
+  { id: "compliance", label: "Compliance Agent", description: "Regulatory and policy checks", icon: ShieldCheck },
 ];
 
 // Which widgets to pre-select by business nature
