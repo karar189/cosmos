@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter } from "next/navigation";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { ZkCommitmentPool } from "@/components/zk-commitment-pool";
 
 export default function SecureVaultPage() {
@@ -22,10 +23,11 @@ export default function SecureVaultPage() {
   return (
     <DashboardMain>
       <div className="flex flex-col gap-8">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Secure Vault</h1>
-          <p className="mt-1 text-sm text-white/40">Zero-knowledge commitment pool for private transactions.</p>
-        </div>
+        <DashboardPageHeader
+          eyebrow="Privacy"
+          title="Secure vault"
+          description="Zero-knowledge commitment pool for private settlement flows."
+        />
         <ZkCommitmentPool publicKey={publicKey} />
       </div>
     </DashboardMain>

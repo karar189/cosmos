@@ -78,7 +78,7 @@ export default function ComplianceAgentAnalysisPage() {
 
       <DashboardMain>
         <div className="flex flex-col gap-6">
-          <div className="rounded-2xl border border-white/[0.12] bg-gradient-to-br from-violet-500/20 via-blue-500/10 to-emerald-500/10 p-6">
+          <div className="rounded-2xl border border-white/[0.12] bg-gradient-to-br from-sky-500/20 via-amber-400/10 to-emerald-500/10 p-6">
             <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
               <div>
                 <p className="text-xs uppercase tracking-wider text-white/55">Compliance intelligence report</p>
@@ -112,7 +112,7 @@ export default function ComplianceAgentAnalysisPage() {
             <Card className="border-white/[0.08] bg-white/[0.02]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Lightbulb className="h-5 w-5 text-violet-300" />
+                  <Lightbulb className="h-5 w-5 text-amber-300" />
                   Source Intelligence (with website visuals)
                 </CardTitle>
               </CardHeader>
@@ -135,7 +135,7 @@ export default function ComplianceAgentAnalysisPage() {
                       href={source.name}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-3 inline-flex items-center text-xs text-violet-300 hover:text-violet-200"
+                      className="mt-3 inline-flex items-center text-xs text-sky-300 hover:text-sky-200"
                     >
                       Visit source <ArrowRight className="ml-1 h-3.5 w-3.5" />
                     </a>
@@ -188,7 +188,7 @@ export default function ComplianceAgentAnalysisPage() {
             <Card className="border-white/[0.08] bg-white/[0.02]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <BadgeCheck className="h-5 w-5 text-violet-300" />
+                  <BadgeCheck className="h-5 w-5 text-sky-300" />
                   Action Items
                 </CardTitle>
               </CardHeader>

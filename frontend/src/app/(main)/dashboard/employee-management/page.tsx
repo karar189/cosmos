@@ -22,6 +22,7 @@ import {
   Download,
 } from "lucide-react";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -68,7 +69,7 @@ const priorityConfig: Record<Priority, { label: string; icon: React.ElementType;
 };
 
 const deptColors: Record<string, string> = {
-  Engineering: "bg-violet-500/15 text-violet-300 border-violet-500/25",
+  Engineering: "border-sky-500/30 bg-sky-500/15 text-sky-200",
   Design:      "bg-pink-500/12 text-pink-300 border-pink-500/25",
   Operations:  "bg-blue-500/10 text-blue-300 border-blue-500/25",
   Support:     "bg-teal-500/10 text-teal-300 border-teal-500/25",
@@ -95,7 +96,13 @@ function getInitials(name: string) {
   return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 }
 
-const avatarHues = ["bg-violet-500/20 text-violet-300", "bg-pink-500/15 text-pink-300", "bg-teal-500/15 text-teal-300", "bg-blue-500/15 text-blue-300", "bg-amber-500/15 text-amber-300"];
+const avatarHues = [
+  "bg-amber-500/20 text-amber-200",
+  "bg-sky-500/20 text-sky-200",
+  "bg-teal-500/15 text-teal-300",
+  "bg-blue-500/15 text-blue-300",
+  "bg-amber-500/10 text-amber-100/90",
+];
 function avatarColor(name: string) {
   const i = name.charCodeAt(0) % avatarHues.length;
   return avatarHues[i];
@@ -163,21 +170,28 @@ export default function EmployeeManagementPage() {
     <DashboardMain>
       <div className="flex flex-col gap-6">
 
-        {/* ── Page heading ── */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Employee Management</h1>
-            <p className="mt-1 text-sm text-white/40">Manage your team members and their roles.</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 border-white/[0.08] bg-white/[0.04] text-white/60 hover:text-white hover:bg-white/[0.08] text-xs gap-1.5">
-              <Download className="h-3.5 w-3.5" /> Export
-            </Button>
-            <Button size="sm" className="h-8 bg-violet-600 hover:bg-violet-500 text-white border-0 text-xs gap-1.5">
-              <Plus className="h-3.5 w-3.5" /> Add employee
-            </Button>
-          </div>
-        </div>
+        <DashboardPageHeader
+          eyebrow="Team"
+          title="Employee management"
+          description="Manage your team members and their roles."
+          end={
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5 rounded-full border-white/12 bg-white/[0.04] text-xs text-muted-foreground hover:bg-white/[0.08] hover:text-foreground"
+              >
+                <Download className="h-3.5 w-3.5" /> Export
+              </Button>
+              <Button
+                size="sm"
+                className="h-9 gap-1.5 rounded-full border border-white/10 bg-foreground text-xs font-semibold text-background hover:opacity-90"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add employee
+              </Button>
+            </div>
+          }
+        />
 
         {/* ── Stat cards ── */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -187,7 +201,7 @@ export default function EmployeeManagementPage() {
             { label: "On leave", value: stats.onLeave,  icon: Clock,      cls: "text-amber-400",   bg: "bg-amber-500/10" },
             { label: "Inactive", value: stats.inactive, icon: UserMinus,  cls: "text-red-400/80",  bg: "bg-red-500/10" },
           ].map(({ label, value, icon: Icon, cls, bg }) => (
-            <div key={label} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 flex items-center gap-3">
+            <div key={label} className="flex items-center gap-3 rounded-2xl border border-white/[0.1] bg-white/[0.02] p-4 backdrop-blur-sm">
               <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08]", bg)}>
                 <Icon className={cn("h-4 w-4", cls)} />
               </div>
@@ -205,30 +219,30 @@ export default function EmployeeManagementPage() {
             <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/25" />
             <Input
               placeholder="Search by name, role, ID…"
-              className="pl-8 h-8 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 text-sm"
+              className="pl-8 h-8 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-white/25 focus:ring-0 text-sm"
               value={filter}
               onChange={(e) => { setFilter(e.target.value); setPage(1); }}
             />
           </div>
           <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-            <SelectTrigger className="h-8 w-[130px] bg-white/[0.04] border-white/[0.08] text-white text-sm focus:ring-0 focus:border-violet-500/40 data-[placeholder]:text-white/30">
+            <SelectTrigger className="h-8 w-[130px] bg-white/[0.04] border-white/[0.08] text-white text-sm focus:ring-0 focus:border-white/25 data-[placeholder]:text-white/30">
               <SelectValue placeholder="All status" />
             </SelectTrigger>
             <SelectContent className="bg-[#0f0f1a] border-white/[0.1] text-white">
-              <SelectItem value="all" className="text-sm text-white/70 focus:bg-violet-500/15 focus:text-white">All status</SelectItem>
+              <SelectItem value="all" className="text-sm text-white/70 focus:bg-white/10 focus:text-white">All status</SelectItem>
               {Object.entries(statusConfig).map(([k, v]) => (
-                <SelectItem key={k} value={k} className="text-sm text-white/70 focus:bg-violet-500/15 focus:text-white">{v.label}</SelectItem>
+                <SelectItem key={k} value={k} className="text-sm text-white/70 focus:bg-white/10 focus:text-white">{v.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={priorityFilter} onValueChange={(v) => { setPriorityFilter(v); setPage(1); }}>
-            <SelectTrigger className="h-8 w-[130px] bg-white/[0.04] border-white/[0.08] text-white text-sm focus:ring-0 focus:border-violet-500/40 data-[placeholder]:text-white/30">
+            <SelectTrigger className="h-8 w-[130px] bg-white/[0.04] border-white/[0.08] text-white text-sm focus:ring-0 focus:border-white/25 data-[placeholder]:text-white/30">
               <SelectValue placeholder="All priority" />
             </SelectTrigger>
             <SelectContent className="bg-[#0f0f1a] border-white/[0.1] text-white">
-              <SelectItem value="all" className="text-sm text-white/70 focus:bg-violet-500/15 focus:text-white">All priority</SelectItem>
+              <SelectItem value="all" className="text-sm text-white/70 focus:bg-white/10 focus:text-white">All priority</SelectItem>
               {Object.entries(priorityConfig).map(([k, v]) => (
-                <SelectItem key={k} value={k} className="text-sm text-white/70 focus:bg-violet-500/15 focus:text-white">{v.label}</SelectItem>
+                <SelectItem key={k} value={k} className="text-sm text-white/70 focus:bg-white/10 focus:text-white">{v.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -277,7 +291,7 @@ export default function EmployeeManagementPage() {
                   key={emp.id}
                   className={cn(
                     "grid grid-cols-[40px_1fr_140px_130px_100px_44px] items-center px-4 py-3 transition-colors",
-                    isSelected ? "bg-violet-500/[0.06]" : "hover:bg-white/[0.02]"
+                    isSelected ? "bg-sky-500/[0.08]" : "hover:bg-white/[0.02]"
                   )}
                 >
                   {/* Checkbox */}
@@ -339,8 +353,8 @@ export default function EmployeeManagementPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-[#0f0f1a] border-white/[0.1] text-white min-w-[140px]">
-                      <DropdownMenuItem className="text-sm text-white/70 focus:bg-violet-500/15 focus:text-white cursor-pointer">View profile</DropdownMenuItem>
-                      <DropdownMenuItem className="text-sm text-white/70 focus:bg-violet-500/15 focus:text-white cursor-pointer">Edit</DropdownMenuItem>
+                      <DropdownMenuItem className="text-sm text-white/70 focus:bg-white/10 focus:text-white cursor-pointer">View profile</DropdownMenuItem>
+                      <DropdownMenuItem className="text-sm text-white/70 focus:bg-white/10 focus:text-white cursor-pointer">Edit</DropdownMenuItem>
                       <DropdownMenuItem className="text-sm text-red-400/80 focus:bg-red-500/10 focus:text-red-400 cursor-pointer">Remove</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -382,7 +396,7 @@ export default function EmployeeManagementPage() {
                   className={cn(
                     "flex h-7 w-7 items-center justify-center rounded-lg text-xs transition-colors",
                     page === p
-                      ? "bg-violet-500/20 text-violet-300 font-medium"
+                      ? "bg-amber-500/15 font-medium text-amber-200"
                       : "text-white/35 hover:text-white hover:bg-white/[0.06]"
                   )}
                 >

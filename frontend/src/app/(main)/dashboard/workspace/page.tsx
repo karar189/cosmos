@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Rnd } from "react-rnd";
-import { Upload, Wrench, Trash2, Plus } from "lucide-react";
+import { Upload, Wrench, Trash2, Plus, Loader2 } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
 import { ThemeSwitch } from "@/components/dashboard/theme-switch";
@@ -573,7 +573,14 @@ function WorkspacePageContent() {
 
 export default function WorkspacePage() {
   return (
-    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-muted-foreground">Loading workspace…</div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-muted-foreground">
+          <Loader2 className="h-8 w-8 animate-spin text-foreground/40" aria-hidden />
+          <p className="text-sm">Loading workspace…</p>
+        </div>
+      }
+    >
       <WorkspacePageContent />
     </Suspense>
   );

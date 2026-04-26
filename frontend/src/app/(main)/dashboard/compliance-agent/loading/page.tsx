@@ -162,13 +162,13 @@ export default function ComplianceAgentLoadingPage() {
 
       <DashboardMain>
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-          <Card className="overflow-hidden border-white/[0.12] bg-gradient-to-br from-violet-500/15 via-blue-500/8 to-emerald-500/10">
+          <Card className="overflow-hidden border-white/[0.12] bg-gradient-to-br from-sky-500/18 via-amber-400/10 to-emerald-500/10">
             <CardHeader>
               <CardTitle className="text-2xl">Compliance analysis in progress</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="flex items-center gap-3">
-                <Loader2 className="h-5 w-5 animate-spin text-violet-300" />
+                <Loader2 className="h-5 w-5 animate-spin text-sky-300" />
                 <p className="text-sm text-white/85">{phase}</p>
               </div>
 
@@ -179,7 +179,7 @@ export default function ComplianceAgentLoadingPage() {
                 </div>
                 <div className="h-2 rounded-full bg-white/10">
                   <div
-                    className="h-2 rounded-full bg-gradient-to-r from-violet-400 via-blue-400 to-emerald-400 transition-all duration-500"
+                    className="h-2 rounded-full bg-gradient-to-r from-amber-400 via-sky-400 to-emerald-400 transition-all duration-500"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
@@ -211,7 +211,7 @@ export default function ComplianceAgentLoadingPage() {
                   return (
                     <div key={item.label} className="flex items-center gap-3 rounded-lg border border-white/[0.07] bg-white/[0.02] p-3">
                       <div className="rounded-md bg-white/[0.08] p-2">
-                        <Icon className="h-4 w-4 text-violet-200" />
+                        <Icon className="h-4 w-4 text-sky-200" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-white/90">{item.label}</p>

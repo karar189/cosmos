@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getExplorerTxUrl } from "@/lib/stellar-explorer";
+import { fallbackBalance, fallbackWithdrawals } from "@/data/fallback";
 
 interface WithdrawTabProps {
   businessId: string;
@@ -55,27 +56,28 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   const fetchBalance = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/balance?businessId=${encodeURIComponent(businessId)}`);
-      const data = await res.json();
-      if (res.ok) setBalance({ virtualBalanceXlm: data.virtualBalanceXlm ?? "0", unspentCount: data.unspentCount ?? 0 });
-    } catch { setBalance(null); }
-  }, [businessId]);
+    setBalance(fallbackBalance);
+    setUsingFallback(true);
+  }, []);
 
   const fetchWithdrawals = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/withdraw?businessId=${encodeURIComponent(businessId)}`);
-      const data = await res.json();
-      if (res.ok) setWithdrawals(data.withdrawals ?? []);
-    } catch { setWithdrawals([]); }
-  }, [businessId]);
+    setWithdrawals(fallbackWithdrawals);
+    setUsingFallback(true);
+  }, []);
 
   useEffect(() => { setRecipient(walletAddress ?? receiveAddress ?? ""); }, [walletAddress, receiveAddress]);
 
   useEffect(() => {
-    if (!businessId) { setLoading(false); return; }
+    if (!businessId) {
+      setBalance(fallbackBalance);
+      setWithdrawals(fallbackWithdrawals);
+      setUsingFallback(true);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     Promise.all([fetchBalance(), fetchWithdrawals()]).finally(() => setLoading(false));
   }, [businessId, fetchBalance, fetchWithdrawals]);
@@ -93,7 +95,7 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
         body: JSON.stringify({ businessId, amount: amt, recipientAddress: recipient.trim() || undefined }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Request failed"); return; }
+      if (!res.ok) { setError("Withdrawal request could not be completed right now."); return; }
       setSuccess(data.payoutTxHash
         ? `${data.amount} XLM sent · tx: ${data.payoutTxHash.slice(0, 16)}…`
         : `${data.amount ?? amt} XLM sent successfully.`
@@ -114,11 +116,17 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
 
+      {usingFallback && (
+        <p className="rounded-lg border border-amber-400/20 bg-amber-400/10 p-3 text-xs text-amber-200">
+          Showing fallback demo vault data while live data is unavailable.
+        </p>
+      )}
+
       {/* ── Balance card ── */}
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl">
         <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 border border-violet-500/20">
-            <Lock className="h-4 w-4 text-violet-400" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/12 bg-white/[0.06]">
+            <Lock className="h-4 w-4 text-cyan-300/90" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white">Verified balance</p>
@@ -138,7 +146,7 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
       </div>
 
       {/* ── Withdraw form ── */}
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl">
         <div className="flex items-start gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08]">
             <ArrowUpRight className="h-4 w-4 text-white/60" />
@@ -160,7 +168,7 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 h-9"
+                className="h-9 border border-white/[0.1] bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:border-white/25 focus:ring-0"
               />
             </div>
             <div className="space-y-1.5 col-span-2">
@@ -171,7 +179,7 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
                 placeholder={defaultRecipient || "GXXXXXX…"}
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
-                className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 h-9 font-mono text-xs"
+                className="h-9 border border-white/[0.1] bg-white/[0.04] font-mono text-xs text-foreground placeholder:text-muted-foreground focus:border-white/25 focus:ring-0"
               />
             </div>
           </div>
@@ -186,20 +194,18 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
 
           <Button
             type="submit"
-            disabled={submitting || balanceNum <= 0}
-            className="w-full bg-violet-600 hover:bg-violet-500 text-white border-0 disabled:opacity-40"
+            disabled={true}
+            className="w-full rounded-full border border-white/10 bg-foreground font-semibold text-background hover:opacity-90 disabled:opacity-40"
           >
-            {submitting ? "Processing…" : "Confirm withdrawal"}
+            Demo mode
           </Button>
 
-          {balanceNum <= 0 && (
-            <p className="text-center text-xs text-white/25">No balance available to withdraw.</p>
-          )}
+          <p className="text-center text-xs text-white/25">Demo mode: withdrawal actions are disabled.</p>
         </form>
       </div>
 
       {/* ── History ── */}
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-white/[0.12] bg-transparent backdrop-blur-xl">
         <div className="flex items-center gap-2.5 px-5 py-4 border-b border-white/[0.06]">
           <History className="h-4 w-4 text-white/30" />
           <p className="text-sm font-medium text-white">Withdrawal history</p>
@@ -218,13 +224,13 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
                   <div className="flex items-center gap-2 ml-auto">
                     {w.contractTxHash && (
                       <a href={getExplorerTxUrl(w.contractTxHash)} target="_blank" rel="noopener noreferrer"
-                        className="text-[11px] text-violet-400/60 hover:text-violet-300 transition-colors">
+                        className="text-[11px] text-cyan-400/80 transition-colors hover:text-cyan-300">
                         Contract ↗
                       </a>
                     )}
                     {w.payoutTxHash && (
                       <a href={getExplorerTxUrl(w.payoutTxHash)} target="_blank" rel="noopener noreferrer"
-                        className="text-[11px] text-violet-400/60 hover:text-violet-300 transition-colors">
+                        className="text-[11px] text-cyan-400/80 transition-colors hover:text-cyan-300">
                         Payout ↗
                       </a>
                     )}

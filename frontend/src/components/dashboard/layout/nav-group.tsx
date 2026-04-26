@@ -67,7 +67,7 @@ function SidebarMenuLink({
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive} tooltip={item.title} className="h-9 rounded-lg">
         <Link href={item.url} onClick={() => setOpenMobile(false)}>
-          {item.icon && <item.icon className={isActive ? "size-4 text-violet-300/90" : "size-4"} />}
+          {item.icon && <item.icon className={isActive ? "size-4 text-foreground" : "size-4"} />}
           <span className={isActive ? "font-medium" : ""}>{item.title}</span>
           {item.badge && <NavBadge>{item.badge}</NavBadge>}
         </Link>
@@ -130,6 +130,7 @@ function SidebarMenuCollapsedDropdown({
           <SidebarMenuButton
             tooltip={item.title}
             isActive={item.items?.some((i) => i.url === pathname)}
+            className="group-data-[collapsible=icon]:[&>span]:hidden group-data-[collapsible=icon]:[&>svg:not(:first-of-type)]:hidden"
           >
             {item.icon && <item.icon className="size-4" />}
             <span>{item.title}</span>
@@ -167,7 +168,9 @@ export function NavGroup({ title, items }: NavGroupProps) {
   const pathname = usePathname() ?? "";
   return (
     <SidebarGroup className="py-1">
-      <SidebarGroupLabel className="mb-0.5 px-2">{title}</SidebarGroupLabel>
+      <SidebarGroupLabel className="mb-0.5 max-w-full truncate px-2" title={typeof title === "string" ? title : undefined}>
+        {title}
+      </SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
           const key = `${item.title}-${"url" in item ? item.url : "group"}`;

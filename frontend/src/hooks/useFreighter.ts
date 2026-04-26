@@ -7,6 +7,9 @@
 import { useState, useCallback, useEffect } from "react";
 
 const FREIGHTER_INSTALL_URL = "https://www.freighter.app/";
+const FREIGHTER_PUBLIC_KEY_STORAGE_KEY = "freighter_public_key";
+const FREIGHTER_DISCONNECTED_STORAGE_KEY = "freighter_disconnected";
+const FREIGHTER_STATE_EVENT = "freighter-state-changed";
 
 export interface UseFreighterResult {
   /** Current Stellar address when connected */
@@ -35,20 +38,54 @@ export function useFreighter(): UseFreighterResult {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    const setStoredPublicKey = (value: string | null) => {
+      if (value) {
+        localStorage.setItem(FREIGHTER_PUBLIC_KEY_STORAGE_KEY, value);
+        localStorage.removeItem(FREIGHTER_DISCONNECTED_STORAGE_KEY);
+      } else {
+        localStorage.removeItem(FREIGHTER_PUBLIC_KEY_STORAGE_KEY);
+      }
+      window.dispatchEvent(new CustomEvent(FREIGHTER_STATE_EVENT, { detail: { publicKey: value } }));
+    };
+
+    const onFreighterStateChanged = (e: Event) => {
+      const event = e as CustomEvent<{ publicKey?: string | null }>;
+      if (typeof event.detail?.publicKey === "string") {
+        setPublicKey(event.detail.publicKey);
+        return;
+      }
+      if (event.detail?.publicKey === null) {
+        setPublicKey(null);
+      }
+    };
+    window.addEventListener(FREIGHTER_STATE_EVENT, onFreighterStateChanged as EventListener);
+
+    const disconnectedByUser = localStorage.getItem(FREIGHTER_DISCONNECTED_STORAGE_KEY) === "true";
+    const cachedPublicKey = localStorage.getItem(FREIGHTER_PUBLIC_KEY_STORAGE_KEY);
+    if (cachedPublicKey) setPublicKey(cachedPublicKey);
+
     const check = async () => {
       try {
         const Freighter = (await import("@stellar/freighter-api")).default;
         const res = await Freighter.isConnected();
         setIsAvailable(res?.isConnected ?? false);
-        if (res?.isConnected) {
+        // Respect explicit in-app disconnect: don't auto-reconnect until user clicks Connect.
+        if (res?.isConnected && !disconnectedByUser) {
           const addrRes = await Freighter.getAddress();
-          if (addrRes?.address && !addrRes?.error) setPublicKey(addrRes.address);
+          if (addrRes?.address && !addrRes?.error) {
+            setPublicKey(addrRes.address);
+            setStoredPublicKey(addrRes.address);
+          }
         }
       } catch {
         setIsAvailable(false);
       }
     };
     check();
+    return () => {
+      window.removeEventListener(FREIGHTER_STATE_EVENT, onFreighterStateChanged as EventListener);
+    };
   }, []);
 
   const connect = useCallback(async (): Promise<string | null> => {
@@ -60,6 +97,9 @@ export function useFreighter(): UseFreighterResult {
       if (res?.address && !res?.error) {
         setPublicKey(res.address);
         setIsAvailable(true);
+        localStorage.setItem(FREIGHTER_PUBLIC_KEY_STORAGE_KEY, res.address);
+        localStorage.removeItem(FREIGHTER_DISCONNECTED_STORAGE_KEY);
+        window.dispatchEvent(new CustomEvent(FREIGHTER_STATE_EVENT, { detail: { publicKey: res.address } }));
         return res.address;
       }
       if (res?.error) {
@@ -88,6 +128,11 @@ export function useFreighter(): UseFreighterResult {
   }, []);
 
   const disconnect = useCallback(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(FREIGHTER_PUBLIC_KEY_STORAGE_KEY);
+      localStorage.setItem(FREIGHTER_DISCONNECTED_STORAGE_KEY, "true");
+      window.dispatchEvent(new CustomEvent(FREIGHTER_STATE_EVENT, { detail: { publicKey: null } }));
+    }
     setPublicKey(null);
   }, []);
 

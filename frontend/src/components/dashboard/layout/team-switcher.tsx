@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronLeft } from "lucide-react";
 import { SidebarMenu, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { cn } from "@/utils";
 
 export function TeamSwitcher() {
   const { open, toggleSidebar } = useSidebar();
@@ -10,12 +11,20 @@ export function TeamSwitcher() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <div className="flex items-center gap-3 px-2 py-3">
+        <div
+          className={cn(
+            "flex items-center py-3",
+            open ? "gap-3 px-2" : "justify-center px-2"
+          )}
+        >
           <div
-            className={`flex size-8 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-violet-700/80 ring-1 ring-white/10 ${!open ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+            className={cn(
+              "flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/12 bg-white/[0.08] ring-1 ring-white/10",
+              open ? "size-8" : "size-9 cursor-pointer transition-opacity hover:opacity-80"
+            )}
             onClick={!open ? toggleSidebar : undefined}
           >
-            <Image src="/logo.png" alt="Hypertron" width={28} height={28} className="object-contain" />
+            <Image src="/logo.png" alt="Hypertron" width={open ? 28 : 26} height={open ? 28 : 26} className="object-contain" />
           </div>
 
           {open && (
