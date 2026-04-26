@@ -12,8 +12,8 @@ import {
   clearPendingComplianceRequest,
   getPendingComplianceRequest,
   normalizeComplianceResult,
+  setLatestComplianceContext,
   setLatestComplianceResult,
-  type SourceStatus,
 } from "@/lib/compliance-agent-session";
 import { useFreighter } from "@/hooks/useFreighter";
 
@@ -110,6 +110,14 @@ export default function ComplianceAgentLoadingPage() {
 
         const normalized = normalizeComplianceResult(payload);
         setLatestComplianceResult(normalized);
+        setLatestComplianceContext({
+          country: pending.country,
+          companyDetails: pending.companyDetails,
+          businessModel: pending.businessModel,
+          notes: pending.notes,
+          websites: pending.websites,
+          sourceStatuses: normalized.sourceStatuses,
+        });
 
         const websiteStatuses = normalized.sourceStatuses.filter((s) => s.sourceType === "website");
         if (websiteStatuses.length > 0) {

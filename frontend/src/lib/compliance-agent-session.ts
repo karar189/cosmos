@@ -44,10 +44,53 @@ export type PendingComplianceRequest = {
   files: File[];
 };
 
+export type ComplianceRunContext = {
+  country: string;
+  companyDetails: string;
+  businessModel: string;
+  notes: string;
+  websites: string[];
+  sourceStatuses: SourceStatus[];
+};
+
+export type DetailStep = {
+  step: number;
+  title: string;
+  details: string;
+  owner?: string | null;
+  requiredDocuments: string[];
+  estimatedTimeline: string;
+  submissionLink?: string | null;
+};
+
+export type DetailLink = {
+  title: string;
+  url: string;
+  purpose: string;
+  authority?: string | null;
+};
+
+export type ComplianceDetailPlan = {
+  modelSource: "openai" | "heuristic";
+  section: string;
+  itemTitle: string;
+  whyItMatters: string;
+  eligibilityChecks: string[];
+  requiredDocuments: string[];
+  stepByStep: DetailStep[];
+  submissionLinks: DetailLink[];
+  automationSuggestions: string[];
+  warnings: string[];
+  sources: DetailLink[];
+  disclaimer: string;
+};
+
 let pendingRequest: PendingComplianceRequest | null = null;
 let latestResultMemory: ComplianceResult | null = null;
+let latestContextMemory: ComplianceRunContext | null = null;
 
 const RESULT_STORAGE_KEY = "compliance_agent_latest_result";
+const CONTEXT_STORAGE_KEY = "compliance_agent_latest_context";
 
 export function setPendingComplianceRequest(req: PendingComplianceRequest): void {
   pendingRequest = req;
@@ -81,6 +124,24 @@ export function normalizeComplianceResult(payload: unknown): ComplianceResult {
   };
 }
 
+export function normalizeComplianceDetailPlan(payload: unknown): ComplianceDetailPlan {
+  const raw = (payload ?? {}) as Record<string, unknown>;
+  return {
+    modelSource: (raw.modelSource ?? raw.model_source ?? "heuristic") as "openai" | "heuristic",
+    section: String(raw.section ?? ""),
+    itemTitle: String(raw.itemTitle ?? raw.item_title ?? ""),
+    whyItMatters: String(raw.whyItMatters ?? raw.why_it_matters ?? ""),
+    eligibilityChecks: (raw.eligibilityChecks ?? raw.eligibility_checks ?? []) as string[],
+    requiredDocuments: (raw.requiredDocuments ?? raw.required_documents ?? []) as string[],
+    stepByStep: (raw.stepByStep ?? raw.step_by_step ?? []) as DetailStep[],
+    submissionLinks: (raw.submissionLinks ?? raw.submission_links ?? []) as DetailLink[],
+    automationSuggestions: (raw.automationSuggestions ?? raw.automation_suggestions ?? []) as string[],
+    warnings: (raw.warnings ?? []) as string[],
+    sources: (raw.sources ?? []) as DetailLink[],
+    disclaimer: String(raw.disclaimer ?? ""),
+  };
+}
+
 export function setLatestComplianceResult(result: ComplianceResult): void {
   latestResultMemory = result;
   if (typeof window !== "undefined") {
@@ -105,5 +166,32 @@ export function clearLatestComplianceResult(): void {
   latestResultMemory = null;
   if (typeof window !== "undefined") {
     window.sessionStorage.removeItem(RESULT_STORAGE_KEY);
+  }
+}
+
+export function setLatestComplianceContext(context: ComplianceRunContext): void {
+  latestContextMemory = context;
+  if (typeof window !== "undefined") {
+    window.sessionStorage.setItem(CONTEXT_STORAGE_KEY, JSON.stringify(context));
+  }
+}
+
+export function getLatestComplianceContext(): ComplianceRunContext | null {
+  if (latestContextMemory) return latestContextMemory;
+  if (typeof window === "undefined") return null;
+  const raw = window.sessionStorage.getItem(CONTEXT_STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    latestContextMemory = JSON.parse(raw) as ComplianceRunContext;
+    return latestContextMemory;
+  } catch {
+    return null;
+  }
+}
+
+export function clearLatestComplianceContext(): void {
+  latestContextMemory = null;
+  if (typeof window !== "undefined") {
+    window.sessionStorage.removeItem(CONTEXT_STORAGE_KEY);
   }
 }

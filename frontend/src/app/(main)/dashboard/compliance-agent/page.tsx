@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useFreighter } from "@/hooks/useFreighter";
 import {
+  clearLatestComplianceContext,
   clearLatestComplianceResult,
   getLatestComplianceResult,
   setPendingComplianceRequest,
@@ -172,6 +173,7 @@ export default function ComplianceAgentPage() {
     }
 
     clearLatestComplianceResult();
+    clearLatestComplianceContext();
     setPendingComplianceRequest({
       country,
       companyDetails: companyDetails.trim(),
