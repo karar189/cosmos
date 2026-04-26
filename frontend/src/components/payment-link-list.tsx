@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Copy, ExternalLink, RefreshCw, CheckCircle2, Clock, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getExplorerTxUrl } from "@/lib/stellar-explorer";
+import { fallbackPaymentLinks } from "@/data/fallback";
 
 function truncate(str: string, head = 28, tail = 10) {
   if (str.length <= head + tail + 3) return str;
@@ -42,10 +43,15 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
     try {
       const res = await fetch(`/api/payment-link?businessId=${encodeURIComponent(businessId)}`);
       const data = await res.json();
-      if (!res.ok) { setError(data.error || `Failed to load links (${res.status})`); return; }
-      setLinks(data.links ?? []);
+      if (!res.ok) {
+        setError("Live payment links are unavailable right now.");
+        setLinks(fallbackPaymentLinks);
+        return;
+      }
+      setLinks((data.links ?? []).length > 0 ? data.links : fallbackPaymentLinks);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed");
+      setError("Live payment links are unavailable right now.");
+      setLinks(fallbackPaymentLinks);
     } finally {
       setLoading(false);
     }
@@ -96,7 +102,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
       {/* Body */}
       <div className="px-5 py-3">
         {error && (
-          <p className="text-red-400 text-xs py-3">{error}</p>
+          <p className="text-red-400 text-xs py-3">Showing fallback demo links while live data is unavailable.</p>
         )}
         {statusHint && (
           <p className="text-white/40 text-xs rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 mb-3">

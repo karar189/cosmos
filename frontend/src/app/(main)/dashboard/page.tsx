@@ -9,12 +9,14 @@ import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { OverviewStats } from "@/components/dashboard/overview-stats";
 import { RecentPayments } from "@/components/dashboard/recent-payments";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
+import { fallbackBusiness } from "@/data/fallback";
 
 function DashboardContent() {
   const router = useRouter();
   const { publicKey, connect, isConnecting } = useFreighter();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     if (!publicKey) { setBusinessId(null); setBusinessError(null); return; }
@@ -27,10 +29,22 @@ function DashboardContent() {
       .then((res) => res.json())
       .then((data) => {
         if (cancelled) return;
-        if (data.businessId) setBusinessId(data.businessId);
-        else setBusinessError(data.error || "Could not load business");
+        if (data.businessId) {
+          setBusinessId(data.businessId);
+          setBusinessError(null);
+          setUsingFallback(false);
+          return;
+        }
+        setBusinessId(fallbackBusiness.businessId);
+        setBusinessError(data.error || "Database unavailable");
+        setUsingFallback(true);
       })
-      .catch(() => { if (!cancelled) setBusinessError("Could not connect to backend"); });
+      .catch(() => {
+        if (cancelled) return;
+        setBusinessId(fallbackBusiness.businessId);
+        setBusinessError("Could not connect to backend");
+        setUsingFallback(true);
+      });
     return () => { cancelled = true; };
   }, [publicKey]);
 
@@ -61,12 +75,6 @@ function DashboardContent() {
               <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
               <p className="mt-1 text-sm text-muted-foreground">Your payment activity at a glance.</p>
             </div>
-
-            {businessError && (
-              <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-                {businessError}. Ensure DATABASE_URL in .env is correct and run: npx prisma generate
-              </p>
-            )}
 
             {/* Stat cards */}
             <OverviewStats businessId={businessId} />

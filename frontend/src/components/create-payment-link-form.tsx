@@ -44,12 +44,12 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
         }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Failed to create link"); return; }
+      if (!res.ok) { setError("Could not create a live payment link right now."); return; }
       setResult({ linkId: data.linkId, url: data.url, memo: data.memo });
       setAmount(""); setPurpose(""); setClientName(""); setWorkflowStage("");
       onCreated?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed");
+      setError("Could not create a live payment link right now.");
     } finally {
       setLoading(false);
     }

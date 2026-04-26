@@ -16,6 +16,7 @@ import { NavGroup } from "@/components/dashboard/layout/nav-group";
 import { NavUser } from "@/components/dashboard/layout/nav-user";
 import { TeamSwitcher } from "@/components/dashboard/layout/team-switcher";
 import { useFreighter } from "@/hooks/useFreighter";
+import { fallbackBusiness } from "@/data/fallback";
 
 type AppSidebarProps = {
   onDisconnect?: () => void;
@@ -38,10 +39,10 @@ export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
         if (profile && Array.isArray(profile.selectedWidgets)) {
           setSelectedWidgets(profile.selectedWidgets);
         } else {
-          setSelectedWidgets([]);
+          setSelectedWidgets(fallbackBusiness.selectedWidgets);
         }
       })
-      .catch(() => setSelectedWidgets([]));
+      .catch(() => setSelectedWidgets(fallbackBusiness.selectedWidgets));
   }, [publicKey]);
 
   fetchRef.current = () => {
@@ -52,10 +53,10 @@ export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
         if (profile && Array.isArray(profile.selectedWidgets)) {
           setSelectedWidgets(profile.selectedWidgets);
         } else {
-          setSelectedWidgets([]);
+          setSelectedWidgets(fallbackBusiness.selectedWidgets);
         }
       })
-      .catch(() => setSelectedWidgets([]));
+      .catch(() => setSelectedWidgets(fallbackBusiness.selectedWidgets));
   };
 
   useEffect(() => {

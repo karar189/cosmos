@@ -28,11 +28,11 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
         body: JSON.stringify({ businessId, flexibleAmount: true }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Failed to create link"); return; }
+      if (!res.ok) { setError("Could not create a live pay-any-amount link right now."); return; }
       setResult({ url: data.url, linkId: data.linkId });
       onCreated?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed");
+      setError("Could not create a live pay-any-amount link right now.");
     } finally {
       setLoading(false);
     }

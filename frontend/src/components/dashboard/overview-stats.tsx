@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { DollarSign, Link2, CheckCircle, Clock } from "lucide-react";
+import { fallbackDashboardStats } from "@/data/fallback";
 
 interface Stats {
   totalReceivedXlm: string;
@@ -45,24 +46,33 @@ export function OverviewStats({ businessId }: OverviewStatsProps) {
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
-    if (!businessId) { setStats(null); return; }
+    if (!businessId) {
+      setStats(fallbackDashboardStats);
+      return;
+    }
     let cancelled = false;
     fetch(`/api/dashboard-stats?businessId=${encodeURIComponent(businessId)}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!cancelled && data)
+        if (cancelled) return;
+        if (data) {
           setStats({
             totalReceivedXlm: data.totalReceivedXlm ?? "0",
             linkCount: data.linkCount ?? 0,
             completed: data.completed ?? 0,
             pending: data.pending ?? 0,
           });
+          return;
+        }
+        setStats(fallbackDashboardStats);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setStats(fallbackDashboardStats);
+      });
     return () => { cancelled = true; };
   }, [businessId]);
 
-  const d = stats ?? { totalReceivedXlm: "—", linkCount: 0, completed: 0, pending: 0 };
+  const d = stats ?? fallbackDashboardStats;
 
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

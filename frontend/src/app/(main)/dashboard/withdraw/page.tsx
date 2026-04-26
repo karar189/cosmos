@@ -6,6 +6,7 @@ import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter } from "next/navigation";
 import { DashboardMain } from "@/components/dashboard/layout/main";
 import { WithdrawTab } from "@/components/dashboard/withdraw-tab";
+import { fallbackBusiness } from "@/data/fallback";
 
 export default function WithdrawPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function WithdrawPage() {
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [receiveAddress, setReceiveAddress] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     if (!publicKey) { setBusinessId(null); return; }
@@ -28,9 +30,22 @@ export default function WithdrawPage() {
         if (data.businessId) {
           setBusinessId(data.businessId);
           setReceiveAddress(data.receiveAddress ?? null);
-        } else setBusinessError(data.error || "Could not load business");
+          setBusinessError(null);
+          setUsingFallback(false);
+          return;
+        }
+        setBusinessId(fallbackBusiness.businessId);
+        setReceiveAddress(fallbackBusiness.receiveAddress);
+        setBusinessError(data.error || "Database unavailable");
+        setUsingFallback(true);
       })
-      .catch(() => { if (!cancelled) setBusinessError("Could not connect to backend"); });
+      .catch(() => {
+        if (cancelled) return;
+        setBusinessId(fallbackBusiness.businessId);
+        setReceiveAddress(fallbackBusiness.receiveAddress);
+        setBusinessError("Could not connect to backend");
+        setUsingFallback(true);
+      });
     return () => { cancelled = true; };
   }, [publicKey]);
 
@@ -50,12 +65,6 @@ export default function WithdrawPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Withdraw</h1>
           <p className="mt-1 text-sm text-white/40">Transfer funds to your Stellar address.</p>
         </div>
-
-        {businessError && (
-          <p className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-            {businessError}
-          </p>
-        )}
 
         {businessId ? (
           <WithdrawTab businessId={businessId} walletAddress={publicKey} receiveAddress={receiveAddress} />

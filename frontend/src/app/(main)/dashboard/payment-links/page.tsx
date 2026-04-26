@@ -8,12 +8,14 @@ import { DashboardMain } from "@/components/dashboard/layout/main";
 import { CreatePaymentLinkForm } from "@/components/create-payment-link-form";
 import { PaymentLinkList } from "@/components/payment-link-list";
 import { PayAnyAmountCard } from "@/components/pay-any-amount-card";
+import { fallbackBusiness } from "@/data/fallback";
 
 export default function PaymentLinksPage() {
   const router = useRouter();
   const { publicKey } = useFreighter();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     if (!publicKey) { setBusinessId(null); return; }
@@ -26,10 +28,22 @@ export default function PaymentLinksPage() {
       .then((res) => res.json())
       .then((data) => {
         if (cancelled) return;
-        if (data.businessId) setBusinessId(data.businessId);
-        else setBusinessError(data.error || "Could not load business");
+        if (data.businessId) {
+          setBusinessId(data.businessId);
+          setBusinessError(null);
+          setUsingFallback(false);
+          return;
+        }
+        setBusinessId(fallbackBusiness.businessId);
+        setBusinessError(data.error || "Database unavailable");
+        setUsingFallback(true);
       })
-      .catch(() => { if (!cancelled) setBusinessError("Could not connect to backend"); });
+      .catch(() => {
+        if (cancelled) return;
+        setBusinessId(fallbackBusiness.businessId);
+        setBusinessError("Could not connect to backend");
+        setUsingFallback(true);
+      });
     return () => { cancelled = true; };
   }, [publicKey]);
 
@@ -50,12 +64,6 @@ export default function PaymentLinksPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Payment Links</h1>
           <p className="mt-1 text-sm text-white/40">Create and manage your Stellar payment links.</p>
         </div>
-
-        {businessError && (
-          <p className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-            {businessError}
-          </p>
-        )}
 
         {businessId ? (
           <div className="flex flex-col gap-6">

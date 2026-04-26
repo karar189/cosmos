@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { getExplorerTxUrl } from "@/lib/stellar-explorer";
 import { ArrowUpRight } from "lucide-react";
+import { fallbackEvents } from "@/data/fallback";
 
 export interface PaymentEvent {
   linkId: string;
@@ -22,16 +23,21 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!businessId) { setEvents([]); setLoading(false); return; }
+    if (!businessId) {
+      setEvents(fallbackEvents.slice(0, 8));
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     setLoading(true);
     fetch(`/api/events?businessId=${encodeURIComponent(businessId)}`)
-      .then((res) => (res.ok ? res.json() : { events: [] }))
+      .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        const paid = (data.events ?? []).filter((e: PaymentEvent) => e.paidAt).slice(0, 8);
-        if (!cancelled) setEvents(paid);
+        const paid = (data?.events ?? []).filter((e: PaymentEvent) => e.paidAt).slice(0, 8);
+        if (cancelled) return;
+        setEvents(paid.length > 0 ? paid : fallbackEvents.slice(0, 8));
       })
-      .catch(() => { if (!cancelled) setEvents([]); })
+      .catch(() => { if (!cancelled) setEvents(fallbackEvents.slice(0, 8)); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [businessId]);

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getExplorerTxUrl } from "@/lib/stellar-explorer";
+import { fallbackBalance, fallbackWithdrawals } from "@/data/fallback";
 
 interface WithdrawTabProps {
   businessId: string;
@@ -55,27 +56,51 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   const fetchBalance = useCallback(async () => {
     try {
       const res = await fetch(`/api/balance?businessId=${encodeURIComponent(businessId)}`);
       const data = await res.json();
-      if (res.ok) setBalance({ virtualBalanceXlm: data.virtualBalanceXlm ?? "0", unspentCount: data.unspentCount ?? 0 });
-    } catch { setBalance(null); }
+      if (res.ok) {
+        setBalance({ virtualBalanceXlm: data.virtualBalanceXlm ?? "0", unspentCount: data.unspentCount ?? 0 });
+        setUsingFallback(false);
+      } else {
+        setBalance(fallbackBalance);
+        setUsingFallback(true);
+      }
+    } catch {
+      setBalance(fallbackBalance);
+      setUsingFallback(true);
+    }
   }, [businessId]);
 
   const fetchWithdrawals = useCallback(async () => {
     try {
       const res = await fetch(`/api/withdraw?businessId=${encodeURIComponent(businessId)}`);
       const data = await res.json();
-      if (res.ok) setWithdrawals(data.withdrawals ?? []);
-    } catch { setWithdrawals([]); }
+      if (res.ok) {
+        setWithdrawals((data.withdrawals ?? []).length > 0 ? data.withdrawals : fallbackWithdrawals);
+      } else {
+        setWithdrawals(fallbackWithdrawals);
+        setUsingFallback(true);
+      }
+    } catch {
+      setWithdrawals(fallbackWithdrawals);
+      setUsingFallback(true);
+    }
   }, [businessId]);
 
   useEffect(() => { setRecipient(walletAddress ?? receiveAddress ?? ""); }, [walletAddress, receiveAddress]);
 
   useEffect(() => {
-    if (!businessId) { setLoading(false); return; }
+    if (!businessId) {
+      setBalance(fallbackBalance);
+      setWithdrawals(fallbackWithdrawals);
+      setUsingFallback(true);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     Promise.all([fetchBalance(), fetchWithdrawals()]).finally(() => setLoading(false));
   }, [businessId, fetchBalance, fetchWithdrawals]);
@@ -93,7 +118,7 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
         body: JSON.stringify({ businessId, amount: amt, recipientAddress: recipient.trim() || undefined }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Request failed"); return; }
+      if (!res.ok) { setError("Withdrawal request could not be completed right now."); return; }
       setSuccess(data.payoutTxHash
         ? `${data.amount} XLM sent · tx: ${data.payoutTxHash.slice(0, 16)}…`
         : `${data.amount ?? amt} XLM sent successfully.`
@@ -113,6 +138,12 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
 
   return (
     <div className="flex flex-col gap-5 max-w-2xl">
+
+      {usingFallback && (
+        <p className="rounded-lg border border-amber-400/20 bg-amber-400/10 p-3 text-xs text-amber-200">
+          Showing fallback demo vault data while live data is unavailable.
+        </p>
+      )}
 
       {/* ── Balance card ── */}
       <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
