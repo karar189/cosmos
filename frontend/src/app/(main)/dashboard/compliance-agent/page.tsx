@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, FileChartColumnIncreasing, Plus, ShieldCheck, Upload, X } from "lucide-react";
+import { AlertTriangle, FileBarChart2, Plus, ShieldCheck, Upload, X } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
 import { ThemeSwitch } from "@/components/dashboard/theme-switch";
@@ -210,7 +210,7 @@ export default function ComplianceAgentPage() {
             </div>
             {hasLastAnalysis && (
               <Button variant="outline" onClick={() => router.push("/dashboard/compliance-agent/analysis")}> 
-                <FileChartColumnIncreasing className="mr-2 h-4 w-4" />
+                <FileBarChart2 className="mr-2 h-4 w-4" />
                 View Last Analysis
               </Button>
             )}
