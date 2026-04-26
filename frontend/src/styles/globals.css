@@ -210,18 +210,18 @@ html, body {
   text-transform: uppercase;
 }
 
-/* Nudge icons slightly right */
-.dashboard-gradient-bg [data-sidebar="menu-button"] svg {
+/* Nudge icons slightly right (not wallet / disconnect row) */
+.dashboard-gradient-bg [data-sidebar="menu-button"]:not([data-nav-user]) svg {
   margin-left: 0.28rem;
 }
 
-/* Inactive menu buttons: muted */
-.dashboard-gradient-bg [data-sidebar="menu-button"]:not([data-active="true"]) {
+/* Inactive menu buttons: muted (skip wallet / disconnect — see data-nav-user on NavUser) */
+.dashboard-gradient-bg [data-sidebar="menu-button"]:not([data-active="true"]):not([data-nav-user]) {
   opacity: 0.45;
   transition: opacity 0.15s ease;
 }
 
-.dashboard-gradient-bg [data-sidebar="menu-button"]:not([data-active="true"]):hover {
+.dashboard-gradient-bg [data-sidebar="menu-button"]:not([data-active="true"]):not([data-nav-user]):hover {
   opacity: 0.85;
   background: rgba(255, 255, 255, 0.04) !important;
 }

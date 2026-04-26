@@ -130,6 +130,7 @@ function SidebarMenuCollapsedDropdown({
           <SidebarMenuButton
             tooltip={item.title}
             isActive={item.items?.some((i) => i.url === pathname)}
+            className="group-data-[collapsible=icon]:[&>span]:hidden group-data-[collapsible=icon]:[&>svg:not(:first-of-type)]:hidden"
           >
             {item.icon && <item.icon className="size-4" />}
             <span>{item.title}</span>

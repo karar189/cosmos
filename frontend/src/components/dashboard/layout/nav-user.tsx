@@ -61,37 +61,43 @@ export function NavUser({
           {isConnected ? (
             <SidebarMenuButton
               size="lg"
-              className="cursor-default data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              data-nav-user
+              className="cursor-default text-[#FFFFFF] opacity-100 hover:opacity-100 data-[state=open]:bg-sidebar-accent data-[state=open]:text-[#FFFFFF]"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="rounded-lg text-[#FFFFFF]">
                   {user.name.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+              <div className="grid flex-1 text-left text-sm leading-tight text-[#FFFFFF]">
+                <span className="truncate font-semibold text-[#FFFFFF]">{user.name}</span>
+                <span className="truncate text-xs text-[#FFFFFF]">{user.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4 opacity-60" />
+              <ChevronsUpDown className="ml-auto size-4 shrink-0 text-[#FFFFFF]" aria-hidden />
             </SidebarMenuButton>
           ) : (
             <SidebarMenuButton
               size="lg"
+              data-nav-user
               onClick={handleConnect}
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="text-[#FFFFFF] opacity-100 hover:opacity-100 data-[state=open]:bg-sidebar-accent data-[state=open]:text-[#FFFFFF]"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="rounded-lg text-[#FFFFFF]">
                   {user.name.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{isConnecting ? "Connecting..." : user.name}</span>
-                <span className="truncate text-xs">{isConnecting ? "Open Freighter to continue" : user.email}</span>
+              <div className="grid flex-1 text-left text-sm leading-tight text-[#FFFFFF]">
+                <span className="truncate font-semibold text-[#FFFFFF]">
+                  {isConnecting ? "Connecting..." : user.name}
+                </span>
+                <span className="truncate text-xs text-[#FFFFFF]">
+                  {isConnecting ? "Open Freighter to continue" : user.email}
+                </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto size-4 shrink-0 text-[#FFFFFF]" aria-hidden />
             </SidebarMenuButton>
           )}
         </SidebarMenuItem>
@@ -104,7 +110,8 @@ export function NavUser({
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Disconnect wallet"
-                className="text-red-400/80 hover:text-red-400 hover:bg-red-500/10"
+                data-nav-user
+                className="text-red-400 opacity-100 hover:opacity-100 hover:bg-red-500/15 hover:text-red-300 [&>span]:text-red-400 [&>svg]:text-red-400"
                 onClick={() => setSignOutOpen(true)}
               >
                 <LogOut className="size-4" />
