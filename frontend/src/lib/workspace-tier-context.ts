@@ -25,6 +25,12 @@ function isTierId(v: string): v is WorkspaceTierId {
   return v === "tier-1" || v === "tier-2" || v === "tier-3";
 }
 
+/** Saved template `bundleId` from onboarding (`tier-1` … `tier-3`). */
+export function bundleIdToTierId(bundleId: string | undefined): WorkspaceTierId | null {
+  if (!bundleId) return null;
+  return isTierId(bundleId) ? bundleId : null;
+}
+
 export function getWorkspaceTierState(): WorkspaceTierState | null {
   if (typeof window === "undefined") return null;
   try {
