@@ -16,6 +16,26 @@ import {
 } from "@/lib/stellar-payment";
 import { getExplorerTxUrl, STELLAR_NETWORK } from "@/lib/stellar-explorer";
 
+function stellarNetworkLabel(network: StellarNetwork): string {
+  return network === "public" ? "Public Mainnet" : "Testnet";
+}
+
+function stellarNetworkFromName(name?: string): StellarNetwork | null {
+  const normalized = (name || "").trim().toLowerCase();
+  if (!normalized) return null;
+  if (normalized.includes("public") || normalized.includes("mainnet")) return "public";
+  if (normalized.includes("testnet")) return "testnet";
+  return null;
+}
+
+function stellarNetworkFromPassphrase(passphrase?: string): StellarNetwork | null {
+  const normalized = (passphrase || "").trim();
+  if (!normalized) return null;
+  if (normalized === getNetworkPassphrase("public")) return "public";
+  if (normalized === getNetworkPassphrase("testnet")) return "testnet";
+  return null;
+}
+
 export default function PayPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -72,15 +92,36 @@ export default function PayPage() {
   const [txHash, setTxHash] = useState<string | null>(null);
   const [payError, setPayError] = useState<string | null>(null);
 
-  const canPay = publicKey && destination && amount && amount !== "—" && payStatus === "idle";
+  const canPay =
+    publicKey &&
+    destination &&
+    amount &&
+    amount !== "—" &&
+    (payStatus === "idle" || payStatus === "error");
 
   async function handlePay() {
     if (!publicKey || !destination || !amount || amount === "—") return;
     setPayError(null);
     setPayStatus("building");
 
-    const horizonUrl = getHorizonUrl(STELLAR_NETWORK);
-    const networkPassphrase = getNetworkPassphrase(STELLAR_NETWORK);
+    const Freighter = (await import("@stellar/freighter-api")).default;
+
+    const configuredNetwork = STELLAR_NETWORK;
+    const walletNetworkRes = await Freighter.getNetwork?.().catch(() => null);
+    const walletNetwork =
+      stellarNetworkFromPassphrase(walletNetworkRes?.networkPassphrase) ??
+      stellarNetworkFromName(walletNetworkRes?.network);
+
+    if (walletNetwork && walletNetwork !== configuredNetwork) {
+      setPayError(
+        `This payment link uses ${stellarNetworkLabel(configuredNetwork)}, but Freighter is on ${stellarNetworkLabel(walletNetwork)}. Please switch Freighter to ${stellarNetworkLabel(configuredNetwork)} and try again.`
+      );
+      setPayStatus("error");
+      return;
+    }
+
+    const horizonUrl = getHorizonUrl(configuredNetwork);
+    const networkPassphrase = getNetworkPassphrase(configuredNetwork);
 
     // Dark pool: get one-time opaque memo (hash) so on-chain only hash is visible
     let memoHashBase64: string | undefined;
@@ -120,13 +161,18 @@ export default function PayPage() {
     });
 
     if (!buildResult.success) {
-      setPayError(buildResult.error);
+      if (/not found/i.test(buildResult.error)) {
+        setPayError(
+          `Account not found on ${stellarNetworkLabel(configuredNetwork)}. Make sure your Freighter account is funded on ${stellarNetworkLabel(configuredNetwork)} and try again.`
+        );
+      } else {
+        setPayError(buildResult.error);
+      }
       setPayStatus("error");
       return;
     }
 
     setPayStatus("signing");
-    const Freighter = (await import("@stellar/freighter-api")).default;
     const signResult = await Freighter.signTransaction(buildResult.xdr, {
       networkPassphrase,
       address: publicKey,
@@ -217,6 +263,9 @@ export default function PayPage() {
           )}
 
           <p className="text-muted-foreground text-sm font-medium">Pay with Stellar wallet</p>
+          <p className="text-muted-foreground text-xs">
+            Network: {stellarNetworkLabel(STELLAR_NETWORK)}
+          </p>
           {!publicKey && (
             <Button onClick={connect} disabled={isConnecting} className="mt-2 w-full">
               {isConnecting ? "Connecting…" : "Connect wallet to pay"}
@@ -231,7 +280,7 @@ export default function PayPage() {
 
           {canPay && (
             <Button onClick={handlePay} className="mt-4 w-full">
-              Pay {amount} XLM
+              {payStatus === "error" ? `Retry payment (${amount} XLM)` : `Pay ${amount} XLM`}
             </Button>
           )}
 
