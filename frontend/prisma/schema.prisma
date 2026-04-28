@@ -76,18 +76,81 @@ model LinkTag {
 // Phase 1: business identity + payment links with attribution (pool + memo)
 // Wallet = identity (no password). Profile from onboarding/settings stored here.
 model Business {
-  id               String    @id @default(cuid()) @map("_id")
-  walletAddress    String    @unique // Stellar G... = username / login identity
-  receiveAddress   String?   // Stellar G... where this business receives payments (user-set)
-  name             String?   // from onboarding/settings
-  email            String?   // from onboarding/settings
-  businessNature   String?   // e.g. agency, fintech, saas
-  selectedWidgets  String[]  // widget ids from onboarding/settings
-  complianceForm   Json?     // extended compliance form: type, geographies, monthlyTx, etc.
-  createdAt        DateTime  @default(now())
-  paymentLinks     PaymentLink[]
-  withdrawals      Withdrawal[]
-  vaultItems       DocumentVaultItem[]
+  id                String    @id @default(cuid()) @map("_id")
+  walletAddress     String    @unique // Stellar G... = username / login identity
+  receiveAddress    String?   // Stellar G... where this business receives payments (user-set)
+  name              String?   // from onboarding/settings
+  email             String?   // from onboarding/settings
+  businessNature    String?   // e.g. agency, fintech, saas
+  selectedWidgets   String[]  // widget ids from onboarding/settings
+  selectedTier      String?   // product tier id chosen during onboarding: "tier-1" | "tier-2" | "tier-3"
+  selectedTierName  String?   // display name for the chosen tier, e.g. "Tier 2"
+  selectedTierAt    DateTime? // when the tier was last set/changed
+  complianceForm    Json?     // extended compliance form: type, geographies, monthlyTx, etc.
+  createdAt         DateTime  @default(now())
+  paymentLinks      PaymentLink[]
+  withdrawals       Withdrawal[]
+  vaultItems        DocumentVaultItem[]
+  templates         BusinessTemplate[]
+  employees         BusinessEmployee[]
+  employeePayments  BusinessEmployeePayment[]
+
+  @@index(selectedTier)
+}
+
+model BusinessTemplate {
+  id           String   @id @default(cuid()) @map("_id")
+  businessId   String
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name         String
+  businessName String?
+  bundleId     String
+  bundleName   String
+  description  String?
+  widgets      Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index(businessId)
+}
+
+model BusinessEmployee {
+  id           String   @id @default(cuid()) @map("_id")
+  businessId   String
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeCode String
+  name         String
+  email        String?
+  walletAddress String?
+  role         String
+  department   String
+  status       String   @default("active") // active | inactive | on_leave | pending | offboarded
+  priority     String   @default("medium") // low | medium | high
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  payments     BusinessEmployeePayment[]
+
+  @@index(businessId)
+  @@index([businessId, status])
+  @@index([businessId, priority])
+  @@unique([businessId, employeeCode])
+}
+
+model BusinessEmployeePayment {
+  id            String           @id @default(cuid()) @map("_id")
+  businessId    String
+  business      Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId    String
+  employee      BusinessEmployee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  amountXlm     String
+  note          String?
+  status        String           @default("completed") // completed | failed
+  payoutTxHash  String?
+  createdAt     DateTime         @default(now())
+
+  @@index(businessId)
+  @@index(employeeId)
+  @@index([employeeId, createdAt])
 }
 
 // Document vault: saved compliance checklists and other todo lists (from Compliance checker).

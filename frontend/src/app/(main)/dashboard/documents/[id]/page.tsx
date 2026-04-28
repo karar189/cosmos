@@ -19,9 +19,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useFreighter } from "@/hooks/useFreighter";
 import { getTemplateById, type SavedTemplate, type DashboardWidget } from "@/lib/my-templates-storage";
-import { bundleIdToTierId } from "@/lib/workspace-tier-context";
+import {
+  bundleIdToTierId,
+  getWorkspaceTierState,
+  markWorkspaceSidebarImported,
+  persistTierFromOnboarding,
+  WORKSPACE_TIER_UPDATED_EVENT,
+} from "@/lib/workspace-tier-context";
 import { TierSavedTemplateView } from "@/components/dashboard/tier-saved-template-view";
 import { cn } from "@/utils";
+import { toast } from "sonner";
 import {
   ComplianceScoreTrendChart,
   RiskHeatmapChart,
@@ -193,6 +200,7 @@ export default function DashboardViewPage() {
   const { publicKey, disconnect, isConnecting } = useFreighter();
   const [, startTransition] = useTransition();
   const [workspaceNavPending, setWorkspaceNavPending] = useState(false);
+  const [sidebarImported, setSidebarImported] = useState(false);
 
   const [template, setTemplate] = useState<SavedTemplate | null>(null);
 
@@ -203,9 +211,35 @@ export default function DashboardViewPage() {
   }, [pathname]);
 
   useEffect(() => {
-    if (!id || typeof window === "undefined") return;
-    setTemplate(getTemplateById(id));
-  }, [id]);
+    const refreshImported = () => {
+      const state = getWorkspaceTierState();
+      setSidebarImported(
+        Boolean(
+          state?.sidebarImported &&
+          template?.bundleId &&
+          state.bundleId === template.bundleId
+        )
+      );
+    };
+    refreshImported();
+    window.addEventListener(WORKSPACE_TIER_UPDATED_EVENT, refreshImported);
+    return () => window.removeEventListener(WORKSPACE_TIER_UPDATED_EVENT, refreshImported);
+  }, [template?.bundleId]);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    getTemplateById(id, publicKey)
+      .then((result) => {
+        if (!cancelled) setTemplate(result);
+      })
+      .catch(() => {
+        if (!cancelled) setTemplate(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id, publicKey]);
 
   const widgets = useMemo(() => {
     const list = template?.widgets ?? [];
@@ -275,6 +309,16 @@ export default function DashboardViewPage() {
               widgets={widgets}
               publicKey={publicKey}
               workspaceNavPending={workspaceNavPending}
+              sidebarImported={sidebarImported}
+              onImportTier={() => {
+                persistTierFromOnboarding({
+                  bundleId: template.bundleId,
+                  bundleName: template.bundleName,
+                  businessName: template.businessName ?? "",
+                });
+                markWorkspaceSidebarImported();
+                toast.success(`${template.bundleName} imported to sidebar`);
+              }}
               onEditWorkspace={() => {
                 setWorkspaceNavPending(true);
                 startTransition(() => {

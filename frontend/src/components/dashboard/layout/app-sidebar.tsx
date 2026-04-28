@@ -16,6 +16,7 @@ import {
 import {
   getWorkspaceTierState,
   syncWorkspaceTierFromLatestTemplate,
+  hydrateWorkspaceTierFromProfile,
   workspaceSectionTitle,
   WORKSPACE_TIER_UPDATED_EVENT,
 } from "@/lib/workspace-tier-context";
@@ -48,6 +49,12 @@ export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
           ? data.selectedWidgets.filter((w: unknown) => typeof w === "string")
           : [];
         setSelectedWidgets(widgets);
+        hydrateWorkspaceTierFromProfile({
+          selectedTier: typeof data?.selectedTier === "string" ? data.selectedTier : null,
+          selectedTierName:
+            typeof data?.selectedTierName === "string" ? data.selectedTierName : null,
+          businessName: typeof data?.name === "string" ? data.name : null,
+        });
       })
       .catch(() => {
         setSelectedWidgets([]);

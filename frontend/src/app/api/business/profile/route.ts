@@ -7,6 +7,17 @@ function isValidStellarAddress(addr: string): boolean {
   return s.length === 56 && s.startsWith("G");
 }
 
+const ALLOWED_TIER_IDS = new Set(["tier-1", "tier-2", "tier-3"]);
+
+function normalizeTierId(raw: unknown): string | null | undefined {
+  if (raw === undefined) return undefined;
+  if (raw === null) return null;
+  if (typeof raw !== "string") return undefined;
+  const trimmed = raw.trim().toLowerCase();
+  if (trimmed === "") return null;
+  return ALLOWED_TIER_IDS.has(trimmed) ? trimmed : undefined;
+}
+
 /**
  * GET /api/business/profile?walletAddress=G...
  * Returns profile for the business identified by wallet (name, email, businessNature, selectedWidgets).
@@ -31,6 +42,9 @@ export async function GET(req: NextRequest) {
         email: true,
         businessNature: true,
         selectedWidgets: true,
+        selectedTier: true,
+        selectedTierName: true,
+        selectedTierAt: true,
         receiveAddress: true,
         complianceForm: true,
       },
@@ -45,6 +59,9 @@ export async function GET(req: NextRequest) {
           email: true,
           businessNature: true,
           selectedWidgets: true,
+          selectedTier: true,
+          selectedTierName: true,
+          selectedTierAt: true,
           receiveAddress: true,
           complianceForm: true,
         },
@@ -57,6 +74,9 @@ export async function GET(req: NextRequest) {
       email: business.email ?? "",
       businessNature: business.businessNature ?? "",
       selectedWidgets: business.selectedWidgets ?? [],
+      selectedTier: business.selectedTier ?? null,
+      selectedTierName: business.selectedTierName ?? null,
+      selectedTierAt: business.selectedTierAt ?? null,
       receiveAddress: business.receiveAddress ?? null,
       complianceForm: business.complianceForm ?? null,
     });
@@ -93,10 +113,21 @@ export async function PATCH(req: NextRequest) {
       ? body.selectedWidgets.filter((w: unknown) => typeof w === "string")
       : undefined;
     const complianceForm = body.complianceForm !== undefined ? body.complianceForm : undefined;
+    const selectedTier = normalizeTierId(body.selectedTier);
+    const selectedTierName =
+      body.selectedTierName === undefined
+        ? undefined
+        : body.selectedTierName === null
+          ? null
+          : typeof body.selectedTierName === "string"
+            ? body.selectedTierName.trim() || null
+            : undefined;
 
     let business = await db.business.findUnique({
       where: { walletAddress: walletAddress },
     });
+
+    const now = new Date();
 
     if (!business) {
       business = await db.business.create({
@@ -107,6 +138,11 @@ export async function PATCH(req: NextRequest) {
           ...(businessNature != null && { businessNature: businessNature || null }),
           ...(selectedWidgets != null && { selectedWidgets: selectedWidgets }),
           ...(complianceForm != null && { complianceForm: complianceForm as object }),
+          ...(selectedTier !== undefined && {
+            selectedTier: selectedTier,
+            selectedTierAt: selectedTier ? now : null,
+          }),
+          ...(selectedTierName !== undefined && { selectedTierName: selectedTierName }),
         },
       });
     } else {
@@ -116,12 +152,20 @@ export async function PATCH(req: NextRequest) {
         businessNature?: string | null;
         selectedWidgets?: string[];
         complianceForm?: object | null;
+        selectedTier?: string | null;
+        selectedTierName?: string | null;
+        selectedTierAt?: Date | null;
       } = {};
       if (name !== undefined) update.name = name || null;
       if (email !== undefined) update.email = email || null;
       if (businessNature !== undefined) update.businessNature = businessNature || null;
       if (selectedWidgets !== undefined) update.selectedWidgets = selectedWidgets;
       if (complianceForm !== undefined) update.complianceForm = complianceForm as object | null;
+      if (selectedTier !== undefined) {
+        update.selectedTier = selectedTier;
+        update.selectedTierAt = selectedTier ? now : null;
+      }
+      if (selectedTierName !== undefined) update.selectedTierName = selectedTierName;
       if (Object.keys(update).length > 0) {
         business = await db.business.update({
           where: { id: business.id },
@@ -136,6 +180,9 @@ export async function PATCH(req: NextRequest) {
       email: business.email ?? "",
       businessNature: business.businessNature ?? "",
       selectedWidgets: business.selectedWidgets ?? [],
+      selectedTier: business.selectedTier ?? null,
+      selectedTierName: business.selectedTierName ?? null,
+      selectedTierAt: business.selectedTierAt ?? null,
       complianceForm: business.complianceForm ?? null,
     });
   } catch (e) {

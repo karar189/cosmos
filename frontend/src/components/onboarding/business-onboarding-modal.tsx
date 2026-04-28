@@ -295,6 +295,8 @@ export function BusinessOnboardingModal({
           name: businessName.trim(),
           businessNature: businessTypeHint.trim() || null,
           selectedWidgets,
+          selectedTier: bundle.id,
+          selectedTierName: bundle.name,
           complianceForm,
         }),
       });
@@ -724,14 +726,14 @@ export function BusinessOnboardingModal({
                                 return;
                               }
                               setOnboardingCompleted(undefined, walletAddress ?? undefined);
-                              saveTemplate({
+                              await saveTemplate({
                                 name: `${businessName.trim() || "Dashboard"} · ${bundle.name}`,
                                 businessName: businessName.trim() || undefined,
                                 bundleId: bundle.id,
                                 bundleName: bundle.name,
                                 description: bundle.description,
                                 widgets: widgetsFromBundle(bundle),
-                              });
+                              }, walletAddress);
                               persistTierFromOnboarding({
                                 bundleId: bundle.id,
                                 businessName: businessName.trim(),

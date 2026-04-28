@@ -44,8 +44,18 @@ export default function MyTemplatesPage() {
   const [pendingNav, setPendingNav] = useState<string | null>(null);
 
   useEffect(() => {
-    setTemplates(loadSavedTemplates());
-  }, []);
+    let cancelled = false;
+    loadSavedTemplates(publicKey)
+      .then((list) => {
+        if (!cancelled) setTemplates(list);
+      })
+      .catch(() => {
+        if (!cancelled) setTemplates([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [publicKey]);
 
   useEffect(() => {
     if (!pathname) return;
@@ -141,9 +151,7 @@ export default function MyTemplatesPage() {
                 <div>
                   <h2 className="text-lg font-semibold tracking-tight text-foreground">All templates</h2>
                   <p className="text-xs text-muted-foreground">
-                    {hasTemplates
-                      ? `${templates.length} saved · local only`
-                      : "Nothing saved yet"}
+                    {hasTemplates ? `${templates.length} saved` : "Nothing saved yet"}
                   </p>
                 </div>
               </div>

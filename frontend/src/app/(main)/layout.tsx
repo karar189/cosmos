@@ -7,7 +7,6 @@ import { AppSidebar } from "@/components/dashboard/layout/app-sidebar";
 import { useFreighter } from "@/hooks/useFreighter";
 import { sidebarData } from "@/components/dashboard/layout/data/sidebar-data";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
-import { WorkspaceImportStrip } from "@/components/dashboard/workspace-import-strip";
 
 export default function MainLayout({
   children,
@@ -33,7 +32,6 @@ export default function MainLayout({
           user={user}
         />
         <SidebarInset className={cn("flex flex-1 flex-col bg-transparent min-h-screen")}>
-          <WorkspaceImportStrip />
           <OnboardingGate when={!!publicKey} walletAddress={publicKey}>
             {children}
           </OnboardingGate>

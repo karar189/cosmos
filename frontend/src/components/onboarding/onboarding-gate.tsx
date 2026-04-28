@@ -35,12 +35,16 @@ type BusinessProfileResponse = {
   name?: string;
   businessNature?: string;
   selectedWidgets?: string[];
+  selectedTier?: string | null;
   complianceForm?: unknown;
 };
 
 function isProfileComplete(profile: BusinessProfileResponse | null): boolean {
   if (!profile) return false;
   const nameOk = typeof profile.name === "string" && profile.name.trim().length > 0;
+  const tierOk =
+    typeof profile.selectedTier === "string" && profile.selectedTier.trim().length > 0;
+  if (nameOk && tierOk) return true;
   const natureOk =
     typeof profile.businessNature === "string" && profile.businessNature.trim().length > 0;
   const widgetsOk =
@@ -152,9 +156,7 @@ export function OnboardingGate({ children, when = true, walletAddress }: Onboard
     mounted &&
     when &&
     walletOk &&
-    !profileLoading &&
-    !profileComplete &&
-    (!dismissed || manualOpen);
+    (manualOpen || (!profileLoading && !profileComplete && !dismissed));
 
   const isOnboardingComplete = useMemo(() => {
     if (!when || !walletOk || !walletAddress) return true;

@@ -95,16 +95,14 @@ function DashboardContent() {
               title="Overview"
               description="Your payment activity at a glance."
               end={
-                onboardingIncomplete ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="rounded-full border-white/20 bg-white/[0.06] text-foreground hover:bg-white/10"
-                    onClick={openOnboardingQuiz}
-                  >
-                    Take onboarding quiz
-                  </Button>
-                ) : undefined
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-white/20 bg-white/[0.06] text-foreground hover:bg-white/10"
+                  onClick={openOnboardingQuiz}
+                >
+                  Take onboarding quiz
+                </Button>
               }
             />
 

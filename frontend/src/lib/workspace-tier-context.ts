@@ -2,7 +2,7 @@
  * Workspace product tier + business label for sidebar navigation.
  * Persisted in localStorage until backend exists.
  */
-import { loadSavedTemplates } from "@/lib/my-templates-storage";
+import { loadSavedTemplatesLocal } from "@/lib/my-templates-storage";
 
 export const WORKSPACE_TIER_STORAGE_KEY = "hypertron_workspace_tier_v1";
 
@@ -82,7 +82,7 @@ export function markWorkspaceSidebarImported(): void {
 export function syncWorkspaceTierFromLatestTemplate(): void {
   if (typeof window === "undefined") return;
   if (getWorkspaceTierState()) return;
-  const tpls = loadSavedTemplates();
+  const tpls = loadSavedTemplatesLocal();
   const latest = tpls[0];
   if (!latest?.bundleId || !isTierId(latest.bundleId)) return;
   setWorkspaceTierState({
@@ -90,6 +90,40 @@ export function syncWorkspaceTierFromLatestTemplate(): void {
     businessName: (latest.businessName ?? "").trim(),
     bundleName: latest.bundleName?.trim() || latest.bundleId,
     sidebarImported: false,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+/**
+ * Hydrate workspace tier state from the server `business profile` response.
+ * Used when a user opens the app on a new device/browser — keeps the tier
+ * consistent with what is stored in the database, while still letting them
+ * decide whether to import the tier nav into the sidebar.
+ */
+export function hydrateWorkspaceTierFromProfile(input: {
+  selectedTier: string | null | undefined;
+  selectedTierName: string | null | undefined;
+  businessName: string | null | undefined;
+}): void {
+  if (typeof window === "undefined") return;
+  const bundleId = bundleIdToTierId(input.selectedTier ?? undefined);
+  if (!bundleId) return;
+  const bundleName = (input.selectedTierName ?? "").trim() || bundleId;
+  const businessName = (input.businessName ?? "").trim();
+  const current = getWorkspaceTierState();
+  if (
+    current &&
+    current.bundleId === bundleId &&
+    current.bundleName === bundleName &&
+    current.businessName === businessName
+  ) {
+    return;
+  }
+  setWorkspaceTierState({
+    bundleId,
+    businessName,
+    bundleName,
+    sidebarImported: current?.sidebarImported ?? false,
     updatedAt: new Date().toISOString(),
   });
 }
