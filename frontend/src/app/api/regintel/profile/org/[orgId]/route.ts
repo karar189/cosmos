@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { proxyRegintel } from "../../../proxy";
+import { requireRegintelSession } from "@/lib/regintel-guard";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   const { orgId } = await params;
+  const guard = await requireRegintelSession(req, orgId);
+  if (guard instanceof NextResponse) return guard;
+
   const res = await proxyRegintel(`/api/regintel/profile/org/${encodeURIComponent(orgId)}`, {
     method: "GET",
   });

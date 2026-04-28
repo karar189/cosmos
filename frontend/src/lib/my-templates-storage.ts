@@ -133,10 +133,10 @@ export async function loadSavedTemplates(
     return loadSavedTemplatesFromLocal();
   }
   try {
-    const res = await fetch(
-      `/api/templates?walletAddress=${encodeURIComponent(walletAddress!.trim())}`,
-      { cache: "no-store" }
-    );
+    const res = await fetch("/api/templates", {
+      cache: "no-store",
+      credentials: "same-origin",
+    });
     if (!res.ok) return loadSavedTemplatesFromLocal();
     const json = (await res.json().catch(() => ({}))) as { templates?: ApiTemplate[] };
     return Array.isArray(json.templates) ? json.templates.map(normalizeTemplate) : [];
@@ -154,10 +154,10 @@ export async function getTemplateById(
     return loadSavedTemplatesFromLocal().find((t) => t.id === id) ?? null;
   }
   try {
-    const res = await fetch(
-      `/api/templates/${encodeURIComponent(id)}?walletAddress=${encodeURIComponent(walletAddress!.trim())}`,
-      { cache: "no-store" }
-    );
+    const res = await fetch(`/api/templates/${encodeURIComponent(id)}`, {
+      cache: "no-store",
+      credentials: "same-origin",
+    });
     if (!res.ok) return null;
     const json = (await res.json().catch(() => ({}))) as { template?: ApiTemplate };
     return json.template ? normalizeTemplate(json.template) : null;
@@ -177,8 +177,8 @@ export async function saveTemplate(
     const res = await fetch("/api/templates", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({
-        walletAddress: walletAddress!.trim(),
         ...template,
       }),
     });
@@ -202,8 +202,8 @@ export async function updateTemplate(
     const res = await fetch(`/api/templates/${encodeURIComponent(id)}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({
-        walletAddress: walletAddress!.trim(),
         ...updates,
       }),
     });

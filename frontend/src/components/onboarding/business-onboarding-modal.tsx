@@ -290,8 +290,8 @@ export function BusinessOnboardingModal({
       const res = await fetch("/api/business/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: walletAddress.trim(),
           name: businessName.trim(),
           businessNature: businessTypeHint.trim() || null,
           selectedWidgets,

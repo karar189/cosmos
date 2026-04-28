@@ -67,7 +67,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (publicKey?.trim().length === 56 && publicKey.startsWith("G")) {
       setLoading(true);
-      fetch(`/api/business/profile?walletAddress=${encodeURIComponent(publicKey.trim())}`)
+      fetch("/api/business/profile", { credentials: "same-origin" })
         .then((res) => (res.ok ? res.json() : null))
         .then((profile) => {
           if (profile) {
@@ -85,10 +85,33 @@ export default function SettingsPage() {
                 : PLAN_OPTIONS.find((p) => p.id === tierFromProfile)?.name ?? "Tier 2";
             setSelectedTier(tierFromProfile);
             setSelectedTierName(tierNameFromProfile);
+            const activeTpl =
+              profile?.activeTemplate &&
+              typeof profile.activeTemplate === "object" &&
+              typeof profile.activeTemplate.id === "string"
+                ? profile.activeTemplate
+                : null;
             hydrateWorkspaceTierFromProfile({
               selectedTier: tierFromProfile,
               selectedTierName: tierNameFromProfile,
               businessName: profile.name ?? "",
+              activeTemplateId:
+                typeof profile.activeTemplateId === "string" ? profile.activeTemplateId : null,
+              activeTemplate: activeTpl
+                ? {
+                    id: activeTpl.id,
+                    name: typeof activeTpl.name === "string" ? activeTpl.name : "",
+                    bundleId: typeof activeTpl.bundleId === "string" ? activeTpl.bundleId : "",
+                    bundleName:
+                      activeTpl.bundleName === null || typeof activeTpl.bundleName === "string"
+                        ? activeTpl.bundleName
+                        : null,
+                    businessName:
+                      activeTpl.businessName === null || typeof activeTpl.businessName === "string"
+                        ? activeTpl.businessName
+                        : null,
+                  }
+                : null,
             });
           }
         })
@@ -116,8 +139,8 @@ export default function SettingsPage() {
       fetch("/api/business/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: publicKey.trim(),
           name: data.name,
           email: data.email,
           businessNature: data.businessNature || null,
@@ -157,17 +180,47 @@ export default function SettingsPage() {
       const res = await fetch("/api/business/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: publicKey.trim(),
           selectedTier,
           selectedTierName,
         }),
       });
       if (!res.ok) return;
+      const updated = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+      const activeTpl =
+        updated?.activeTemplate &&
+        typeof updated.activeTemplate === "object" &&
+        typeof (updated.activeTemplate as { id?: string }).id === "string"
+          ? (updated.activeTemplate as {
+              id: string;
+              name?: string;
+              bundleId?: string;
+              bundleName?: string | null;
+              businessName?: string | null;
+            })
+          : null;
       hydrateWorkspaceTierFromProfile({
         selectedTier,
         selectedTierName,
         businessName: username.trim(),
+        activeTemplateId:
+          typeof updated?.activeTemplateId === "string" ? updated.activeTemplateId : null,
+        activeTemplate: activeTpl
+          ? {
+              id: activeTpl.id,
+              name: typeof activeTpl.name === "string" ? activeTpl.name : "",
+              bundleId: typeof activeTpl.bundleId === "string" ? activeTpl.bundleId : "",
+              bundleName:
+                activeTpl.bundleName === null || typeof activeTpl.bundleName === "string"
+                  ? activeTpl.bundleName
+                  : null,
+              businessName:
+                activeTpl.businessName === null || typeof activeTpl.businessName === "string"
+                  ? activeTpl.businessName
+                  : null,
+            }
+          : null,
       });
       setPlanSaved(true);
       setTimeout(() => setPlanSaved(false), 2500);

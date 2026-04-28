@@ -68,7 +68,9 @@ export function OverviewStats({ businessId, onboardingIncomplete }: OverviewStat
 
     setLoading(true);
     setError(null);
-    fetch(`/api/dashboard-stats?businessId=${encodeURIComponent(businessId)}`)
+    fetch(`/api/dashboard-stats?businessId=${encodeURIComponent(businessId)}`, {
+      credentials: "same-origin",
+    })
       .then(async (res) => {
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {

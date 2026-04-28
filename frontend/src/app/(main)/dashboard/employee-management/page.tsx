@@ -136,10 +136,10 @@ export default function EmployeeManagementPage() {
     }
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/employees?walletAddress=${encodeURIComponent(publicKey.trim())}`,
-        { cache: "no-store" }
-      );
+      const res = await fetch("/api/employees", {
+        cache: "no-store",
+        credentials: "same-origin",
+      });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(typeof json?.error === "string" ? json.error : "Failed to load employees");
@@ -211,8 +211,8 @@ export default function EmployeeManagementPage() {
       const res = await fetch("/api/employees", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: publicKey.trim(),
           name: newName.trim(),
           email: newEmail.trim() || null,
           employeeWalletAddress: newWalletAddress.trim() || null,
@@ -250,8 +250,8 @@ export default function EmployeeManagementPage() {
       const res = await fetch("/api/employees", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: publicKey.trim(),
           ids,
         }),
       });
@@ -276,10 +276,8 @@ export default function EmployeeManagementPage() {
       const res = await fetch(`/api/employees/${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          walletAddress: publicKey.trim(),
-          ...patch,
-        }),
+        credentials: "same-origin",
+        body: JSON.stringify(patch),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {

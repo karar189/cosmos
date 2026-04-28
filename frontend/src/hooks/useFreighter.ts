@@ -5,6 +5,7 @@
  */
 
 import { useState, useCallback, useEffect } from "react";
+import { getAddress, isConnected, requestAccess } from "@stellar/freighter-api";
 
 const FREIGHTER_INSTALL_URL = "https://www.freighter.app/";
 const FREIGHTER_PUBLIC_KEY_STORAGE_KEY = "freighter_public_key";
@@ -67,12 +68,11 @@ export function useFreighter(): UseFreighterResult {
 
     const check = async () => {
       try {
-        const Freighter = (await import("@stellar/freighter-api")).default;
-        const res = await Freighter.isConnected();
+        const res = await isConnected();
         setIsAvailable(res?.isConnected ?? false);
         // Respect explicit in-app disconnect: don't auto-reconnect until user clicks Connect.
         if (res?.isConnected && !disconnectedByUser) {
-          const addrRes = await Freighter.getAddress();
+          const addrRes = await getAddress();
           if (addrRes?.address && !addrRes?.error) {
             setPublicKey(addrRes.address);
             setStoredPublicKey(addrRes.address);
@@ -92,8 +92,7 @@ export function useFreighter(): UseFreighterResult {
     if (typeof window === "undefined") return null;
     setIsConnecting(true);
     try {
-      const Freighter = (await import("@stellar/freighter-api")).default;
-      const res = await Freighter.requestAccess();
+      const res = await requestAccess();
       if (res?.address && !res?.error) {
         setPublicKey(res.address);
         setIsAvailable(true);
@@ -129,6 +128,7 @@ export function useFreighter(): UseFreighterResult {
 
   const disconnect = useCallback(() => {
     if (typeof window !== "undefined") {
+      void fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => {});
       localStorage.removeItem(FREIGHTER_PUBLIC_KEY_STORAGE_KEY);
       localStorage.setItem(FREIGHTER_DISCONNECTED_STORAGE_KEY, "true");
       window.dispatchEvent(new CustomEvent(FREIGHTER_STATE_EVENT, { detail: { publicKey: null } }));

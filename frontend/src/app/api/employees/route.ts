@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { DB_UNAVAILABLE_MESSAGE, isPrismaConnectionError } from "@/lib/prisma-errors";
+import { requireSessionWallet } from "@/lib/require-session-wallet";
+import { isValidStellarAddress } from "@/lib/stellar-address";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "on_leave", "pending", "offboarded"]);
 const ALLOWED_PRIORITY = new Set(["low", "medium", "high"]);
-
-function isValidStellarAddress(addr: string): boolean {
-  const s = (addr || "").trim();
-  return s.length === 56 && s.startsWith("G");
-}
 
 function normalizeWalletAddress(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
@@ -39,14 +36,9 @@ function normalizePriority(raw: unknown): string {
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const walletAddress = searchParams.get("walletAddress")?.trim() ?? "";
-    if (!isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress query required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
 
     const businessId = await resolveBusinessId(walletAddress);
     if (!businessId) return NextResponse.json({ employees: [] });
@@ -80,15 +72,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const walletAddress = typeof body.walletAddress === "string" ? body.walletAddress.trim() : "";
-    if (!isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
 
+    const body = await req.json().catch(() => ({}));
     const name = typeof body.name === "string" ? body.name.trim() : "";
     const email =
       typeof body.email === "string" ? body.email.trim() || null : null;
@@ -156,15 +144,12 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
+
     const body = await req.json().catch(() => ({}));
-    const walletAddress = typeof body.walletAddress === "string" ? body.walletAddress.trim() : "";
     const ids = Array.isArray(body.ids) ? body.ids.filter((v: unknown) => typeof v === "string") : [];
-    if (!isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
     if (ids.length === 0) {
       return NextResponse.json({ error: "ids[] required" }, { status: 400 });
     }

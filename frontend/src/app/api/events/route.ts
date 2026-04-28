@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { resolveAppBaseUrl } from "@/lib/app-base-url";
+import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,9 @@ export async function GET(req: NextRequest) {
     if (!businessId) {
       return NextResponse.json({ error: "businessId query required" }, { status: 400 });
     }
+
+    const auth = await requireBusinessOwnedBySession(req, businessId);
+    if (auth instanceof NextResponse) return auth;
 
     const links = await db.paymentLink.findMany({
       where: { businessId },

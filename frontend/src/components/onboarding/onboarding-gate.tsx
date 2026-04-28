@@ -107,7 +107,7 @@ export function OnboardingGate({ children, when = true, walletAddress }: Onboard
       return;
     }
     setProfileLoading(true);
-    fetch(`/api/business/profile?walletAddress=${encodeURIComponent(walletAddress.trim())}`)
+    fetch("/api/business/profile", { credentials: "same-origin" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: BusinessProfileResponse | null) => {
         setProfileComplete(isProfileComplete(data));

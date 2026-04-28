@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { getCookie } from "@/lib/cookies";
 import { cn } from "@/utils";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -13,7 +15,29 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
   const { publicKey, disconnect } = useFreighter();
+
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      const res = await fetch("/api/auth/me", { credentials: "same-origin" });
+      if (cancelled || res.status === 401) return;
+      const data = (await res.json().catch(() => null)) as { walletAddress?: string } | null;
+      const sessionWallet = data?.walletAddress?.trim();
+      if (!sessionWallet) return;
+      if (publicKey && sessionWallet !== publicKey) {
+        disconnect();
+        const ret = pathname && pathname.startsWith("/") ? pathname : "/dashboard";
+        window.location.assign(`/session/wallet?returnUrl=${encodeURIComponent(ret)}`);
+        return;
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [publicKey, disconnect, pathname]);
   const defaultOpen = getCookie("sidebar_state") !== "false";
 
   const user = publicKey

@@ -166,8 +166,8 @@ export function OnboardingModal({
         fetch("/api/business/profile", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
           body: JSON.stringify({
-            walletAddress: walletAddress.trim(),
             name: data.name,
             email: data.email,
             businessNature: data.businessNature || null,

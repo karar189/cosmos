@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { DB_UNAVAILABLE_MESSAGE, isPrismaConnectionError } from "@/lib/prisma-errors";
-
-function isValidStellarAddress(addr: string): boolean {
-  const s = (addr || "").trim();
-  return s.length === 56 && s.startsWith("G");
-}
+import { requireSessionWallet } from "@/lib/require-session-wallet";
 
 async function resolveBusinessIdByWallet(walletAddress: string): Promise<string | null> {
   const business = await db.business.findUnique({
@@ -21,14 +17,9 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
-    const { searchParams } = new URL(req.url);
-    const walletAddress = searchParams.get("walletAddress")?.trim() ?? "";
-    if (!walletAddress || !isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress query required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
 
     const businessId = await resolveBusinessIdByWallet(walletAddress);
     if (!businessId) {
@@ -69,15 +60,11 @@ export async function PATCH(
 ) {
   try {
     const { id } = await context.params;
-    const body = await req.json().catch(() => ({}));
-    const walletAddress = typeof body.walletAddress === "string" ? body.walletAddress.trim() : "";
-    if (!walletAddress || !isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
 
+    const body = await req.json().catch(() => ({}));
     const businessId = await resolveBusinessIdByWallet(walletAddress);
     if (!businessId) {
       return NextResponse.json({ error: "Template not found" }, { status: 404 });

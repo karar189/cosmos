@@ -101,6 +101,7 @@ export default function ComplianceAgentLoadingPage() {
       try {
         const response = await fetch("/api/compliance-agent/analyze", {
           method: "POST",
+          credentials: "same-origin",
           body: formData,
         });
         const payload = await response.json();

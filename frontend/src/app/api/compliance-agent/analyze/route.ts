@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireSessionWallet } from "@/lib/require-session-wallet";
 
 const DEFAULT_BASE = "http://localhost:8001";
 const BASE =
@@ -9,6 +10,9 @@ const BASE =
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+
     const incoming = await req.formData();
     const outbound = new FormData();
 

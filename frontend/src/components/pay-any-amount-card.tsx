@@ -25,6 +25,7 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
       const res = await fetch("/api/payment-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ businessId, flexibleAmount: true }),
       });
       const data = await res.json();

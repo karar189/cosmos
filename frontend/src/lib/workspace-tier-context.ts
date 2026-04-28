@@ -94,36 +94,67 @@ export function syncWorkspaceTierFromLatestTemplate(): void {
   });
 }
 
+export type ProfileActiveTemplate = {
+  id: string;
+  name: string;
+  bundleId: string;
+  bundleName: string | null;
+  businessName: string | null;
+};
+
 /**
  * Hydrate workspace tier state from the server `business profile` response.
- * Used when a user opens the app on a new device/browser — keeps the tier
- * consistent with what is stored in the database, while still letting them
- * decide whether to import the tier nav into the sidebar.
+ * When `activeTemplate` is present, sidebar import state matches the template saved in DB (login / new device).
  */
 export function hydrateWorkspaceTierFromProfile(input: {
   selectedTier: string | null | undefined;
   selectedTierName: string | null | undefined;
   businessName: string | null | undefined;
+  activeTemplateId?: string | null | undefined;
+  activeTemplate?: ProfileActiveTemplate | null;
 }): void {
   if (typeof window === "undefined") return;
-  const bundleId = bundleIdToTierId(input.selectedTier ?? undefined);
+
+  const tpl = input.activeTemplate;
+  const tierFromActiveTpl = tpl?.bundleId ? bundleIdToTierId(tpl.bundleId) : null;
+  const hasActive = Boolean(
+    input.activeTemplateId &&
+      tpl?.id &&
+      tpl.id === input.activeTemplateId &&
+      tierFromActiveTpl
+  );
+
+  const bundleId = hasActive ? tierFromActiveTpl! : bundleIdToTierId(input.selectedTier ?? undefined);
   if (!bundleId) return;
-  const bundleName = (input.selectedTierName ?? "").trim() || bundleId;
-  const businessName = (input.businessName ?? "").trim();
+
+  const bundleName =
+    hasActive && (tpl?.bundleName?.trim() ?? "")
+      ? (tpl!.bundleName as string).trim()
+      : (input.selectedTierName ?? "").trim() || bundleId;
+
+  const businessName =
+    hasActive && (tpl?.businessName?.trim() || tpl?.name?.trim())
+      ? (tpl!.businessName ?? tpl!.name ?? "").trim()
+      : (input.businessName ?? "").trim();
+
+  const sidebarImported = Boolean(hasActive && bundleId);
+
   const current = getWorkspaceTierState();
   if (
     current &&
     current.bundleId === bundleId &&
     current.bundleName === bundleName &&
-    current.businessName === businessName
+    current.businessName === businessName &&
+    current.sidebarImported === sidebarImported
   ) {
     return;
   }
+
   setWorkspaceTierState({
     bundleId,
     businessName,
     bundleName,
-    sidebarImported: current?.sidebarImported ?? false,
+    sidebarImported,
     updatedAt: new Date().toISOString(),
   });
 }

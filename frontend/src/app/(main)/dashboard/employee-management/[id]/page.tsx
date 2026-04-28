@@ -87,14 +87,14 @@ export default function EmployeeDetailsPage() {
     setLoading(true);
     try {
       const [employeeRes, paymentsRes] = await Promise.all([
-        fetch(
-          `/api/employees/${encodeURIComponent(employeeId)}?walletAddress=${encodeURIComponent(publicKey.trim())}`,
-          { cache: "no-store" }
-        ),
-        fetch(
-          `/api/employees/${encodeURIComponent(employeeId)}/payments?walletAddress=${encodeURIComponent(publicKey.trim())}`,
-          { cache: "no-store" }
-        ),
+        fetch(`/api/employees/${encodeURIComponent(employeeId)}`, {
+          cache: "no-store",
+          credentials: "same-origin",
+        }),
+        fetch(`/api/employees/${encodeURIComponent(employeeId)}/payments`, {
+          cache: "no-store",
+          credentials: "same-origin",
+        }),
       ]);
 
       const employeeJson = await employeeRes.json().catch(() => ({}));
@@ -144,8 +144,8 @@ export default function EmployeeDetailsPage() {
       const res = await fetch(`/api/employees/${encodeURIComponent(employee.id)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: publicKey.trim(),
           name: employee.name,
           email: employee.email ?? null,
           employeeWalletAddress: employee.walletAddress ?? null,
@@ -180,8 +180,8 @@ export default function EmployeeDetailsPage() {
       const res = await fetch(`/api/employees/${encodeURIComponent(employee.id)}/payments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: publicKey.trim(),
           amountXlm: amount.toString(),
           note: payNote.trim() || null,
         }),

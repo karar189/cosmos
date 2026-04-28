@@ -77,7 +77,7 @@ export function TierSavedTemplateView({
             <div className="flex flex-wrap items-center gap-2">
               <Button
                 type="button"
-                variant={sidebarImported ? "secondary" : "outline"}
+                variant={sidebarImported ? "subtle" : "outline"}
                 size="sm"
                 className={cn(
                   "rounded-full sm:w-auto",

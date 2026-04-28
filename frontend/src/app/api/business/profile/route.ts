@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
-
-function isValidStellarAddress(addr: string): boolean {
-  const s = (addr || "").trim();
-  return s.length === 56 && s.startsWith("G");
-}
+import { requireSessionWallet } from "@/lib/require-session-wallet";
 
 const ALLOWED_TIER_IDS = new Set(["tier-1", "tier-2", "tier-3"]);
 
@@ -18,21 +14,96 @@ function normalizeTierId(raw: unknown): string | null | undefined {
   return ALLOWED_TIER_IDS.has(trimmed) ? trimmed : undefined;
 }
 
+type BusinessRow = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  businessNature: string | null;
+  selectedWidgets: string[];
+  selectedTier: string | null;
+  selectedTierName: string | null;
+  selectedTierAt: Date | null;
+  receiveAddress: string | null;
+  complianceForm: unknown;
+  activeTemplateId: string | null;
+  activeTemplateAt: Date | null;
+};
+
+type ActiveTemplatePayload = {
+  id: string;
+  name: string;
+  bundleId: string;
+  bundleName: string | null;
+  businessName: string | null;
+} | null;
+
+async function resolveActiveTemplate(
+  business: Pick<BusinessRow, "id" | "activeTemplateId">
+): Promise<{ activeTemplateId: string | null; activeTemplate: ActiveTemplatePayload }> {
+  if (!business.activeTemplateId) {
+    return { activeTemplateId: null, activeTemplate: null };
+  }
+  const tpl = await db.businessTemplate.findFirst({
+    where: { id: business.activeTemplateId, businessId: business.id },
+    select: {
+      id: true,
+      name: true,
+      bundleId: true,
+      bundleName: true,
+      businessName: true,
+    },
+  });
+  if (!tpl) {
+    await db.business
+      .update({
+        where: { id: business.id },
+        data: { activeTemplateId: null, activeTemplateAt: null },
+      })
+      .catch(() => {});
+    return { activeTemplateId: null, activeTemplate: null };
+  }
+  return {
+    activeTemplateId: tpl.id,
+    activeTemplate: {
+      id: tpl.id,
+      name: tpl.name,
+      bundleId: tpl.bundleId,
+      bundleName: tpl.bundleName ?? null,
+      businessName: tpl.businessName ?? null,
+    },
+  };
+}
+
+function profileJson(
+  business: BusinessRow,
+  active: { activeTemplateId: string | null; activeTemplate: ActiveTemplatePayload }
+) {
+  return {
+    businessId: business.id,
+    name: business.name ?? "",
+    email: business.email ?? "",
+    businessNature: business.businessNature ?? "",
+    selectedWidgets: business.selectedWidgets ?? [],
+    selectedTier: business.selectedTier ?? null,
+    selectedTierName: business.selectedTierName ?? null,
+    selectedTierAt: business.selectedTierAt?.toISOString() ?? null,
+    receiveAddress: business.receiveAddress ?? null,
+    complianceForm: business.complianceForm ?? null,
+    activeTemplateId: active.activeTemplateId,
+    activeTemplateAt: business.activeTemplateAt?.toISOString() ?? null,
+    activeTemplate: active.activeTemplate,
+  };
+}
+
 /**
- * GET /api/business/profile?walletAddress=G...
- * Returns profile for the business identified by wallet (name, email, businessNature, selectedWidgets).
- * Wallet = identity; no password. Ensures business exists (creates if needed) so caller can rely on profile.
+ * GET /api/business/profile
+ * Authenticated session wallet only (no query/body trust).
  */
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const walletAddress = searchParams.get("walletAddress")?.trim() ?? "";
-    if (!walletAddress || !isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress query required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
 
     let business = await db.business.findUnique({
       where: { walletAddress: walletAddress },
@@ -47,6 +118,8 @@ export async function GET(req: NextRequest) {
         selectedTierAt: true,
         receiveAddress: true,
         complianceForm: true,
+        activeTemplateId: true,
+        activeTemplateAt: true,
       },
     });
 
@@ -64,22 +137,14 @@ export async function GET(req: NextRequest) {
           selectedTierAt: true,
           receiveAddress: true,
           complianceForm: true,
+          activeTemplateId: true,
+          activeTemplateAt: true,
         },
       });
     }
 
-    return NextResponse.json({
-      businessId: business.id,
-      name: business.name ?? "",
-      email: business.email ?? "",
-      businessNature: business.businessNature ?? "",
-      selectedWidgets: business.selectedWidgets ?? [],
-      selectedTier: business.selectedTier ?? null,
-      selectedTierName: business.selectedTierName ?? null,
-      selectedTierAt: business.selectedTierAt ?? null,
-      receiveAddress: business.receiveAddress ?? null,
-      complianceForm: business.complianceForm ?? null,
-    });
+    const active = await resolveActiveTemplate(business);
+    return NextResponse.json(profileJson(business as BusinessRow, active));
   } catch (e) {
     if (isPrismaConnectionError(e)) {
       console.warn("Business profile GET: database unavailable");
@@ -92,20 +157,15 @@ export async function GET(req: NextRequest) {
 
 /**
  * PATCH /api/business/profile
- * Body: { walletAddress, name?, email?, businessNature?, selectedWidgets? }
- * Updates profile for the business identified by wallet. Creates business if not exists.
+ * Body: { name?, email?, activeTemplateId?: string | null, ... } — wallet from session only.
  */
 export async function PATCH(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const walletAddress = typeof body.walletAddress === "string" ? body.walletAddress.trim() : "";
-    if (!walletAddress || !isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
 
+    const body = await req.json().catch(() => ({}));
     const name = typeof body.name === "string" ? body.name.trim() : undefined;
     const email = typeof body.email === "string" ? body.email.trim() : undefined;
     const businessNature = typeof body.businessNature === "string" ? body.businessNature.trim() : undefined;
@@ -123,6 +183,16 @@ export async function PATCH(req: NextRequest) {
             ? body.selectedTierName.trim() || null
             : undefined;
 
+    let activeTemplateIdUpdate: string | null | undefined = undefined;
+    if (body.activeTemplateId !== undefined) {
+      if (body.activeTemplateId === null) {
+        activeTemplateIdUpdate = null;
+      } else if (typeof body.activeTemplateId === "string") {
+        const tid = body.activeTemplateId.trim();
+        activeTemplateIdUpdate = tid || null;
+      }
+    }
+
     let business = await db.business.findUnique({
       where: { walletAddress: walletAddress },
     });
@@ -130,21 +200,32 @@ export async function PATCH(req: NextRequest) {
     const now = new Date();
 
     if (!business) {
-      business = await db.business.create({
-        data: {
-          walletAddress: walletAddress,
-          ...(name != null && { name: name || null }),
-          ...(email != null && { email: email || null }),
-          ...(businessNature != null && { businessNature: businessNature || null }),
-          ...(selectedWidgets != null && { selectedWidgets: selectedWidgets }),
-          ...(complianceForm != null && { complianceForm: complianceForm as object }),
-          ...(selectedTier !== undefined && {
-            selectedTier: selectedTier,
-            selectedTierAt: selectedTier ? now : null,
-          }),
-          ...(selectedTierName !== undefined && { selectedTierName: selectedTierName }),
-        },
-      });
+      const createData: Parameters<typeof db.business.create>[0]["data"] = {
+        walletAddress: walletAddress,
+        ...(name != null && { name: name || null }),
+        ...(email != null && { email: email || null }),
+        ...(businessNature != null && { businessNature: businessNature || null }),
+        ...(selectedWidgets != null && { selectedWidgets: selectedWidgets }),
+        ...(complianceForm != null && { complianceForm: complianceForm as object }),
+        ...(selectedTier !== undefined && {
+          selectedTier: selectedTier,
+          selectedTierAt: selectedTier ? now : null,
+        }),
+        ...(selectedTierName !== undefined && { selectedTierName: selectedTierName }),
+      };
+      business = await db.business.create({ data: createData });
+      if (activeTemplateIdUpdate !== undefined && activeTemplateIdUpdate !== null) {
+        const tpl = await db.businessTemplate.findFirst({
+          where: { id: activeTemplateIdUpdate, businessId: business.id },
+        });
+        if (!tpl) {
+          return NextResponse.json({ error: "activeTemplateId not found for this business" }, { status: 400 });
+        }
+        business = await db.business.update({
+          where: { id: business.id },
+          data: { activeTemplateId: tpl.id, activeTemplateAt: now },
+        });
+      }
     } else {
       const update: {
         name?: string | null;
@@ -155,6 +236,8 @@ export async function PATCH(req: NextRequest) {
         selectedTier?: string | null;
         selectedTierName?: string | null;
         selectedTierAt?: Date | null;
+        activeTemplateId?: string | null;
+        activeTemplateAt?: Date | null;
       } = {};
       if (name !== undefined) update.name = name || null;
       if (email !== undefined) update.email = email || null;
@@ -166,6 +249,35 @@ export async function PATCH(req: NextRequest) {
         update.selectedTierAt = selectedTier ? now : null;
       }
       if (selectedTierName !== undefined) update.selectedTierName = selectedTierName;
+
+      if (activeTemplateIdUpdate !== undefined) {
+        if (activeTemplateIdUpdate === null) {
+          update.activeTemplateId = null;
+          update.activeTemplateAt = null;
+        } else {
+          const tpl = await db.businessTemplate.findFirst({
+            where: { id: activeTemplateIdUpdate, businessId: business.id },
+          });
+          if (!tpl) {
+            return NextResponse.json({ error: "activeTemplateId not found for this business" }, { status: 400 });
+          }
+          update.activeTemplateId = tpl.id;
+          update.activeTemplateAt = now;
+        }
+      }
+
+      if (selectedTier !== undefined && business.activeTemplateId) {
+        const existingTpl = await db.businessTemplate.findFirst({
+          where: { id: business.activeTemplateId, businessId: business.id },
+          select: { bundleId: true },
+        });
+        const tplTier = existingTpl ? normalizeTierId(existingTpl.bundleId) : undefined;
+        if (tplTier !== undefined && selectedTier !== tplTier) {
+          update.activeTemplateId = null;
+          update.activeTemplateAt = null;
+        }
+      }
+
       if (Object.keys(update).length > 0) {
         business = await db.business.update({
           where: { id: business.id },
@@ -174,17 +286,28 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      businessId: business.id,
-      name: business.name ?? "",
-      email: business.email ?? "",
-      businessNature: business.businessNature ?? "",
-      selectedWidgets: business.selectedWidgets ?? [],
-      selectedTier: business.selectedTier ?? null,
-      selectedTierName: business.selectedTierName ?? null,
-      selectedTierAt: business.selectedTierAt ?? null,
-      complianceForm: business.complianceForm ?? null,
+    const full = await db.business.findUnique({
+      where: { id: business.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        businessNature: true,
+        selectedWidgets: true,
+        selectedTier: true,
+        selectedTierName: true,
+        selectedTierAt: true,
+        receiveAddress: true,
+        complianceForm: true,
+        activeTemplateId: true,
+        activeTemplateAt: true,
+      },
     });
+    if (!full) {
+      return NextResponse.json({ error: "Business not found" }, { status: 404 });
+    }
+    const active = await resolveActiveTemplate(full);
+    return NextResponse.json(profileJson(full as BusinessRow, active));
   } catch (e) {
     if (isPrismaConnectionError(e)) {
       console.warn("Business profile PATCH: database unavailable");

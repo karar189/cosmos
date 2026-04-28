@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const CONTACT_HREF = "https://x.com/hypertron_hq";
+const DOCS_HREF = "https://www.hypertron.space/docs/introduction";
 
 export function LandingNavbar() {
   const [open, setOpen] = useState(false);
@@ -54,6 +55,14 @@ export function LandingNavbar() {
               Home
             </Link>
             <Link
+              href={DOCS_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2 py-1.5 text-sm font-medium text-muted-foreground transition-opacity hover:text-foreground"
+            >
+              Docs
+            </Link>
+            <Link
               href={CONTACT_HREF}
               target="_blank"
               rel="noopener noreferrer"
@@ -96,6 +105,15 @@ export function LandingNavbar() {
             onClick={() => setOpen(false)}
           >
             Home
+          </Link>
+          <Link
+            href={DOCS_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            onClick={() => setOpen(false)}
+          >
+            Docs
           </Link>
           <Link
             href={CONTACT_HREF}

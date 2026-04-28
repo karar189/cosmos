@@ -75,6 +75,19 @@ model LinkTag {
 
 // Phase 1: business identity + payment links with attribution (pool + memo)
 // Wallet = identity (no password). Profile from onboarding/settings stored here.
+// One-time login challenges (SEP-53 sign-in). Expired rows can be pruned periodically.
+model AuthChallenge {
+  id            String   @id @default(cuid()) @map("_id")
+  walletAddress String
+  message       String // exact UTF-8 string the wallet must sign (shown in Freighter)
+  expiresAt     DateTime
+  used          Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@index([walletAddress, used])
+  @@index([expiresAt])
+}
+
 model Business {
   id                String    @id @default(cuid()) @map("_id")
   walletAddress     String    @unique // Stellar G... = username / login identity
@@ -86,6 +99,8 @@ model Business {
   selectedTier      String?   // product tier id chosen during onboarding: "tier-1" | "tier-2" | "tier-3"
   selectedTierName  String?   // display name for the chosen tier, e.g. "Tier 2"
   selectedTierAt    DateTime? // when the tier was last set/changed
+  activeTemplateId  String? // BusinessTemplate id for sidebar tier modules (Import)
+  activeTemplateAt  DateTime?
   complianceForm    Json?     // extended compliance form: type, geographies, monthlyTx, etc.
   createdAt         DateTime  @default(now())
   paymentLinks      PaymentLink[]
@@ -96,6 +111,7 @@ model Business {
   employeePayments  BusinessEmployeePayment[]
 
   @@index(selectedTier)
+  @@index(activeTemplateId)
 }
 
 model BusinessTemplate {

@@ -1,22 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
+import { requireSessionWallet } from "@/lib/require-session-wallet";
 
-/** GET /api/vault?businessId=... | ?walletAddress=... — list Document vault items. */
+/** GET /api/vault?businessId=... — list Document vault items for the signed-in business. */
 export async function GET(req: NextRequest) {
   try {
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+
     const { searchParams } = new URL(req.url);
     let businessId = searchParams.get("businessId")?.trim();
-    const walletAddress = searchParams.get("walletAddress")?.trim();
-    if (!businessId && walletAddress) {
+    if (!businessId) {
       const b = await db.business.findUnique({
-        where: { walletAddress },
+        where: { walletAddress: session },
         select: { id: true },
       });
-      if (b) businessId = b.id;
+      businessId = b?.id ?? "";
     }
     if (!businessId) {
-      return NextResponse.json({ error: "businessId or walletAddress required" }, { status: 400 });
+      return NextResponse.json({ error: "businessId required" }, { status: 400 });
+    }
+
+    const owned = await db.business.findFirst({
+      where: { id: businessId, walletAddress: session },
+      select: { id: true },
+    });
+    if (!owned) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const items = await db.documentVaultItem.findMany({
       where: { businessId },
@@ -47,28 +58,32 @@ export async function GET(req: NextRequest) {
   }
 }
 
-/** POST /api/vault — save a checklist to Document vault. Body: { businessId?: string, walletAddress?: string, title?: string, items: [{ id, text, done }] } */
+/** POST /api/vault — save a checklist. Body: { businessId?: string, title?, items } */
 export async function POST(req: NextRequest) {
   try {
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+
     const body = await req.json().catch(() => ({}));
     let businessId = (body.businessId ?? "").trim();
-    const walletAddress = (body.walletAddress ?? "").trim();
     const title = (body.title ?? "Compliance checklist").trim();
     const rawItems = Array.isArray(body.items) ? body.items : [];
-    if (!businessId && walletAddress) {
+    if (!businessId) {
       const b = await db.business.findUnique({
-        where: { walletAddress },
+        where: { walletAddress: session },
         select: { id: true },
       });
-      if (b) businessId = b.id;
+      businessId = b?.id ?? "";
     }
     if (!businessId) {
-      return NextResponse.json({ error: "businessId or walletAddress required" }, { status: 400 });
+      return NextResponse.json({ error: "businessId required" }, { status: 400 });
     }
 
-    const business = await db.business.findUnique({ where: { id: businessId } });
+    const business = await db.business.findFirst({
+      where: { id: businessId, walletAddress: session },
+    });
     if (!business) {
-      return NextResponse.json({ error: "Business not found" }, { status: 404 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const items = rawItems.map((x: { id?: string; text?: string; done?: boolean }) => ({

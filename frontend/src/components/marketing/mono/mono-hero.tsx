@@ -1,13 +1,57 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { DarkVeil } from "./dark-veil";
 import { HeroDashboardPreview } from "./hero-dashboard-preview";
 import { ShinyText } from "@/components/ui/shiny-text";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 const BOOK_DEMO = "https://calendly.com/kararsweta/30min";
+/** Static invite gate for Launch (replace with server validation when ready). */
+const VALID_INVITE_CODE = "INVITE101";
 
 export function MonoHero() {
+  const router = useRouter();
+  const [launchOpen, setLaunchOpen] = useState(false);
+  const [inviteCode, setInviteCode] = useState("");
+  const [inviteError, setInviteError] = useState<string | null>(null);
+
+  const resetLaunchState = useCallback(() => {
+    setInviteCode("");
+    setInviteError(null);
+  }, []);
+
+  const handleLaunchOpenChange = (open: boolean) => {
+    setLaunchOpen(open);
+    if (!open) resetLaunchState();
+  };
+
+  const handleInviteSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = inviteCode.trim();
+    if (trimmed !== VALID_INVITE_CODE) {
+      setInviteError("Invalid invite code. Try again or contact us for access.");
+      return;
+    }
+    setInviteError(null);
+    setLaunchOpen(false);
+    resetLaunchState();
+    router.push("/session/wallet?returnUrl=%2Fdashboard");
+  };
+
   return (
     <section
       id="home"
@@ -65,6 +109,7 @@ export function MonoHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
         >
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
             <Link
@@ -76,7 +121,66 @@ export function MonoHero() {
               Book a Demo
             </Link>
           </motion.div>
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              onClick={() => setLaunchOpen(true)}
+              className="h-auto rounded-full border-white/25 bg-transparent px-8 py-3.5 text-base font-semibold text-white hover:bg-white/10 hover:text-white"
+            >
+              Launch
+            </Button>
+          </motion.div>
         </motion.div>
+
+        <Dialog open={launchOpen} onOpenChange={handleLaunchOpenChange}>
+          <DialogContent className="border-white/10 bg-zinc-950 text-foreground sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-white">Enter invite code</DialogTitle>
+              <DialogDescription className="text-zinc-400">
+                Hypertron is invite-only during early access. Enter your code to continue to sign in.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleInviteSubmit} className="grid gap-4 py-2">
+              <div className="grid gap-2">
+                <Label htmlFor="hypertron-invite-code" className="text-zinc-300">
+                  Invite code
+                </Label>
+                <Input
+                  id="hypertron-invite-code"
+                  name="inviteCode"
+                  autoComplete="off"
+                  placeholder="e.g. INVITE101"
+                  value={inviteCode}
+                  onChange={(ev) => {
+                    setInviteCode(ev.target.value);
+                    if (inviteError) setInviteError(null);
+                  }}
+                  className="border-white/15 bg-black/40 text-white placeholder:text-zinc-600"
+                />
+                {inviteError ? (
+                  <p className="text-sm text-red-400" role="alert">
+                    {inviteError}
+                  </p>
+                ) : null}
+              </div>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-zinc-400 hover:text-white"
+                  onClick={() => handleLaunchOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-white text-black hover:bg-white/90">
+                  Continue
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Dashboard preview */}

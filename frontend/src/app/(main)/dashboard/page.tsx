@@ -28,7 +28,7 @@ function DashboardContent() {
     }
 
     setBusinessError(null);
-    fetch(`/api/business/profile?walletAddress=${encodeURIComponent(publicKey.trim())}`)
+    fetch("/api/business/profile", { credentials: "same-origin" })
       .then(async (res) => {
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {

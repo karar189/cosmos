@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { DB_UNAVAILABLE_MESSAGE, isPrismaConnectionError } from "@/lib/prisma-errors";
+import { requireSessionWallet } from "@/lib/require-session-wallet";
+import { isValidStellarAddress } from "@/lib/stellar-address";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "on_leave", "pending", "offboarded"]);
 const ALLOWED_PRIORITY = new Set(["low", "medium", "high"]);
-
-function isValidStellarAddress(addr: string): boolean {
-  const s = (addr || "").trim();
-  return s.length === 56 && s.startsWith("G");
-}
 
 async function resolveBusinessId(walletAddress: string): Promise<string | null> {
   const business = await db.business.findUnique({
@@ -34,14 +31,10 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
-    const { searchParams } = new URL(req.url);
-    const walletAddress = searchParams.get("walletAddress")?.trim() ?? "";
-    if (!isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress query required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
+
     const businessId = await resolveBusinessId(walletAddress);
     if (!businessId) return NextResponse.json({ error: "Employee not found" }, { status: 404 });
 
@@ -91,15 +84,11 @@ export async function PATCH(
 ) {
   try {
     const { id } = await context.params;
-    const body = await req.json().catch(() => ({}));
-    const walletAddress = typeof body.walletAddress === "string" ? body.walletAddress.trim() : "";
-    if (!isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
 
+    const body = await req.json().catch(() => ({}));
     const businessId = await resolveBusinessId(walletAddress);
     if (!businessId) return NextResponse.json({ error: "Employee not found" }, { status: 404 });
 
@@ -176,14 +165,9 @@ export async function DELETE(
 ) {
   try {
     const { id } = await context.params;
-    const { searchParams } = new URL(req.url);
-    const walletAddress = searchParams.get("walletAddress")?.trim() ?? "";
-    if (!isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "walletAddress query required (Stellar G..., 56 chars)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
 
     const businessId = await resolveBusinessId(walletAddress);
     if (!businessId) return NextResponse.json({ error: "Employee not found" }, { status: 404 });

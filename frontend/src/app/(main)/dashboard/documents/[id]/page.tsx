@@ -22,6 +22,7 @@ import { getTemplateById, type SavedTemplate, type DashboardWidget } from "@/lib
 import {
   bundleIdToTierId,
   getWorkspaceTierState,
+  hydrateWorkspaceTierFromProfile,
   markWorkspaceSidebarImported,
   persistTierFromOnboarding,
   WORKSPACE_TIER_UPDATED_EVENT,
@@ -201,6 +202,8 @@ export default function DashboardViewPage() {
   const [, startTransition] = useTransition();
   const [workspaceNavPending, setWorkspaceNavPending] = useState(false);
   const [sidebarImported, setSidebarImported] = useState(false);
+  /** Matches `Business.activeTemplateId` when loaded from `/api/business/profile`. */
+  const [serverActiveTemplateId, setServerActiveTemplateId] = useState<string | null>(null);
 
   const [template, setTemplate] = useState<SavedTemplate | null>(null);
 
@@ -211,20 +214,44 @@ export default function DashboardViewPage() {
   }, [pathname]);
 
   useEffect(() => {
+    if (!(publicKey?.trim().length === 56 && publicKey.startsWith("G"))) {
+      setServerActiveTemplateId(null);
+      return;
+    }
+    const load = () => {
+      fetch("/api/business/profile", { credentials: "same-origin" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          setServerActiveTemplateId(
+            typeof data?.activeTemplateId === "string" ? data.activeTemplateId : null
+          );
+        })
+        .catch(() => setServerActiveTemplateId(null));
+    };
+    load();
+    const onProfileUpdated = () => load();
+    window.addEventListener("profile-updated", onProfileUpdated);
+    return () => window.removeEventListener("profile-updated", onProfileUpdated);
+  }, [publicKey]);
+
+  useEffect(() => {
     const refreshImported = () => {
       const state = getWorkspaceTierState();
-      setSidebarImported(
+      const localMatch =
         Boolean(
           state?.sidebarImported &&
-          template?.bundleId &&
-          state.bundleId === template.bundleId
-        )
+            template?.bundleId &&
+            state.bundleId === template.bundleId
+        );
+      const serverMatch = Boolean(
+        template?.id && serverActiveTemplateId && serverActiveTemplateId === template.id
       );
+      setSidebarImported(localMatch || serverMatch);
     };
     refreshImported();
     window.addEventListener(WORKSPACE_TIER_UPDATED_EVENT, refreshImported);
     return () => window.removeEventListener(WORKSPACE_TIER_UPDATED_EVENT, refreshImported);
-  }, [template?.bundleId]);
+  }, [template?.bundleId, template?.id, serverActiveTemplateId]);
 
   useEffect(() => {
     if (!id) return;
@@ -310,14 +337,74 @@ export default function DashboardViewPage() {
               publicKey={publicKey}
               workspaceNavPending={workspaceNavPending}
               sidebarImported={sidebarImported}
-              onImportTier={() => {
+              onImportTier={async () => {
                 persistTierFromOnboarding({
                   bundleId: template.bundleId,
                   bundleName: template.bundleName,
                   businessName: template.businessName ?? "",
                 });
+                try {
+                  const res = await fetch("/api/business/profile", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "same-origin",
+                    body: JSON.stringify({ activeTemplateId: template.id }),
+                  });
+                  const data = res.ok ? ((await res.json().catch(() => null)) as Record<string, unknown> | null) : null;
+                  if (res.ok && data) {
+                    const activeTpl =
+                      data.activeTemplate &&
+                      typeof data.activeTemplate === "object" &&
+                      typeof (data.activeTemplate as { id?: string }).id === "string"
+                        ? (data.activeTemplate as {
+                            id: string;
+                            name?: string;
+                            bundleId?: string;
+                            bundleName?: string | null;
+                            businessName?: string | null;
+                          })
+                        : null;
+                    hydrateWorkspaceTierFromProfile({
+                      selectedTier: typeof data.selectedTier === "string" ? data.selectedTier : null,
+                      selectedTierName:
+                        typeof data.selectedTierName === "string" ? data.selectedTierName : null,
+                      businessName: typeof data.name === "string" ? data.name : null,
+                      activeTemplateId:
+                        typeof data.activeTemplateId === "string" ? data.activeTemplateId : null,
+                      activeTemplate: activeTpl
+                        ? {
+                            id: activeTpl.id,
+                            name: typeof activeTpl.name === "string" ? activeTpl.name : "",
+                            bundleId: typeof activeTpl.bundleId === "string" ? activeTpl.bundleId : "",
+                            bundleName:
+                              activeTpl.bundleName === null || typeof activeTpl.bundleName === "string"
+                                ? activeTpl.bundleName
+                                : null,
+                            businessName:
+                              activeTpl.businessName === null || typeof activeTpl.businessName === "string"
+                                ? activeTpl.businessName
+                                : null,
+                          }
+                        : null,
+                    });
+                    setServerActiveTemplateId(
+                      typeof data.activeTemplateId === "string" ? data.activeTemplateId : template.id
+                    );
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(new CustomEvent("profile-updated"));
+                    }
+                    toast.success(`${template.bundleName} imported to sidebar`);
+                    return;
+                  }
+                } catch {
+                  /* fall through to local-only */
+                }
                 markWorkspaceSidebarImported();
-                toast.success(`${template.bundleName} imported to sidebar`);
+                toast.success(`${template.bundleName} imported to sidebar (device only)`);
+                toast.message(
+                  "Cloud sync unavailable",
+                  { description: "Save your template to the account or try again to persist across logins." }
+                );
               }}
               onEditWorkspace={() => {
                 setWorkspaceNavPending(true);
