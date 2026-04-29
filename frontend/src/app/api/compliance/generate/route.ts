@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
-
-function isValidStellarAddress(addr: string): boolean {
-  const s = (addr || "").trim();
-  return s.length === 56 && s.startsWith("G");
-}
+import { requireSessionWallet } from "@/lib/require-session-wallet";
 
 /** Optional compliance form payload (from request body or DB complianceForm). */
 interface ComplianceFormPayload {
@@ -27,20 +23,17 @@ const COMPLIANCE_PYTHON_API_URL = process.env.COSMOS_AI_URL?.trim() || process.e
 
 /**
  * POST /api/compliance/generate
- * Body: { walletAddress: string, ...ComplianceFormPayload } (form fields optional; if omitted, use saved profile)
+ * Body: { ...ComplianceFormPayload } (wallet from session; form fields optional; if omitted, use saved profile)
  * Uses OpenAI to generate a regulatory & compliance checklist for the business.
  * Returns { items: { id: string, text: string }[] }
  */
 export async function POST(req: NextRequest) {
   try {
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const walletAddress = session;
+
     const body = await req.json().catch(() => ({}));
-    const walletAddress = (body.walletAddress ?? "").trim();
-    if (!walletAddress || !isValidStellarAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "Valid walletAddress (Stellar G...) required" },
-        { status: 400 }
-      );
-    }
 
     let business: { id: string; name: string | null; email: string | null; businessNature: string | null; complianceForm?: unknown } | null = null;
     try {

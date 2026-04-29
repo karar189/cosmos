@@ -16,6 +16,7 @@ import {
 import {
   getWorkspaceTierState,
   syncWorkspaceTierFromLatestTemplate,
+  hydrateWorkspaceTierFromProfile,
   workspaceSectionTitle,
   WORKSPACE_TIER_UPDATED_EVENT,
 } from "@/lib/workspace-tier-context";
@@ -41,13 +42,41 @@ export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
       setSelectedWidgets([]);
       return;
     }
-    fetch(`/api/business/profile?walletAddress=${encodeURIComponent(publicKey.trim())}`)
+    fetch("/api/business/profile", { credentials: "same-origin" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         const widgets = Array.isArray(data?.selectedWidgets)
           ? data.selectedWidgets.filter((w: unknown) => typeof w === "string")
           : [];
         setSelectedWidgets(widgets);
+        const activeTpl =
+          data?.activeTemplate &&
+          typeof data.activeTemplate === "object" &&
+          typeof data.activeTemplate.id === "string"
+            ? data.activeTemplate
+            : null;
+        hydrateWorkspaceTierFromProfile({
+          selectedTier: typeof data?.selectedTier === "string" ? data.selectedTier : null,
+          selectedTierName:
+            typeof data?.selectedTierName === "string" ? data.selectedTierName : null,
+          businessName: typeof data?.name === "string" ? data.name : null,
+          activeTemplateId: typeof data?.activeTemplateId === "string" ? data.activeTemplateId : null,
+          activeTemplate: activeTpl
+            ? {
+                id: activeTpl.id,
+                name: typeof activeTpl.name === "string" ? activeTpl.name : "",
+                bundleId: typeof activeTpl.bundleId === "string" ? activeTpl.bundleId : "",
+                bundleName:
+                  activeTpl.bundleName === null || typeof activeTpl.bundleName === "string"
+                    ? activeTpl.bundleName
+                    : null,
+                businessName:
+                  activeTpl.businessName === null || typeof activeTpl.businessName === "string"
+                    ? activeTpl.businessName
+                    : null,
+              }
+            : null,
+        });
       })
       .catch(() => {
         setSelectedWidgets([]);

@@ -52,7 +52,9 @@ export default function RegintelSetupPage() {
       setLoading(false);
       return;
     }
-    fetch(`/api/regintel/profile/org/${encodeURIComponent(publicKey)}`)
+    fetch(`/api/regintel/profile/org/${encodeURIComponent(publicKey)}`, {
+      credentials: "same-origin",
+    })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data) {
@@ -87,6 +89,7 @@ export default function RegintelSetupPage() {
     fetch("/api/regintel/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({
         orgId: publicKey,
         businessName: form.businessName || undefined,

@@ -17,10 +17,9 @@ services:
       - key: OPENAI_MODEL
         value: gpt-4o-mini
 
-      # IMPORTANT: update this to your frontend origin(s) in production
-      # e.g. "https://your-frontend.onrender.com"
+      # Hypertron production + local dev. Add preview origins in Render dashboard if needed.
       - key: CORS_ALLOW_ORIGINS
-        value: http://localhost:3000,http://127.0.0.1:3000
+        value: http://localhost:3000,http://127.0.0.1:3000,https://www.hypertron.space,https://hypertron.space
 
       # Optional: pin Python version for Render (also supported via .python-version)
       - key: PYTHON_VERSION

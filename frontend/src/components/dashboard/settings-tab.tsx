@@ -41,7 +41,7 @@ export function SettingsTab({ walletAddress }: SettingsTabProps) {
   useEffect(() => {
     if (walletAddress?.trim().length === 56 && walletAddress.startsWith("G")) {
       setLoading(true);
-      fetch(`/api/business/profile?walletAddress=${encodeURIComponent(walletAddress.trim())}`)
+      fetch("/api/business/profile", { credentials: "same-origin" })
         .then((res) => (res.ok ? res.json() : null))
         .then((profile) => {
           if (profile) {
@@ -74,8 +74,8 @@ export function SettingsTab({ walletAddress }: SettingsTabProps) {
       fetch("/api/business/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: walletAddress.trim(),
           name: data.name.trim(),
           email: data.email.trim(),
           businessNature: data.businessNature || null,

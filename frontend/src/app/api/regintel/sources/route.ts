@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { proxyRegintel } from "../proxy";
+import { requireRegintelSession } from "@/lib/regintel-guard";
 
 export async function GET(req: NextRequest) {
+  const guard = await requireRegintelSession(req);
+  if (guard instanceof NextResponse) return guard;
+
   const search = req.nextUrl.searchParams.toString();
   const path = `/api/regintel/sources${search ? `?${search}` : ""}`;
   const res = await proxyRegintel(path, { method: "GET" });
@@ -13,6 +17,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const guard = await requireRegintelSession(req);
+  if (guard instanceof NextResponse) return guard;
+
   const body = await req.json().catch(() => ({}));
   const res = await proxyRegintel("/api/regintel/sources", {
     method: "POST",

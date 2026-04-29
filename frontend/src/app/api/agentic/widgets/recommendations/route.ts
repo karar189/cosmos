@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireSessionWallet } from "@/lib/require-session-wallet";
 
 /**
  * Proxy to the Cosmos AI backend (ai-analyzer / cosmos-ai) to avoid browser CORS.
@@ -28,6 +29,9 @@ async function fetchWithRetry(input: string, init: RequestInit, attempts = 3) {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+
     const body = await req.json();
 
     const upstream = await fetchWithRetry(`${BASE_URL}/api/widgets/recommendations`, {

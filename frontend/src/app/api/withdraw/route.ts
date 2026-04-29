@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { executeWithdraw } from "@/lib/soroban-commit-server";
 import { sendPayout } from "@/lib/payout-server";
+import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
 
 const STELLAR_NETWORK = (process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet") as "testnet" | "public";
 
@@ -18,8 +19,12 @@ export async function GET(req: NextRequest) {
     if (!businessId?.trim()) {
       return NextResponse.json({ error: "businessId query required" }, { status: 400 });
     }
+    const bid = businessId.trim();
+    const auth = await requireBusinessOwnedBySession(req, bid);
+    if (auth instanceof NextResponse) return auth;
+
     const list = await db.withdrawal.findMany({
-      where: { businessId: businessId.trim() },
+      where: { businessId: bid },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -59,6 +64,9 @@ export async function POST(req: NextRequest) {
     if (!bid) {
       return NextResponse.json({ error: "businessId required" }, { status: 400 });
     }
+    const auth = await requireBusinessOwnedBySession(req, bid);
+    if (auth instanceof NextResponse) return auth;
+
     if (!amt || !/^\d+(\.\d+)?$/.test(amt)) {
       return NextResponse.json({ error: "Valid amount required" }, { status: 400 });
     }

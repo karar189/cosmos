@@ -2,7 +2,7 @@
  * Workspace product tier + business label for sidebar navigation.
  * Persisted in localStorage until backend exists.
  */
-import { loadSavedTemplates } from "@/lib/my-templates-storage";
+import { loadSavedTemplatesLocal } from "@/lib/my-templates-storage";
 
 export const WORKSPACE_TIER_STORAGE_KEY = "hypertron_workspace_tier_v1";
 
@@ -82,7 +82,7 @@ export function markWorkspaceSidebarImported(): void {
 export function syncWorkspaceTierFromLatestTemplate(): void {
   if (typeof window === "undefined") return;
   if (getWorkspaceTierState()) return;
-  const tpls = loadSavedTemplates();
+  const tpls = loadSavedTemplatesLocal();
   const latest = tpls[0];
   if (!latest?.bundleId || !isTierId(latest.bundleId)) return;
   setWorkspaceTierState({
@@ -90,6 +90,71 @@ export function syncWorkspaceTierFromLatestTemplate(): void {
     businessName: (latest.businessName ?? "").trim(),
     bundleName: latest.bundleName?.trim() || latest.bundleId,
     sidebarImported: false,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+export type ProfileActiveTemplate = {
+  id: string;
+  name: string;
+  bundleId: string;
+  bundleName: string | null;
+  businessName: string | null;
+};
+
+/**
+ * Hydrate workspace tier state from the server `business profile` response.
+ * When `activeTemplate` is present, sidebar import state matches the template saved in DB (login / new device).
+ */
+export function hydrateWorkspaceTierFromProfile(input: {
+  selectedTier: string | null | undefined;
+  selectedTierName: string | null | undefined;
+  businessName: string | null | undefined;
+  activeTemplateId?: string | null | undefined;
+  activeTemplate?: ProfileActiveTemplate | null;
+}): void {
+  if (typeof window === "undefined") return;
+
+  const tpl = input.activeTemplate;
+  const tierFromActiveTpl = tpl?.bundleId ? bundleIdToTierId(tpl.bundleId) : null;
+  const hasActive = Boolean(
+    input.activeTemplateId &&
+      tpl?.id &&
+      tpl.id === input.activeTemplateId &&
+      tierFromActiveTpl
+  );
+
+  const bundleId = hasActive ? tierFromActiveTpl! : bundleIdToTierId(input.selectedTier ?? undefined);
+  if (!bundleId) return;
+
+  const bundleName =
+    hasActive && (tpl?.bundleName?.trim() ?? "")
+      ? (tpl!.bundleName as string).trim()
+      : (input.selectedTierName ?? "").trim() || bundleId;
+
+  const businessName =
+    hasActive && (tpl?.businessName?.trim() || tpl?.name?.trim())
+      ? (tpl!.businessName ?? tpl!.name ?? "").trim()
+      : (input.businessName ?? "").trim();
+
+  const sidebarImported = Boolean(hasActive && bundleId);
+
+  const current = getWorkspaceTierState();
+  if (
+    current &&
+    current.bundleId === bundleId &&
+    current.bundleName === bundleName &&
+    current.businessName === businessName &&
+    current.sidebarImported === sidebarImported
+  ) {
+    return;
+  }
+
+  setWorkspaceTierState({
+    bundleId,
+    businessName,
+    bundleName,
+    sidebarImported,
     updatedAt: new Date().toISOString(),
   });
 }

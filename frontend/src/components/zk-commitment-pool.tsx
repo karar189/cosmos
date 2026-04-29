@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { signTransaction } from "@stellar/freighter-api";
 import {
   fetchPoolState,
   prepareInitialize,
@@ -34,8 +35,7 @@ function normalizePoolError(message: string): string {
 }
 
 async function signWithFreighter(xdr: string, address: string): Promise<string> {
-  const Freighter = (await import("@stellar/freighter-api")).default;
-  const result = await Freighter.signTransaction(xdr, {
+  const result = await signTransaction(xdr, {
     networkPassphrase: getNetworkPassphrase(NETWORK),
     address,
   });

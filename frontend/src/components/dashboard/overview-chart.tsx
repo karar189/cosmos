@@ -47,7 +47,9 @@ export function OverviewChart({ businessId, onboardingIncomplete }: OverviewChar
 
     setLoading(true);
     setError(null);
-    fetch(`/api/events?businessId=${encodeURIComponent(businessId)}`)
+    fetch(`/api/events?businessId=${encodeURIComponent(businessId)}`, {
+      credentials: "same-origin",
+    })
       .then(async (res) => {
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {

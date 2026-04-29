@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Loader2, Wrench } from "lucide-react";
+import { ArrowUpRight, CheckCheck, Loader2, Upload, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
@@ -21,6 +21,8 @@ type TierSavedTemplateViewProps = {
   widgets: DashboardWidget[];
   publicKey: string;
   workspaceNavPending: boolean;
+  sidebarImported: boolean;
+  onImportTier: () => void;
   onEditWorkspace: () => void;
   onPrefetchWorkspace: () => void;
   formatDate: (iso: string) => string;
@@ -33,6 +35,8 @@ export function TierSavedTemplateView({
   widgets,
   publicKey,
   workspaceNavPending,
+  sidebarImported,
+  onImportTier,
   onEditWorkspace,
   onPrefetchWorkspace,
   formatDate,
@@ -70,22 +74,43 @@ export function TierSavedTemplateView({
             <p className="text-sm text-white/45">Open the full workspace to rearrange widgets.</p>
           </CardContent>
           <div className="px-5 pb-4">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full rounded-full border-white/20 bg-white/[0.06] text-white hover:bg-white/[0.12] sm:w-auto"
-              disabled={workspaceNavPending}
-              onClick={onEditWorkspace}
-              onMouseEnter={onPrefetchWorkspace}
-            >
-              {workspaceNavPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-              ) : (
-                <Wrench className="mr-2 h-4 w-4" aria-hidden />
-              )}
-              {workspaceNavPending ? "Opening workspace…" : "Edit in workspace"}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                variant={sidebarImported ? "subtle" : "outline"}
+                size="sm"
+                className={cn(
+                  "rounded-full sm:w-auto",
+                  sidebarImported
+                    ? "border border-emerald-400/30 bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/20"
+                    : "border-white/20 bg-white/[0.06] text-white hover:bg-white/[0.12]"
+                )}
+                onClick={onImportTier}
+              >
+                {sidebarImported ? (
+                  <CheckCheck className="mr-2 h-4 w-4" aria-hidden />
+                ) : (
+                  <Upload className="mr-2 h-4 w-4" aria-hidden />
+                )}
+                {sidebarImported ? "Imported to sidebar" : "Import to sidebar"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-full border-white/20 bg-white/[0.06] text-white hover:bg-white/[0.12] sm:w-auto"
+                disabled={workspaceNavPending}
+                onClick={onEditWorkspace}
+                onMouseEnter={onPrefetchWorkspace}
+              >
+                {workspaceNavPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                ) : (
+                  <Wrench className="mr-2 h-4 w-4" aria-hidden />
+                )}
+                {workspaceNavPending ? "Opening workspace…" : "Edit in workspace"}
+              </Button>
+            </div>
           </div>
         </Card>
       </div>

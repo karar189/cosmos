@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { resolveAppBaseUrl } from "@/lib/app-base-url";
+import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
 
 /** Pool address where payment-link funds are sent. When set, all links pay here (business.receiveAddress is for withdraws only). */
 const PAYMENT_POOL_ADDRESS = (
@@ -33,6 +34,8 @@ export async function POST(req: NextRequest) {
     if (!bid) {
       return NextResponse.json({ error: "businessId required" }, { status: 400 });
     }
+    const auth = await requireBusinessOwnedBySession(req, bid);
+    if (auth instanceof NextResponse) return auth;
     if (!isFlexible && !amt) {
       return NextResponse.json({ error: "amount required (or set flexibleAmount: true for pay-any-amount link)" }, { status: 400 });
     }
@@ -103,6 +106,9 @@ export async function GET(req: NextRequest) {
     if (!businessId) {
       return NextResponse.json({ error: "businessId query required" }, { status: 400 });
     }
+
+    const auth = await requireBusinessOwnedBySession(req, businessId);
+    if (auth instanceof NextResponse) return auth;
 
     const links = await db.paymentLink.findMany({
       where: { businessId },

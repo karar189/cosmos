@@ -40,7 +40,9 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(`/api/payment-link?businessId=${encodeURIComponent(businessId)}`);
+      const res = await fetch(`/api/payment-link?businessId=${encodeURIComponent(businessId)}`, {
+        credentials: "same-origin",
+      });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(

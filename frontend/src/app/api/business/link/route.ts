@@ -1,27 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
+import { requireSessionWallet } from "@/lib/require-session-wallet";
+import { isValidStellarAddress } from "@/lib/stellar-address";
 
-/** Stellar public keys are G..., 56 chars. */
-function isValidStellarAddress(addr: string): boolean {
-  const s = addr.trim();
-  return s.length === 56 && s.startsWith("G");
-}
-
-/** Get or create a business by wallet address. Optional body: receiveAddress (Stellar G...). Returns { businessId, receiveAddress }. */
+/** Get or create a business for the signed-in wallet. Optional body: receiveAddress (Stellar G...). Returns { businessId, receiveAddress }. */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const walletAddress = body.walletAddress;
-    const receiveAddress = body.receiveAddress;
-    const address = typeof walletAddress === "string" ? walletAddress.trim() : "";
-    if (!address || !isValidStellarAddress(address)) {
-      return NextResponse.json(
-        { error: "walletAddress required (Stellar G... address, 56 characters)" },
-        { status: 400 }
-      );
-    }
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const address = session;
 
+    const body = await req.json();
+    const receiveAddress = body.receiveAddress;
     let business = await db.business.findUnique({
       where: { walletAddress: address },
     });
@@ -63,19 +54,15 @@ export async function POST(req: NextRequest) {
   }
 }
 
-/** Update receive address for the business identified by wallet. Body: { walletAddress, receiveAddress }. */
+/** Update receive address for the signed-in business. Body: { receiveAddress }. */
 export async function PATCH(req: NextRequest) {
   try {
+    const session = await requireSessionWallet(req);
+    if (session instanceof NextResponse) return session;
+    const address = session;
+
     const body = await req.json();
-    const walletAddress = body.walletAddress;
     const receiveAddress = body.receiveAddress;
-    const address = typeof walletAddress === "string" ? walletAddress.trim() : "";
-    if (!address || !isValidStellarAddress(address)) {
-      return NextResponse.json(
-        { error: "walletAddress required (Stellar G... address, 56 characters)" },
-        { status: 400 }
-      );
-    }
     const g = typeof receiveAddress === "string" ? receiveAddress.trim() : "";
     if (!g || !isValidStellarAddress(g)) {
       return NextResponse.json(

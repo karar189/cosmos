@@ -32,7 +32,7 @@ export default function DocumentVaultPage() {
       return;
     }
     setLoading(true);
-    fetch(`/api/vault?walletAddress=${encodeURIComponent(publicKey.trim())}`)
+    fetch("/api/vault", { credentials: "same-origin" })
       .then((res) => (res.ok ? res.json() : { items: [] }))
       .then((data) => setItems(data.items ?? []))
       .catch(() => setItems([]))

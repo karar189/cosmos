@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useSearchParams } from "next/navigation";
+import { getNetwork, signTransaction } from "@stellar/freighter-api";
 import { useFreighter } from "@/hooks/useFreighter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,10 +105,8 @@ export default function PayPage() {
     setPayError(null);
     setPayStatus("building");
 
-    const Freighter = (await import("@stellar/freighter-api")).default;
-
     const configuredNetwork = STELLAR_NETWORK;
-    const walletNetworkRes = await Freighter.getNetwork?.().catch(() => null);
+    const walletNetworkRes = await getNetwork().catch(() => null);
     const walletNetwork =
       stellarNetworkFromPassphrase(walletNetworkRes?.networkPassphrase) ??
       stellarNetworkFromName(walletNetworkRes?.network);
@@ -173,7 +172,7 @@ export default function PayPage() {
     }
 
     setPayStatus("signing");
-    const signResult = await Freighter.signTransaction(buildResult.xdr, {
+    const signResult = await signTransaction(buildResult.xdr, {
       networkPassphrase,
       address: publicKey,
     });

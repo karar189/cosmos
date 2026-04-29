@@ -92,6 +92,7 @@ export function WithdrawTab({ businessId, walletAddress, receiveAddress }: Withd
       const res = await fetch("/api/withdraw", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ businessId, amount: amt, recipientAddress: recipient.trim() || undefined }),
       });
       const data = await res.json();
