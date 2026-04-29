@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { signTransaction } from "@stellar/freighter-api";
 import {
   fetchPoolState,
   prepareInitialize,
@@ -26,14 +27,15 @@ function normalizePoolError(message: string): string {
     return "Use a standard Stellar account (G...). Muxed accounts (M...) are not supported for this action.";
   }
   if (message.includes("Account not found")) {
-    return "Account not found on this network. Fund it with testnet XLM first (e.g. via Friendbot).";
+    return NETWORK === "testnet"
+      ? "Account not found on this network. Fund it with testnet XLM first (e.g. via Friendbot)."
+      : "Account not found on this network. Fund this account with XLM on mainnet first.";
   }
   return message;
 }
 
 async function signWithFreighter(xdr: string, address: string): Promise<string> {
-  const Freighter = (await import("@stellar/freighter-api")).default;
-  const result = await Freighter.signTransaction(xdr, {
+  const result = await signTransaction(xdr, {
     networkPassphrase: getNetworkPassphrase(NETWORK),
     address,
   });

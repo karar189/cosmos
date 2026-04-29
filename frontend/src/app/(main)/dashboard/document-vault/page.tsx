@@ -32,7 +32,7 @@ export default function DocumentVaultPage() {
       return;
     }
     setLoading(true);
-    fetch(`/api/vault?walletAddress=${encodeURIComponent(publicKey.trim())}`)
+    fetch("/api/vault", { credentials: "same-origin" })
       .then((res) => (res.ok ? res.json() : { items: [] }))
       .then((data) => setItems(data.items ?? []))
       .catch(() => setItems([]))
@@ -72,15 +72,15 @@ export default function DocumentVaultPage() {
               Document vault
             </h1>
             <p className="text-muted-foreground mt-1">
-              Saved compliance checklists and other documents. Generate a new checklist from the Compliance checker.
+              Saved compliance checklists and other documents. Generate a new checklist from the Compliance Agent.
             </p>
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() => router.push("/dashboard/compliance-checker")}
+              onClick={() => router.push("/dashboard/compliance-agent")}
             >
               <ShieldCheck className="mr-2 h-4 w-4" />
-              Open Compliance checker
+              Open Compliance Agent
             </Button>
           </div>
 
@@ -94,10 +94,10 @@ export default function DocumentVaultPage() {
                 <FolderArchive className="h-12 w-12 text-muted-foreground mb-3" />
                 <p className="text-muted-foreground mb-2">No saved checklists yet.</p>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Use the Compliance checker to generate a regulatory checklist, then save it here.
+                  Use the Compliance Agent to generate a regulatory checklist, then save it here.
                 </p>
-                <Button onClick={() => router.push("/dashboard/compliance-checker")}>
-                  Go to Compliance checker
+                <Button onClick={() => router.push("/dashboard/compliance-agent")}>
+                  Go to Compliance Agent
                 </Button>
               </CardContent>
             </Card>

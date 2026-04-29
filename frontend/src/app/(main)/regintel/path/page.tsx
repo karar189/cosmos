@@ -39,7 +39,9 @@ export default function RegintelPathPage() {
       return;
     }
     setProfileLoading(true);
-    fetch(`/api/regintel/profile/org/${encodeURIComponent(publicKey)}`)
+    fetch(`/api/regintel/profile/org/${encodeURIComponent(publicKey)}`, {
+      credentials: "same-origin",
+    })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         setProfile(data || null);
@@ -55,6 +57,7 @@ export default function RegintelPathPage() {
     fetch("/api/regintel/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({ profileId: profile.id, force: !!force }),
     })
       .then((res) => {

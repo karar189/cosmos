@@ -9,7 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-/* ── Shared card shell ─────────────────────────────────────────── */
+/* Shared card shell */
 function ServiceCard({
   children,
   className = "",
@@ -48,7 +48,7 @@ function ServiceCard({
   );
 }
 
-/* ── Card 1 — Automate onboarding steps ───────────────────────── */
+/* Card 1: Automate onboarding steps */
 const tasks = [
   { label: "Client KYC",         icon: <Users className="size-4" />,      done: true  },
   { label: "Document upload",    icon: <FileText className="size-4" />,   done: false },
@@ -99,7 +99,7 @@ function TaskCard() {
   );
 }
 
-/* ── Card 2 — One workflow link ────────────────────────────────── */
+/* Card 2: Guided client journey */
 const SANKEY_PATHS = [
   { d: "M 90,107 C 230,107 260,22  440,22",  delay: 0    },
   { d: "M 90,107 C 230,107 260,74  440,74",  delay: 0.5  },
@@ -184,16 +184,16 @@ function WorkflowCard() {
       </div>
 
       <div className="relative z-10 mt-2 text-left">
-        <h3 className="text-xl font-semibold text-white leading-snug">One workflow link</h3>
+        <h3 className="text-xl font-semibold text-white leading-snug">Guided client journeys</h3>
         <p className="mt-2 text-sm text-white/45 leading-relaxed max-w-sm">
-          Share a single link. Clients complete onboarding, upload docs, and pay — no manual chasing.
+          One structured flow per deal: onboarding, documents, and settlement status without spreadsheet chaos.
         </p>
       </div>
     </ServiceCard>
   );
 }
 
-/* ── Card 3 — Real-time deal tracking ─────────────────────────── */
+/* Card 3: Real-time deal tracking */
 const RADAR_BLIPS = [
   { angle: 40,  r: 0.52 },
   { angle: 115, r: 0.38 },
@@ -280,7 +280,7 @@ function TrackingCard() {
   );
 }
 
-/* ── Card 4 — Smart compliance checks ─────────────────────────── */
+/* Card 4: Smart compliance checks */
 const codeLines = [
   { indent: 0, text: "def run_kyb_check(self, entity_id):",         dim: false },
   { indent: 1, text: 'self.status = "pending_review"',              dim: true  },
@@ -335,7 +335,7 @@ function ComplianceCard() {
   );
 }
 
-/* ── Card 5 — Escrow & milestone settlements ──────────────────── */
+/* Card 5: Escrow & milestone settlements */
 const barHeights = [40, 58, 50, 70, 62, 78, 68, 88, 72];
 
 function EscrowCard() {
@@ -372,14 +372,16 @@ function EscrowCard() {
       </div>
 
       <div className="shrink-0 pt-4 pb-2 text-left">
-        <h3 className="text-base font-semibold text-white">Escrow & milestone settlements</h3>
-        <p className="mt-1 text-xs text-white/50 leading-relaxed">Funds held securely and released only when conditions are met.</p>
+        <h3 className="text-base font-semibold text-white">Pool, escrow &amp; private payout</h3>
+        <p className="mt-1 text-xs text-white/50 leading-relaxed">
+          Milestone releases and pool-based settlement on Stellar, with paths toward private payout and relayer-style execution.
+        </p>
       </div>
     </ServiceCard>
   );
 }
 
-/* ── Exported section ──────────────────────────────────────────── */
+/* Exported section */
 export function FeaturesBento() {
   return (
     <div className="mt-20 max-w-5xl mx-auto grid grid-cols-1 gap-4

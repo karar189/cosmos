@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter } from "next/navigation";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { CreatePaymentLinkForm } from "@/components/create-payment-link-form";
 import { PaymentLinkList } from "@/components/payment-link-list";
 import { PayAnyAmountCard } from "@/components/pay-any-amount-card";
@@ -16,21 +17,44 @@ export default function PaymentLinksPage() {
   const [businessError, setBusinessError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!publicKey) { setBusinessId(null); return; }
     let cancelled = false;
-    fetch("/api/business/link", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ walletAddress: publicKey }),
-    })
-      .then((res) => res.json())
+
+    if (!publicKey) {
+      setBusinessId(null);
+      setBusinessError(null);
+      return;
+    }
+
+    setBusinessError(null);
+    fetch("/api/business/profile", { credentials: "same-origin" })
+      .then(async (res) => {
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(
+            typeof json?.error === "string" ? json.error : `Failed to load profile (${res.status})`
+          );
+        }
+        return json as { businessId?: string };
+      })
       .then((data) => {
         if (cancelled) return;
-        if (data.businessId) setBusinessId(data.businessId);
-        else setBusinessError(data.error || "Could not load business");
+        if (typeof data.businessId === "string" && data.businessId.trim()) {
+          setBusinessId(data.businessId.trim());
+          setBusinessError(null);
+          return;
+        }
+        setBusinessId(null);
+        setBusinessError("Business profile not found for this wallet.");
       })
-      .catch(() => { if (!cancelled) setBusinessError("Could not connect to backend"); });
-    return () => { cancelled = true; };
+      .catch((e) => {
+        if (cancelled) return;
+        setBusinessId(null);
+        setBusinessError(e instanceof Error ? e.message : "Could not load business profile");
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [publicKey]);
 
   if (!publicKey) {
@@ -45,17 +69,11 @@ export default function PaymentLinksPage() {
   return (
     <DashboardMain>
       <div className="flex flex-col gap-8">
-        {/* Page heading */}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Payment Links</h1>
-          <p className="mt-1 text-sm text-white/40">Create and manage your Stellar payment links.</p>
-        </div>
-
-        {businessError && (
-          <p className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-            {businessError}
-          </p>
-        )}
+        <DashboardPageHeader
+          eyebrow="Payments"
+          title="Payment links"
+          description="Create and manage your Stellar payment links."
+        />
 
         {businessId ? (
           <div className="flex flex-col gap-6">
@@ -67,7 +85,9 @@ export default function PaymentLinksPage() {
           </div>
         ) : !businessError ? (
           <p className="text-white/30 text-sm">Loading…</p>
-        ) : null}
+        ) : (
+          <p className="text-destructive text-sm">{businessError}</p>
+        )}
       </div>
     </DashboardMain>
   );

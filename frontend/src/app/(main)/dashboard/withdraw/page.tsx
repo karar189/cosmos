@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter } from "next/navigation";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { WithdrawTab } from "@/components/dashboard/withdraw-tab";
+import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
 
 export default function WithdrawPage() {
   const router = useRouter();
@@ -13,25 +15,23 @@ export default function WithdrawPage() {
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [receiveAddress, setReceiveAddress] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
-    if (!publicKey) { setBusinessId(null); return; }
-    let cancelled = false;
-    fetch("/api/business/link", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ walletAddress: publicKey }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled) return;
-        if (data.businessId) {
-          setBusinessId(data.businessId);
-          setReceiveAddress(data.receiveAddress ?? null);
-        } else setBusinessError(data.error || "Could not load business");
-      })
-      .catch(() => { if (!cancelled) setBusinessError("Could not connect to backend"); });
-    return () => { cancelled = true; };
+    if (!publicKey) {
+      setBusinessId(null);
+      setBusinessError(null);
+      setUsingFallback(false);
+      return;
+    }
+
+    if (USE_MOCK_DASHBOARD_DATA) {
+      setBusinessId(fallbackBusiness.businessId);
+      setReceiveAddress(fallbackBusiness.receiveAddress);
+      setBusinessError(null);
+      setUsingFallback(true);
+      return;
+    }
   }, [publicKey]);
 
   if (!publicKey) {
@@ -46,16 +46,11 @@ export default function WithdrawPage() {
   return (
     <DashboardMain>
       <div className="flex flex-col gap-8">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Withdraw</h1>
-          <p className="mt-1 text-sm text-white/40">Transfer funds to your Stellar address.</p>
-        </div>
-
-        {businessError && (
-          <p className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-            {businessError}
-          </p>
-        )}
+        <DashboardPageHeader
+          eyebrow="Treasury"
+          title="Withdraw"
+          description="Transfer settled funds to your Stellar receive address."
+        />
 
         {businessId ? (
           <WithdrawTab businessId={businessId} walletAddress={publicKey} receiveAddress={receiveAddress} />

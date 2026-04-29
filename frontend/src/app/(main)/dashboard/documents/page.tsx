@@ -1,33 +1,94 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { FileText, Database, Wrench, ExternalLink, Pencil } from "lucide-react";
+import { useState, useEffect, useTransition, useCallback } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import {
+  FileText,
+  Database,
+  Wrench,
+  ExternalLink,
+  Pencil,
+  Loader2,
+} from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { ThemeSwitch } from "@/components/dashboard/theme-switch";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useFreighter } from "@/hooks/useFreighter";
 import { loadSavedTemplates, type SavedTemplate } from "@/lib/my-templates-storage";
+import { useOnboardingUi } from "@/components/onboarding";
+import { cn } from "@/utils";
+
+function formatSavedAt(iso: string) {
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return "";
+  }
+}
 
 export default function MyTemplatesPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const { publicKey, disconnect, isConnecting } = useFreighter();
+  const { isOnboardingComplete, openOnboardingQuiz } = useOnboardingUi();
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
+  const [, startTransition] = useTransition();
+  /** Tracks which row action is navigating: `open:id` | `edit:id` */
+  const [pendingNav, setPendingNav] = useState<string | null>(null);
 
   useEffect(() => {
-    setTemplates(loadSavedTemplates());
-  }, []);
+    let cancelled = false;
+    loadSavedTemplates(publicKey)
+      .then((list) => {
+        if (!cancelled) setTemplates(list);
+      })
+      .catch(() => {
+        if (!cancelled) setTemplates([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [publicKey]);
+
+  useEffect(() => {
+    if (!pathname) return;
+    if (pathname.startsWith("/dashboard/workspace")) {
+      setPendingNav(null);
+      return;
+    }
+    if (/^\/dashboard\/documents\/.+/.test(pathname)) {
+      setPendingNav(null);
+    }
+  }, [pathname]);
 
   const hasTemplates = templates.length > 0;
 
+  const runNav = useCallback(
+    (key: string, href: string) => {
+      setPendingNav(key);
+      startTransition(() => {
+        router.push(href);
+      });
+    },
+    [router]
+  );
+
   const openTemplate = (id: string) => {
-    router.push(`/dashboard/documents/${encodeURIComponent(id)}`);
+    runNav(`open:${id}`, `/dashboard/documents/${encodeURIComponent(id)}`);
   };
 
   const editTemplate = (id: string) => {
-    router.push(`/dashboard/workspace?template=${encodeURIComponent(id)}`);
+    runNav(
+      `edit:${id}`,
+      `/dashboard/workspace?template=${encodeURIComponent(id)}`
+    );
   };
 
   if (!publicKey) {
@@ -56,86 +117,150 @@ export default function MyTemplatesPage() {
         </div>
       </DashboardHeader>
       <DashboardMain>
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-1">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h1 className="text-3xl font-bold tracking-tight">My Templates</h1>
+        <div className="flex flex-col gap-8">
+          <DashboardPageHeader
+            eyebrow="Documents"
+            title="My templates"
+            description="Saved from Compliance Maker. Open a read-only dashboard preview, or edit layouts in the workspace."
+            end={
               <Button
+                type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/dashboard/onboarding")}
+                disabled={!!pendingNav}
+                className="rounded-full border-white/15 bg-white/[0.06] text-foreground hover:bg-white/10"
+                onClick={() => {
+                  if (!isOnboardingComplete) {
+                    openOnboardingQuiz();
+                    return;
+                  }
+                  startTransition(() => {
+                    router.push("/dashboard/workspace");
+                  });
+                }}
               >
                 <Wrench className="mr-2 h-4 w-4" />
                 Create template
               </Button>
+            }
+          />
+
+          <section className="rounded-2xl border border-white/[0.12] bg-transparent p-1 backdrop-blur-xl">
+            <div className="rounded-xl border border-white/[0.06] bg-black/20 px-5 py-4 sm:px-6">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold tracking-tight text-foreground">All templates</h2>
+                  <p className="text-xs text-muted-foreground">
+                    {hasTemplates ? `${templates.length} saved` : "Nothing saved yet"}
+                  </p>
+                </div>
+              </div>
             </div>
-            <p className="text-muted-foreground">
-              Templates saved from Compliance Maker. Open to view your dashboard, or Edit to customize.
-            </p>
-          </div>
 
-          <Card className="rounded-xl border-border bg-card">
-            <CardContent className="p-6">
-              <h2 className="text-lg font-semibold mb-4">All templates</h2>
-
+            <div className="p-4 sm:p-5">
               {!hasTemplates ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Database className="h-14 w-14 text-muted-foreground/60 mb-4" />
-                  <p className="text-muted-foreground font-medium">No templates yet</p>
-                  <p className="mt-1 text-sm text-muted-foreground max-w-sm">
-                    Build one in Compliance Maker (Onboarding) and save it here.
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.12] bg-white/[0.02] px-6 py-16 text-center">
+                  <Database className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                  <p className="font-medium text-foreground">No templates yet</p>
+                  <p className="mt-1 max-w-md text-sm text-muted-foreground">
+                    Run the onboarding quiz and save a bundle — it will show up here.
                   </p>
                   <Button
-                    variant="primary"
-                    size="sm"
-                    className="mt-4"
-                    onClick={() => router.push("/dashboard/onboarding")}
+                    type="button"
+                    variant="outline"
+                    className="mt-6 rounded-full border-white/20"
+                    onClick={() => {
+                      if (!isOnboardingComplete) {
+                        openOnboardingQuiz();
+                        return;
+                      }
+                      startTransition(() => {
+                        router.push("/dashboard/workspace");
+                      });
+                    }}
                   >
                     <Wrench className="mr-2 h-4 w-4" />
                     Open Compliance Maker
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {templates.map((t) => (
-                    <div
-                      key={t.id}
-                      className="flex items-center gap-4 rounded-lg border border-border bg-muted/30 px-4 py-3 transition-colors hover:bg-muted/50"
-                    >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                        <FileText className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-foreground truncate">{t.name}</p>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {t.bundleName}
-                          {t.businessName ? ` · ${t.businessName}` : ""}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => openTemplate(t.id)}
+                <ul className="flex flex-col gap-3">
+                  {templates.map((t) => {
+                    const savedLabel = formatSavedAt(t.savedAt);
+                    const isOpenPending = pendingNav === `open:${t.id}`;
+                    const isEditPending = pendingNav === `edit:${t.id}`;
+                    const workspaceHref = `/dashboard/workspace?template=${encodeURIComponent(t.id)}`;
+
+                    return (
+                      <li key={t.id}>
+                        <div
+                          className={cn(
+                            "flex flex-col gap-4 rounded-2xl border border-white/[0.1] bg-white/[0.03] p-4 transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-5",
+                            "hover:border-amber-400/25 hover:bg-white/[0.05]"
+                          )}
                         >
-                          <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                          Open
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => editTemplate(t.id)}
-                        >
-                          <Pencil className="mr-1.5 h-3.5 w-3.5" />
-                          Edit
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                          <div className="flex min-w-0 flex-1 items-start gap-4">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06]">
+                              <FileText className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                            <div className="min-w-0 flex-1 space-y-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="truncate font-medium text-foreground">{t.name}</p>
+                                <Badge
+                                  variant="secondary"
+                                  className="shrink-0 rounded-full border border-white/10 bg-white/[0.06] text-[10px] font-medium uppercase tracking-wide text-muted-foreground"
+                                >
+                                  {t.bundleName}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {savedLabel ? `Saved ${savedLabel}` : "Saved template"}
+                                {t.businessName ? ` · ${t.businessName}` : ""}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              disabled={!!pendingNav}
+                              className="rounded-full border-white/15 bg-white/[0.06] text-white hover:border-white/25 hover:bg-white/[0.14] hover:text-white"
+                              onClick={() => openTemplate(t.id)}
+                              onMouseEnter={() => router.prefetch(`/dashboard/documents/${encodeURIComponent(t.id)}`)}
+                            >
+                              {isOpenPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                              ) : (
+                                <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                              )}
+                              {isOpenPending ? "Opening…" : "Open"}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              disabled={!!pendingNav}
+                              className="rounded-full border-white/15 bg-transparent text-white/90 hover:border-white/25 hover:bg-white/[0.1] hover:text-white"
+                              onClick={() => editTemplate(t.id)}
+                              onMouseEnter={() => router.prefetch(workspaceHref)}
+                            >
+                              {isEditPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                              ) : (
+                                <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                              )}
+                              {isEditPending ? "Loading…" : "Edit"}
+                            </Button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </div>
       </DashboardMain>
     </>

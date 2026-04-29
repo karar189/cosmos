@@ -66,9 +66,7 @@ export function TransactionAnalyticsChart({ walletAddress, height = 280 }: Props
     }
     setLoading(true);
     setError(null);
-    fetch(
-      `/api/transaction-analytics?walletAddress=${encodeURIComponent(walletAddress)}&days=${days}`
-    )
+    fetch(`/api/transaction-analytics?days=${days}`, { credentials: "same-origin" })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load transaction data");
         return res.json();

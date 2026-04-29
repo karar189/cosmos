@@ -2,8 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { User, Settings as SettingsIcon, Palette, Bell, Monitor, Plus, CheckCheck } from "lucide-react";
+import {
+  User,
+  Settings as SettingsIcon,
+  Layers3,
+  Plus,
+  CheckCheck,
+} from "lucide-react";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,19 +25,27 @@ import {
   type OnboardingData,
 } from "@/components/onboarding/onboarding-modal";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ThemeSwitch } from "@/components/dashboard/theme-switch";
+import { hydrateWorkspaceTierFromProfile } from "@/lib/workspace-tier-context";
 
-type SettingsSection = "profile" | "account" | "appearance" | "notifications" | "display";
+type SettingsSection =
+  | "profile"
+  | "account"
+  | "plan";
+
+const PLAN_OPTIONS = [
+  { id: "tier-1", name: "Tier 1", description: "Payments foundation, employee management, and compliance analysis." },
+  { id: "tier-2", name: "Tier 2", description: "Tier 1 plus opt-in privacy, compliance execution, and RNS." },
+  { id: "tier-3", name: "Tier 3", description: "Tier 2 plus escrow-based project management." },
+] as const;
 
 const navItems: { id: SettingsSection; label: string; icon: React.ElementType }[] = [
   { id: "profile",       label: "Profile",       icon: User },
   { id: "account",       label: "Account",        icon: SettingsIcon },
-  { id: "appearance",    label: "Appearance",     icon: Palette },
-  { id: "notifications", label: "Notifications",  icon: Bell },
-  { id: "display",       label: "Display",        icon: Monitor },
+  { id: "plan",          label: "Plan",           icon: Layers3 },
 ];
 
-const inputCls = "bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 h-9";
+const inputCls =
+  "h-9 border border-white/[0.1] bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:border-white/25 focus:ring-0";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -42,13 +57,17 @@ export default function SettingsPage() {
   const [urls, setUrls] = useState<string[]>([""]);
   const [businessNature, setBusinessNature] = useState("");
   const [selectedWidgets, setSelectedWidgets] = useState<string[]>([]);
+  const [selectedTier, setSelectedTier] = useState<string>("tier-2");
+  const [selectedTierName, setSelectedTierName] = useState<string>("Tier 2");
   const [saved, setSaved] = useState(false);
+  const [planSaved, setPlanSaved] = useState(false);
+  const [savingPlan, setSavingPlan] = useState(false);
   const [loading, setLoading] = useState(!!publicKey);
 
   useEffect(() => {
     if (publicKey?.trim().length === 56 && publicKey.startsWith("G")) {
       setLoading(true);
-      fetch(`/api/business/profile?walletAddress=${encodeURIComponent(publicKey.trim())}`)
+      fetch("/api/business/profile", { credentials: "same-origin" })
         .then((res) => (res.ok ? res.json() : null))
         .then((profile) => {
           if (profile) {
@@ -56,6 +75,44 @@ export default function SettingsPage() {
             setEmail(profile.email ?? "");
             setBusinessNature(profile.businessNature ?? "");
             setSelectedWidgets(Array.isArray(profile.selectedWidgets) ? profile.selectedWidgets : []);
+            const tierFromProfile =
+              typeof profile.selectedTier === "string" && profile.selectedTier.trim().length > 0
+                ? profile.selectedTier.trim()
+                : "tier-2";
+            const tierNameFromProfile =
+              typeof profile.selectedTierName === "string" && profile.selectedTierName.trim().length > 0
+                ? profile.selectedTierName.trim()
+                : PLAN_OPTIONS.find((p) => p.id === tierFromProfile)?.name ?? "Tier 2";
+            setSelectedTier(tierFromProfile);
+            setSelectedTierName(tierNameFromProfile);
+            const activeTpl =
+              profile?.activeTemplate &&
+              typeof profile.activeTemplate === "object" &&
+              typeof profile.activeTemplate.id === "string"
+                ? profile.activeTemplate
+                : null;
+            hydrateWorkspaceTierFromProfile({
+              selectedTier: tierFromProfile,
+              selectedTierName: tierNameFromProfile,
+              businessName: profile.name ?? "",
+              activeTemplateId:
+                typeof profile.activeTemplateId === "string" ? profile.activeTemplateId : null,
+              activeTemplate: activeTpl
+                ? {
+                    id: activeTpl.id,
+                    name: typeof activeTpl.name === "string" ? activeTpl.name : "",
+                    bundleId: typeof activeTpl.bundleId === "string" ? activeTpl.bundleId : "",
+                    bundleName:
+                      activeTpl.bundleName === null || typeof activeTpl.bundleName === "string"
+                        ? activeTpl.bundleName
+                        : null,
+                    businessName:
+                      activeTpl.businessName === null || typeof activeTpl.businessName === "string"
+                        ? activeTpl.businessName
+                        : null,
+                  }
+                : null,
+            });
           }
         })
         .catch(() => {})
@@ -82,8 +139,8 @@ export default function SettingsPage() {
       fetch("/api/business/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
-          walletAddress: publicKey.trim(),
           name: data.name,
           email: data.email,
           businessNature: data.businessNature || null,
@@ -109,6 +166,69 @@ export default function SettingsPage() {
     setUrls((p) => { const n = [...p]; n[i] = v; return n; });
   const toggleWidget = (id: string) =>
     setSelectedWidgets((p) => p.includes(id) ? p.filter((w) => w !== id) : [...p, id]);
+  const handleTierChange = (tierId: string) => {
+    const next = PLAN_OPTIONS.find((p) => p.id === tierId);
+    if (!next) return;
+    setSelectedTier(next.id);
+    setSelectedTierName(next.name);
+  };
+
+  const handleUpdatePlan = async () => {
+    if (!(publicKey?.trim().length === 56 && publicKey.startsWith("G"))) return;
+    setSavingPlan(true);
+    try {
+      const res = await fetch("/api/business/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          selectedTier,
+          selectedTierName,
+        }),
+      });
+      if (!res.ok) return;
+      const updated = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+      const activeTpl =
+        updated?.activeTemplate &&
+        typeof updated.activeTemplate === "object" &&
+        typeof (updated.activeTemplate as { id?: string }).id === "string"
+          ? (updated.activeTemplate as {
+              id: string;
+              name?: string;
+              bundleId?: string;
+              bundleName?: string | null;
+              businessName?: string | null;
+            })
+          : null;
+      hydrateWorkspaceTierFromProfile({
+        selectedTier,
+        selectedTierName,
+        businessName: username.trim(),
+        activeTemplateId:
+          typeof updated?.activeTemplateId === "string" ? updated.activeTemplateId : null,
+        activeTemplate: activeTpl
+          ? {
+              id: activeTpl.id,
+              name: typeof activeTpl.name === "string" ? activeTpl.name : "",
+              bundleId: typeof activeTpl.bundleId === "string" ? activeTpl.bundleId : "",
+              bundleName:
+                activeTpl.bundleName === null || typeof activeTpl.bundleName === "string"
+                  ? activeTpl.bundleName
+                  : null,
+              businessName:
+                activeTpl.businessName === null || typeof activeTpl.businessName === "string"
+                  ? activeTpl.businessName
+                  : null,
+            }
+          : null,
+      });
+      setPlanSaved(true);
+      setTimeout(() => setPlanSaved(false), 2500);
+      if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("profile-updated"));
+    } finally {
+      setSavingPlan(false);
+    }
+  };
 
   if (!publicKey) {
     return (
@@ -124,10 +244,10 @@ export default function SettingsPage() {
       onClick={handleUpdateProfile}
       disabled={loading}
       className={cn(
-        "min-w-[130px] transition-all",
+        "min-w-[130px] rounded-full font-semibold transition-all",
         saved
-          ? "bg-emerald-600 hover:bg-emerald-600 text-white border-0"
-          : "bg-violet-600 hover:bg-violet-500 text-white border-0"
+          ? "border-0 bg-emerald-600 text-white hover:bg-emerald-600"
+          : "border border-white/10 bg-foreground text-background hover:opacity-90"
       )}
     >
       {saved ? <><CheckCheck className="h-4 w-4 mr-1.5" /> Saved</> : label}
@@ -137,10 +257,11 @@ export default function SettingsPage() {
   return (
     <DashboardMain>
       <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-          <p className="mt-1 text-sm text-white/40">Manage your account settings and preferences.</p>
-        </div>
+        <DashboardPageHeader
+          eyebrow="Workspace"
+          title="Settings"
+          description="Manage your account, appearance, and notifications."
+        />
 
         <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
 
@@ -152,10 +273,10 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => setSection(id)}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors whitespace-nowrap",
+                  "flex items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm transition-colors whitespace-nowrap",
                   section === id
-                    ? "bg-violet-500/15 text-white font-medium"
-                    : "text-white/40 hover:text-white/70 hover:bg-white/[0.04]"
+                    ? "border border-white/12 bg-white/[0.08] font-medium text-foreground"
+                    : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -194,7 +315,7 @@ export default function SettingsPage() {
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="Tell us a little about yourself…"
-                      className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 min-h-[80px] resize-none"
+                      className="min-h-[80px] resize-none border border-white/[0.1] bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:border-white/25 focus:ring-0"
                     />
                   </div>
 
@@ -219,10 +340,10 @@ export default function SettingsPage() {
 
             {/* Account */}
             {section === "account" && (
-              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-5">
+              <div className="flex flex-col gap-5 rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl">
                 <div>
-                  <p className="text-sm font-medium text-white">Account</p>
-                  <p className="text-xs text-white/35 mt-0.5">Business nature and feature preferences.</p>
+                  <p className="text-sm font-medium text-foreground">Account</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Business nature and feature preferences.</p>
                 </div>
 
                 <div className="flex flex-col gap-5">
@@ -235,8 +356,8 @@ export default function SettingsPage() {
                           className={cn(
                             "flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-sm transition-colors",
                             businessNature === value
-                              ? "border-violet-500/40 bg-violet-500/10 text-white"
-                              : "border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.12] hover:text-white/70"
+                              ? "border-white/20 bg-white/[0.08] text-foreground"
+                              : "border-white/[0.08] bg-white/[0.02] text-muted-foreground hover:border-white/[0.14] hover:text-foreground"
                           )}
                         >
                           <input type="radio" name="businessNature" value={value} checked={businessNature === value} onChange={() => setBusinessNature(value)} className="sr-only" />
@@ -259,8 +380,8 @@ export default function SettingsPage() {
                             className={cn(
                               "flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors",
                               checked
-                                ? "border-violet-500/30 bg-violet-500/08 text-white"
-                                : "border-white/[0.07] bg-white/[0.02] text-white/50 hover:border-white/[0.12]"
+                                ? "border-white/18 bg-white/[0.07] text-foreground"
+                                : "border-white/[0.08] bg-white/[0.02] text-muted-foreground hover:border-white/[0.14]"
                             )}
                           >
                             <Checkbox checked={checked} onCheckedChange={() => toggleWidget(w.id)} className="mt-0.5 border-white/20" />
@@ -286,39 +407,59 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {/* Appearance */}
-            {section === "appearance" && (
-              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-5">
+            {/* Plan */}
+            {section === "plan" && (
+              <div className="flex flex-col gap-5 rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl">
                 <div>
-                  <p className="text-sm font-medium text-white">Appearance</p>
-                  <p className="text-xs text-white/35 mt-0.5">Customize how the dashboard looks on your device.</p>
+                  <p className="text-sm font-medium text-foreground">Plan</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Select your active workspace tier. This is saved to your business profile.
+                  </p>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm text-white/50">Theme</span>
-                  <ThemeSwitch />
-                </div>
-              </div>
-            )}
 
-            {/* Notifications */}
-            {section === "notifications" && (
-              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-3">
-                <div>
-                  <p className="text-sm font-medium text-white">Notifications</p>
-                  <p className="text-xs text-white/35 mt-0.5">Configure how you receive notifications.</p>
+                <div className="max-w-2xl space-y-3">
+                  <Label className="text-xs text-white/50">Workspace tier</Label>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    {PLAN_OPTIONS.map((plan) => (
+                      <button
+                        key={plan.id}
+                        type="button"
+                        onClick={() => handleTierChange(plan.id)}
+                        className={cn(
+                          "rounded-xl border px-4 py-3 text-left transition-colors",
+                          selectedTier === plan.id
+                            ? "border-white/20 bg-white/[0.08]"
+                            : "border-white/[0.08] bg-white/[0.02] hover:border-white/[0.14]"
+                        )}
+                      >
+                        <p className="text-sm font-medium text-foreground">{plan.name}</p>
+                        <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                          {plan.description}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-sm text-white/30">Notification preferences coming soon.</p>
-              </div>
-            )}
 
-            {/* Display */}
-            {section === "display" && (
-              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-3">
                 <div>
-                  <p className="text-sm font-medium text-white">Display</p>
-                  <p className="text-xs text-white/35 mt-0.5">Control what's displayed in the dashboard.</p>
+                  <Button
+                    onClick={handleUpdatePlan}
+                    disabled={loading || savingPlan}
+                    className={cn(
+                      "min-w-[130px] rounded-full font-semibold transition-all",
+                      planSaved
+                        ? "border-0 bg-emerald-600 text-white hover:bg-emerald-600"
+                        : "border border-white/10 bg-foreground text-background hover:opacity-90"
+                    )}
+                  >
+                    {planSaved ? (
+                      <>
+                        <CheckCheck className="mr-1.5 h-4 w-4" />
+                        Saved
+                      </>
+                    ) : savingPlan ? "Saving..." : "Save plan"}
+                  </Button>
                 </div>
-                <p className="text-sm text-white/30">Display options coming soon.</p>
               </div>
             )}
 

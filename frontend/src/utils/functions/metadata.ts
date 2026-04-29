@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const generateMetadata = ({
-    title = `${process.env.NEXT_PUBLIC_APP_NAME || "Hypertron"} - B2B Onboarding & Payments for Web3`,
-    description = `${process.env.NEXT_PUBLIC_APP_NAME || "Hypertron"} is the B2B onboarding and payment platform for Web3. One workflow link for onboarding, escrow, approvals, and real-time tracking.`,
+    title = `${process.env.NEXT_PUBLIC_APP_NAME || "Hypertron"} - B2B operations & payments on Stellar`,
+    description = `${process.env.NEXT_PUBLIC_APP_NAME || "Hypertron"} unifies onboarding, compliance, and Stellar settlement in one operations layer, with AI-assisted workflows and a programmable privacy pool for B2B teams.`,
     image = "/thumbnail.png",
     icons = [
         {

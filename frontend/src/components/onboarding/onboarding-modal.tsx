@@ -38,7 +38,7 @@ export const WIDGETS: { id: string; label: string; description: string; icon: Lu
   { id: "doc-hub", label: "Doc hub", description: "Store and manage documents", icon: FileText },
   { id: "ai-assistant", label: "AI assistant", description: "Smart automation and support", icon: Bot },
   { id: "employee-mgmt", label: "Employee management", description: "Team and HR tools", icon: Users },
-  { id: "compliance", label: "Compliance checker", description: "Regulatory and policy checks", icon: ShieldCheck },
+  { id: "compliance", label: "Compliance Agent", description: "Regulatory and policy checks", icon: ShieldCheck },
 ];
 
 // Which widgets to pre-select by business nature
@@ -62,27 +62,48 @@ export type OnboardingData = {
 const ONBOARDING_STORAGE_KEY = "onboarding_completed";
 const ONBOARDING_DATA_KEY = "onboarding_data";
 
-export function getOnboardingCompleted(): boolean {
+function normalizeWalletAddress(walletAddress?: string): string | null {
+  if (!walletAddress) return null;
+  const trimmed = walletAddress.trim().toUpperCase();
+  return trimmed.length === 56 && trimmed.startsWith("G") ? trimmed : null;
+}
+
+function onboardingCompletedKey(walletAddress?: string): string {
+  const normalized = normalizeWalletAddress(walletAddress);
+  return normalized ? `${ONBOARDING_STORAGE_KEY}:${normalized}` : ONBOARDING_STORAGE_KEY;
+}
+
+function onboardingDataKey(walletAddress?: string): string {
+  const normalized = normalizeWalletAddress(walletAddress);
+  return normalized ? `${ONBOARDING_DATA_KEY}:${normalized}` : ONBOARDING_DATA_KEY;
+}
+
+export function getOnboardingCompleted(walletAddress?: string): boolean {
   if (typeof window === "undefined") return true;
+  const normalizedWallet = normalizeWalletAddress(walletAddress);
+  if (normalizedWallet) {
+    return localStorage.getItem(onboardingCompletedKey(normalizedWallet)) === "true";
+  }
   return localStorage.getItem(ONBOARDING_STORAGE_KEY) === "true";
 }
 
-export function setOnboardingCompleted(data?: OnboardingData): void {
+export function setOnboardingCompleted(data?: OnboardingData, walletAddress?: string): void {
   if (typeof window === "undefined") return;
-  localStorage.setItem(ONBOARDING_STORAGE_KEY, "true");
+  localStorage.setItem(onboardingCompletedKey(walletAddress), "true");
   if (data) {
     try {
-      localStorage.setItem(ONBOARDING_DATA_KEY, JSON.stringify(data));
+      localStorage.setItem(onboardingDataKey(walletAddress), JSON.stringify(data));
     } catch {
       // ignore
     }
   }
 }
 
-export function getOnboardingData(): OnboardingData | null {
+export function getOnboardingData(walletAddress?: string): OnboardingData | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(ONBOARDING_DATA_KEY);
+    const scopedRaw = localStorage.getItem(onboardingDataKey(walletAddress));
+    const raw = scopedRaw ?? localStorage.getItem(ONBOARDING_DATA_KEY);
     if (!raw) return null;
     const data = JSON.parse(raw) as OnboardingData;
     return data && typeof data.name === "string" ? data : null;
@@ -140,19 +161,25 @@ export function OnboardingModal({
         selectedWidgets,
         ...(importFile && { importFileName: importFile.name }),
       };
-      setOnboardingCompleted(data);
+      setOnboardingCompleted(data, walletAddress);
       if (walletAddress?.trim().length === 56 && walletAddress.startsWith("G")) {
         fetch("/api/business/profile", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
           body: JSON.stringify({
-            walletAddress: walletAddress.trim(),
             name: data.name,
             email: data.email,
             businessNature: data.businessNature || null,
             selectedWidgets: data.selectedWidgets,
           }),
-        }).catch(() => {});
+        })
+          .then(() => {
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new Event("profile-updated"));
+            }
+          })
+          .catch(() => {});
       }
       onComplete?.(data);
       onOpenChange(false);

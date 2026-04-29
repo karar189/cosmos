@@ -35,6 +35,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
       const res = await fetch("/api/payment-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({
           businessId,
           amount: amount.trim(),
@@ -44,12 +45,12 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
         }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Failed to create link"); return; }
+      if (!res.ok) { setError("Could not create a live payment link right now."); return; }
       setResult({ linkId: data.linkId, url: data.url, memo: data.memo });
       setAmount(""); setPurpose(""); setClientName(""); setWorkflowStage("");
       onCreated?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed");
+      setError("Could not create a live payment link right now.");
     } finally {
       setLoading(false);
     }
@@ -89,7 +90,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
             onChange={(e) => setAmount(e.target.value)}
             placeholder="e.g. 100"
             required
-            className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 h-9"
+            className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-sky-500/45 focus:ring-0 h-9"
           />
         </div>
 
@@ -103,7 +104,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
               value={purpose}
               onChange={(e) => setPurpose(e.target.value)}
               placeholder="Invoice #123"
-              className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 h-9 text-sm"
+              className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-sky-500/45 focus:ring-0 h-9 text-sm"
             />
           </div>
           <div className="space-y-1.5">
@@ -114,7 +115,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
               placeholder="Acme Corp"
-              className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 h-9 text-sm"
+              className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-sky-500/45 focus:ring-0 h-9 text-sm"
             />
           </div>
         </div>
@@ -127,7 +128,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
             value={workflowStage}
             onChange={(e) => setWorkflowStage(e.target.value)}
             placeholder="e.g. pending, signed, delivered"
-            className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/40 focus:ring-0 h-9 text-sm"
+            className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-sky-500/45 focus:ring-0 h-9 text-sm"
           />
         </div>
 
@@ -157,7 +158,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
             <input
               readOnly
               value={result.url}
-              className="flex-1 min-w-0 truncate rounded-md bg-white/[0.04] border border-white/[0.08] px-2.5 py-1.5 text-xs font-mono text-violet-400/80 outline-none"
+              className="flex-1 min-w-0 truncate rounded-md border border-white/[0.08] bg-white/[0.04] px-2.5 py-1.5 font-mono text-xs text-sky-300/90 outline-none"
             />
             <Button
               type="button"

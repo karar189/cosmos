@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Rnd } from "react-rnd";
-import { Upload, Wrench, Trash2, Plus } from "lucide-react";
+import { Upload, Wrench, Trash2, Plus, Loader2 } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
 import { ThemeSwitch } from "@/components/dashboard/theme-switch";
@@ -68,31 +68,42 @@ function WorkspacePageContent() {
   );
 
   useEffect(() => {
-    if (typeof window === "undefined" || !templateId) return;
-    const t = getTemplateById(templateId);
-    if (t) {
-      setDashboardName(t.name);
-      const raw = t.widgets ?? [];
-      const normalized: DashboardWidget[] = raw.map((w, i) => {
-        if ("x" in w && "settings" in w && w.settings) return w as DashboardWidget;
-        const col = (i % 4) * 3;
-        const row = Math.floor(i / 4) * 5;
-        return {
-          id: (w as { id?: string }).id ?? `dw-${Date.now()}-${i}`,
-          widgetId: String((w as { widgetId?: string }).widgetId ?? (w as { id?: string }).id ?? `widget-${i}`),
-          title: String((w as { title?: string }).title ?? "Widget"),
-          type: ((w as { type?: string }).type as WidgetType) ?? "chart",
-          x: col,
-          y: row,
-          w: 3,
-          h: 5,
-          settings: defaultWidgetSettings(),
-        };
+    if (!templateId) return;
+    let cancelled = false;
+    getTemplateById(templateId, publicKey)
+      .then((t) => {
+        if (!t || cancelled) return;
+        setDashboardName(t.name);
+        const raw = t.widgets ?? [];
+        const normalized: DashboardWidget[] = raw.map((w, i) => {
+          if ("x" in w && "settings" in w && w.settings) return w as DashboardWidget;
+          const col = (i % 4) * 3;
+          const row = Math.floor(i / 4) * 5;
+          return {
+            id: (w as { id?: string }).id ?? `dw-${Date.now()}-${i}`,
+            widgetId: String((w as { widgetId?: string }).widgetId ?? (w as { id?: string }).id ?? `widget-${i}`),
+            title: String((w as { title?: string }).title ?? "Widget"),
+            type: ((w as { type?: string }).type as WidgetType) ?? "chart",
+            x: col,
+            y: row,
+            w: 3,
+            h: 5,
+            settings: defaultWidgetSettings(),
+          };
+        });
+        setWidgets(normalized);
+        setSelectedId(normalized[0]?.id ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setWidgets([]);
+          setSelectedId(null);
+        }
       });
-      setWidgets(normalized);
-      setSelectedId(normalized[0]?.id ?? null);
-    }
-  }, [templateId]);
+    return () => {
+      cancelled = true;
+    };
+  }, [templateId, publicKey]);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -145,13 +156,13 @@ function WorkspacePageContent() {
     setSelectedId((prev) => (prev === id ? null : prev));
   };
 
-  const saveDashboard = () => {
+  const saveDashboard = async () => {
     if (!templateId) {
       toast.error("No template selected");
       return;
     }
     const name = dashboardName.trim() || "Untitled dashboard";
-    const updated = updateTemplate(templateId, { name, widgets });
+    const updated = await updateTemplate(templateId, { name, widgets }, publicKey);
     if (updated) {
       setStatus("Saved to My Templates");
       toast.success("Saved to My Templates");
@@ -573,7 +584,14 @@ function WorkspacePageContent() {
 
 export default function WorkspacePage() {
   return (
-    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-muted-foreground">Loading workspace…</div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-muted-foreground">
+          <Loader2 className="h-8 w-8 animate-spin text-foreground/40" aria-hidden />
+          <p className="text-sm">Loading workspace…</p>
+        </div>
+      }
+    >
       <WorkspacePageContent />
     </Suspense>
   );

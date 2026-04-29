@@ -1,0 +1,6 @@
+# Cargo build output — always local, never commit
+target/
+
+# Soroban contract test snapshots (JSON). Safe to ignore for a quiet repo;
+# remove this line if you prefer to commit golden snapshots for CI regression.
+test_snapshots/

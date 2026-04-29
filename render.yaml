@@ -1,0 +1,22 @@
+# Render Blueprint (repo root). Deploys FastAPI app from ./ai-analyzer.
+# Dashboard: New → Blueprint → connect repo; default path is render.yaml on main.
+# After first deploy, set OPENAI_API_KEY when prompted. CORS includes Hypertron prod + local dev.
+services:
+  - type: web
+    name: cosmos-ai
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: ai-analyzer
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: CORS_ALLOW_ORIGINS
+        value: http://localhost:3000,http://127.0.0.1:3000,https://www.hypertron.space,https://hypertron.space
+      - key: PYTHON_VERSION
+        value: 3.12.8

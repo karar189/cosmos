@@ -7,7 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 export interface PaymentEvent {
   linkId: string;
   businessId: string;
-  amount: string;
+  amount: string | null;
   workflowStage?: string;
   paidAt: string;
   commitmentId?: string;
@@ -15,26 +15,83 @@ export interface PaymentEvent {
 
 interface RecentPaymentsProps {
   businessId: string | null;
+  /** When true, show NA / empty state instead of activity (onboarding not completed). */
+  onboardingIncomplete?: boolean;
 }
 
-export function RecentPayments({ businessId }: RecentPaymentsProps) {
+function formatAmountLabel(amount: string | null): string {
+  if (typeof amount === "string" && amount.trim().length > 0) {
+    return `+${amount} XLM`;
+  }
+  return "—";
+}
+
+export function RecentPayments({ businessId, onboardingIncomplete }: RecentPaymentsProps) {
   const [events, setEvents] = useState<PaymentEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!businessId) { setEvents([]); setLoading(false); return; }
     let cancelled = false;
+
+    if (onboardingIncomplete) {
+      setEvents([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    if (!businessId) {
+      setEvents([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     setLoading(true);
-    fetch(`/api/events?businessId=${encodeURIComponent(businessId)}`)
-      .then((res) => (res.ok ? res.json() : { events: [] }))
-      .then((data) => {
-        const paid = (data.events ?? []).filter((e: PaymentEvent) => e.paidAt).slice(0, 8);
-        if (!cancelled) setEvents(paid);
+    setError(null);
+    fetch(`/api/events?businessId=${encodeURIComponent(businessId)}`, {
+      credentials: "same-origin",
+    })
+      .then(async (res) => {
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(
+            typeof json?.error === "string" ? json.error : `Failed to load recent payments (${res.status})`
+          );
+        }
+        return json as { events?: PaymentEvent[] };
       })
-      .catch(() => { if (!cancelled) setEvents([]); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, [businessId]);
+      .then((json) => {
+        if (cancelled) return;
+        const paid = (Array.isArray(json.events) ? json.events : []).filter((ev) => !!ev.paidAt);
+        setEvents(paid.slice(0, 8));
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        setEvents([]);
+        setError(e instanceof Error ? e.message : "Could not load recent payments");
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, onboardingIncomplete]);
+
+  if (onboardingIncomplete) {
+    return (
+      <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.12] bg-white/[0.02] px-4 py-8 text-center">
+        <p className="text-sm font-medium text-white/50">Activity: NA</p>
+        <p className="mt-2 max-w-xs text-xs leading-relaxed text-white/35">
+          Recent payments will appear here after you finish onboarding.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -57,9 +114,15 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
 
   if (events.length === 0) {
     return (
-      <p className="text-sm text-white/30 py-2">
-        No payments yet. They'll appear here when clients pay a link.
-      </p>
+      <div className="py-2">
+        {error ? (
+          <p className="text-sm text-destructive">{error}</p>
+        ) : (
+          <p className="text-sm text-white/30">
+            No payments yet. They&apos;ll appear here when clients pay a link.
+          </p>
+        )}
+      </div>
     );
   }
 
@@ -92,7 +155,7 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
                         href={getExplorerTxUrl(ev.commitmentId)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-0.5 text-violet-400/60 hover:text-violet-400 transition-colors"
+                        className="inline-flex items-center gap-0.5 text-cyan-400/80 transition-colors hover:text-cyan-300"
                       >
                         proof <ArrowUpRight className="h-2.5 w-2.5" />
                       </a>
@@ -103,8 +166,8 @@ export function RecentPayments({ businessId }: RecentPaymentsProps) {
             </div>
 
             {/* Right: amount */}
-            <span className="text-sm font-semibold text-violet-400 shrink-0 ml-4">
-              +{ev.amount} XLM
+            <span className="ml-4 shrink-0 text-sm font-semibold text-cyan-300/90">
+              {formatAmountLabel(ev.amount)}
             </span>
           </div>
         ))}

@@ -1,6 +1,7 @@
 /**
  * Saved templates (dashboard bundles) from Compliance Maker.
- * Stored in localStorage; replace with API when backend is ready.
+ * Primary persistence uses /api/templates (MongoDB via Prisma),
+ * with localStorage retained as fallback for disconnected wallets.
  */
 const MY_TEMPLATES_KEY = "hypertron_my_templates";
 
@@ -54,7 +55,12 @@ export type SavedTemplate = {
   widgets?: DashboardWidget[];
 };
 
-export function loadSavedTemplates(): SavedTemplate[] {
+function isValidWalletAddress(walletAddress: string | null | undefined): boolean {
+  const s = (walletAddress ?? "").trim();
+  return s.length === 56 && s.startsWith("G");
+}
+
+function loadSavedTemplatesFromLocal(): SavedTemplate[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(MY_TEMPLATES_KEY);
@@ -66,14 +72,10 @@ export function loadSavedTemplates(): SavedTemplate[] {
   }
 }
 
-export function getTemplateById(id: string): SavedTemplate | null {
-  return loadSavedTemplates().find((t) => t.id === id) ?? null;
-}
-
-export function saveTemplate(
+function saveTemplateToLocal(
   template: Omit<SavedTemplate, "id" | "savedAt"> & { widgets?: DashboardWidget[] }
 ): SavedTemplate {
-  const list = loadSavedTemplates();
+  const list = loadSavedTemplatesFromLocal();
   const newOne: SavedTemplate = {
     ...template,
     id: `tpl-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
@@ -84,16 +86,133 @@ export function saveTemplate(
   return newOne;
 }
 
-export function updateTemplate(
+function updateTemplateInLocal(
   id: string,
   updates: Partial<Pick<SavedTemplate, "name" | "description" | "widgets">>
 ): SavedTemplate | null {
-  const list = loadSavedTemplates();
+  const list = loadSavedTemplatesFromLocal();
   const idx = list.findIndex((t) => t.id === id);
   if (idx === -1) return null;
   list[idx] = { ...list[idx], ...updates, savedAt: new Date().toISOString() };
   window.localStorage.setItem(MY_TEMPLATES_KEY, JSON.stringify(list));
   return list[idx];
+}
+
+type ApiTemplate = {
+  id: string;
+  name: string;
+  businessName?: string | null;
+  savedAt: string;
+  bundleId: string;
+  bundleName: string;
+  description?: string | null;
+  widgets?: unknown;
+};
+
+function normalizeTemplate(raw: ApiTemplate): SavedTemplate {
+  return {
+    id: String(raw.id),
+    name: String(raw.name ?? ""),
+    businessName: typeof raw.businessName === "string" ? raw.businessName : undefined,
+    savedAt: String(raw.savedAt),
+    bundleId: String(raw.bundleId ?? ""),
+    bundleName: String(raw.bundleName ?? ""),
+    description: typeof raw.description === "string" ? raw.description : undefined,
+    widgets: Array.isArray(raw.widgets) ? (raw.widgets as DashboardWidget[]) : [],
+  };
+}
+
+export function loadSavedTemplatesLocal(): SavedTemplate[] {
+  return loadSavedTemplatesFromLocal();
+}
+
+export async function loadSavedTemplates(
+  walletAddress?: string | null
+): Promise<SavedTemplate[]> {
+  if (!isValidWalletAddress(walletAddress)) {
+    return loadSavedTemplatesFromLocal();
+  }
+  try {
+    const res = await fetch("/api/templates", {
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+    if (!res.ok) return loadSavedTemplatesFromLocal();
+    const json = (await res.json().catch(() => ({}))) as { templates?: ApiTemplate[] };
+    return Array.isArray(json.templates) ? json.templates.map(normalizeTemplate) : [];
+  } catch {
+    return loadSavedTemplatesFromLocal();
+  }
+}
+
+export async function getTemplateById(
+  id: string,
+  walletAddress?: string | null
+): Promise<SavedTemplate | null> {
+  if (!id) return null;
+  if (!isValidWalletAddress(walletAddress)) {
+    return loadSavedTemplatesFromLocal().find((t) => t.id === id) ?? null;
+  }
+  try {
+    const res = await fetch(`/api/templates/${encodeURIComponent(id)}`, {
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+    if (!res.ok) return null;
+    const json = (await res.json().catch(() => ({}))) as { template?: ApiTemplate };
+    return json.template ? normalizeTemplate(json.template) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveTemplate(
+  template: Omit<SavedTemplate, "id" | "savedAt"> & { widgets?: DashboardWidget[] },
+  walletAddress?: string | null
+): Promise<SavedTemplate> {
+  if (!isValidWalletAddress(walletAddress)) {
+    return saveTemplateToLocal(template);
+  }
+  try {
+    const res = await fetch("/api/templates", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        ...template,
+      }),
+    });
+    if (!res.ok) return saveTemplateToLocal(template);
+    const json = (await res.json().catch(() => ({}))) as { template?: ApiTemplate };
+    return json.template ? normalizeTemplate(json.template) : saveTemplateToLocal(template);
+  } catch {
+    return saveTemplateToLocal(template);
+  }
+}
+
+export async function updateTemplate(
+  id: string,
+  updates: Partial<Pick<SavedTemplate, "name" | "description" | "widgets">>,
+  walletAddress?: string | null
+): Promise<SavedTemplate | null> {
+  if (!isValidWalletAddress(walletAddress)) {
+    return updateTemplateInLocal(id, updates);
+  }
+  try {
+    const res = await fetch(`/api/templates/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        ...updates,
+      }),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json().catch(() => ({}))) as { template?: ApiTemplate };
+    return json.template ? normalizeTemplate(json.template) : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Build DashboardWidget[] from a Compliance Maker bundle (e.g. when saving from Onboarding). */

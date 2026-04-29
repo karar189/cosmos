@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, type MotionValue } from "framer-motion
 import { useRef } from "react";
 
 const QUOTE =
-  "Hypertron revolutionized how we handle client onboarding and payments using unified workflow links. We are now driving better outcomes quicker than we ever imagined! Hypertron revolutionized how we handle client onboarding and payments using unified workflow links.";
+  "Fragmented tools and exposed on-chain flows block real B2B adoption. Hypertron unifies onboarding, compliance, and Stellar payments, with a privacy pool so execution stays programmable and defensible.";
 
 const WORDS = QUOTE.split(/\s+/);
 

@@ -5,33 +5,58 @@ import { Button } from "@/components/ui/button";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter } from "next/navigation";
 import { DashboardMain } from "@/components/dashboard/layout/main";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { OverviewStats } from "@/components/dashboard/overview-stats";
 import { RecentPayments } from "@/components/dashboard/recent-payments";
-import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
+import { useOnboardingUi } from "@/components/onboarding";
 
 function DashboardContent() {
   const router = useRouter();
   const { publicKey, connect, isConnecting } = useFreighter();
+  const { isOnboardingComplete, openOnboardingQuiz } = useOnboardingUi();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!publicKey) { setBusinessId(null); setBusinessError(null); return; }
     let cancelled = false;
-    fetch("/api/business/link", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ walletAddress: publicKey }),
-    })
-      .then((res) => res.json())
+
+    if (!publicKey) {
+      setBusinessId(null);
+      setBusinessError(null);
+      return;
+    }
+
+    setBusinessError(null);
+    fetch("/api/business/profile", { credentials: "same-origin" })
+      .then(async (res) => {
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(
+            typeof json?.error === "string" ? json.error : `Failed to load profile (${res.status})`
+          );
+        }
+        return json as { businessId?: string };
+      })
       .then((data) => {
         if (cancelled) return;
-        if (data.businessId) setBusinessId(data.businessId);
-        else setBusinessError(data.error || "Could not load business");
+        if (typeof data.businessId === "string" && data.businessId.trim()) {
+          setBusinessId(data.businessId.trim());
+          setBusinessError(null);
+          return;
+        }
+        setBusinessId(null);
+        setBusinessError("Business profile not found for this wallet.");
       })
-      .catch(() => { if (!cancelled) setBusinessError("Could not connect to backend"); });
-    return () => { cancelled = true; };
+      .catch((e) => {
+        if (cancelled) return;
+        setBusinessId(null);
+        setBusinessError(e instanceof Error ? e.message : "Could not load business profile");
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [publicKey]);
 
   if (!publicKey) {
@@ -41,58 +66,75 @@ function DashboardContent() {
         <p className="text-sm text-muted-foreground text-center max-w-xs">
           Connect your Stellar wallet to manage payments and track activity.
         </p>
-        <Button onClick={connect} disabled={isConnecting} className="mt-2">
+        <Button
+          onClick={connect}
+          disabled={isConnecting}
+          className="mt-2 rounded-full bg-foreground px-8 py-3 text-base font-semibold text-background hover:opacity-90"
+        >
           {isConnecting ? "Connecting…" : "Connect with Freighter"}
         </Button>
-        <Button variant="ghost" size="sm" onClick={() => router.push("/")}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push("/")}
+          className="rounded-full text-muted-foreground hover:text-foreground"
+        >
           Back to home
         </Button>
       </div>
     );
   }
 
-  return (
-    <OnboardingGate when={!!publicKey} walletAddress={publicKey}>
-      <>
-        <DashboardMain>
-          <div className="flex flex-col gap-8">
-            {/* Page heading */}
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Your payment activity at a glance.</p>
-            </div>
+  const onboardingIncomplete = !!publicKey && !isOnboardingComplete;
 
-            {businessError && (
-              <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-                {businessError}. Ensure DATABASE_URL in .env is correct and run: npx prisma generate
-              </p>
-            )}
+  return (
+    <DashboardMain>
+          <div className="flex flex-col gap-8">
+            <DashboardPageHeader
+              eyebrow="Dashboard"
+              title="Overview"
+              description="Your payment activity at a glance."
+              end={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-white/20 bg-white/[0.06] text-foreground hover:bg-white/10"
+                  onClick={openOnboardingQuiz}
+                >
+                  Take onboarding quiz
+                </Button>
+              }
+            />
 
             {/* Stat cards */}
-            <OverviewStats businessId={businessId} />
+            <OverviewStats businessId={businessId} onboardingIncomplete={onboardingIncomplete} />
 
             {/* Charts row */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-              <div className="col-span-1 lg:col-span-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
-                <div className="mb-4">
-                  <p className="text-sm font-medium">Revenue</p>
-                  <p className="text-xs text-white/30 mt-0.5">Monthly received (XLM)</p>
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-7">
+              <div className="col-span-1 flex flex-col rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl lg:col-span-4">
+                <div className="mb-5 space-y-1">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Revenue</p>
+                  <p className="text-sm font-medium text-foreground">Monthly received (XLM)</p>
                 </div>
-                <OverviewChart />
+                <OverviewChart businessId={businessId} onboardingIncomplete={onboardingIncomplete} />
               </div>
 
-              <div className="col-span-1 lg:col-span-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
-                <div className="mb-4">
-                  <p className="text-sm font-medium">Recent payments</p>
-                  <p className="text-xs text-white/30 mt-0.5">Latest activity on your links</p>
+              <div className="col-span-1 flex flex-col rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl lg:col-span-3">
+                <div className="mb-5 space-y-1">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Activity</p>
+                  <p className="text-sm font-medium text-foreground">Recent payments</p>
+                  <p className="text-xs text-muted-foreground">Latest activity on your links</p>
                 </div>
-                <RecentPayments businessId={businessId} />
+                <RecentPayments businessId={businessId} onboardingIncomplete={onboardingIncomplete} />
               </div>
             </div>
+            {businessError && (
+              <p className="text-xs text-destructive">
+                {businessError}
+              </p>
+            )}
           </div>
         </DashboardMain>
-      </>
-    </OnboardingGate>
   );
 }
 

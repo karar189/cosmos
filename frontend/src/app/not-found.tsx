@@ -1,42 +1,55 @@
-import { Footer, Navbar } from '@/components';
-import { Button } from "@/components/ui/button";
-import Link from 'next/link';
+import { DarkVeil, LandingFooter, LandingNavbar } from "@/components/marketing/mono";
+import Link from "next/link";
 
-const NotFound = () => {
-    return (
-        <main className="relative flex flex-col items-center justify-center px-4">
+const BOOK_DEMO = "https://calendly.com/kararsweta/30min";
 
-            <Navbar />
+export default function NotFound() {
+  return (
+    <div className="marketing-mono min-h-screen bg-black font-default text-foreground antialiased">
+      <LandingNavbar />
 
-            <div className="flex flex-col items-center justify-center mx-auto h-screen">
+      <main className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden px-4 pb-28 pt-28 md:px-8">
+        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden style={{ position: "absolute", inset: 0 }}>
+          <DarkVeil resolutionScale={0.55} />
+        </div>
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-slate-950/80 via-blue-950/20 to-slate-950/90"
+          aria-hidden
+        />
 
-                <div className="flex items-center justify-center h-full flex-col">
-                    <span className="text-sm font-medium px-3.5 py-1 rounded-md bg-gradient-to-br from-blue-500 to-cyan-600 text-neutral-50 not-found">
-                        404
-                    </span>
-                    <h1 className="text-3xl md:text-5xl font-bold text-neutral-50 mt-5">
-                        Not Found
-                    </h1>
-                    <p className="text-base text-neutral-400 font-medium mt-5 text-center mx-auto max-w-xl">
-                        The page you are looking for does not exist. <br /> But don&apos;t worry, we&apos;ve got you covered. You can{" "}
-                        <Link href="/resources/help" className="text-foreground">
-                            contact us
-                        </Link>
-                        .
-                    </p>
-                    <Link href="/">
-                        <Button className="mt-8">
-                            Back to homepage
-                        </Button>
-                    </Link>
-                </div>
+        <div className="relative z-10 mx-auto flex max-w-xl flex-col items-center text-center">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">Error 404</p>
+          <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
+            We can&apos;t find that page
+          </h1>
+          <p className="mt-5 text-pretty text-base leading-relaxed text-heroSubtitle/85 md:text-lg">
+            The link may be mistyped, or this page moved. If you were looking for product docs, try{" "}
+            <Link href="/docs" className="font-medium text-foreground underline decoration-white/30 underline-offset-4 hover:decoration-white/60">
+              /docs
+            </Link>
+            .
+          </p>
 
-            </div>
+          <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center">
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center rounded-full bg-foreground px-8 py-3.5 text-center text-base font-semibold text-background transition-opacity hover:opacity-90"
+            >
+              Back to home
+            </Link>
+            <Link
+              href={BOOK_DEMO}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-8 py-3.5 text-center text-base font-semibold text-foreground backdrop-blur-sm transition-colors hover:bg-white/10"
+            >
+              Book a demo
+            </Link>
+          </div>
+        </div>
+      </main>
 
-            <Footer />
-
-        </main>
-    )
+      <LandingFooter />
+    </div>
+  );
 }
-
-export default NotFound

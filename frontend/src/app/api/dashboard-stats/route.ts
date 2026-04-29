@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,8 @@ export async function GET(req: NextRequest) {
     }
 
     const bid = businessId.trim();
+    const auth = await requireBusinessOwnedBySession(req, bid);
+    if (auth instanceof NextResponse) return auth;
 
     const [links, paidLinks] = await Promise.all([
       db.paymentLink.findMany({

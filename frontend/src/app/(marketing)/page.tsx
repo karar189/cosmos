@@ -1,5 +1,4 @@
 import {
-  ChangedSection,
   CtaHlsSection,
   MissionSection,
   MonoHero,
@@ -13,7 +12,6 @@ const HomePage = () => {
       <MonoHero />
       <NeuralTestimonial />
       <SolutionSection />
-      <ChangedSection />
       <MissionSection />
       <CtaHlsSection />
     </div>

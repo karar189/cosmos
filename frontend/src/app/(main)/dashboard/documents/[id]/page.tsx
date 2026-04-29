@@ -1,15 +1,15 @@
 "use client";
 
-import { useRouter, useParams } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useRouter, useParams, usePathname } from "next/navigation";
+import { useEffect, useState, useMemo, useTransition } from "react";
 import {
   BarChart3,
   Activity,
   LayoutGrid,
   AlertTriangle,
-  FileText,
   Wrench,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
@@ -19,7 +19,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useFreighter } from "@/hooks/useFreighter";
 import { getTemplateById, type SavedTemplate, type DashboardWidget } from "@/lib/my-templates-storage";
+import {
+  bundleIdToTierId,
+  getWorkspaceTierState,
+  hydrateWorkspaceTierFromProfile,
+  markWorkspaceSidebarImported,
+  persistTierFromOnboarding,
+  WORKSPACE_TIER_UPDATED_EVENT,
+} from "@/lib/workspace-tier-context";
+import { TierSavedTemplateView } from "@/components/dashboard/tier-saved-template-view";
 import { cn } from "@/utils";
+import { toast } from "sonner";
 import {
   ComplianceScoreTrendChart,
   RiskHeatmapChart,
@@ -185,21 +195,85 @@ function WidgetCard({ widget }: { widget: DashboardWidget }) {
 
 export default function DashboardViewPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : null;
   const { publicKey, disconnect, isConnecting } = useFreighter();
+  const [, startTransition] = useTransition();
+  const [workspaceNavPending, setWorkspaceNavPending] = useState(false);
+  const [sidebarImported, setSidebarImported] = useState(false);
+  /** Matches `Business.activeTemplateId` when loaded from `/api/business/profile`. */
+  const [serverActiveTemplateId, setServerActiveTemplateId] = useState<string | null>(null);
 
   const [template, setTemplate] = useState<SavedTemplate | null>(null);
 
   useEffect(() => {
-    if (!id || typeof window === "undefined") return;
-    setTemplate(getTemplateById(id));
-  }, [id]);
+    if (pathname?.startsWith("/dashboard/workspace")) {
+      setWorkspaceNavPending(false);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!(publicKey?.trim().length === 56 && publicKey.startsWith("G"))) {
+      setServerActiveTemplateId(null);
+      return;
+    }
+    const load = () => {
+      fetch("/api/business/profile", { credentials: "same-origin" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          setServerActiveTemplateId(
+            typeof data?.activeTemplateId === "string" ? data.activeTemplateId : null
+          );
+        })
+        .catch(() => setServerActiveTemplateId(null));
+    };
+    load();
+    const onProfileUpdated = () => load();
+    window.addEventListener("profile-updated", onProfileUpdated);
+    return () => window.removeEventListener("profile-updated", onProfileUpdated);
+  }, [publicKey]);
+
+  useEffect(() => {
+    const refreshImported = () => {
+      const state = getWorkspaceTierState();
+      const localMatch =
+        Boolean(
+          state?.sidebarImported &&
+            template?.bundleId &&
+            state.bundleId === template.bundleId
+        );
+      const serverMatch = Boolean(
+        template?.id && serverActiveTemplateId && serverActiveTemplateId === template.id
+      );
+      setSidebarImported(localMatch || serverMatch);
+    };
+    refreshImported();
+    window.addEventListener(WORKSPACE_TIER_UPDATED_EVENT, refreshImported);
+    return () => window.removeEventListener(WORKSPACE_TIER_UPDATED_EVENT, refreshImported);
+  }, [template?.bundleId, template?.id, serverActiveTemplateId]);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    getTemplateById(id, publicKey)
+      .then((result) => {
+        if (!cancelled) setTemplate(result);
+      })
+      .catch(() => {
+        if (!cancelled) setTemplate(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id, publicKey]);
 
   const widgets = useMemo(() => {
     const list = template?.widgets ?? [];
     return [...list].sort((a, b) => (a.y !== b.y ? a.y - b.y : a.x - b.x));
   }, [template?.widgets]);
+
+  const tierId = template ? bundleIdToTierId(template.bundleId) : null;
 
   if (!publicKey) {
     return (
@@ -255,101 +329,203 @@ export default function DashboardViewPage() {
             My Templates
           </Button>
 
-          {/* Header: three summary cards (COSMOS-style) */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <Card className="rounded-2xl border-border bg-card shadow-sm">
-              <CardContent className="flex flex-col gap-0.5 p-5">
-                <p className="text-sm font-medium text-muted-foreground">Widgets</p>
-                <p className="text-2xl font-bold tracking-tight">{widgets.length}</p>
-                <p className="text-sm text-muted-foreground">widgets in this dashboard</p>
-              </CardContent>
-            </Card>
-            <Card className="rounded-2xl border-border bg-card shadow-sm">
-              <CardContent className="flex flex-col gap-0.5 p-5">
-                <p className="text-sm font-medium text-muted-foreground">Last updated</p>
-                <p className="text-2xl font-bold tracking-tight">{formatDate(template.savedAt)}</p>
-                <p className="text-sm text-muted-foreground">Saved from workspace</p>
-              </CardContent>
-            </Card>
-            <Card className="rounded-2xl border-border bg-card shadow-sm flex flex-col justify-between">
-              <CardContent className="flex flex-col gap-0.5 p-5">
-                <p className="text-xl font-bold tracking-tight">{template.name}</p>
-                <button
-                  type="button"
-                  onClick={() => router.push("/dashboard/documents")}
-                  className="text-sm text-muted-foreground hover:text-foreground text-left underline-offset-2 hover:underline"
-                >
-                  My Templates
-                </button>
-              </CardContent>
-              <div className="px-5 pb-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full sm:w-auto"
-                  onClick={() => router.push(`/dashboard/workspace?template=${encodeURIComponent(template.id)}`)}
-                >
-                  <Wrench className="mr-2 h-4 w-4" />
-                  Edit in workspace
-                </Button>
+          {tierId ? (
+            <TierSavedTemplateView
+              tierId={tierId}
+              template={template}
+              widgets={widgets}
+              publicKey={publicKey}
+              workspaceNavPending={workspaceNavPending}
+              sidebarImported={sidebarImported}
+              onImportTier={async () => {
+                persistTierFromOnboarding({
+                  bundleId: template.bundleId,
+                  bundleName: template.bundleName,
+                  businessName: template.businessName ?? "",
+                });
+                try {
+                  const res = await fetch("/api/business/profile", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "same-origin",
+                    body: JSON.stringify({ activeTemplateId: template.id }),
+                  });
+                  const data = res.ok ? ((await res.json().catch(() => null)) as Record<string, unknown> | null) : null;
+                  if (res.ok && data) {
+                    const activeTpl =
+                      data.activeTemplate &&
+                      typeof data.activeTemplate === "object" &&
+                      typeof (data.activeTemplate as { id?: string }).id === "string"
+                        ? (data.activeTemplate as {
+                            id: string;
+                            name?: string;
+                            bundleId?: string;
+                            bundleName?: string | null;
+                            businessName?: string | null;
+                          })
+                        : null;
+                    hydrateWorkspaceTierFromProfile({
+                      selectedTier: typeof data.selectedTier === "string" ? data.selectedTier : null,
+                      selectedTierName:
+                        typeof data.selectedTierName === "string" ? data.selectedTierName : null,
+                      businessName: typeof data.name === "string" ? data.name : null,
+                      activeTemplateId:
+                        typeof data.activeTemplateId === "string" ? data.activeTemplateId : null,
+                      activeTemplate: activeTpl
+                        ? {
+                            id: activeTpl.id,
+                            name: typeof activeTpl.name === "string" ? activeTpl.name : "",
+                            bundleId: typeof activeTpl.bundleId === "string" ? activeTpl.bundleId : "",
+                            bundleName:
+                              activeTpl.bundleName === null || typeof activeTpl.bundleName === "string"
+                                ? activeTpl.bundleName
+                                : null,
+                            businessName:
+                              activeTpl.businessName === null || typeof activeTpl.businessName === "string"
+                                ? activeTpl.businessName
+                                : null,
+                          }
+                        : null,
+                    });
+                    setServerActiveTemplateId(
+                      typeof data.activeTemplateId === "string" ? data.activeTemplateId : template.id
+                    );
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(new CustomEvent("profile-updated"));
+                    }
+                    toast.success(`${template.bundleName} imported to sidebar`);
+                    return;
+                  }
+                } catch {
+                  /* fall through to local-only */
+                }
+                markWorkspaceSidebarImported();
+                toast.success(`${template.bundleName} imported to sidebar (device only)`);
+                toast.message(
+                  "Cloud sync unavailable",
+                  { description: "Save your template to the account or try again to persist across logins." }
+                );
+              }}
+              onEditWorkspace={() => {
+                setWorkspaceNavPending(true);
+                startTransition(() => {
+                  router.push(`/dashboard/workspace?template=${encodeURIComponent(template.id)}`);
+                });
+              }}
+              onPrefetchWorkspace={() =>
+                router.prefetch(`/dashboard/workspace?template=${encodeURIComponent(template.id)}`)
+              }
+              formatDate={formatDate}
+              renderWidget={(w) => <WidgetCard widget={w} />}
+            />
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <Card className="rounded-2xl border-border bg-card shadow-sm">
+                  <CardContent className="flex flex-col gap-0.5 p-5">
+                    <p className="text-sm font-medium text-muted-foreground">Widgets</p>
+                    <p className="text-2xl font-bold tracking-tight">{widgets.length}</p>
+                    <p className="text-sm text-muted-foreground">widgets in this dashboard</p>
+                  </CardContent>
+                </Card>
+                <Card className="rounded-2xl border-border bg-card shadow-sm">
+                  <CardContent className="flex flex-col gap-0.5 p-5">
+                    <p className="text-sm font-medium text-muted-foreground">Last updated</p>
+                    <p className="text-2xl font-bold tracking-tight">{formatDate(template.savedAt)}</p>
+                    <p className="text-sm text-muted-foreground">Saved from workspace</p>
+                  </CardContent>
+                </Card>
+                <Card className="rounded-2xl border-border bg-card shadow-sm flex flex-col justify-between">
+                  <CardContent className="flex flex-col gap-0.5 p-5">
+                    <p className="text-xl font-bold tracking-tight">{template.name}</p>
+                    <button
+                      type="button"
+                      onClick={() => router.push("/dashboard/documents")}
+                      className="text-sm text-muted-foreground hover:text-foreground text-left underline-offset-2 hover:underline"
+                    >
+                      My Templates
+                    </button>
+                  </CardContent>
+                  <div className="px-5 pb-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto rounded-full border-white/15"
+                      disabled={workspaceNavPending}
+                      onClick={() => {
+                        setWorkspaceNavPending(true);
+                        startTransition(() => {
+                          router.push(
+                            `/dashboard/workspace?template=${encodeURIComponent(template.id)}`
+                          );
+                        });
+                      }}
+                      onMouseEnter={() =>
+                        router.prefetch(
+                          `/dashboard/workspace?template=${encodeURIComponent(template.id)}`
+                        )
+                      }
+                    >
+                      {workspaceNavPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                      ) : (
+                        <Wrench className="mr-2 h-4 w-4" aria-hidden />
+                      )}
+                      {workspaceNavPending ? "Opening workspace…" : "Edit in workspace"}
+                    </Button>
+                  </div>
+                </Card>
               </div>
-            </Card>
-          </div>
 
-          {/* Main portfolio chart: total assets valuation from wallet */}
-          <section>
-            <h2 className="text-lg font-semibold tracking-tight mb-4">Portfolio</h2>
-            <div className="space-y-6">
-              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
-                <CardContent className="p-5">
-                  <PortfolioTotalValueChart />
-                </CardContent>
-              </Card>
-              {/* Individual assets: filter by token, historical data per asset (XLM, PayPal US, EURC) */}
-              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
-                <CardContent className="p-5">
-                  <IndividualAssetsChart />
-                </CardContent>
-              </Card>
-            </div>
-          </section>
+              <section>
+                <h2 className="text-lg font-semibold tracking-tight mb-4">Portfolio</h2>
+                <div className="space-y-6">
+                  <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                    <CardContent className="p-5">
+                      <PortfolioTotalValueChart />
+                    </CardContent>
+                  </Card>
+                  <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                    <CardContent className="p-5">
+                      <IndividualAssetsChart />
+                    </CardContent>
+                  </Card>
+                </div>
+              </section>
 
-          {/* Compliance Parameters section – Cosmos-style chart components (wire APIs via props) */}
-          <section>
-            <h2 className="text-lg font-semibold tracking-tight mb-4">Compliance Parameters</h2>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {/* Project ratings bar chart (Dependency, Financial, Operational, etc.) */}
-              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm lg:col-span-2">
-                <CardContent className="p-5">
-                  <ProjectRatingsBarChart />
-                </CardContent>
-              </Card>
-              {/* Compliance Score Trend – line chart */}
-              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
-                <CardContent className="p-5">
-                  <ComplianceScoreTrendChart />
-                </CardContent>
-              </Card>
-              {/* Risk Heatmap – GitHub-style activity grid */}
-              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
-                <CardContent className="p-5">
-                  <RiskHeatmapChart />
-                </CardContent>
-              </Card>
-              {/* Active Routes metric */}
-              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
-                <CardContent className="p-0">
-                  <ActiveRoutesMetric />
-                </CardContent>
-              </Card>
-              {/* Transaction Analytics: daily payments received from Stellar (integrated wallet) */}
-              <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm lg:col-span-2">
-                <CardContent className="p-5">
-                  <TransactionAnalyticsChart walletAddress={publicKey ?? null} />
-                </CardContent>
-              </Card>
-            </div>
-          </section>
+              <section>
+                <h2 className="text-lg font-semibold tracking-tight mb-4">Compliance Parameters</h2>
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                  <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm lg:col-span-2">
+                    <CardContent className="p-5">
+                      <ProjectRatingsBarChart />
+                    </CardContent>
+                  </Card>
+                  <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                    <CardContent className="p-5">
+                      <ComplianceScoreTrendChart />
+                    </CardContent>
+                  </Card>
+                  <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                    <CardContent className="p-5">
+                      <RiskHeatmapChart />
+                    </CardContent>
+                  </Card>
+                  <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm">
+                    <CardContent className="p-0">
+                      <ActiveRoutesMetric />
+                    </CardContent>
+                  </Card>
+                  <Card className="overflow-hidden rounded-2xl border-border bg-card shadow-sm lg:col-span-2">
+                    <CardContent className="p-5">
+                      <TransactionAnalyticsChart walletAddress={publicKey ?? null} />
+                    </CardContent>
+                  </Card>
+                </div>
+              </section>
+            </>
+          )}
         </div>
       </DashboardMain>
     </>

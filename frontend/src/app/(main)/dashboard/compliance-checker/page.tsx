@@ -115,7 +115,7 @@ export default function ComplianceCheckerPage() {
       return;
     }
     setProfileLoading(true);
-    fetch(`/api/business/profile?walletAddress=${encodeURIComponent(publicKey.trim())}`)
+    fetch("/api/business/profile", { credentials: "same-origin" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data) {
@@ -144,8 +144,8 @@ export default function ComplianceCheckerPage() {
     fetch("/api/business/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({
-        walletAddress: publicKey.trim(),
         name: form.businessName || null,
         email: form.email || null,
         businessNature: form.businessType || form.businessTypeCustom || null,
@@ -169,7 +169,8 @@ export default function ComplianceCheckerPage() {
     fetch("/api/compliance/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ walletAddress: publicKey.trim(), ...payload }),
+      credentials: "same-origin",
+      body: JSON.stringify(payload),
     })
       .then((res) => {
         if (!res.ok) return res.json().then((e) => { throw new Error(e.error || "Failed to generate"); });
@@ -187,8 +188,8 @@ export default function ComplianceCheckerPage() {
     fetch("/api/vault", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({
-        walletAddress: publicKey.trim(),
         title: "Regulatory & compliance checklist",
         items: items.map((i) => ({ id: i.id, text: i.text, done: i.done ?? false })),
       }),

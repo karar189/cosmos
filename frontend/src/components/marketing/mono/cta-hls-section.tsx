@@ -12,9 +12,12 @@ export function CtaHlsSection() {
   return (
     <section className="relative overflow-hidden border-t border-border/30 py-32 md:py-44">
       <div className="pointer-events-none absolute inset-0 z-0" style={{ position: "absolute", inset: 0 }} aria-hidden>
-        <DarkVeil speed={0.4} warpAmount={0.3} noiseIntensity={0.02} resolutionScale={0.6} />
+        <DarkVeil resolutionScale={0.6} />
       </div>
-      <div className="absolute inset-0 z-[1] bg-background/45" aria-hidden />
+      <div
+        className="absolute inset-0 z-[1] bg-gradient-to-b from-slate-950/55 via-blue-950/20 to-slate-950/65"
+        aria-hidden
+      />
 
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center px-6 text-center md:px-8">
         <motion.div {...fadeUp(0)} className="mb-8">
@@ -27,7 +30,7 @@ export function CtaHlsSection() {
           <span className="font-serif font-normal italic">Start</span> your rollout
         </motion.h2>
         <motion.p {...fadeUp(0.14)} className="mt-4 max-w-md text-muted-foreground">
-          Book a walkthrough to connect your wallet and open the dashboard.
+          Book a walkthrough with the Hypertron team: onboarding, settlements, and the dashboard on Stellar.
         </motion.p>
         <motion.div {...fadeUp(0.2)} className="mt-10">
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
