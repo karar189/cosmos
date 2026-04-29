@@ -109,25 +109,32 @@ export function MonoHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
+          className="mx-auto grid w-full max-w-lg grid-cols-1 gap-3 sm:grid-cols-2"
         >
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+          <motion.div
+            className="w-full"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <Link
               href={BOOK_DEMO}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex rounded-full bg-foreground px-8 py-3.5 text-base font-semibold text-background"
+              className="flex h-12 w-full items-center justify-center rounded-full bg-foreground px-8 text-base font-semibold text-background"
             >
               Book a Demo
             </Link>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+          <motion.div
+            className="w-full"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <Button
               type="button"
               variant="outline"
-              size="lg"
               onClick={() => setLaunchOpen(true)}
-              className="h-auto rounded-full border-white/25 bg-transparent px-8 py-3.5 text-base font-semibold text-white hover:bg-white/10 hover:text-white"
+              className="flex h-12 w-full items-center justify-center rounded-full border-white/25 bg-transparent px-8 text-base font-semibold text-white hover:bg-white/10 hover:text-white"
             >
               Launch
             </Button>
@@ -135,14 +142,14 @@ export function MonoHero() {
         </motion.div>
 
         <Dialog open={launchOpen} onOpenChange={handleLaunchOpenChange}>
-          <DialogContent className="border-white/10 bg-zinc-950 text-foreground sm:max-w-md">
+          <DialogContent className="border-white/10 bg-zinc-950 py-8 text-foreground sm:max-w-md sm:py-10">
             <DialogHeader>
               <DialogTitle className="text-white">Enter invite code</DialogTitle>
               <DialogDescription className="text-zinc-400">
                 Hypertron is invite-only during early access. Enter your code to continue to sign in.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleInviteSubmit} className="grid gap-4 py-2">
+            <form onSubmit={handleInviteSubmit} className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="hypertron-invite-code" className="text-zinc-300">
                   Invite code

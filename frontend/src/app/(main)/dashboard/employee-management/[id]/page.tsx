@@ -27,6 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useFreighter } from "@/hooks/useFreighter";
+import { isValidStellarAddress } from "@/lib/stellar-address";
 import { cn } from "@/utils";
 
 type Status = "active" | "inactive" | "on_leave" | "pending" | "offboarded";
@@ -78,6 +79,8 @@ export default function EmployeeDetailsPage() {
   const [payAmount, setPayAmount] = useState("");
   const [payNote, setPayNote] = useState("");
   const [paying, setPaying] = useState(false);
+  /** Wallet last loaded from or saved to the server (POST payout uses DB, not draft form). */
+  const [savedWalletAddress, setSavedWalletAddress] = useState<string | null>(null);
 
   const loadEmployee = useCallback(async () => {
     if (!publicKey || publicKey.length !== 56 || !publicKey.startsWith("G") || !employeeId) {
@@ -85,6 +88,7 @@ export default function EmployeeDetailsPage() {
       return;
     }
     setLoading(true);
+    setSavedWalletAddress(null);
     try {
       const [employeeRes, paymentsRes] = await Promise.all([
         fetch(`/api/employees/${encodeURIComponent(employeeId)}`, {
@@ -103,7 +107,10 @@ export default function EmployeeDetailsPage() {
           typeof employeeJson?.error === "string" ? employeeJson.error : "Failed to load employee"
         );
       }
-      setEmployee(employeeJson.employee as Employee);
+      const emp = employeeJson.employee as Employee;
+      setEmployee(emp);
+      const w = typeof emp.walletAddress === "string" ? emp.walletAddress.trim() : "";
+      setSavedWalletAddress(w.length ? w : null);
 
       const paymentsJson = await paymentsRes.json().catch(() => ({}));
       if (paymentsRes.ok) {
@@ -168,8 +175,10 @@ export default function EmployeeDetailsPage() {
     }
   };
 
+  const payWalletReady = isValidStellarAddress(savedWalletAddress ?? "");
+
   const payNow = async () => {
-    if (!employee || !publicKey) return;
+    if (!employee || !publicKey || !payWalletReady) return;
     const amount = Number.parseFloat(payAmount);
     if (!Number.isFinite(amount) || amount <= 0) {
       toast.error("Enter a valid amount");
@@ -246,7 +255,12 @@ export default function EmployeeDetailsPage() {
             <Button
               size="sm"
               className="rounded-full border border-white/10 bg-foreground text-xs font-semibold text-background hover:opacity-90"
-              disabled={!employee || loading}
+              disabled={!employee || loading || !payWalletReady}
+              title={
+                payWalletReady
+                  ? undefined
+                  : "Add a valid Stellar wallet (G…, 56 chars) on this profile and save to enable Pay now."
+              }
               onClick={() => setPayOpen(true)}
             >
               <Send className="mr-1.5 h-3.5 w-3.5" />
@@ -392,6 +406,12 @@ export default function EmployeeDetailsPage() {
                       size="sm"
                       variant="outline"
                       className="rounded-full"
+                      disabled={!payWalletReady}
+                      title={
+                        payWalletReady
+                          ? undefined
+                          : "Save a valid employee wallet on this profile to enable payouts."
+                      }
                       onClick={() => setPayOpen(true)}
                     >
                       <Wallet className="mr-1.5 h-3.5 w-3.5" />
@@ -481,7 +501,7 @@ export default function EmployeeDetailsPage() {
               <Button variant="outline" onClick={() => setPayOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={payNow} disabled={paying}>
+              <Button onClick={payNow} disabled={paying || !payWalletReady}>
                 {paying ? "Processing..." : "Pay now"}
               </Button>
             </DialogFooter>
