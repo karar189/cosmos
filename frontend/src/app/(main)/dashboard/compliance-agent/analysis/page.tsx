@@ -62,6 +62,12 @@ export default function ComplianceAgentAnalysisPage() {
   const websiteSources = result.sourceStatuses.filter(
     (s) => s.sourceType === "website" && s.status === "Processed"
   );
+  const openDetail = (
+    section: "licenses" | "documents" | "actions" | "timeline" | "risks",
+    index: number
+  ) => {
+    router.push(`/dashboard/compliance-agent/analysis/${section}/${index}`);
+  };
 
   return (
     <>
@@ -78,7 +84,7 @@ export default function ComplianceAgentAnalysisPage() {
 
       <DashboardMain>
         <div className="flex flex-col gap-6">
-          <div className="rounded-2xl border border-white/[0.12] bg-gradient-to-br from-sky-500/20 via-amber-400/10 to-emerald-500/10 p-6">
+          <div className="rounded-2xl border border-white/[0.12] bg-gradient-to-br from-violet-500/20 via-blue-500/10 to-emerald-500/10 p-6">
             <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
               <div>
                 <p className="text-xs uppercase tracking-wider text-white/55">Compliance intelligence report</p>
@@ -112,7 +118,7 @@ export default function ComplianceAgentAnalysisPage() {
             <Card className="border-white/[0.08] bg-white/[0.02]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Lightbulb className="h-5 w-5 text-amber-300" />
+                  <Lightbulb className="h-5 w-5 text-violet-300" />
                   Source Intelligence (with website visuals)
                 </CardTitle>
               </CardHeader>
@@ -135,7 +141,7 @@ export default function ComplianceAgentAnalysisPage() {
                       href={source.name}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-3 inline-flex items-center text-xs text-sky-300 hover:text-sky-200"
+                      className="mt-3 inline-flex items-center text-xs text-violet-300 hover:text-violet-200"
                     >
                       Visit source <ArrowRight className="ml-1 h-3.5 w-3.5" />
                     </a>
@@ -155,12 +161,20 @@ export default function ComplianceAgentAnalysisPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {result.requiredLicenses.map((item, idx) => (
-                  <div key={`${item.name}-${idx}`} className="rounded-lg border border-white/[0.07] bg-white/[0.02] p-3">
+                  <button
+                    type="button"
+                    key={`${item.name}-${idx}`}
+                    className="w-full rounded-lg border border-white/[0.07] bg-white/[0.02] p-3 text-left transition hover:border-violet-400/40 hover:bg-violet-500/[0.06]"
+                    onClick={() => openDetail("licenses", idx)}
+                  >
                     <p className="text-sm font-medium">{item.name}</p>
                     <p className="text-xs text-white/55">{item.jurisdiction}</p>
                     <p className="mt-1 text-xs">Priority {item.priority} · Confidence {item.confidence}</p>
                     <p className="mt-1 text-sm text-white/70">{item.reason}</p>
-                  </div>
+                    <p className="mt-2 inline-flex items-center text-xs text-violet-300">
+                      Open detailed workflow <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                    </p>
+                  </button>
                 ))}
               </CardContent>
             </Card>
@@ -174,11 +188,19 @@ export default function ComplianceAgentAnalysisPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {result.requiredDocuments.map((item, idx) => (
-                  <div key={`${item.name}-${idx}`} className="rounded-lg border border-white/[0.07] bg-white/[0.02] p-3">
+                  <button
+                    type="button"
+                    key={`${item.name}-${idx}`}
+                    className="w-full rounded-lg border border-white/[0.07] bg-white/[0.02] p-3 text-left transition hover:border-violet-400/40 hover:bg-violet-500/[0.06]"
+                    onClick={() => openDetail("documents", idx)}
+                  >
                     <p className="text-sm font-medium">{item.name}</p>
                     <p className="text-xs">Owner {item.owner} · Priority {item.priority}</p>
                     <p className="mt-1 text-sm text-white/70">{item.reason}</p>
-                  </div>
+                    <p className="mt-2 inline-flex items-center text-xs text-violet-300">
+                      Open detailed workflow <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                    </p>
+                  </button>
                 ))}
               </CardContent>
             </Card>
@@ -188,17 +210,25 @@ export default function ComplianceAgentAnalysisPage() {
             <Card className="border-white/[0.08] bg-white/[0.02]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <BadgeCheck className="h-5 w-5 text-sky-300" />
+                  <BadgeCheck className="h-5 w-5 text-violet-300" />
                   Action Items
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {result.actionItems.map((item, idx) => (
-                  <div key={`${item.title}-${idx}`} className="rounded-lg border border-white/[0.07] bg-white/[0.02] p-3">
+                  <button
+                    type="button"
+                    key={`${item.title}-${idx}`}
+                    className="w-full rounded-lg border border-white/[0.07] bg-white/[0.02] p-3 text-left transition hover:border-violet-400/40 hover:bg-violet-500/[0.06]"
+                    onClick={() => openDetail("actions", idx)}
+                  >
                     <p className="text-sm font-medium">{item.title}</p>
                     <p className="text-xs">Owner {item.owner} · Priority {item.priority}</p>
                     <p className="mt-1 text-sm text-white/70">{item.details}</p>
-                  </div>
+                    <p className="mt-2 inline-flex items-center text-xs text-violet-300">
+                      Open detailed workflow <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                    </p>
+                  </button>
                 ))}
               </CardContent>
             </Card>
@@ -212,14 +242,22 @@ export default function ComplianceAgentAnalysisPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {result.timeline.map((item, idx) => (
-                  <div key={`${item.phase}-${idx}`} className="rounded-lg border border-white/[0.07] bg-white/[0.02] p-3">
+                  <button
+                    type="button"
+                    key={`${item.phase}-${idx}`}
+                    className="w-full rounded-lg border border-white/[0.07] bg-white/[0.02] p-3 text-left transition hover:border-violet-400/40 hover:bg-violet-500/[0.06]"
+                    onClick={() => openDetail("timeline", idx)}
+                  >
                     <p className="text-sm font-medium">{item.phase} <span className="text-xs text-white/50">({item.weeks})</span></p>
                     <ul className="mt-1 list-disc pl-5 text-sm text-white/70">
                       {item.goals.map((goal) => (
                         <li key={goal}>{goal}</li>
                       ))}
                     </ul>
-                  </div>
+                    <p className="mt-2 inline-flex items-center text-xs text-violet-300">
+                      Open detailed workflow <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                    </p>
+                  </button>
                 ))}
               </CardContent>
             </Card>
@@ -234,11 +272,19 @@ export default function ComplianceAgentAnalysisPage() {
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2">
               {result.risks.map((item, idx) => (
-                <div key={`${item.risk}-${idx}`} className="rounded-lg border border-white/[0.07] bg-white/[0.02] p-3">
+                <button
+                  type="button"
+                  key={`${item.risk}-${idx}`}
+                  className="w-full rounded-lg border border-white/[0.07] bg-white/[0.02] p-3 text-left transition hover:border-violet-400/40 hover:bg-violet-500/[0.06]"
+                  onClick={() => openDetail("risks", idx)}
+                >
                   <p className="text-sm font-medium">{item.risk}</p>
                   <p className="text-xs text-white/50">Severity: {item.severity}</p>
                   <p className="mt-1 text-sm text-white/70">{item.mitigation}</p>
-                </div>
+                  <p className="mt-2 inline-flex items-center text-xs text-violet-300">
+                    Open detailed workflow <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  </p>
+                </button>
               ))}
             </CardContent>
           </Card>
