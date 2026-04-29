@@ -2,13 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSessionWallet } from "@/lib/require-session-wallet";
 
 const DEFAULT_BASE = "http://localhost:8001";
-const BASE =
-  (process.env.COSMOS_AI_URL || process.env.NEXT_PUBLIC_COSMOS_AI_URL || DEFAULT_BASE).replace(
-    /\/$/,
-    ""
-  );
+
+function resolveBackendBase(): string | null {
+  const raw = (process.env.COSMOS_AI_URL || process.env.NEXT_PUBLIC_COSMOS_AI_URL || "").trim();
+  if (raw) return raw.replace(/\/$/, "");
+  // On Vercel, localhost is wrong — require an explicit backend URL.
+  if (process.env.VERCEL === "1") return null;
+  return DEFAULT_BASE;
+}
 
 export async function POST(req: NextRequest) {
+  const BASE = resolveBackendBase();
+  if (!BASE) {
+    return NextResponse.json(
+      {
+        error:
+          "Compliance Agent backend URL is not configured. Set COSMOS_AI_URL in the Vercel project (e.g. https://your-service.onrender.com).",
+      },
+      { status: 503 }
+    );
+  }
+
   try {
     const session = await requireSessionWallet(req);
     if (session instanceof NextResponse) return session;
