@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, FileBarChart2, Plus, ShieldCheck, Upload, X } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/layout/header";
 import { DashboardMain } from "@/components/dashboard/layout/main";
-import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import { ThemeSwitch } from "@/components/dashboard/theme-switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useFreighter } from "@/hooks/useFreighter";
 import {
+  clearLatestComplianceContext,
   clearLatestComplianceResult,
   getLatestComplianceResult,
   setPendingComplianceRequest,
@@ -173,6 +173,7 @@ export default function ComplianceAgentPage() {
     }
 
     clearLatestComplianceResult();
+    clearLatestComplianceContext();
     setPendingComplianceRequest({
       country,
       companyDetails: companyDetails.trim(),
@@ -199,28 +200,23 @@ export default function ComplianceAgentPage() {
 
       <DashboardMain>
         <div className="flex flex-col gap-6">
-          <DashboardPageHeader
-            eyebrow="Compliance"
-            title={
-              <span className="flex flex-wrap items-center gap-3">
-                <ShieldCheck className="h-8 w-8 shrink-0 text-foreground" aria-hidden />
-                <span>Compliance agent</span>
-              </span>
-            }
-            description="Configure your context and launch AI analysis. You will be redirected to a live analysis screen."
-            end={
-              hasLastAnalysis ? (
-                <Button
-                  variant="outline"
-                  className="rounded-full border-white/15 bg-white/[0.04] text-foreground backdrop-blur-sm hover:bg-white/[0.08]"
-                  onClick={() => router.push("/dashboard/compliance-agent/analysis")}
-                >
-                  <FileBarChart2 className="mr-2 h-4 w-4" />
-                  View last analysis
-                </Button>
-              ) : undefined
-            }
-          />
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
+                <ShieldCheck className="h-6 w-6" />
+                Compliance Agent
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Configure your context and launch AI analysis. You will be redirected to a live analysis screen.
+              </p>
+            </div>
+            {hasLastAnalysis && (
+              <Button variant="outline" onClick={() => router.push("/dashboard/compliance-agent/analysis")}> 
+                <FileBarChart2 className="mr-2 h-4 w-4" />
+                View Last Analysis
+              </Button>
+            )}
+          </div>
 
           <Card>
             <CardHeader>
