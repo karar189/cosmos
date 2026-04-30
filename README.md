@@ -35,7 +35,7 @@ Hypertron brings **darkpool-style privacy** to **B2B onboarding + payments**, wi
 * Business **never** sees payer address
 * Memo-based attribution
 
-### 🔹 **Fee sponsorship (CAP-40 fee bump)** *(optional)*
+### 🔹 **Fee sponsorship (CAP-40 fee bump)**
 
 When enabled, **payers still sign the inner payment** (same authorization as today), but a **dedicated sponsor account** wraps that transaction in a **fee bump** so the **sponsor pays the Stellar network fee** instead of the payer.
 
