@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { motion } from "framer-motion";
+import { useState, useCallback, useRef } from "react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DarkVeil } from "./dark-veil";
@@ -33,6 +33,24 @@ export function MonoHero() {
     setInviteCode("");
     setInviteError(null);
   }, []);
+
+  // Scroll-linked 3D tilt for the dashboard preview
+  const previewRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: previewRef,
+    offset: ["start 95%", "start 30%"],
+  });
+  // 0 = dashboard entering viewport (tilted), 1 = centered (upright)
+  const rotateX = useSpring(useTransform(scrollYProgress, [0, 1], [22, 0]), {
+    stiffness: 140,
+    damping: 24,
+    mass: 0.5,
+  });
+  const scale = useSpring(useTransform(scrollYProgress, [0, 1], [0.94, 1]), {
+    stiffness: 140,
+    damping: 24,
+    mass: 0.5,
+  });
 
   const handleLaunchOpenChange = (open: boolean) => {
     setLaunchOpen(open);
@@ -229,27 +247,38 @@ export function MonoHero() {
         </motion.div>
       </div>
 
-      {/* Dashboard preview */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
+      {/* Dashboard preview with scroll-linked 3D tilt */}
+      <div
+        ref={previewRef}
         className="relative z-10 mt-16 w-full max-w-5xl px-4 md:mt-20"
+        style={{ perspective: "1800px", perspectiveOrigin: "50% 0%" }}
       >
-        {/* Glow beneath the frame */}
-        <div
-          className="pointer-events-none absolute -inset-x-10 -top-12 h-40 rounded-full blur-3xl"
-          style={{ background: "radial-gradient(ellipse at center, rgba(59,130,246,0.35), transparent 70%)" }}
-        />
-        {/* Frame */}
-        <div
-          className="pointer-events-none relative overflow-hidden rounded-2xl select-none"
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
           style={{
-            boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 32px 80px rgba(0,0,0,0.6)",
+            rotateX,
+            scale,
+            transformStyle: "preserve-3d",
+            transformOrigin: "50% 100%",
           }}
+          className="relative will-change-transform"
         >
-          {/* Title bar */}
-          <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.04] px-4 py-3 backdrop-blur-sm">
+          {/* Glow beneath the frame */}
+          <div
+            className="pointer-events-none absolute -inset-x-10 -top-12 h-40 rounded-full blur-3xl"
+            style={{ background: "radial-gradient(ellipse at center, rgba(59,130,246,0.35), transparent 70%)" }}
+          />
+          {/* Frame */}
+          <div
+            className="pointer-events-none relative overflow-hidden rounded-2xl select-none"
+            style={{
+              boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 32px 80px rgba(0,0,0,0.6)",
+            }}
+          >
+            {/* Title bar */}
+            <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.04] px-4 py-3 backdrop-blur-sm">
             <div className="flex gap-1.5">
               <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
               <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
@@ -263,8 +292,9 @@ export function MonoHero() {
           </div>
 
           <HeroDashboardPreview />
-        </div>
-      </motion.div>
+          </div>
+        </motion.div>
+      </div>
 
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-gradient-to-t from-background to-transparent"

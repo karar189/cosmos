@@ -1,20 +1,20 @@
 "use client";
 
 import {
-  ArrowDownRight,
-  ArrowUpRight,
-  Bell,
-  Check,
-  ChevronDown,
-  Clock,
+  ChevronLeft,
+  CircleDollarSign,
+  FileSignature,
+  FileText,
+  Folder,
   Home,
-  LayoutDashboard,
-  Link2,
+  MapPin,
+  Plus,
+  Receipt,
   Search,
-  Settings,
   ShieldCheck,
-  Sparkles,
-  Vault,
+  Timer,
+  TrendingUp,
+  Users,
   Wallet,
 } from "lucide-react";
 
@@ -22,468 +22,260 @@ import {
 export function HeroDashboardPreview() {
   return (
     <div
-      className="grid gap-0 overflow-hidden rounded-b-xl bg-[#08080a] text-left font-sans text-[12px] leading-normal text-white/90 antialiased md:grid-cols-[56px_1fr]"
+      className="grid grid-cols-[160px_1fr] overflow-hidden rounded-b-xl bg-[#08080a] text-left font-sans text-[12px] text-white/90 antialiased"
       aria-hidden
     >
-      {/* Sidebar */}
-      <aside className="hidden flex-col items-center gap-1 border-r border-white/[0.06] bg-[#050506] py-3 md:flex">
-        <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.08] ring-1 ring-white/[0.08]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="" className="h-5 w-5 object-contain opacity-90" />
-        </div>
-        {[
-          { Icon: Home, active: true },
-          { Icon: LayoutDashboard },
-          { Icon: Link2 },
-          { Icon: Wallet },
-          { Icon: Vault },
-          { Icon: ShieldCheck },
-        ].map(({ Icon, active }, i) => (
-          <span
-            key={i}
-            className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-              active
-                ? "bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/30"
-                : "text-white/30 hover:text-white/55"
-            }`}
-          >
-            <Icon className="h-4 w-4" strokeWidth={1.75} />
+      {/* ——— Sidebar ——— */}
+      <aside className="flex flex-col gap-1 border-r border-white/[0.06] bg-[#060607] px-3 py-4">
+        {/* Logo + collapse */}
+        <div className="mb-4 flex items-center justify-between px-2">
+          <div className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="" className="h-5 w-5 object-contain" />
+            <span className="text-sm font-semibold tracking-tight text-white">Hypertron</span>
+          </div>
+          <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white/10 text-white/40">
+            <ChevronLeft className="h-3 w-3" strokeWidth={2} />
           </span>
-        ))}
-        <div className="mt-auto flex h-9 w-9 items-center justify-center rounded-lg text-white/30">
-          <Settings className="h-4 w-4" strokeWidth={1.75} />
         </div>
+
+        {/* Main nav */}
+        <SideItem icon={Home} label="Home" active />
+        <SideItem icon={Users} label="Clients" />
+        <SideItem icon={Folder} label="Projects" />
+        <SideItem icon={Timer} label="Time tracking" />
+
+        {/* Divider + Tools */}
+        <div className="my-4 border-t border-white/[0.06]" />
+        <p className="mb-2 px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/35">
+          Tools
+        </p>
+        <SideItem icon={Receipt} label="Invoices" />
+        <SideItem icon={FileSignature} label="Contracts" />
+        <SideItem icon={Wallet} label="Balance" />
+        <SideItem icon={ShieldCheck} label="Compliance" />
+        <SideItem icon={CircleDollarSign} label="Payouts" />
       </aside>
 
+      {/* ——— Main ——— */}
       <div className="flex min-w-0 flex-col">
         {/* Top bar */}
-        <header className="flex items-center gap-3 border-b border-white/[0.06] px-4 py-2.5">
-          <button
-            type="button"
-            tabIndex={-1}
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-medium text-white/75"
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
-            Dashboard
-            <ChevronDown className="h-3 w-3 opacity-50" />
-          </button>
-          <div className="relative hidden min-w-0 flex-1 sm:block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3 w-3 -translate-y-1/2 text-white/30" />
-            <div className="rounded-md border border-white/[0.08] bg-black/30 py-1.5 pl-8 pr-3 text-[11px] text-white/40">
-              Search workflows, clients, invoices…
-              <span className="float-right rounded border border-white/10 bg-white/[0.04] px-1.5 text-[9px] text-white/40">
-                ⌘K
-              </span>
+        <header className="flex items-center gap-3 border-b border-white/[0.06] px-5 py-4">
+          <div>
+            <p className="text-sm font-semibold tracking-tight text-white">Hello, Karar</p>
+            <p className="text-[11px] text-white/45">What are you working on?</p>
+          </div>
+
+          <div className="relative ml-6 hidden min-w-0 flex-1 sm:block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />
+            <div className="rounded-full border border-white/[0.08] bg-white/[0.02] py-1.5 pl-9 pr-3 text-[11px] text-white/40">
+              Search
             </div>
           </div>
+
           <div className="ml-auto flex items-center gap-2">
-            <span className="hidden rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-emerald-300 sm:inline">
-              Live · Stellar mainnet
-            </span>
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
-              <Bell className="h-3.5 w-3.5 text-white/55" strokeWidth={1.75} />
-              <span className="absolute -right-1 -top-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-md bg-blue-500 px-1 text-[8px] font-bold text-white">
-                2
+            {[MapPin, FileText, CircleDollarSign].map((Icon, i) => (
+              <span
+                key={i}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.02] text-white/55"
+              >
+                <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
               </span>
-            </div>
-            <div className="flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] py-1 pl-1 pr-2.5">
-              <div className="h-6 w-6 rounded-md bg-gradient-to-br from-blue-500 to-sky-400" />
-              <div className="hidden text-[10px] leading-tight sm:block">
-                <p className="font-medium text-white/85">Hypertron Team</p>
-                <p className="text-[9px] text-white/45">3 members online</p>
-              </div>
-            </div>
+            ))}
+            <span className="ml-1 font-mono text-sm tabular-nums text-white/85">0:00:00</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black">
+              <TimerPlay />
+            </span>
           </div>
         </header>
 
-        {/* KPI strip */}
-        <div className="grid grid-cols-2 gap-px border-b border-white/[0.06] bg-white/[0.03] sm:grid-cols-4">
-          {[
-            { label: "Volume (30d)", value: "1.42M", sub: "XLM", delta: "+12.4%", up: true },
-            { label: "Active deals", value: "47", sub: "open", delta: "+6", up: true },
-            { label: "Avg cycle", value: "2.8d", sub: "to settle", delta: "−18%", up: true },
-            { label: "Compliance", value: "98%", sub: "pass rate", delta: "+1.2%", up: true },
-          ].map((k) => (
-            <div key={k.label} className="bg-[#08080a] px-3 py-2">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                {k.label}
-              </p>
-              <div className="mt-0.5 flex items-baseline justify-between gap-2">
-                <p className="flex items-baseline gap-1 text-[15px] font-semibold tabular-nums tracking-tight text-white">
-                  {k.value}
-                  <span className="text-[10px] font-medium text-white/40">{k.sub}</span>
-                </p>
-                <span
-                  className={`flex items-center gap-0.5 text-[10px] font-medium tabular-nums ${
-                    k.up ? "text-emerald-400" : "text-rose-400"
-                  }`}
-                >
-                  {k.up ? (
-                    <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
-                  ) : (
-                    <ArrowDownRight className="h-3 w-3" strokeWidth={2} />
-                  )}
-                  {k.delta}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Main grid */}
-        <div className="grid grid-cols-12 gap-2.5 p-2.5 md:p-3">
-          {/* Chart card */}
-          <div className="col-span-12 flex flex-col gap-2 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-3 lg:col-span-7">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                  Settlement volume · Inbound XLM
-                </p>
-                <p className="mt-0.5 text-xl font-semibold tabular-nums tracking-tight text-white">
-                  1,423,094 <span className="text-xs font-medium text-blue-300">XLM</span>
-                </p>
-                <p className="text-[10px] tabular-nums text-emerald-400">
-                  +176,420 vs prev. period
-                </p>
-              </div>
-              <div className="flex items-center gap-1 rounded-lg border border-white/[0.06] bg-white/[0.03] p-0.5">
-                {["24h", "7d", "30d", "QTD"].map((t, i) => (
-                  <span
-                    key={t}
-                    className={`rounded-md px-2 py-0.5 text-[10px] font-medium ${
-                      i === 2
-                        ? "bg-white/[0.08] text-white ring-1 ring-white/10"
-                        : "text-white/45"
-                    }`}
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="relative flex-1">
-              <svg viewBox="0 0 400 100" className="h-[90px] w-full" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="hpFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgba(59,130,246,0.42)" />
-                    <stop offset="100%" stopColor="rgba(59,130,246,0)" />
-                  </linearGradient>
-                  <linearGradient id="hpLine" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#60a5fa" />
-                    <stop offset="100%" stopColor="#38bdf8" />
-                  </linearGradient>
-                </defs>
-                {/* gridlines */}
-                {[0, 24, 48, 72].map((y) => (
-                  <line
-                    key={y}
-                    x1="0"
-                    x2="400"
-                    y1={y + 8}
-                    y2={y + 8}
-                    stroke="rgba(255,255,255,0.04)"
-                    strokeDasharray="2 4"
-                  />
-                ))}
-                <path
-                  d="M0,68 L32,62 L64,72 L96,52 L128,58 L160,42 L192,47 L224,32 L256,37 L288,22 L320,28 L352,15 L400,12 L400,100 L0,100 Z"
-                  fill="url(#hpFill)"
-                />
-                <path
-                  d="M0,68 L32,62 L64,72 L96,52 L128,58 L160,42 L192,47 L224,32 L256,37 L288,22 L320,28 L352,15 L400,12"
-                  fill="none"
-                  stroke="url(#hpLine)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                {/* highlight dot */}
-                <circle cx="288" cy="22" r="4" fill="#60a5fa" />
-                <circle cx="288" cy="22" r="8" fill="#60a5fa" fillOpacity="0.18" />
-              </svg>
-              {/* tooltip */}
+        {/* Content */}
+        <div className="flex flex-col gap-3 p-4">
+          {/* KPI row */}
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {[
+              { label: "Total volume", value: "1.42M", unit: "XLM", delta: "+16.4%", up: true, Icon: Receipt },
+              { label: "Active deals", value: "55", unit: "open", delta: "−4.8%", up: false, Icon: FileSignature },
+              { label: "Completed", value: "400", unit: "deals", delta: "+12.8%", up: true, Icon: ShieldCheck },
+              { label: "Total hours", value: "600hrs", unit: "", delta: "−1.2%", up: false, Icon: Timer },
+            ].map((k) => (
               <div
-                className="absolute top-2 rounded-md border border-white/[0.1] bg-black/80 px-2.5 py-1.5 text-[10px] backdrop-blur-md"
-                style={{ left: "calc(72% - 30px)" }}
+                key={k.label}
+                className="flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-[#0d0d10] p-3.5"
               >
-                <p className="text-white/45">Mar 29 · 06:49</p>
-                <p className="font-semibold tabular-nums text-blue-300">5,538 XLM</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 border-t border-white/[0.05] pt-2 text-[10px]">
-              <span className="flex items-center gap-1.5 text-white/55">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-400" /> Settled
-              </span>
-              <span className="flex items-center gap-1.5 text-white/40">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-400/70" /> Pending pool
-              </span>
-              <span className="flex items-center gap-1.5 text-white/40">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Confirmed
-              </span>
-              <span className="ml-auto tabular-nums text-white/35">Updated 06:49 AM</span>
-            </div>
-          </div>
-
-          {/* Pool balance card */}
-          <div className="col-span-12 flex flex-col gap-2 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-3 sm:col-span-6 lg:col-span-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                  Pool balance
-                </p>
-                <p className="mt-1 text-[10px] text-white/45">Settled via Stellar</p>
-              </div>
-              <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold tabular-nums text-emerald-300">
-                +7.2%
-              </span>
-            </div>
-
-            <div>
-              <p className="text-[22px] font-semibold leading-none tabular-nums tracking-tight text-white">
-                23,094
-                <span className="ml-1 text-sm font-medium text-blue-300">XLM</span>
-              </p>
-              <p className="mt-0.5 text-[10px] tabular-nums text-white/40">≈ $9,237.60 USD</p>
-            </div>
-
-            {/* mini sparkline */}
-            <svg viewBox="0 0 120 28" className="h-7 w-full">
-              <path
-                d="M0,22 L12,18 L24,20 L36,14 L48,16 L60,10 L72,12 L84,7 L96,9 L108,4 L120,6"
-                fill="none"
-                stroke="#60a5fa"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-
-            {/* breakdown */}
-            <div className="space-y-1.5">
-              {[
-                { label: "Inflow", v: "18.4K", pct: 78, c: "bg-blue-400" },
-                { label: "Pool", v: "3.2K", pct: 14, c: "bg-amber-400/80" },
-                { label: "Reserve", v: "1.5K", pct: 8, c: "bg-emerald-400/80" },
-              ].map((r) => (
-                <div key={r.label} className="space-y-0.5">
-                  <div className="flex justify-between text-[10px] text-white/55">
-                    <span>{r.label}</span>
-                    <span className="tabular-nums">{r.v}</span>
-                  </div>
-                  <div className="h-1 overflow-hidden rounded-full bg-white/[0.05]">
-                    <div className={`h-full ${r.c}`} style={{ width: `${r.pct}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Private payouts card */}
-          <div className="relative col-span-12 flex flex-col gap-2 overflow-hidden rounded-xl border border-amber-400/20 bg-gradient-to-b from-[#161118] via-[#0e0d11] to-[#0a0a0c] p-3 sm:col-span-6 lg:col-span-2">
-            <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-400/[0.08] blur-2xl" />
-            <div className="relative flex items-center justify-between">
-              <p className="text-[10px] font-semibold tracking-wide text-white/70">Private payouts</p>
-              <span className="rounded border border-amber-300/40 bg-amber-400/[0.16] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-amber-100">
-                Beta
-              </span>
-            </div>
-            <p className="relative text-[10px] leading-relaxed text-white/45">
-              Route via the pool with memo-based attribution — opt-in privacy.
-            </p>
-
-            <div className="relative space-y-1.5">
-              <div className="flex items-center justify-between rounded-md border border-white/[0.06] bg-white/[0.03] px-2 py-1.5">
-                <span className="font-mono text-[10px] text-white/55">commit_0x9f…b4</span>
-                <Check className="h-3 w-3 text-emerald-400" />
-              </div>
-              <div className="flex items-center justify-between rounded-md border border-white/[0.06] bg-white/[0.03] px-2 py-1.5">
-                <span className="font-mono text-[10px] text-white/55">commit_0xe2…a1</span>
-                <Clock className="h-3 w-3 text-amber-300" />
-              </div>
-            </div>
-
-            <div className="relative mt-auto flex items-center justify-between gap-2 pt-1">
-              <span className="text-[10px] font-medium text-amber-200/85 underline decoration-amber-400/40 underline-offset-2">
-                Learn more
-              </span>
-              <span className="rounded-md bg-amber-300 px-2.5 py-1 text-[10px] font-semibold text-stone-900">
-                Open
-              </span>
-            </div>
-          </div>
-
-          {/* Active workflows */}
-          <div className="col-span-12 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-3 lg:col-span-5">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                Active workflows
-              </p>
-              <span className="text-[10px] tabular-nums text-white/35">12 open · 4 stalled</span>
-            </div>
-            <div className="space-y-1.5">
-              {[
-                {
-                  name: "Acme onboarding",
-                  sub: "12 clients · KYC · Soroban escrow",
-                  pct: 72,
-                  delta: "+9.2%",
-                  c: "bg-blue-400",
-                },
-                {
-                  name: "RWA intake — Q2",
-                  sub: "8 pending docs · 3 awaiting review",
-                  pct: 44,
-                  delta: "+4.1%",
-                  c: "bg-amber-400/80",
-                },
-                {
-                  name: "Stacked Labs payout",
-                  sub: "Milestone 3 of 5 · escrow funded",
-                  pct: 60,
-                  delta: "+2.3%",
-                  c: "bg-emerald-400/80",
-                },
-              ].map((row) => (
-                <div
-                  key={row.name}
-                  className="flex items-center gap-2.5 rounded-lg border border-white/[0.04] bg-white/[0.02] px-2.5 py-1.5"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="truncate text-[11px] font-medium text-white/85">{row.name}</p>
-                      <span className="shrink-0 text-[10px] font-semibold tabular-nums text-emerald-300">
-                        {row.delta}
-                      </span>
-                    </div>
-                    <p className="truncate text-[9px] text-white/40">{row.sub}</p>
-                    <div className="mt-1 h-1 overflow-hidden rounded-full bg-white/[0.05]">
-                      <div className={`h-full ${row.c}`} style={{ width: `${row.pct}%` }} />
-                    </div>
-                  </div>
-                  <span className="shrink-0 font-mono text-[10px] tabular-nums text-white/45">
-                    {row.pct}%
+                <div className="flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] ring-1 ring-white/10">
+                    <k.Icon className="h-3.5 w-3.5 text-white/70" strokeWidth={1.75} />
                   </span>
+                  <p className="text-[11px] text-white/55">{k.label}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Conversion / This week */}
-          <div className="col-span-12 flex flex-col gap-2 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-3 sm:col-span-6 lg:col-span-3">
-            <div className="flex items-center justify-between">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                Conversion · this week
-              </p>
-              <Sparkles className="h-3 w-3 text-amber-300" />
-            </div>
-            <div>
-              <p className="text-2xl font-semibold tabular-nums tracking-tight text-blue-300">
-                +19.2%
-              </p>
-              <p className="text-[10px] text-white/40">Workflow opens → completed payments</p>
-            </div>
-
-            {/* funnel */}
-            <div className="space-y-1.5">
-              {[
-                { label: "Opened", v: 412, pct: 100 },
-                { label: "Verified", v: 337, pct: 81 },
-                { label: "Paid", v: 196, pct: 47 },
-              ].map((s, i) => (
-                <div key={s.label} className="space-y-0.5">
-                  <div className="flex justify-between text-[10px]">
-                    <span className="text-white/55">{s.label}</span>
-                    <span className="tabular-nums text-white/70">{s.v}</span>
-                  </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.05]">
-                    <div
-                      className={`h-full ${
-                        i === 0 ? "bg-blue-400" : i === 1 ? "bg-blue-400/70" : "bg-blue-400/45"
-                      }`}
-                      style={{ width: `${s.pct}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-auto flex items-center gap-2 rounded-lg border border-blue-500/25 bg-blue-500/[0.06] p-2">
-              <Sparkles className="h-3.5 w-3.5 shrink-0 text-blue-300" />
-              <p className="text-[10px] leading-relaxed text-white/60">
-                <span className="font-semibold text-white/80">AI</span> · 3 workflows need
-                compliance review.
-              </p>
-            </div>
-          </div>
-
-          {/* Recent receivables table */}
-          <div className="col-span-12 overflow-hidden rounded-xl border border-white/[0.07] bg-[#0d0d10] lg:col-span-4">
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-2">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                Recent receivables
-              </p>
-              <span className="text-[10px] font-semibold text-amber-300">View all</span>
-            </div>
-            <div className="divide-y divide-white/[0.04]">
-              {[
-                {
-                  name: "Invoice #1042",
-                  biz: "Northwind",
-                  amt: "5,538 XLM",
-                  status: "Paid",
-                  tone: "emerald",
-                  letter: "N",
-                  bg: "from-blue-500/30 to-cyan-500/20",
-                },
-                {
-                  name: "Retainer Q2",
-                  biz: "Blue Ocean",
-                  amt: "12,400 XLM",
-                  status: "Pending",
-                  tone: "amber",
-                  letter: "B",
-                  bg: "from-emerald-500/30 to-teal-500/20",
-                },
-                {
-                  name: "Pilot deposit",
-                  biz: "Stacked Labs",
-                  amt: "3,200 XLM",
-                  status: "Paid",
-                  tone: "emerald",
-                  letter: "S",
-                  bg: "from-amber-400/30 to-orange-500/20",
-                },
-              ].map((row) => (
-                <div key={row.name} className="flex items-center gap-2.5 px-3 py-2">
-                  <div
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gradient-to-br ${row.bg} text-[10px] font-bold text-white/85 ring-1 ring-white/10`}
-                  >
-                    {row.letter}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[11px] font-medium text-white/85">{row.name}</p>
-                    <p className="truncate text-[9px] text-white/40">{row.biz}</p>
-                  </div>
-                  <p className="shrink-0 font-mono text-[10px] tabular-nums text-white/65">
-                    {row.amt}
+                <div className="flex items-end justify-between">
+                  <p className="text-2xl font-semibold leading-none tabular-nums tracking-tight text-white">
+                    {k.value}
+                    {k.unit ? (
+                      <span className="ml-1 text-xs font-medium text-white/40">{k.unit}</span>
+                    ) : null}
                   </p>
                   <span
-                    className={`shrink-0 rounded-md border px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide ${
-                      row.tone === "emerald"
-                        ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-300"
-                        : row.tone === "amber"
-                          ? "border-amber-400/30 bg-amber-400/[0.1] text-amber-100"
-                          : "border-blue-400/30 bg-blue-400/[0.08] text-blue-200"
+                    className={`text-[11px] font-medium tabular-nums ${
+                      k.up ? "text-emerald-400" : "text-rose-400"
                     }`}
                   >
-                    {row.status}
+                    {k.delta}
                   </span>
                 </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Chart + actions */}
+          <div className="grid grid-cols-12 gap-3">
+            {/* Earning chart */}
+            <div className="col-span-12 rounded-xl border border-white/[0.06] bg-[#0d0d10] p-4 lg:col-span-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-white">Earning over time</p>
+                  <div className="mt-1 flex items-center gap-4 text-[11px] text-white/55">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-blue-400" /> Billable
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-blue-400/35" /> Non-billable
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="flex items-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[11px] text-white/70">
+                    Month
+                    <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 text-white/40">
+                      <path
+                        d="M3 5 L6 8 L9 5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03] text-white/55">
+                    <TrendingUp className="h-3 w-3" strokeWidth={1.75} />
+                  </span>
+                </div>
+              </div>
+
+              {/* Bar chart */}
+              <div className="mt-5 flex h-36 items-end justify-between gap-2 px-1">
+                {[
+                  [55, 35],
+                  [80, 50],
+                  [60, 38],
+                  [50, 32],
+                  [75, 48],
+                  [40, 22],
+                  [85, 55],
+                  [65, 42],
+                  [45, 28],
+                  [70, 45],
+                  [55, 34],
+                  [38, 20],
+                ].map(([bill, nonBill], i) => {
+                  const total = bill + nonBill;
+                  return (
+                    <div
+                      key={i}
+                      className="flex h-full flex-1 flex-col justify-end"
+                    >
+                      <div
+                        className="flex w-full flex-col overflow-hidden rounded-t"
+                        style={{ height: `${(total / 140) * 100}%` }}
+                      >
+                        <div
+                          className="w-full bg-blue-400/25"
+                          style={{ flex: `${nonBill} 0 0%` }}
+                        />
+                        <div
+                          className="w-full bg-gradient-to-t from-blue-500/70 to-blue-400"
+                          style={{ flex: `${bill} 0 0%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Action grid */}
+            <div className="col-span-12 grid grid-cols-2 gap-3 lg:col-span-4">
+              {[
+                { label: "New payout", Icon: CircleDollarSign },
+                { label: "Run KYB", Icon: ShieldCheck },
+                { label: "Add workflow", Icon: Plus },
+                { label: "Send invoice", Icon: Receipt },
+              ].map((a) => (
+                <div
+                  key={a.label}
+                  className="flex flex-col items-start justify-between gap-3 rounded-xl border border-white/[0.06] bg-[#0d0d10] p-3.5"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.06] ring-1 ring-white/10">
+                    <a.Icon className="h-3.5 w-3.5 text-white/75" strokeWidth={1.75} />
+                  </span>
+                  <p className="text-[12px] font-medium text-white/85">{a.label}</p>
+                </div>
               ))}
+            </div>
+
+            {/* Footer accent strip */}
+            <div className="col-span-12 flex items-center justify-between rounded-xl border border-white/[0.06] bg-[#0a0a0c] px-4 py-2.5">
+              <div className="flex items-center gap-3 text-[11px] text-white/55">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                </span>
+                Live on Stellar mainnet
+              </div>
+              <div className="flex items-center gap-4 text-[11px] text-white/45">
+                <span>
+                  Pool balance · <span className="font-mono tabular-nums text-white/75">23,094 XLM</span>
+                </span>
+                <span className="hidden sm:inline">
+                  Last payout · <span className="font-mono tabular-nums text-white/75">06:49 AM</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function SideItem({
+  icon: Icon,
+  label,
+  active = false,
+}: {
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  label: string;
+  active?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[12px] transition-colors ${
+        active
+          ? "bg-white/[0.06] text-white ring-1 ring-white/[0.08]"
+          : "text-white/55"
+      }`}
+    >
+      <Icon className="h-4 w-4" strokeWidth={1.75} />
+      <span className="truncate">{label}</span>
+    </div>
+  );
+}
+
+function TimerPlay() {
+  return (
+    <svg viewBox="0 0 16 16" className="h-3 w-3 fill-current">
+      <path d="M5 3.5v9l7.5-4.5z" />
+    </svg>
   );
 }
