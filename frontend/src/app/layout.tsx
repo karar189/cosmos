@@ -2,6 +2,7 @@ import { Providers } from "@/components";
 import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import { aeonik, cn, generateMetadata, instrumentSerif, inter } from "@/utils";
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata = generateMetadata();
 
@@ -24,6 +25,7 @@ export default function RootLayout({
                     <Toaster richColors theme="dark" position="top-right" />
                     {children}
                 </Providers>
+                <Analytics />
             </body>
         </html>
     );
