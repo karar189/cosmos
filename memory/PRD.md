@@ -37,3 +37,19 @@ Next.js 14 (App Router) · TypeScript · Tailwind · Framer Motion · OGL (WebGL
 - P2: Implement scroll-snapped section transitions
 - P2: Add an interactive "Privacy pool" visual demo
 - P2: SEO meta tags + OG image
+
+## Update — Hero dashboard preview redesign (Apr 30, 2026)
+Original preview had cards with massive empty whitespace, stretched flex layouts, and very little useful content. Completely rebuilt `hero-dashboard-preview.tsx`:
+
+- **Top bar**: search with ⌘K hint, "Live · Stellar mainnet" status pill, team avatar
+- **KPI strip** (NEW): 4 headline metrics — Volume (30d) 1.42M XLM, Active deals 47, Avg cycle 2.8d, Compliance 98% — each with delta arrow
+- **Chart card**: bigger headline number (1,423,094 XLM), period tabs (24h/7d/30d/QTD), full-height area chart with dashed gridlines, highlight dot + tooltip, color-coded legend
+- **Pool balance**: USD conversion sub-line, sparkline, 3-bar breakdown (Inflow/Pool/Reserve)
+- **Private payouts**: real commit-hash chips (`commit_0x9f…b4`) with check/clock icons
+- **Active workflows**: 4 rows with delta %, progress bars, completion %
+- **Conversion / This Week**: funnel viz (Opened 412 → Verified 337 → Paid 196) + AI nudge
+- **Recent receivables**: gradient avatar tiles per client, mono amounts, status pills (Paid/Pending/Review)
+- **Compliance log** (NEW): timeline of last 4 events with timestamps
+- **Document vault** (NEW): 4 file tiles with verified/pending status + "All hashes anchored on Stellar" footer
+
+Density is now ~4× what it was, and every element has plausible B2B data instead of placeholders.
