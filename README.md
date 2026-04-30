@@ -1,7 +1,9 @@
 
 <img width="1376" height="913" alt="Screenshot 2026-02-22 at 6 44 18 PM" src="https://github.com/user-attachments/assets/96739bf1-0daa-4abe-ab1a-178076e255e1" />
 
-##User Onboarding Review Sheet** : https://docs.google.com/spreadsheets/d/1t3ZQOgel-9NhzT6k8WI7Pu-mJnA12t2xoRACP4Mx6uA/edit?usp=sharing
+## User Onboarding Review Sheet
+
+https://docs.google.com/spreadsheets/d/1t3ZQOgel-9NhzT6k8WI7Pu-mJnA12t2xoRACP4Mx6uA/edit?usp=sharing
 
 ## 🚀 Overview
 
@@ -33,6 +35,25 @@ Hypertron brings **darkpool-style privacy** to **B2B onboarding + payments**, wi
 * Payment enters a shared pool
 * Business **never** sees payer address
 * Memo-based attribution
+
+### 🔹 **Fee sponsorship (CAP-40 fee bump)** *(optional)*
+
+When enabled, **payers still sign the inner payment** (same authorization as today), but a **dedicated sponsor account** wraps that transaction in a **fee bump** so the **sponsor pays the Stellar network fee** instead of the payer.
+
+* **Flow:** `prepare-pay` → build inner tx → Freighter signs inner → `POST /api/payment-link/[id]/submit-sponsored-pay` → server validates destination, amount, and memo against the link + `PendingPaymentMemo` → sponsor signs outer fee bump → submit to Horizon.
+* **Safety:** The API rejects inner transactions that do not match the expected recipient (relayer or pool), the prepared amount, and the registered memo hash (or fixed-amount text memo). This blocks abuse of the sponsor key for unrelated transfers.
+* **Verification:** On [StellarExpert](https://stellar.expert), successful payments appear as **fee bump** transactions; expand the envelope to inspect the inner **payment** / **createAccount** operation.
+* **Code:** `frontend/src/lib/fee-sponsor-server.ts`, `frontend/src/app/api/payment-link/[id]/submit-sponsored-pay/route.ts`, pay page branches in `frontend/src/app/pay/[id]/page.tsx`.
+
+**Environment variables** (frontend / deployment):
+
+| Variable | Required | Description |
+| -------- | -------- | ----------- |
+| `FEE_SPONSOR_SECRET` | Yes, to sponsor | Secret key of the sponsor `G...` account (server only). Must hold XLM for network fees. |
+| `NEXT_PUBLIC_FEE_SPONSOR_PUBLIC_KEY` | Yes, to enable UX | Public key of the same sponsor. When set, the pay UI uses the sponsored submit path. |
+| `FEE_SPONSOR_MAX_FEE_STROOPS` | No | Max fee (stroops) for the fee bump outer tx; default `100000`. |
+
+If `NEXT_PUBLIC_FEE_SPONSOR_PUBLIC_KEY` is unset, payers submit the classic transaction themselves and pay their own base fee (previous behavior). The sponsor public key must match the key derived from `FEE_SPONSOR_SECRET` when both are set.
 
 ### 🔹 **ZK-Friendly Commitment Layer**
 
@@ -115,7 +136,7 @@ sequenceDiagram
 ### **1. Payment Links**
 
 * Business configures workflow & amount
-* Client pays to shared pool
+* Client pays to shared pool (or relayer when configured), optionally with **sponsored network fees** via fee bump
 * Memo tags identify workflow
 
 ### **2. Attribution Engine**
@@ -182,6 +203,7 @@ sequenceDiagram
 ## 🗺 Roadmap
 
 * [x] Payment link attribution
+* [x] Payer fee sponsorship (Stellar fee bump on payment links)
 * [x] Commitment + nullifier registry
 * [x] Onboarding flow builder
 * [x] Virtual balance engine
