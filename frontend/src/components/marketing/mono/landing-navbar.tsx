@@ -28,62 +28,68 @@ export function LandingNavbar() {
 
   return (
     <header className={cn(
-      "fixed left-0 right-0 top-0 z-50 px-8 py-4 md:px-28 transition-all duration-300",
+      "fixed left-0 right-0 top-0 z-50 px-6 py-3 md:px-10 transition-all duration-300",
       !visible && "-translate-y-full",
       scrolled
-        ? "bg-white/5 backdrop-blur-md"
+        ? "bg-black/40 backdrop-blur-xl border-b border-white/[0.06]"
         : "bg-transparent"
     )}>
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4">
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4">
         <Link href="/" className="flex shrink-0 items-center gap-2 text-foreground">
           <Image
             src="/logo.png"
             alt="Hypertron"
-            width={40}
-            height={40}
-            className="h-9 w-9 object-contain md:h-10 md:w-10"
+            width={36}
+            height={36}
+            className="h-8 w-8 object-contain md:h-9 md:w-9"
           />
-          <span className="text-xl font-bold tracking-tight">Hypertron</span>
+          <span className="text-lg font-bold tracking-tight">Hypertron</span>
         </Link>
 
-        <div className="flex items-center gap-4">
-          <nav className="hidden items-center gap-1 md:flex">
-            <Link
-              href="/#home"
-              className="px-2 py-1.5 text-sm font-medium text-muted-foreground transition-opacity hover:text-foreground"
-            >
-              Home
-            </Link>
-            <Link
-              href={DOCS_HREF}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-2 py-1.5 text-sm font-medium text-muted-foreground transition-opacity hover:text-foreground"
-            >
-              Docs
-            </Link>
-            <Link
-              href={CONTACT_HREF}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-2 py-1.5 text-sm font-medium text-muted-foreground transition-opacity hover:text-foreground"
-            >
-              Contact us
-            </Link>
-          </nav>
-
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full border border-white/[0.07] bg-white/[0.03] px-1.5 py-1 backdrop-blur-md md:flex">
+          <Link
+            href="/#solution"
+            className="rounded-full px-3.5 py-1.5 text-sm font-medium text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white"
+          >
+            Product
+          </Link>
+          <Link
+            href="/#how-it-works"
+            className="rounded-full px-3.5 py-1.5 text-sm font-medium text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white"
+          >
+            How it works
+          </Link>
+          <Link
+            href={DOCS_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full px-3.5 py-1.5 text-sm font-medium text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white"
+          >
+            Docs
+          </Link>
           <Link
             href={CONTACT_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-90 sm:inline-flex"
+            className="rounded-full px-3.5 py-1.5 text-sm font-medium text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white"
+          >
+            Contact
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href={CONTACT_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-90 sm:inline-flex"
           >
             Book a Demo
           </Link>
 
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-md border border-border/60 text-foreground md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-foreground md:hidden"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
@@ -96,21 +102,28 @@ export function LandingNavbar() {
       {open ? (
         <div
           className={cn(
-            "mt-3 flex flex-col gap-1 rounded-xl border border-border/40 bg-card/95 p-3 backdrop-blur-sm md:hidden",
+            "mt-3 flex flex-col gap-1 rounded-2xl border border-white/[0.08] bg-black/80 p-3 backdrop-blur-xl md:hidden",
           )}
         >
           <Link
-            href="/#home"
-            className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            href="/#solution"
+            className="rounded-md px-3 py-2.5 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white"
             onClick={() => setOpen(false)}
           >
-            Home
+            Product
+          </Link>
+          <Link
+            href="/#how-it-works"
+            className="rounded-md px-3 py-2.5 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white"
+            onClick={() => setOpen(false)}
+          >
+            How it works
           </Link>
           <Link
             href={DOCS_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            className="rounded-md px-3 py-2.5 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white"
             onClick={() => setOpen(false)}
           >
             Docs
@@ -119,7 +132,7 @@ export function LandingNavbar() {
             href={CONTACT_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            className="rounded-md px-3 py-2.5 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white"
             onClick={() => setOpen(false)}
           >
             Contact us
@@ -128,7 +141,7 @@ export function LandingNavbar() {
             href={CONTACT_HREF}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 rounded-lg bg-foreground py-2.5 text-center text-sm font-semibold text-background"
+            className="mt-2 rounded-full bg-foreground py-2.5 text-center text-sm font-semibold text-background"
             onClick={() => setOpen(false)}
           >
             Book a Demo

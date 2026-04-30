@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
-
-const PAYMENT_POOL_ADDRESS = (
-  process.env.NEXT_PUBLIC_PAYMENT_POOL_ADDRESS?.trim() ||
-  process.env.NEXT_PUBLIC_MERCHANT_RECIPIENT?.trim() ||
-  ""
-).trim();
-
-const RELAYER_PUBLIC_KEY = (process.env.NEXT_PUBLIC_RELAYER_PUBLIC_KEY ?? "").trim();
+import { getExpectedPaymentDestination } from "@/lib/payment-destination";
 
 /** Get a payment link by id (for pay page and attribution). When relayer is set, return relayer so clients pay relayer (backend forwards to pool). Otherwise pool address. */
 export async function GET(
@@ -22,7 +15,7 @@ export async function GET(
     if (!link) {
       return NextResponse.json({ error: "Payment link not found" }, { status: 404 });
     }
-    const destinationAddress = RELAYER_PUBLIC_KEY || PAYMENT_POOL_ADDRESS || link.destinationAddress;
+    const destinationAddress = getExpectedPaymentDestination(link.destinationAddress);
     return NextResponse.json({
       id: link.id,
       amount: link.amount,
