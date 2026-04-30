@@ -184,18 +184,43 @@ export default function PayPage() {
     }
 
     setPayStatus("submitting");
-    const submitResult = await submitSignedTransaction(
-      horizonUrl,
-      networkPassphrase,
-      signResult.signedTxXdr
-    );
 
-    if (submitResult.success) {
-      setTxHash(submitResult.txHash);
-      setPayStatus("success");
+    const feeSponsorPublic = process.env.NEXT_PUBLIC_FEE_SPONSOR_PUBLIC_KEY?.trim();
+    if (feeSponsorPublic) {
+      const sponsoredRes = await fetch(`/api/payment-link/${linkId}/submit-sponsored-pay`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          signedInnerTxXdr: signResult.signedTxXdr,
+          payerPublicKey: publicKey,
+        }),
+      });
+      const sponsoredBody = await sponsoredRes.json().catch(() => ({}));
+      if (sponsoredRes.ok && typeof sponsoredBody?.txHash === "string") {
+        setTxHash(sponsoredBody.txHash);
+        setPayStatus("success");
+      } else {
+        setPayError(
+          typeof sponsoredBody?.error === "string"
+            ? sponsoredBody.error
+            : `Sponsored submit failed (${sponsoredRes.status})`
+        );
+        setPayStatus("error");
+      }
     } else {
-      setPayError(submitResult.error);
-      setPayStatus("error");
+      const submitResult = await submitSignedTransaction(
+        horizonUrl,
+        networkPassphrase,
+        signResult.signedTxXdr
+      );
+
+      if (submitResult.success) {
+        setTxHash(submitResult.txHash);
+        setPayStatus("success");
+      } else {
+        setPayError(submitResult.error);
+        setPayStatus("error");
+      }
     }
   }
 
