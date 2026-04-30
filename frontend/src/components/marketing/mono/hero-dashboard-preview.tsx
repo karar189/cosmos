@@ -7,7 +7,6 @@ import {
   Check,
   ChevronDown,
   Clock,
-  FileText,
   Home,
   LayoutDashboard,
   Link2,
@@ -105,43 +104,45 @@ export function HeroDashboardPreview() {
             { label: "Avg cycle", value: "2.8d", sub: "to settle", delta: "−18%", up: true },
             { label: "Compliance", value: "98%", sub: "pass rate", delta: "+1.2%", up: true },
           ].map((k) => (
-            <div key={k.label} className="bg-[#08080a] px-4 py-3">
+            <div key={k.label} className="bg-[#08080a] px-3 py-2">
               <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/40">
                 {k.label}
               </p>
-              <p className="mt-1 flex items-baseline gap-1.5 text-base font-semibold tabular-nums tracking-tight text-white">
-                {k.value}
-                <span className="text-[10px] font-medium text-white/40">{k.sub}</span>
-              </p>
-              <p
-                className={`mt-0.5 flex items-center gap-1 text-[10px] font-medium tabular-nums ${
-                  k.up ? "text-emerald-400" : "text-rose-400"
-                }`}
-              >
-                {k.up ? (
-                  <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
-                ) : (
-                  <ArrowDownRight className="h-3 w-3" strokeWidth={2} />
-                )}
-                {k.delta}
-              </p>
+              <div className="mt-0.5 flex items-baseline justify-between gap-2">
+                <p className="flex items-baseline gap-1 text-[15px] font-semibold tabular-nums tracking-tight text-white">
+                  {k.value}
+                  <span className="text-[10px] font-medium text-white/40">{k.sub}</span>
+                </p>
+                <span
+                  className={`flex items-center gap-0.5 text-[10px] font-medium tabular-nums ${
+                    k.up ? "text-emerald-400" : "text-rose-400"
+                  }`}
+                >
+                  {k.up ? (
+                    <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
+                  ) : (
+                    <ArrowDownRight className="h-3 w-3" strokeWidth={2} />
+                  )}
+                  {k.delta}
+                </span>
+              </div>
             </div>
           ))}
         </div>
 
         {/* Main grid */}
-        <div className="grid grid-cols-12 gap-3 p-3 md:p-4">
+        <div className="grid grid-cols-12 gap-2.5 p-2.5 md:p-3">
           {/* Chart card */}
-          <div className="col-span-12 flex flex-col gap-3 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-4 lg:col-span-7">
+          <div className="col-span-12 flex flex-col gap-2 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-3 lg:col-span-7">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/40">
                   Settlement volume · Inbound XLM
                 </p>
-                <p className="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-white">
-                  1,423,094 <span className="text-sm font-medium text-blue-300">XLM</span>
+                <p className="mt-0.5 text-xl font-semibold tabular-nums tracking-tight text-white">
+                  1,423,094 <span className="text-xs font-medium text-blue-300">XLM</span>
                 </p>
-                <p className="mt-0.5 text-[10px] tabular-nums text-emerald-400">
+                <p className="text-[10px] tabular-nums text-emerald-400">
                   +176,420 vs prev. period
                 </p>
               </div>
@@ -149,7 +150,7 @@ export function HeroDashboardPreview() {
                 {["24h", "7d", "30d", "QTD"].map((t, i) => (
                   <span
                     key={t}
-                    className={`rounded-md px-2 py-1 text-[10px] font-medium ${
+                    className={`rounded-md px-2 py-0.5 text-[10px] font-medium ${
                       i === 2
                         ? "bg-white/[0.08] text-white ring-1 ring-white/10"
                         : "text-white/45"
@@ -161,7 +162,7 @@ export function HeroDashboardPreview() {
               </div>
             </div>
             <div className="relative flex-1">
-              <svg viewBox="0 0 400 130" className="h-[140px] w-full" preserveAspectRatio="none">
+              <svg viewBox="0 0 400 100" className="h-[90px] w-full" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="hpFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="rgba(59,130,246,0.42)" />
@@ -173,23 +174,23 @@ export function HeroDashboardPreview() {
                   </linearGradient>
                 </defs>
                 {/* gridlines */}
-                {[0, 32, 64, 96].map((y) => (
+                {[0, 24, 48, 72].map((y) => (
                   <line
                     key={y}
                     x1="0"
                     x2="400"
-                    y1={y + 12}
-                    y2={y + 12}
+                    y1={y + 8}
+                    y2={y + 8}
                     stroke="rgba(255,255,255,0.04)"
                     strokeDasharray="2 4"
                   />
                 ))}
                 <path
-                  d="M0,90 L32,82 L64,95 L96,68 L128,76 L160,55 L192,62 L224,42 L256,48 L288,30 L320,38 L352,22 L400,18 L400,130 L0,130 Z"
+                  d="M0,68 L32,62 L64,72 L96,52 L128,58 L160,42 L192,47 L224,32 L256,37 L288,22 L320,28 L352,15 L400,12 L400,100 L0,100 Z"
                   fill="url(#hpFill)"
                 />
                 <path
-                  d="M0,90 L32,82 L64,95 L96,68 L128,76 L160,55 L192,62 L224,42 L256,48 L288,30 L320,38 L352,22 L400,18"
+                  d="M0,68 L32,62 L64,72 L96,52 L128,58 L160,42 L192,47 L224,32 L256,37 L288,22 L320,28 L352,15 L400,12"
                   fill="none"
                   stroke="url(#hpLine)"
                   strokeWidth="2"
@@ -197,8 +198,8 @@ export function HeroDashboardPreview() {
                   strokeLinejoin="round"
                 />
                 {/* highlight dot */}
-                <circle cx="288" cy="30" r="4" fill="#60a5fa" />
-                <circle cx="288" cy="30" r="8" fill="#60a5fa" fillOpacity="0.18" />
+                <circle cx="288" cy="22" r="4" fill="#60a5fa" />
+                <circle cx="288" cy="22" r="8" fill="#60a5fa" fillOpacity="0.18" />
               </svg>
               {/* tooltip */}
               <div
@@ -209,7 +210,7 @@ export function HeroDashboardPreview() {
                 <p className="font-semibold tabular-nums text-blue-300">5,538 XLM</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 border-t border-white/[0.05] pt-3 text-[10px]">
+            <div className="flex items-center gap-3 border-t border-white/[0.05] pt-2 text-[10px]">
               <span className="flex items-center gap-1.5 text-white/55">
                 <span className="h-1.5 w-1.5 rounded-full bg-blue-400" /> Settled
               </span>
@@ -224,7 +225,7 @@ export function HeroDashboardPreview() {
           </div>
 
           {/* Pool balance card */}
-          <div className="col-span-12 flex flex-col gap-3 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-4 sm:col-span-6 lg:col-span-3">
+          <div className="col-span-12 flex flex-col gap-2 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-3 sm:col-span-6 lg:col-span-3">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/40">
@@ -238,11 +239,11 @@ export function HeroDashboardPreview() {
             </div>
 
             <div>
-              <p className="text-[26px] font-semibold leading-none tabular-nums tracking-tight text-white">
+              <p className="text-[22px] font-semibold leading-none tabular-nums tracking-tight text-white">
                 23,094
-                <span className="ml-1 text-base font-medium text-blue-300">XLM</span>
+                <span className="ml-1 text-sm font-medium text-blue-300">XLM</span>
               </p>
-              <p className="mt-1 text-[10px] tabular-nums text-white/40">≈ $9,237.60 USD</p>
+              <p className="mt-0.5 text-[10px] tabular-nums text-white/40">≈ $9,237.60 USD</p>
             </div>
 
             {/* mini sparkline */}
@@ -278,7 +279,7 @@ export function HeroDashboardPreview() {
           </div>
 
           {/* Private payouts card */}
-          <div className="relative col-span-12 flex flex-col gap-3 overflow-hidden rounded-xl border border-amber-400/20 bg-gradient-to-b from-[#161118] via-[#0e0d11] to-[#0a0a0c] p-4 sm:col-span-6 lg:col-span-2">
+          <div className="relative col-span-12 flex flex-col gap-2 overflow-hidden rounded-xl border border-amber-400/20 bg-gradient-to-b from-[#161118] via-[#0e0d11] to-[#0a0a0c] p-3 sm:col-span-6 lg:col-span-2">
             <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-400/[0.08] blur-2xl" />
             <div className="relative flex items-center justify-between">
               <p className="text-[10px] font-semibold tracking-wide text-white/70">Private payouts</p>
@@ -312,14 +313,14 @@ export function HeroDashboardPreview() {
           </div>
 
           {/* Active workflows */}
-          <div className="col-span-12 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-4 lg:col-span-5">
-            <div className="mb-3 flex items-center justify-between">
+          <div className="col-span-12 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-3 lg:col-span-5">
+            <div className="mb-2 flex items-center justify-between">
               <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/45">
                 Active workflows
               </p>
               <span className="text-[10px] tabular-nums text-white/35">12 open · 4 stalled</span>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {[
                 {
                   name: "Acme onboarding",
@@ -342,17 +343,10 @@ export function HeroDashboardPreview() {
                   delta: "+2.3%",
                   c: "bg-emerald-400/80",
                 },
-                {
-                  name: "Northwind retainer",
-                  sub: "Awaiting compliance signoff",
-                  pct: 18,
-                  delta: "−0.4%",
-                  c: "bg-rose-400/70",
-                },
               ].map((row) => (
                 <div
                   key={row.name}
-                  className="flex items-center gap-3 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2.5"
+                  className="flex items-center gap-2.5 rounded-lg border border-white/[0.04] bg-white/[0.02] px-2.5 py-1.5"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
@@ -361,8 +355,8 @@ export function HeroDashboardPreview() {
                         {row.delta}
                       </span>
                     </div>
-                    <p className="mt-0.5 truncate text-[9px] text-white/40">{row.sub}</p>
-                    <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.05]">
+                    <p className="truncate text-[9px] text-white/40">{row.sub}</p>
+                    <div className="mt-1 h-1 overflow-hidden rounded-full bg-white/[0.05]">
                       <div className={`h-full ${row.c}`} style={{ width: `${row.pct}%` }} />
                     </div>
                   </div>
@@ -375,7 +369,7 @@ export function HeroDashboardPreview() {
           </div>
 
           {/* Conversion / This week */}
-          <div className="col-span-12 flex flex-col gap-3 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-4 sm:col-span-6 lg:col-span-3">
+          <div className="col-span-12 flex flex-col gap-2 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-3 sm:col-span-6 lg:col-span-3">
             <div className="flex items-center justify-between">
               <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/45">
                 Conversion · this week
@@ -383,10 +377,10 @@ export function HeroDashboardPreview() {
               <Sparkles className="h-3 w-3 text-amber-300" />
             </div>
             <div>
-              <p className="text-3xl font-semibold tabular-nums tracking-tight text-blue-300">
+              <p className="text-2xl font-semibold tabular-nums tracking-tight text-blue-300">
                 +19.2%
               </p>
-              <p className="mt-0.5 text-[10px] text-white/40">Workflow opens → completed payments</p>
+              <p className="text-[10px] text-white/40">Workflow opens → completed payments</p>
             </div>
 
             {/* funnel */}
@@ -424,7 +418,7 @@ export function HeroDashboardPreview() {
 
           {/* Recent receivables table */}
           <div className="col-span-12 overflow-hidden rounded-xl border border-white/[0.07] bg-[#0d0d10] lg:col-span-4">
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-2">
               <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/45">
                 Recent receivables
               </p>
@@ -459,19 +453,10 @@ export function HeroDashboardPreview() {
                   letter: "S",
                   bg: "from-amber-400/30 to-orange-500/20",
                 },
-                {
-                  name: "Milestone #2",
-                  biz: "Acme Co.",
-                  amt: "8,750 XLM",
-                  status: "Review",
-                  tone: "blue",
-                  letter: "A",
-                  bg: "from-rose-400/30 to-pink-500/20",
-                },
               ].map((row) => (
-                <div key={row.name} className="flex items-center gap-3 px-4 py-2.5">
+                <div key={row.name} className="flex items-center gap-2.5 px-3 py-2">
                   <div
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br ${row.bg} text-[10px] font-bold text-white/85 ring-1 ring-white/10`}
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gradient-to-br ${row.bg} text-[10px] font-bold text-white/85 ring-1 ring-white/10`}
                   >
                     {row.letter}
                   </div>
@@ -495,76 +480,6 @@ export function HeroDashboardPreview() {
                   </span>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Compliance log */}
-          <div className="col-span-12 flex flex-col gap-2.5 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-4 sm:col-span-6 lg:col-span-4">
-            <div className="flex items-center justify-between">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                Compliance log
-              </p>
-              <span className="rounded border border-emerald-500/25 bg-emerald-500/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-emerald-300">
-                All passing
-              </span>
-            </div>
-            {[
-              { t: "06:49", e: "KYB approved", who: "Northwind Co.", c: "emerald" },
-              { t: "06:31", e: "Document hash committed", who: "Stacked Labs", c: "blue" },
-              { t: "05:58", e: "Pool deposit confirmed", who: "Acme Co.", c: "amber" },
-              { t: "05:12", e: "Privacy commit relayed", who: "0xe2…a1", c: "blue" },
-            ].map((row, i) => (
-              <div key={i} className="flex items-start gap-2.5">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/30" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[11px] text-white/80">
-                    {row.e}{" "}
-                    <span className="text-white/40">· {row.who}</span>
-                  </p>
-                </div>
-                <span className="font-mono text-[10px] tabular-nums text-white/35">{row.t}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Document vault */}
-          <div className="col-span-12 flex flex-col gap-3 rounded-xl border border-white/[0.07] bg-[#0d0d10] p-4 sm:col-span-6 lg:col-span-4">
-            <div className="flex items-center justify-between">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                Document vault
-              </p>
-              <span className="text-[10px] tabular-nums text-white/35">128 files</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { n: "MSA_Northwind.pdf", s: "verified", i: "emerald" },
-                { n: "KYB_BlueOcean.pdf", s: "pending", i: "amber" },
-                { n: "Term_Sheet_v3.pdf", s: "verified", i: "emerald" },
-                { n: "Audit_Q1.pdf", s: "verified", i: "emerald" },
-              ].map((d) => (
-                <div
-                  key={d.n}
-                  className="flex items-center gap-2 rounded-lg border border-white/[0.05] bg-white/[0.02] px-2 py-1.5"
-                >
-                  <FileText className="h-3.5 w-3.5 shrink-0 text-white/45" strokeWidth={1.75} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[10px] font-medium text-white/80">{d.n}</p>
-                    <p
-                      className={`text-[9px] ${
-                        d.i === "emerald" ? "text-emerald-400/85" : "text-amber-300/85"
-                      }`}
-                    >
-                      · {d.s}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-auto flex items-center gap-2 rounded-md bg-white/[0.03] px-2.5 py-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" strokeWidth={1.75} />
-              <p className="text-[10px] text-white/55">
-                All hashes anchored on Stellar — verifiable.
-              </p>
             </div>
           </div>
         </div>
