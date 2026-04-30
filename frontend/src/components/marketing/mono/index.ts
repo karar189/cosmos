@@ -10,3 +10,6 @@ export { MissionSection } from "./mission-section";
 export { MonoHero } from "./mono-hero";
 export { NeuralTestimonial } from "./neural-testimonial";
 export { SolutionSection } from "./solution-section";
+export { ProcessSection } from "./process-section";
+export { TestimonialsSection } from "./testimonials-section";
+export { SectionHeader } from "./section-header";

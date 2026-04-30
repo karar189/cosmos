@@ -3,7 +3,9 @@ import {
   MissionSection,
   MonoHero,
   NeuralTestimonial,
+  ProcessSection,
   SolutionSection,
+  TestimonialsSection,
 } from "@/components/marketing/mono";
 
 const HomePage = () => {
@@ -12,7 +14,9 @@ const HomePage = () => {
       <MonoHero />
       <NeuralTestimonial />
       <SolutionSection />
+      <ProcessSection />
       <MissionSection />
+      <TestimonialsSection />
       <CtaHlsSection />
     </div>
   );
