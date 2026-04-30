@@ -17,6 +17,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 /** Decorative dashboard mock for the landing hero (non-interactive). */
 export function HeroDashboardPreview() {
@@ -254,7 +255,7 @@ function SideItem({
   label,
   active = false,
 }: {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: LucideIcon;
   label: string;
   active?: boolean;
 }) {
