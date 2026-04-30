@@ -149,6 +149,10 @@ const config = {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(calc(-100% - var(--gap)))" },
         },
+        "marquee-reverse": {
+          from: { transform: "translateX(calc(-50%))" },
+          to: { transform: "translateX(0)" },
+        },
         "flip": {
           to: {
             transform: "rotate(360deg)",
@@ -183,6 +187,7 @@ const config = {
         "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
         "image-glow": "image-glow 4s ease-out 0.6s forwards",
         "marquee": "marquee var(--duration) linear infinite",
+        "marquee-reverse": "marquee-reverse var(--duration) linear infinite",
         "flip": "flip 6s infinite steps(2, end)",
         "rotate": "rotate 3s linear infinite both",
         "caret-blink": "caret-blink 1.25s ease-out infinite",

@@ -55,26 +55,36 @@ export function MonoHero() {
   return (
     <section
       id="home"
-      className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-black px-4 pb-24 pt-28 text-center md:px-8 md:pt-48"
+      className="relative flex w-full flex-col items-center overflow-hidden bg-black px-4 pb-12 pt-28 text-center md:px-8 md:pt-40"
     >
       <div className="pointer-events-none absolute inset-0 z-0" style={{ position: "absolute", inset: 0 }} aria-hidden>
         <DarkVeil resolutionScale={0.6} />
       </div>
 
       <div
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-slate-950/75 via-blue-950/25 to-slate-950/80"
+        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-slate-950/70 via-blue-950/20 to-slate-950/85"
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center pt-24">
+      {/* Subtle grid overlay */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[1] opacity-[0.18] [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,black,transparent)]"
+        aria-hidden
+      />
+
+      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0 }}
-          className="mb-6 relative flex flex-wrap items-center justify-center gap-2.5 rounded-full px-4 py-2 overflow-hidden"
-          style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)" }}
+          className="mb-6 relative flex flex-wrap items-center justify-center gap-2.5 rounded-full px-4 py-2 overflow-hidden ring-1 ring-white/10"
+          style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}
         >
-          <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-black tracking-wide">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+          </span>
+          <span className="rounded-full bg-white px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-black">
             Stellar
           </span>
           <ShinyText
@@ -91,18 +101,24 @@ export function MonoHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-4 max-w-3xl text-4xl font-semibold leading-[1.15] tracking-[-1.5px] text-foreground drop-shadow-sm sm:text-5xl md:text-6xl md:leading-[1.1]"
+          className="mb-5 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-[-2px] text-foreground drop-shadow-sm sm:text-5xl md:text-7xl"
         >
-          Unified B2B onboarding and private settlement.
+          Unified B2B onboarding{" "}
+          <span className="relative whitespace-nowrap">
+            <span className="font-serif font-normal italic text-white/90">and</span>
+          </span>{" "}
+          <span className="bg-gradient-to-br from-white via-white to-blue-200/80 bg-clip-text text-transparent">
+            private settlement.
+          </span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25 }}
-          className="mb-8 max-w-xl text-md leading-relaxed text-heroSubtitle/90 opacity-85 drop-shadow-sm md:text-sm"
+          className="mb-8 max-w-xl text-base leading-relaxed text-white/65 drop-shadow-sm md:text-[15px]"
         >
-          Replace fragmented tools and expose less sensitive financial data. Hypertron combines onboarding, payments, AI-assisted workflows, and a privacy layer into a single programmable B2B infrastructure.
+          Replace fragmented tools and exposed financial data. Hypertron combines onboarding, payments, AI-assisted workflows, and a privacy layer into a single programmable B2B infrastructure.
         </motion.p>
 
         <motion.div
@@ -120,6 +136,7 @@ export function MonoHero() {
               href={BOOK_DEMO}
               target="_blank"
               rel="noopener noreferrer"
+              data-testid="hero-book-demo-btn"
               className="flex h-12 w-full items-center justify-center rounded-full bg-foreground px-8 text-base font-semibold text-background"
             >
               Book a Demo
@@ -133,6 +150,7 @@ export function MonoHero() {
             <Button
               type="button"
               variant="outline"
+              data-testid="hero-launch-btn"
               onClick={() => setLaunchOpen(true)}
               className="flex h-12 w-full items-center justify-center rounded-full border-white/25 bg-transparent px-8 text-base font-semibold text-white hover:bg-white/10 hover:text-white"
             >
@@ -188,6 +206,27 @@ export function MonoHero() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Trust strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.18em] text-white/35"
+        >
+          <span className="flex items-center gap-1.5">
+            <span className="h-1 w-1 rounded-full bg-white/40" /> Soroban-native
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-1 w-1 rounded-full bg-white/40" /> Privacy by design
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-1 w-1 rounded-full bg-white/40" /> Audit-ready
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-1 w-1 rounded-full bg-white/40" /> Invite-only
+          </span>
+        </motion.div>
       </div>
 
       {/* Dashboard preview */}
@@ -195,12 +234,12 @@ export function MonoHero() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.5 }}
-        className="relative z-10 mt-24 w-full max-w-5xl px-4 translate-y-[82%] md:mt-20 lg:mt-32"
+        className="relative z-10 mt-16 w-full max-w-5xl px-4 md:mt-20"
       >
         {/* Glow beneath the frame */}
         <div
-          className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 h-24 w-3/4 rounded-full blur-3xl"
-          style={{ background: "rgba(59, 130, 246, 0.35)" }}
+          className="pointer-events-none absolute -inset-x-10 -top-12 h-40 rounded-full blur-3xl"
+          style={{ background: "radial-gradient(ellipse at center, rgba(59,130,246,0.35), transparent 70%)" }}
         />
         {/* Frame */}
         <div
@@ -228,7 +267,7 @@ export function MonoHero() {
       </motion.div>
 
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-40 bg-gradient-to-t from-background to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-gradient-to-t from-background to-transparent"
         aria-hidden
       />
     </section>
