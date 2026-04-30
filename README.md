@@ -1,6 +1,4 @@
-
-![Uploading Screenshot 2026-04-30 at 10.22.01 PM.png…]()
-
+<img width="1709" height="1105" alt="Screenshot 2026-04-30 at 10 22 35 PM" src="https://github.com/user-attachments/assets/07fe4c30-8e9f-4066-8b4d-454f7da6725a" />
 
 ## User Onboarding Review Sheet
 
