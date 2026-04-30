@@ -12,7 +12,7 @@ const DOCS_HREF = "https://www.hypertron.space/docs/introduction";
 
 export function CtaHlsSection() {
   return (
-    <section className="relative overflow-hidden border-t border-border/30 py-32 md:py-44">
+    <section className="relative overflow-hidden border-t border-border/30 py-24 md:py-32">
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{ position: "absolute", inset: 0 }}

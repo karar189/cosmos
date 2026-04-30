@@ -41,10 +41,10 @@ export function NeuralTestimonial() {
     <section
       id="reviews"
       ref={containerRef}
-      className="flex flex-col items-center gap-10 px-8 pt-24 pb-8 md:px-28 md:pt-20 md:pb-6"
+      className="flex flex-col items-center gap-10 px-6 py-24 md:px-8 md:py-28"
     >
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-10 text-center">
-        <p className="flex flex-wrap justify-center text-4xl font-medium leading-[1.2] md:text-5xl">
+        <p className="flex flex-wrap justify-center text-3xl font-medium leading-[1.25] tracking-[-0.5px] md:text-4xl lg:text-5xl">
           {WORDS.map((w, i) => (
             <RevealWord key={`${w}-${i}`} word={w} index={i} total={WORDS.length} progress={scrollYProgress} />
           ))}

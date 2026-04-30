@@ -55,7 +55,7 @@ export function MonoHero() {
   return (
     <section
       id="home"
-      className="relative flex w-full flex-col items-center overflow-hidden bg-black px-4 pb-12 pt-28 text-center md:px-8 md:pt-40"
+      className="relative flex w-full flex-col items-center overflow-hidden bg-black px-6 pb-16 pt-28 text-center md:px-8 md:pt-40"
     >
       <div className="pointer-events-none absolute inset-0 z-0" style={{ position: "absolute", inset: 0 }} aria-hidden>
         <DarkVeil resolutionScale={0.6} />

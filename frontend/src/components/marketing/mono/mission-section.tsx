@@ -68,16 +68,16 @@ export function MissionSection() {
     <section
       id="mission"
       ref={ref}
-      className="relative border-t border-border/30 px-6 py-28 md:px-28 md:py-36"
+      className="relative border-t border-border/30 py-24 md:py-32"
     >
-      <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-20">
+      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 md:grid-cols-[minmax(0,420px)_1fr] md:px-8 lg:gap-20">
         <div className="relative">
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6 }}
-            className="mb-6 text-xs uppercase tracking-[3px] text-muted-foreground"
+            className="mb-6 text-xs font-medium uppercase tracking-[3px] text-muted-foreground"
           >
             Our mission
           </motion.p>

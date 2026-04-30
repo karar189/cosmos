@@ -12,3 +12,4 @@ export { NeuralTestimonial } from "./neural-testimonial";
 export { SolutionSection } from "./solution-section";
 export { ProcessSection } from "./process-section";
 export { TestimonialsSection } from "./testimonials-section";
+export { SectionHeader } from "./section-header";

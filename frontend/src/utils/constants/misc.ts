@@ -1,4 +1,4 @@
-import { BarChart3Icon, FolderOpenIcon, WandSparklesIcon } from "lucide-react";
+import { BarChart3Icon, FolderOpenIcon, WandSparklesIcon, ShieldCheckIcon, EyeIcon, LockIcon, CoinsIcon, GitBranchIcon, SparklesIcon } from "lucide-react";
 
 export const DEFAULT_AVATAR_URL = "https://api.dicebear.com/8.x/initials/svg?backgroundType=gradientLinear&backgroundRotation=0,360&seed=";
 
@@ -29,29 +29,35 @@ export const FEATURES = [
         title: "Privacy pool & execution",
         description:
             "Soroban-backed pool with commitment and nullifier flows: onboarding to payment to pool to private payout, with relayer integration for opt-in privacy.",
+        icon: LockIcon,
     },
     {
         title: "XLM receivables & tracking",
         description:
             "Collect inbound XLM with clear memos and attribution while you monitor status and settlement in one dashboard.",
+        icon: CoinsIcon,
     },
     {
         title: "Workflows & AI dashboard",
         description:
             "Guided onboarding, wallet abstraction where it helps, and an AI-assisted dashboard to design and monitor workflows, not a patchwork of tools.",
+        icon: SparklesIcon,
     },
     {
         title: "Real-time visibility",
         description:
             "See who joined each workflow, completed KYC and documents, and paid, without losing the thread across email and spreadsheets.",
+        icon: EyeIcon,
     },
     {
         title: "Compliance in the flow",
         description: "KYB, document checks, and approvals embedded in the same workflow as payments and milestones.",
+        icon: ShieldCheckIcon,
     },
     {
         title: "One programmable pipeline",
         description: "Encode onboarding, compliance touchpoints, and payment terms in a single operational flow so nothing slips through.",
+        icon: GitBranchIcon,
     },
 ] as const;
 
