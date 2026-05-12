@@ -34,7 +34,7 @@ export function MonoHero() {
             Stellar
           </span>
           <ShinyText
-            text="B2B workflows & pooled settlement"
+            text="B2B AI workflows & pooled settlement"
             speed={3}
             color="rgba(255,255,255,0.6)"
             shineColor="#ffffff"
