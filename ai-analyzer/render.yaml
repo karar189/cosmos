@@ -17,6 +17,27 @@ services:
       - key: OPENAI_MODEL
         value: gpt-4o-mini
 
+      # News source used by /agent/business-impact-* endpoints
+      - key: NEWS_DATA_API_KEY
+        sync: false
+
+      # Optional Gmail SMTP settings for /agent/business-impact-report/email
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+
+      # Optional JSON config for daily scheduled business-impact email digest.
+      # Leave empty if you only want on-demand report generation.
+      - key: DAILY_IMPACT_EMAIL_CONFIG
+        sync: false
+
       # Hypertron production + local dev. Add preview origins in Render dashboard if needed.
       - key: CORS_ALLOW_ORIGINS
         value: http://localhost:3000,http://127.0.0.1:3000,https://www.hypertron.space,https://hypertron.space

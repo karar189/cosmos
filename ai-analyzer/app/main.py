@@ -14,6 +14,7 @@ from .compliance_checklist import (
     generate_checklist,
 )
 from .scraper_routes import router as scraper_router
+from .business_impact_routes import router as business_impact_router
 import warnings
 
 # Compliance Agent requires python-multipart for Form/File parsing.
@@ -41,6 +42,11 @@ except ModuleNotFoundError as e:
     _regintel_available = False
     warnings.warn(f"RegIntel disabled: missing dependency ({e.name}). Install with: pip install motor feedparser", UserWarning)
 
+try:
+    from .business_impact_scheduler import create_business_impact_scheduler
+except ModuleNotFoundError:
+    create_business_impact_scheduler = None
+
 
 # Load env from local .env (if present). This is safe even if .env is missing.
 load_dotenv()
@@ -49,6 +55,7 @@ app = FastAPI(title="Cosmos AI Backend", version="0.1.0")
 if _regintel_available:
     app.include_router(regintel_router)
 app.include_router(scraper_router)
+app.include_router(business_impact_router)
 if _compliance_agent_available and compliance_agent_router:
     app.include_router(compliance_agent_router)
 
@@ -78,6 +85,16 @@ async def startup():
             await seed_sources_if_empty()
         except Exception:
             pass  # MongoDB may not be configured
+
+    # Optional daily business impact email scheduler.
+    impact_config = os.getenv("DAILY_IMPACT_EMAIL_CONFIG", "").strip()
+    if impact_config and create_business_impact_scheduler is not None:
+        try:
+            scheduler = create_business_impact_scheduler(impact_config)
+            scheduler.start()
+            app.state.business_impact_scheduler = scheduler
+        except Exception:
+            pass
 
 
 @app.post("/api/compliance/checklist", response_model=ComplianceChecklistResponse)
