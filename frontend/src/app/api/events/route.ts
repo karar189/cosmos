@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { resolveAppBaseUrl } from "@/lib/app-base-url";
 import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
+import { getPaymentDetailsByTransactionHash } from "@/lib/horizon";
 
 export const dynamic = "force-dynamic";
+const STELLAR_NETWORK = (process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet") as "testnet" | "public";
 
 /**
  * Phase 3: Per-business event stream. Returns only safe fields — no client/payer address, no pool balance.
@@ -35,8 +37,55 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    const normalizedLinks = await Promise.all(
+      links.map(async (link) => {
+        const amountRaw = typeof link.amount === "string" ? link.amount.trim() : "";
+        if (link.paidAt && link.paymentTxHash && !amountRaw) {
+          try {
+            const details = await getPaymentDetailsByTransactionHash(
+              link.paymentTxHash,
+              STELLAR_NETWORK
+            );
+            if (details && Number.isFinite(parseFloat(details.amount))) {
+              const paidAtFromLedger = details.createdAt
+                ? new Date(details.createdAt)
+                : link.paidAt;
+              const nextPaidAt = Number.isNaN(paidAtFromLedger.getTime())
+                ? link.paidAt
+                : paidAtFromLedger;
+
+              const updated = await db.paymentLink.update({
+                where: { id: link.id },
+                data: {
+                  amount: details.amount,
+                  paidAt: nextPaidAt,
+                  ...(details.sourceAccount
+                    ? { payerAddress: details.sourceAccount }
+                    : {}),
+                },
+                select: {
+                  id: true,
+                  businessId: true,
+                  amount: true,
+                  purpose: true,
+                  workflowStage: true,
+                  paidAt: true,
+                  commitmentTxHash: true,
+                  createdAt: true,
+                },
+              });
+              return updated;
+            }
+          } catch {
+            // Keep existing row when backfill fails.
+          }
+        }
+        return link;
+      })
+    );
+
     const baseUrl = resolveAppBaseUrl(req);
-    const events = links.map((l) => ({
+    const events = normalizedLinks.map((l) => ({
       linkId: l.id,
       businessId: l.businessId,
       amount: l.amount,

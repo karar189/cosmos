@@ -91,6 +91,17 @@ export function OverviewChart({ businessId, onboardingIncomplete }: OverviewChar
     return MONTHS.map((name, idx) => ({ name, total: Number(totals[idx].toFixed(2)) }));
   }, [events]);
 
+  const { yAxisMax, yAxisTicks } = useMemo(() => {
+    const maxTotal = data.reduce((acc, item) => Math.max(acc, item.total), 0);
+    const step = 50;
+    const computedMax = Math.max(250, Math.ceil(maxTotal / step) * step);
+    const ticks = Array.from(
+      { length: Math.floor(computedMax / step) + 1 },
+      (_, idx) => idx * step
+    );
+    return { yAxisMax: computedMax, yAxisTicks: ticks };
+  }, [data]);
+
   if (onboardingIncomplete) {
     return (
       <div className="flex h-[300px] flex-col items-center justify-center rounded-xl border border-dashed border-white/[0.12] bg-white/[0.02] px-6 text-center">
@@ -133,8 +144,11 @@ export function OverviewChart({ businessId, onboardingIncomplete }: OverviewChar
             tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 11 }}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-            width={32}
+            domain={[0, yAxisMax]}
+            ticks={yAxisTicks}
+            interval={0}
+            tickFormatter={(v) => `${v}`}
+            width={42}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
           <Bar dataKey="total" fill="rgba(139, 92, 246, 0.7)" radius={[4, 4, 0, 0]} />

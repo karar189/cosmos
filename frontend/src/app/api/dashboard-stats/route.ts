@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
+import { getPaymentDetailsByTransactionHash } from "@/lib/horizon";
 
 export const dynamic = "force-dynamic";
+const STELLAR_NETWORK = (process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet") as "testnet" | "public";
 
 /**
  * Phase 3: Dashboard stats for overview cards.
@@ -31,7 +33,7 @@ export async function GET(req: NextRequest) {
       }),
       db.paymentLink.findMany({
         where: { businessId: bid, paidAt: { not: null } },
-        select: { amount: true },
+        select: { id: true, amount: true, paymentTxHash: true, paidAt: true },
       }),
     ]);
 
@@ -39,7 +41,39 @@ export async function GET(req: NextRequest) {
     const pending = links.length - completed;
     let totalReceived = 0;
     for (const p of paidLinks) {
-      const amt = parseFloat(p.amount ?? '');
+      let amountStr = p.amount ?? "";
+      const isMissingAmount = String(amountStr).trim() === "";
+      if (isMissingAmount && p.paymentTxHash) {
+        try {
+          const details = await getPaymentDetailsByTransactionHash(
+            p.paymentTxHash,
+            STELLAR_NETWORK
+          );
+          if (details && Number.isFinite(parseFloat(details.amount))) {
+            amountStr = details.amount;
+            const paidAtFromLedger = details.createdAt
+              ? new Date(details.createdAt)
+              : p.paidAt;
+            const nextPaidAt = Number.isNaN(paidAtFromLedger.getTime())
+              ? p.paidAt
+              : paidAtFromLedger;
+            await db.paymentLink.update({
+              where: { id: p.id },
+              data: {
+                amount: details.amount,
+                paidAt: nextPaidAt,
+                ...(details.sourceAccount
+                  ? { payerAddress: details.sourceAccount }
+                  : {}),
+              },
+            });
+          }
+        } catch {
+          // Skip backfill failure; stats falls back to existing values.
+        }
+      }
+
+      const amt = parseFloat(String(amountStr));
       if (Number.isFinite(amt)) totalReceived += amt;
     }
 
