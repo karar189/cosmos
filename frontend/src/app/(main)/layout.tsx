@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getCookie } from "@/lib/cookies";
 import { cn } from "@/utils";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/layout/app-sidebar";
 import { useFreighter } from "@/hooks/useFreighter";
+import { useAppSession } from "@/hooks/useAppSession";
 import { sidebarData } from "@/components/dashboard/layout/data/sidebar-data";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
+import { ConnectWalletBanner } from "@/components/dashboard/connect-wallet-banner";
 
 export default function MainLayout({
   children,
@@ -16,21 +18,25 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { publicKey, disconnect } = useFreighter();
+  const { data: session, loading: sessionLoading, isPrivy, privyUser } = useAppSession();
 
   useEffect(() => {
     let cancelled = false;
     const run = async () => {
       const res = await fetch("/api/auth/me", { credentials: "same-origin" });
       if (cancelled || res.status === 401) return;
-      const data = (await res.json().catch(() => null)) as { walletAddress?: string } | null;
-      const sessionWallet = data?.walletAddress?.trim();
+      const data = (await res.json().catch(() => null)) as
+        | { auth?: string; walletAddress?: string }
+        | null;
+      if (data?.auth !== "wallet") return;
+      const sessionWallet = data.walletAddress?.trim();
       if (!sessionWallet) return;
       if (publicKey && sessionWallet !== publicKey) {
         disconnect();
         const ret = pathname && pathname.startsWith("/") ? pathname : "/dashboard";
         window.location.assign(`/session/wallet?returnUrl=${encodeURIComponent(ret)}`);
-        return;
       }
     };
     void run();
@@ -38,6 +44,14 @@ export default function MainLayout({
       cancelled = true;
     };
   }, [publicKey, disconnect, pathname]);
+
+  const handleSignOut = async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+    window.dispatchEvent(new Event("hypertron-sign-out"));
+    disconnect();
+    router.push("/?launch=1");
+  };
+
   const defaultOpen = getCookie("sidebar_state") !== "false";
 
   const user = publicKey
@@ -46,19 +60,39 @@ export default function MainLayout({
         email: `${publicKey.slice(0, 6)}...${publicKey.slice(-4)}`,
         avatar: "",
       }
-    : sidebarData.user;
+    : privyUser
+      ? {
+          name: privyUser.name?.trim() || "Account",
+          email: privyUser.email?.trim() || privyUser.id.slice(0, 12) + "…",
+          avatar: "",
+        }
+      : sidebarData.user;
+
+  const showConnectWallet = !sessionLoading && isPrivy && !publicKey;
 
   return (
     <div className="marketing-mono font-default relative min-h-screen bg-black text-foreground antialiased dashboard-gradient-bg">
       <SidebarProvider defaultOpen={defaultOpen} className="!bg-transparent">
         <AppSidebar
-          onDisconnect={disconnect}
+          onDisconnect={handleSignOut}
           user={user}
+          isSessionConnected={!!session || !!publicKey}
         />
         <SidebarInset className={cn("flex flex-1 flex-col bg-transparent min-h-screen")}>
-          <OnboardingGate when={!!publicKey} walletAddress={publicKey}>
-            {children}
-          </OnboardingGate>
+          <div className="flex flex-1 flex-col px-4 pt-4 md:px-6 md:pt-6">
+            <ConnectWalletBanner show={showConnectWallet} />
+            <OnboardingGate
+              when={!sessionLoading && !!session}
+              walletAddress={publicKey}
+              scopeKey={
+                publicKey && publicKey.length === 56 && publicKey.startsWith("G")
+                  ? publicKey
+                  : privyUser?.id ?? null
+              }
+            >
+              {children}
+            </OnboardingGate>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </div>

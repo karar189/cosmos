@@ -10,10 +10,12 @@ import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { OverviewStats } from "@/components/dashboard/overview-stats";
 import { RecentPayments } from "@/components/dashboard/recent-payments";
 import { useOnboardingUi } from "@/components/onboarding";
+import { useAppSession } from "@/hooks/useAppSession";
 
 function DashboardContent() {
   const router = useRouter();
   const { publicKey, connect, isConnecting } = useFreighter();
+  const { isPrivy, loading: sessionLoading } = useAppSession();
   const { isOnboardingComplete, openOnboardingQuiz } = useOnboardingUi();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
@@ -21,7 +23,8 @@ function DashboardContent() {
   useEffect(() => {
     let cancelled = false;
 
-    if (!publicKey) {
+    if (sessionLoading) return;
+    if (!publicKey && !isPrivy) {
       setBusinessId(null);
       setBusinessError(null);
       return;
@@ -57,9 +60,9 @@ function DashboardContent() {
     return () => {
       cancelled = true;
     };
-  }, [publicKey]);
+  }, [publicKey, sessionLoading, isPrivy]);
 
-  if (!publicKey) {
+  if (!publicKey && !sessionLoading && !isPrivy) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>

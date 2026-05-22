@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
         purpose: true,
         workflowStage: true,
         paidAt: true,
+        paymentTxHash: true,
         commitmentTxHash: true,
         createdAt: true,
       },

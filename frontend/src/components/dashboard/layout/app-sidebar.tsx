@@ -28,9 +28,11 @@ import { useFreighter } from "@/hooks/useFreighter";
 type AppSidebarProps = {
   onDisconnect?: () => void;
   user?: { name: string; email: string; avatar: string };
+  /** True when Privy or wallet server session exists (sidebar account row). */
+  isSessionConnected?: boolean;
 };
 
-export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
+export function AppSidebar({ onDisconnect, user, isSessionConnected }: AppSidebarProps) {
   const { publicKey, connect, isConnecting } = useFreighter();
   const [selectedWidgets, setSelectedWidgets] = useState<string[]>([]);
   const [tierNavTick, setTierNavTick] = useState(0);
@@ -141,7 +143,7 @@ export function AppSidebar({ onDisconnect, user }: AppSidebarProps) {
           onDisconnect={onDisconnect}
           onConnect={connect}
           isConnecting={isConnecting}
-          isConnected={!!publicKey}
+          isConnected={isSessionConnected ?? !!publicKey}
         />
       </SidebarFooter>
     </Sidebar>

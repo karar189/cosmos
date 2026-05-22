@@ -88,9 +88,58 @@ model AuthChallenge {
   @@index([expiresAt])
 }
 
+// Privy-authenticated app user (email/social/wallet via Privy). Distinct from legacy Link `User`.
+model AppUser {
+  id        String   @id @default(cuid()) @map("_id")
+  privyId   String   @unique
+  email     String?
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+
+  @@index([email])
+}
+
+// Team membership: user ↔ business workspace with RBAC role.
+model Membership {
+  id         String   @id @default(cuid()) @map("_id")
+  userId     String
+  businessId String
+  role       String   @default("owner") // owner | admin | finance | compliance | viewer
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     AppUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+  @@index([businessId])
+  @@index([userId])
+}
+
+// Stellar wallets linked to a business (signing / treasury). Login identity migrates here from Business.walletAddress.
+model LinkedWallet {
+  id         String   @id @default(cuid()) @map("_id")
+  businessId String
+  address    String // Stellar G...
+  kind       String   @default("external") // external | embedded
+  label      String?
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, address])
+  @@index([address])
+  @@index([businessId])
+}
+
 model Business {
   id                String    @id @default(cuid()) @map("_id")
-  walletAddress     String    @unique // Stellar G... = username / login identity
+  walletAddress     String    @unique // Stellar G... legacy login; prefer LinkedWallet + Membership
   receiveAddress    String?   // Stellar G... where this business receives payments (user-set)
   name              String?   // from onboarding/settings
   email             String?   // from onboarding/settings
@@ -109,6 +158,8 @@ model Business {
   templates         BusinessTemplate[]
   employees         BusinessEmployee[]
   employeePayments  BusinessEmployeePayment[]
+  memberships       Membership[]
+  linkedWallets     LinkedWallet[]
 
   @@index(selectedTier)
   @@index(activeTemplateId)

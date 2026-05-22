@@ -53,10 +53,11 @@ export async function GET(req: NextRequest) {
             amountStr = details.amount;
             const paidAtFromLedger = details.createdAt
               ? new Date(details.createdAt)
-              : p.paidAt;
-            const nextPaidAt = Number.isNaN(paidAtFromLedger.getTime())
-              ? p.paidAt
-              : paidAtFromLedger;
+              : p.paidAt ?? undefined;
+            const nextPaidAt =
+              paidAtFromLedger && !Number.isNaN(paidAtFromLedger.getTime())
+                ? paidAtFromLedger
+                : p.paidAt;
             await db.paymentLink.update({
               where: { id: p.id },
               data: {
