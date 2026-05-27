@@ -1,26 +1,130 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import React from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePrivy } from "@privy-io/react-auth";
+import { useCallback, useEffect, useState } from "react";
+import { isPrivyConfigured } from "@/lib/privy-config";
+import { Loader2 } from "lucide-react";
+
+function safeReturnUrl(raw: string | null): string {
+  if (!raw || !raw.startsWith("/")) return "/dashboard";
+  if (raw.startsWith("//") || raw.includes("://")) return "/dashboard";
+  return raw;
+}
 
 const SignInForm = () => {
-    const router = useRouter();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = safeReturnUrl(searchParams.get("returnUrl"));
+  const reason = searchParams.get("reason");
 
+  const privyOn = isPrivyConfigured();
+  const { ready, authenticated, login } = usePrivy();
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/auth/me", { credentials: "same-origin" })
+      .then((res) => {
+        if (!cancelled && res.ok) {
+          router.replace(returnUrl);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setCheckingSession(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [router, returnUrl]);
+
+  useEffect(() => {
+    if (!privyOn || !ready || !authenticated) return;
+    const t = window.setTimeout(() => {
+      router.replace(returnUrl);
+    }, 400);
+    return () => window.clearTimeout(t);
+  }, [privyOn, ready, authenticated, router, returnUrl]);
+
+  const handlePrivyLogin = useCallback(() => {
+    login();
+  }, [login]);
+
+  if (checkingSession) {
     return (
-        <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5">
-            <h2 className="text-2xl font-semibold">Sign in to Hypertron</h2>
-            <p className="text-muted-foreground text-sm">
-                Authentication is not configured. You can go to the dashboard or home.
-            </p>
-            <div className="flex gap-2">
-                <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
-                <Button variant="outline" onClick={() => router.push("/")}>
-                    Back to home
-                </Button>
-            </div>
-        </div>
+      <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">Checking session…</p>
+      </div>
     );
+  }
+
+  if (!privyOn) {
+    return (
+      <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5">
+        <h2 className="text-2xl font-semibold">Sign in to Hypertron</h2>
+        <p className="text-muted-foreground text-sm">
+          Privy is not configured. Set <code className="text-xs">NEXT_PUBLIC_PRIVY_APP_ID</code> and{" "}
+          <code className="text-xs">PRIVY_APP_SECRET</code>, or use Stellar wallet sign-in.
+        </p>
+        <div className="flex flex-col gap-2 w-full">
+          <Button asChild>
+            <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
+              Connect Stellar wallet
+            </Link>
+          </Button>
+          <Button variant="outline" onClick={() => router.push("/")}>
+            Back to home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5">
+      <h2 className="text-2xl font-semibold">Sign in to Hypertron</h2>
+      <p className="text-muted-foreground text-sm">
+        Use your work email or Google. You can link a Stellar wallet later for on-chain actions.
+      </p>
+      {reason === "config" && (
+        <p className="text-sm text-amber-600 dark:text-amber-400">
+          Server auth is not fully configured. Contact support if this persists.
+        </p>
+      )}
+
+      <div className="flex flex-col gap-3 w-full">
+        <Button
+          onClick={handlePrivyLogin}
+          disabled={!ready}
+          className="w-full"
+        >
+          {!ready ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading…
+            </>
+          ) : (
+            "Continue with email or Google"
+          )}
+        </Button>
+
+        <div className="relative flex items-center gap-3 py-1">
+          <span className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground uppercase tracking-wide">or</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <Button variant="outline" asChild className="w-full">
+          <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
+            Connect Stellar wallet (Freighter)
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default SignInForm;

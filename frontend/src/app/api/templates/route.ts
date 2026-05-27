@@ -1,26 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { DB_UNAVAILABLE_MESSAGE, isPrismaConnectionError } from "@/lib/prisma-errors";
-import { requireSessionWallet } from "@/lib/require-session-wallet";
-
-async function resolveBusinessIdByWallet(walletAddress: string): Promise<string | null> {
-  const business = await db.business.findUnique({
-    where: { walletAddress },
-    select: { id: true },
-  });
-  return business?.id ?? null;
-}
+import { getBusinessForAppSession } from "@/lib/business-for-session";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await requireSessionWallet(req);
-    if (session instanceof NextResponse) return session;
-    const walletAddress = session;
-
-    const businessId = await resolveBusinessIdByWallet(walletAddress);
-    if (!businessId) {
-      return NextResponse.json({ templates: [] });
-    }
+    const resolved = await getBusinessForAppSession(req);
+    if (resolved instanceof NextResponse) return resolved;
+    const businessId = resolved.business.id;
 
     const templates = await db.businessTemplate.findMany({
       where: { businessId },
@@ -50,9 +37,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireSessionWallet(req);
-    if (session instanceof NextResponse) return session;
-    const walletAddress = session;
+    const resolved = await getBusinessForAppSession(req);
+    if (resolved instanceof NextResponse) return resolved;
 
     const body = await req.json().catch(() => ({}));
     const name = typeof body.name === "string" ? body.name.trim() : "";
@@ -65,17 +51,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const business = await db.business.findUnique({
-      where: { walletAddress },
-      select: { id: true },
-    });
-    if (!business) {
-      return NextResponse.json({ error: "Business profile not found" }, { status: 404 });
-    }
-
     const template = await db.businessTemplate.create({
       data: {
-        businessId: business.id,
+        businessId: resolved.business.id,
         name,
         bundleId,
         bundleName,

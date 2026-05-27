@@ -14,6 +14,7 @@ import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@
 import { setOnboardingCompleted } from "./onboarding-modal";
 import { persistTierFromOnboarding } from "@/lib/workspace-tier-context";
 import { cn } from "@/utils";
+import { OnboardingWidgetBuildLoader } from "./onboarding-widget-build-loader";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -201,13 +202,18 @@ export type BusinessOnboardingModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   walletAddress: string | null;
+  /** Privy app user id or wallet G... for local completion markers. */
+  scopeKey?: string | null;
 };
 
 export function BusinessOnboardingModal({
   open,
   onOpenChange,
   walletAddress,
+  scopeKey,
 }: BusinessOnboardingModalProps) {
+  const completionKey = scopeKey?.trim() || walletAddress?.trim() || "";
+  const canRender = open && completionKey.length > 0;
   const router = useRouter();
   const [portalReady, setPortalReady] = useState(false);
 
@@ -216,13 +222,13 @@ export function BusinessOnboardingModal({
   }, []);
 
   useEffect(() => {
-    if (!open || !walletAddress) return;
+    if (!canRender) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open, walletAddress]);
+  }, [canRender]);
 
   const [businessName, setBusinessName] = useState("");
   const [businessDescription, setBusinessDescription] = useState("");
@@ -253,8 +259,9 @@ export function BusinessOnboardingModal({
       if (v === null) { setError("Monthly outbound volume must be a number (e.g. 300000 or 300,000)."); return; }
     }
     setLoading(true);
-    // Simulate a brief thinking delay for UX
-    await new Promise((r) => setTimeout(r, 900));
+    setResponse(null);
+    // Minimum time so the build animation reads clearly
+    await new Promise((r) => setTimeout(r, 2400));
     const result = generateRecommendations(
       businessTypeHint,
       businessDescription,
@@ -267,8 +274,8 @@ export function BusinessOnboardingModal({
 
   const saveBusinessProfile = useCallback(
     async (bundle: Bundle) => {
-      if (!walletAddress || walletAddress.length !== 56 || !walletAddress.startsWith("G")) {
-        throw new Error("Connect a valid Stellar wallet before saving onboarding.");
+      if (!completionKey) {
+        throw new Error("Sign in before saving onboarding.");
       }
       const selectedWidgets = bundle.widgets.map((w) => String(w.id));
       const complianceForm = {
@@ -311,7 +318,7 @@ export function BusinessOnboardingModal({
       }
     },
     [
-      walletAddress,
+      completionKey,
       businessDescription,
       businessTypeHint,
       geographies,
@@ -325,7 +332,7 @@ export function BusinessOnboardingModal({
     ]
   );
 
-  if (!open || !walletAddress) {
+  if (!canRender) {
     return null;
   }
 
@@ -370,7 +377,12 @@ export function BusinessOnboardingModal({
 
           {/* ── Left: form ── */}
           <div className="lg:sticky lg:top-6 lg:self-start">
-            <div className="rounded-xl border border-white/15 bg-white/[0.06] p-5 backdrop-blur-md md:p-6 flex flex-col gap-6">
+            <div
+              className={cn(
+                "relative rounded-xl border border-white/15 bg-white/[0.06] p-5 backdrop-blur-md md:p-6 flex flex-col gap-6 transition-opacity",
+                loading && "opacity-60 pointer-events-none"
+              )}
+            >
               <div className="flex items-start gap-3">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/[0.08] text-xs font-semibold text-amber-300 ring-1 ring-amber-400/25">
                   1
@@ -378,9 +390,11 @@ export function BusinessOnboardingModal({
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-white">Business & metrics</p>
                   <p className="text-xs text-white/40 mt-0.5 leading-relaxed">
-                    {response
-                      ? "Update anything below, then regenerate or pick a tier on the right."
-                      : "Tell us about your business first. Your tier options appear in step 2 after you generate."}
+                    {loading
+                      ? "Profile captured — assembling your tiers on the right."
+                      : response
+                        ? "Update anything below, then regenerate or pick a tier on the right."
+                        : "Tell us about your business first. Your tier options appear in step 2 after you generate."}
                   </p>
                 </div>
               </div>
@@ -560,6 +574,7 @@ export function BusinessOnboardingModal({
                 <Button
                   onClick={handleSubmit}
                   disabled={loading}
+                  aria-busy={loading}
                   variant={response ? "outline" : "primary"}
                   className={cn(
                     "w-full h-10 text-sm font-medium",
@@ -609,13 +624,8 @@ export function BusinessOnboardingModal({
             )}
 
             {loading && (
-              <div className="rounded-xl border border-white/15 bg-white/[0.05] flex flex-col items-center justify-center py-20 backdrop-blur-md">
-                <div className="flex gap-1.5 mb-4">
-                  <span className="size-2 animate-bounce rounded-full bg-zinc-500 [animation-delay:-0.3s]" />
-                  <span className="size-2 animate-bounce rounded-full bg-amber-400 [animation-delay:-0.15s]" />
-                  <span className="size-2 animate-bounce rounded-full bg-zinc-400" />
-                </div>
-                <p className="text-sm text-white/40">Generating widget combinations…</p>
+              <div className="rounded-xl border border-white/15 bg-white/[0.03] p-4 md:p-5 backdrop-blur-md">
+                <OnboardingWidgetBuildLoader />
               </div>
             )}
 
@@ -725,7 +735,7 @@ export function BusinessOnboardingModal({
                                 toast.error(e instanceof Error ? e.message : "Could not save onboarding profile");
                                 return;
                               }
-                              setOnboardingCompleted(undefined, walletAddress ?? undefined);
+                              setOnboardingCompleted(undefined, completionKey);
                               await saveTemplate({
                                 name: `${businessName.trim() || "Dashboard"} · ${bundle.name}`,
                                 businessName: businessName.trim() || undefined,

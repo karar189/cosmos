@@ -300,3 +300,199 @@ html, body {
   mask-composite: exclude;
   pointer-events: none;
 }
+
+/* ── Dashboard light mode — BDO-inspired mesh gradient palette ─────────── */
+
+.dashboard-light.dashboard-gradient-bg {
+  background: #f5f0ff;
+  color: #2d3482;
+}
+
+.dashboard-light.dashboard-gradient-bg::before {
+  background:
+    radial-gradient(ellipse 75% 65% at 0% 0%, rgba(177, 151, 252, 0.52) 0%, transparent 58%),
+    radial-gradient(ellipse 70% 60% at 100% 0%, rgba(255, 179, 71, 0.42) 0%, transparent 52%),
+    radial-gradient(ellipse 65% 55% at 0% 100%, rgba(116, 160, 255, 0.48) 0%, transparent 52%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(245, 198, 208, 0.42) 0%, transparent 50%),
+    radial-gradient(ellipse 85% 75% at 50% 45%, rgba(248, 244, 255, 0.92) 0%, rgba(243, 232, 255, 0.78) 100%);
+}
+
+.dashboard-light.dashboard-gradient-bg::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(177, 151, 252, 0.45),
+    rgba(255, 179, 71, 0.4),
+    rgba(116, 160, 255, 0.42),
+    rgba(245, 198, 208, 0.38),
+    transparent
+  );
+  opacity: 0.65;
+}
+
+.dashboard-light.marketing-mono {
+  --background: 260 100% 98%;
+  --foreground: 234 45% 28%;
+  --card: 0 0% 100%;
+  --card-foreground: 234 45% 28%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 234 45% 28%;
+  --primary: 234 45% 28%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 260 40% 94%;
+  --secondary-foreground: 234 45% 28%;
+  --muted: 260 35% 92%;
+  --muted-foreground: 234 28% 38%;
+  --accent: 260 35% 92%;
+  --accent-foreground: 234 45% 28%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 234 28% 78%;
+  --input: 234 28% 78%;
+  --ring: 234 45% 28%;
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 234 45% 28%;
+  --sidebar-primary: 234 45% 28%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 260 40% 94%;
+  --sidebar-accent-foreground: 234 45% 28%;
+  --sidebar-border: 234 28% 78%;
+  --sidebar-ring: 234 45% 28%;
+}
+
+.dashboard-light ::selection {
+  background-color: rgba(116, 160, 255, 0.28);
+  color: #2d3482;
+}
+
+.dashboard-light.dashboard-gradient-bg [data-sidebar="sidebar"] {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(45, 52, 130, 0.14) !important;
+  box-shadow:
+    0 8px 40px rgba(45, 52, 130, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.dashboard-light.dashboard-gradient-bg [data-sidebar="group-label"] {
+  opacity: 1 !important;
+  color: rgba(45, 52, 130, 0.52) !important;
+  font-weight: 600;
+}
+
+.dashboard-light.dashboard-gradient-bg [data-sidebar="menu-button"]:not([data-nav-user]) {
+  color: rgba(45, 52, 130, 0.78) !important;
+}
+
+.dashboard-light.dashboard-gradient-bg [data-sidebar="menu-button"]:not([data-active="true"]):not([data-nav-user]) {
+  opacity: 1 !important;
+  color: rgba(45, 52, 130, 0.68) !important;
+}
+
+.dashboard-light.dashboard-gradient-bg [data-sidebar="menu-button"]:not([data-active="true"]):not([data-nav-user]):hover {
+  background: rgba(255, 255, 255, 0.72) !important;
+  color: #2d3482 !important;
+  opacity: 1 !important;
+}
+
+.dashboard-light.dashboard-gradient-bg [data-sidebar="menu-button"][data-active="true"] {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(45, 52, 130, 0.18) !important;
+  box-shadow:
+    0 2px 12px rgba(45, 52, 130, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  color: #2d3482 !important;
+  opacity: 1 !important;
+}
+
+.dashboard-light.dashboard-gradient-bg [data-sidebar="menu-button"][data-active="true"] svg {
+  color: #2d3482 !important;
+}
+
+.dashboard-light .rounded-2xl.border.backdrop-blur-xl,
+.dashboard-light .rounded-xl.border.backdrop-blur-xl,
+.dashboard-light .rounded-2xl.border.border-white\/\[0\.12\] {
+  background-color: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(45, 52, 130, 0.14) !important;
+  box-shadow: 0 4px 24px rgba(45, 52, 130, 0.06);
+}
+
+.dashboard-light .text-muted-foreground {
+  color: hsl(234 28% 38%) !important;
+}
+
+.dashboard-light .text-foreground {
+  color: #2d3482 !important;
+}
+
+.dashboard-light .text-\[\#FFFFFF\] {
+  color: #2d3482 !important;
+}
+
+.dashboard-light .text-white {
+  color: #2d3482 !important;
+}
+
+.dashboard-light .text-white\/90 { color: rgba(45, 52, 130, 0.92) !important; }
+.dashboard-light .text-white\/80 { color: rgba(45, 52, 130, 0.85) !important; }
+.dashboard-light .text-white\/70 { color: rgba(45, 52, 130, 0.78) !important; }
+.dashboard-light .text-white\/60 { color: rgba(45, 52, 130, 0.68) !important; }
+.dashboard-light .text-white\/50 { color: rgba(45, 52, 130, 0.6) !important; }
+.dashboard-light .text-white\/45 { color: rgba(45, 52, 130, 0.58) !important; }
+.dashboard-light .text-white\/40 { color: rgba(45, 52, 130, 0.55) !important; }
+.dashboard-light .text-white\/35 { color: rgba(45, 52, 130, 0.52) !important; }
+.dashboard-light .text-white\/30 { color: rgba(45, 52, 130, 0.5) !important; }
+.dashboard-light .text-white\/25 { color: rgba(45, 52, 130, 0.48) !important; }
+.dashboard-light .text-white\/20 { color: rgba(45, 52, 130, 0.45) !important; }
+.dashboard-light .text-white\/15 { color: rgba(45, 52, 130, 0.42) !important; }
+
+.dashboard-light .text-cyan-300,
+.dashboard-light .text-cyan-300\/90 { color: #0e7490 !important; }
+.dashboard-light .text-cyan-400,
+.dashboard-light .text-cyan-400\/80 { color: #0891b2 !important; }
+.dashboard-light .hover\:text-cyan-300:hover { color: #155e75 !important; }
+
+.dashboard-light .border-white\/20 { border-color: rgba(45, 52, 130, 0.18) !important; }
+.dashboard-light .border-white\/18 { border-color: rgba(45, 52, 130, 0.16) !important; }
+.dashboard-light .border-white\/15 { border-color: rgba(45, 52, 130, 0.14) !important; }
+.dashboard-light .border-white\/12 { border-color: rgba(45, 52, 130, 0.12) !important; }
+.dashboard-light .border-white\/10 { border-color: rgba(45, 52, 130, 0.1) !important; }
+
+.dashboard-light .bg-white\/\[0\.02\] { background-color: rgba(255, 255, 255, 0.55) !important; }
+.dashboard-light .bg-white\/\[0\.03\] { background-color: rgba(255, 255, 255, 0.6) !important; }
+.dashboard-light .bg-white\/\[0\.04\] { background-color: rgba(255, 255, 255, 0.65) !important; }
+.dashboard-light .bg-white\/\[0\.05\] { background-color: rgba(255, 255, 255, 0.68) !important; }
+.dashboard-light .bg-white\/\[0\.06\] { background-color: rgba(255, 255, 255, 0.72) !important; }
+.dashboard-light .bg-white\/\[0\.07\] { background-color: rgba(255, 255, 255, 0.74) !important; }
+.dashboard-light .bg-white\/\[0\.08\] { background-color: rgba(255, 255, 255, 0.78) !important; }
+.dashboard-light .bg-white\/10 { background-color: rgba(255, 255, 255, 0.8) !important; }
+
+.dashboard-light .border-white\/\[0\.06\] { border-color: rgba(45, 52, 130, 0.08) !important; }
+.dashboard-light .border-white\/\[0\.07\] { border-color: rgba(45, 52, 130, 0.09) !important; }
+.dashboard-light .border-white\/\[0\.08\] { border-color: rgba(45, 52, 130, 0.1) !important; }
+.dashboard-light .border-white\/\[0\.10\] { border-color: rgba(45, 52, 130, 0.12) !important; }
+.dashboard-light .border-white\/\[0\.12\] { border-color: rgba(45, 52, 130, 0.14) !important; }
+.dashboard-light .border-white\/\[0\.14\] { border-color: rgba(45, 52, 130, 0.16) !important; }
+.dashboard-light .border-white\/\[0\.18\] { border-color: rgba(45, 52, 130, 0.2) !important; }
+
+.dashboard-light .hover\:bg-white\/10:hover { background-color: rgba(255, 255, 255, 0.88) !important; }
+.dashboard-light .hover\:bg-white\/\[0\.05\]:hover { background-color: rgba(255, 255, 255, 0.82) !important; }
+.dashboard-light .hover\:bg-white\/\[0\.08\]:hover { background-color: rgba(255, 255, 255, 0.85) !important; }
+.dashboard-light .hover\:bg-white\/\[0\.10\]:hover { background-color: rgba(255, 255, 255, 0.88) !important; }
+.dashboard-light .hover\:bg-white\/\[0\.14\]:hover { background-color: rgba(255, 255, 255, 0.92) !important; }
+.dashboard-light .hover\:text-white:hover { color: #2d3482 !important; }
+.dashboard-light .hover\:text-white\/70:hover { color: #2d3482 !important; }
+
+.dashboard-light .bg-black\/20 { background-color: rgba(255, 255, 255, 0.5) !important; }
+.dashboard-light .divide-white\/\[0\.04\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(45, 52, 130, 0.08) !important;
+}
+
+.dashboard-light ::-webkit-scrollbar-thumb {
+  background-color: rgba(45, 52, 130, 0.22);
+}
+
+.dashboard-light ::-webkit-scrollbar {
+  scrollbar-color: rgba(45, 52, 130, 0.22) transparent;
+}

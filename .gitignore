@@ -1,6 +1,11 @@
 # Soroban test snapshots (auto-generated, not meant to be committed)
 **/test_snapshots/
 
+# Python bytecode (never commit)
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Rust build artifacts
 **/target/
 -e 

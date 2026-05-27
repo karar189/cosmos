@@ -9,7 +9,7 @@ export const PLANS = [
             { text: "1 workflow link", tooltip: "Share with clients or borrowers" },
             { text: "Community support", tooltip: "Get help in our Discord" },
         ],
-        btn: { text: "Start for free", href: "/auth/sign-up?plan=free", variant: "default" },
+        btn: { text: "Start for free", href: "/?launch=1", variant: "default" },
     },
     {
         name: "Pro",
@@ -23,7 +23,7 @@ export const PLANS = [
             { text: "Real-time tracking", tooltip: "See completion and payment status" },
             { text: "Priority support", tooltip: "24/7 chat support" },
         ],
-        btn: { text: "Get started", href: "/auth/sign-up?plan=pro", variant: "purple" },
+        btn: { text: "Get started", href: "/?launch=1", variant: "purple" },
     },
     {
         name: "Business",
@@ -36,7 +36,7 @@ export const PLANS = [
             { text: "Export & reporting", tooltip: "Export deal and payment data" },
             { text: "Dedicated manager", tooltip: "Priority support from our team" },
         ],
-        btn: { text: "Contact team", href: "/auth/sign-up?plan=business", variant: "default" },
+        btn: { text: "Contact team", href: "/?launch=1", variant: "default" },
     },
 ];
 

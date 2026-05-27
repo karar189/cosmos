@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
 import { getDashboardWalletFromRequest } from "@/lib/dashboard-session";
+import { requireBusinessOwnedByAppSession } from "@/lib/business-for-session";
 
 export function getAuthSecret(): string | null {
   return process.env.AUTH_SECRET?.trim() ?? null;
@@ -22,23 +22,15 @@ export async function requireSessionWallet(req: NextRequest): Promise<string | N
   return w;
 }
 
-/** Ensures `businessId` belongs to the signed-in wallet. */
+/** Ensures `businessId` belongs to the signed-in Privy user or wallet session. */
 export async function requireBusinessOwnedBySession(
   req: NextRequest,
   businessId: string
-): Promise<{ wallet: string } | NextResponse> {
-  const sw = await requireSessionWallet(req);
-  if (sw instanceof NextResponse) return sw;
-  const bid = businessId.trim();
-  if (!bid) {
-    return NextResponse.json({ error: "businessId required" }, { status: 400 });
+): Promise<{ wallet?: string; session: import("@/lib/app-session").AppSession } | NextResponse> {
+  const auth = await requireBusinessOwnedByAppSession(req, businessId);
+  if (auth instanceof NextResponse) return auth;
+  if (auth.session.kind === "wallet") {
+    return { wallet: auth.session.walletAddress, session: auth.session };
   }
-  const business = await db.business.findFirst({
-    where: { id: bid, walletAddress: sw },
-    select: { id: true },
-  });
-  if (!business) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-  return { wallet: sw };
+  return { session: auth.session };
 }

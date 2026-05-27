@@ -21,6 +21,7 @@ interface HorizonPayment {
   to: string;
   type: string;
   transaction_hash: string;
+  amount?: string;
   created_at: string;
   transaction?: { memo_type?: string; memo?: string };
 }
@@ -91,7 +92,7 @@ export async function findPaymentToAccountByMemo(
   memoFilter: string,
   network: StellarNetwork,
   limit = 100
-): Promise<{ txHash: string; memo: string; sourceAccount: string } | null> {
+): Promise<{ txHash: string; memo: string; sourceAccount: string; amount: string; createdAt: string } | null> {
   const base = getHorizonUrl(network);
   const pool = accountId.trim();
   const want = memoFilter.trim();
@@ -127,7 +128,13 @@ export async function findPaymentToAccountByMemo(
 
     const sourceAccount =
       payment.from ?? (await getTransactionSourceAccount(txHash, network)) ?? "";
-    return { txHash, memo: memo.trim(), sourceAccount };
+    return {
+      txHash,
+      memo: memo.trim(),
+      sourceAccount,
+      amount: payment.amount ?? "0",
+      createdAt: payment.created_at,
+    };
   }
   return null;
 }
@@ -138,6 +145,7 @@ export interface PaymentWithHashMemo {
   memoHashHex: string;
   sourceAccount: string;
   amount: string;
+  createdAt: string;
 }
 
 /**
@@ -173,6 +181,7 @@ export async function findPaymentsToAccountWithHashMemo(
       memoHashHex,
       sourceAccount,
       amount: (payment as { amount?: string }).amount ?? "0",
+      createdAt: payment.created_at,
     });
   }
   return out;
@@ -183,6 +192,30 @@ export interface DailyPaymentStats {
   date: string; // YYYY-MM-DD
   count: number;
   totalAmount: number;
+}
+
+/** Resolve amount + created time for a specific transaction hash (payment operation). */
+export async function getPaymentDetailsByTransactionHash(
+  txHash: string,
+  network: StellarNetwork
+): Promise<{ amount: string; createdAt: string; sourceAccount: string } | null> {
+  const base = getHorizonUrl(network);
+  const url = `${base}/transactions/${encodeURIComponent(txHash)}/payments?limit=20&order=desc`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) return null;
+
+  const data = (await res.json()) as { _embedded?: { records?: HorizonPayment[] } };
+  const records = data._embedded?.records ?? [];
+  const payment = records.find((record) => record.type === "payment");
+  if (!payment) return null;
+
+  const sourceAccount =
+    payment.from ?? (await getTransactionSourceAccount(txHash, network)) ?? "";
+  return {
+    amount: payment.amount ?? "0",
+    createdAt: payment.created_at,
+    sourceAccount,
+  };
 }
 
 /**

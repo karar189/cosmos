@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma";
 import {
   findPaymentToAccountByMemo,
   findPaymentsToAccountWithHashMemo,
+  getPaymentDetailsByTransactionHash,
 } from "@/lib/horizon";
 import {
   executeCommit,
@@ -45,6 +46,30 @@ export async function GET(
     }
 
     if (link.paidAt && link.paymentTxHash) {
+      // Backfill amount for old pay-any-amount links that were marked paid before
+      // we started persisting the paid amount.
+      if (!link.amount || String(link.amount).trim() === "") {
+        const paymentDetails = await getPaymentDetailsByTransactionHash(
+          link.paymentTxHash,
+          STELLAR_NETWORK
+        );
+        if (paymentDetails && Number.isFinite(parseFloat(paymentDetails.amount))) {
+          const paidAtDate = paymentDetails.createdAt
+            ? new Date(paymentDetails.createdAt)
+            : link.paidAt;
+          await db.paymentLink.update({
+            where: { id },
+            data: {
+              amount: paymentDetails.amount,
+              paidAt: Number.isNaN(paidAtDate.getTime()) ? link.paidAt : paidAtDate,
+              payerAddress:
+                link.payerAddress && link.payerAddress.trim().length > 0
+                  ? link.payerAddress
+                  : paymentDetails.sourceAccount || undefined,
+            },
+          });
+        }
+      }
       return NextResponse.json({
         status: "paid" as const,
         paymentTxHash: link.paymentTxHash,
@@ -65,7 +90,7 @@ export async function GET(
       });
     }
 
-    let found: { txHash: string; sourceAccount: string } | null =
+    let found: { txHash: string; sourceAccount: string; amount: string; createdAt: string } | null =
       await findPaymentToAccountByMemo(
         pool,
         link.linkMemo,
@@ -82,10 +107,15 @@ export async function GET(
         where: { linkId: id },
         select: { memoHash: true, amount: true },
       });
-      const pendingSet = new Set(pendingForLink.map((p) => p.memoHash));
+      const pendingAmountByHash = new Map(pendingForLink.map((p) => [p.memoHash, p.amount]));
       for (const hp of hashPayments) {
-        if (!pendingSet.has(hp.memoHashHex)) continue;
-        found = { txHash: hp.txHash, sourceAccount: hp.sourceAccount };
+        if (!pendingAmountByHash.has(hp.memoHashHex)) continue;
+        found = {
+          txHash: hp.txHash,
+          sourceAccount: hp.sourceAccount,
+          amount: pendingAmountByHash.get(hp.memoHashHex) || hp.amount || "0",
+          createdAt: hp.createdAt,
+        };
         await db.pendingPaymentMemo.deleteMany({
           where: { linkId: id, memoHash: hp.memoHashHex },
         });
@@ -112,8 +142,12 @@ export async function GET(
     }
 
     const payerAddress = found.sourceAccount || "";
+    const paidAmount = Number.isFinite(parseFloat(found.amount)) ? String(found.amount) : "";
+    const paidAtDate = found.createdAt ? new Date(found.createdAt) : new Date();
+    const normalizedPaidAt = Number.isNaN(paidAtDate.getTime()) ? new Date() : paidAtDate;
     const nonce = randomBytes(16).toString("hex");
-    const secret = hashToScalar(payerAddress, link.businessId, link.amount ?? "");
+    const secretAmount = (link.amount && String(link.amount).trim()) || paidAmount || "";
+    const secret = hashToScalar(payerAddress, link.businessId, secretAmount);
     const nullifier = hashToScalar(nonce, link.id);
 
     const commitResult = await executeCommit(secret, nullifier, STELLAR_NETWORK);
@@ -123,8 +157,9 @@ export async function GET(
       await db.paymentLink.update({
         where: { id },
         data: {
-          paidAt: new Date(),
+          paidAt: normalizedPaidAt,
           paymentTxHash: found.txHash,
+          ...(paidAmount && (!link.amount || String(link.amount).trim() === "") ? { amount: paidAmount } : {}),
           payerAddress: payerAddress || undefined,
           nonce,
           nullifier: nullifier.toString(),
@@ -133,7 +168,7 @@ export async function GET(
       return NextResponse.json({
         status: "paid" as const,
         paymentTxHash: found.txHash,
-        paidAt: new Date().toISOString(),
+        paidAt: normalizedPaidAt.toISOString(),
         commitmentError: commitResult.error,
       });
     }
@@ -141,8 +176,9 @@ export async function GET(
     await db.paymentLink.update({
       where: { id },
       data: {
-        paidAt: new Date(),
+        paidAt: normalizedPaidAt,
         paymentTxHash: found.txHash,
+        ...(paidAmount && (!link.amount || String(link.amount).trim() === "") ? { amount: paidAmount } : {}),
         payerAddress: payerAddress || undefined,
         nonce,
         nullifier: nullifier.toString(),
@@ -152,7 +188,7 @@ export async function GET(
     return NextResponse.json({
       status: "paid" as const,
       paymentTxHash: found.txHash,
-      paidAt: new Date().toISOString(),
+      paidAt: normalizedPaidAt.toISOString(),
       commitmentTxHash: commitResult.commitmentTxHash,
     });
   } catch (e) {

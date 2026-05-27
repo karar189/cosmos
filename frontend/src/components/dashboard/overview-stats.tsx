@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { DollarSign, Link2, CheckCircle, Clock } from "lucide-react";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 
 interface Stats {
   totalReceivedXlm: string;
@@ -16,26 +17,32 @@ interface OverviewStatsProps {
   onboardingIncomplete?: boolean;
 }
 
-/** Matches SolutionSection accent */
-const ACCENT_BAR = "#FFF971";
+/** Dark mode: landing accent. Light mode: BDO mesh gradient strip. */
+function statAccentBar(theme: "dark" | "light") {
+  return theme === "light"
+    ? "linear-gradient(90deg, #74a0ff 0%, #b197fc 55%, #ffb347 100%)"
+    : "#FFF971";
+}
 
 function StatCard({
   label,
   sub,
   icon: Icon,
   value,
+  theme,
 }: {
   label: string;
   sub: string;
   icon: React.ElementType;
   value: string;
+  theme: "dark" | "light";
 }) {
   return (
     <div className="group flex flex-col gap-4 rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl transition-colors duration-300 hover:border-white/[0.2]">
       <div className="flex items-start justify-between gap-3">
         <div
-          className="mt-1 h-0.5 w-10 shrink-0 rounded-full transition-[width] group-hover:w-14"
-          style={{ backgroundColor: ACCENT_BAR }}
+          className={`mt-1 shrink-0 rounded-full transition-[width] group-hover:w-14 ${theme === "light" ? "h-1 w-12" : "h-0.5 w-10"}`}
+          style={{ background: statAccentBar(theme) }}
           aria-hidden
         />
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04]">
@@ -52,6 +59,7 @@ function StatCard({
 }
 
 export function OverviewStats({ businessId, onboardingIncomplete }: OverviewStatsProps) {
+  const { theme } = useDashboardTheme();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,10 +117,10 @@ export function OverviewStats({ businessId, onboardingIncomplete }: OverviewStat
   if (onboardingIncomplete) {
     return (
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Received" sub="Complete onboarding to see metrics" icon={DollarSign} value="NA" />
-        <StatCard label="Payment Links" sub="Complete onboarding to see metrics" icon={Link2} value="NA" />
-        <StatCard label="Completed" sub="Complete onboarding to see metrics" icon={CheckCircle} value="NA" />
-        <StatCard label="Pending" sub="Complete onboarding to see metrics" icon={Clock} value="NA" />
+        <StatCard label="Total Received" sub="Complete onboarding to see metrics" icon={DollarSign} value="NA" theme={theme} />
+        <StatCard label="Payment Links" sub="Complete onboarding to see metrics" icon={Link2} value="NA" theme={theme} />
+        <StatCard label="Completed" sub="Complete onboarding to see metrics" icon={CheckCircle} value="NA" theme={theme} />
+        <StatCard label="Pending" sub="Complete onboarding to see metrics" icon={Clock} value="NA" theme={theme} />
       </div>
     );
   }
@@ -125,24 +133,28 @@ export function OverviewStats({ businessId, onboardingIncomplete }: OverviewStat
           sub="All-time from payment links"
           icon={DollarSign}
           value={loading ? "…" : `${d.totalReceivedXlm} XLM`}
+          theme={theme}
         />
         <StatCard
           label="Payment Links"
           sub="Active links"
           icon={Link2}
           value={loading ? "…" : String(d.linkCount)}
+          theme={theme}
         />
         <StatCard
           label="Completed"
           sub="Successful payments"
           icon={CheckCircle}
           value={loading ? "…" : String(d.completed)}
+          theme={theme}
         />
         <StatCard
           label="Pending"
           sub="Awaiting payment"
           icon={Clock}
           value={loading ? "…" : String(d.pending)}
+          theme={theme}
         />
       </div>
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}

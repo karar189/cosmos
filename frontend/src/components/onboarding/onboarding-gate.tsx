@@ -10,16 +10,18 @@ import {
 } from "react";
 import { BusinessOnboardingModal } from "./business-onboarding-modal";
 
-function onboardingModalDismissedKey(wallet: string): string {
-  return `onboarding_modal_dismissed:${wallet.trim().toUpperCase()}`;
+function onboardingModalDismissedKey(scopeKey: string): string {
+  return `onboarding_modal_dismissed:${scopeKey.trim()}`;
 }
 
 type OnboardingGateProps = {
   children: React.ReactNode;
-  /** Open onboarding modal only when this is true (e.g. wallet connected). */
+  /** Open onboarding modal when app session is ready (Privy or wallet). */
   when?: boolean;
-  /** Wallet address (G...) used for wallet-scoped onboarding completion checks. */
+  /** Stellar G... when Freighter is connected (optional with Privy). */
   walletAddress?: string | null;
+  /** Stable key for dismiss/completion storage (wallet G... or Privy app user id). */
+  scopeKey?: string | null;
 };
 
 export type OnboardingUiContextValue = {
@@ -62,7 +64,12 @@ export function useOnboardingUi(): OnboardingUiContextValue {
   return ctx;
 }
 
-export function OnboardingGate({ children, when = true, walletAddress }: OnboardingGateProps) {
+export function OnboardingGate({
+  children,
+  when = true,
+  walletAddress,
+  scopeKey,
+}: OnboardingGateProps) {
   const [mounted, setMounted] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [manualOpen, setManualOpen] = useState(false);
@@ -74,34 +81,37 @@ export function OnboardingGate({ children, when = true, walletAddress }: Onboard
     walletAddress.length === 56 &&
     walletAddress.startsWith("G");
 
+  const storageKey = (scopeKey?.trim() || walletAddress?.trim() || "").trim();
+  const scopeOk = storageKey.length > 0;
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!walletAddress || walletAddress.length !== 56 || !walletAddress.startsWith("G")) {
+    if (!scopeOk) {
       setDismissed(false);
       return;
     }
     try {
-      setDismissed(sessionStorage.getItem(onboardingModalDismissedKey(walletAddress)) === "1");
+      setDismissed(sessionStorage.getItem(onboardingModalDismissedKey(storageKey)) === "1");
     } catch {
       setDismissed(false);
     }
-  }, [walletAddress]);
+  }, [storageKey, scopeOk]);
 
   const persistDismiss = useCallback(() => {
-    if (!walletAddress) return;
+    if (!scopeOk) return;
     try {
-      sessionStorage.setItem(onboardingModalDismissedKey(walletAddress), "1");
+      sessionStorage.setItem(onboardingModalDismissedKey(storageKey), "1");
     } catch {
       // ignore
     }
     setDismissed(true);
-  }, [walletAddress]);
+  }, [storageKey, scopeOk]);
 
   const refreshProfileCompletion = useCallback(() => {
-    if (!mounted || !when || !walletOk || !walletAddress) {
+    if (!mounted || !when || !scopeOk) {
       setProfileLoading(false);
       setProfileComplete(true);
       return;
@@ -116,7 +126,7 @@ export function OnboardingGate({ children, when = true, walletAddress }: Onboard
         setProfileComplete(false);
       })
       .finally(() => setProfileLoading(false));
-  }, [mounted, walletAddress, walletOk, when]);
+  }, [mounted, scopeOk, when]);
 
   useEffect(() => {
     refreshProfileCompletion();
@@ -129,15 +139,15 @@ export function OnboardingGate({ children, when = true, walletAddress }: Onboard
   }, [refreshProfileCompletion]);
 
   const openOnboardingQuiz = useCallback(() => {
-    if (!walletAddress || walletAddress.length !== 56 || !walletAddress.startsWith("G")) return;
+    if (!scopeOk) return;
     try {
-      sessionStorage.removeItem(onboardingModalDismissedKey(walletAddress));
+      sessionStorage.removeItem(onboardingModalDismissedKey(storageKey));
     } catch {
       // ignore
     }
     setDismissed(false);
     setManualOpen(true);
-  }, [walletAddress]);
+  }, [storageKey, scopeOk]);
 
   const handleModalOpenChange = useCallback(
     (next: boolean) => {
@@ -155,15 +165,15 @@ export function OnboardingGate({ children, when = true, walletAddress }: Onboard
   const showModal =
     mounted &&
     when &&
-    walletOk &&
+    scopeOk &&
     (manualOpen || (!profileLoading && !profileComplete && !dismissed));
 
   const isOnboardingComplete = useMemo(() => {
-    if (!when || !walletOk || !walletAddress) return true;
+    if (!when || !scopeOk) return true;
     if (!mounted) return false;
     if (profileLoading) return false;
     return profileComplete;
-  }, [when, walletOk, walletAddress, mounted, profileComplete, profileLoading]);
+  }, [when, scopeOk, mounted, profileComplete, profileLoading]);
 
   const uiValue = useMemo<OnboardingUiContextValue>(
     () => ({
@@ -180,6 +190,7 @@ export function OnboardingGate({ children, when = true, walletAddress }: Onboard
         open={showModal}
         onOpenChange={handleModalOpenChange}
         walletAddress={walletAddress ?? null}
+        scopeKey={storageKey || null}
       />
     </OnboardingUiContext.Provider>
   );
