@@ -8,6 +8,9 @@ import {
   Layers3,
   Plus,
   CheckCheck,
+  Sun,
+  Moon,
+  Palette,
 } from "lucide-react";
 import { DashboardMain } from "@/components/dashboard/layout/main";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
@@ -26,10 +29,13 @@ import {
 } from "@/components/onboarding/onboarding-modal";
 import { Checkbox } from "@/components/ui/checkbox";
 import { hydrateWorkspaceTierFromProfile } from "@/lib/workspace-tier-context";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
+import type { DashboardTheme } from "@/lib/dashboard-theme";
 
 type SettingsSection =
   | "profile"
   | "account"
+  | "appearance"
   | "plan";
 
 const PLAN_OPTIONS = [
@@ -41,6 +47,7 @@ const PLAN_OPTIONS = [
 const navItems: { id: SettingsSection; label: string; icon: React.ElementType }[] = [
   { id: "profile",       label: "Profile",       icon: User },
   { id: "account",       label: "Account",        icon: SettingsIcon },
+  { id: "appearance",    label: "Appearance",     icon: Palette },
   { id: "plan",          label: "Plan",           icon: Layers3 },
 ];
 
@@ -50,6 +57,7 @@ const inputCls =
 export default function SettingsPage() {
   const router = useRouter();
   const { publicKey } = useFreighter();
+  const { theme, setTheme } = useDashboardTheme();
   const [section, setSection] = useState<SettingsSection>("profile");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -403,6 +411,76 @@ export default function SettingsPage() {
                   <div>
                     <SaveButton />
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Appearance */}
+            {section === "appearance" && (
+              <div className="flex flex-col gap-5 rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Appearance</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Choose how your dashboard looks. Light mode uses a soft mesh gradient inspired by the BDO palette.
+                  </p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 max-w-xl">
+                  {(
+                    [
+                      {
+                        id: "dark" as DashboardTheme,
+                        label: "Dark",
+                        description: "True black with blue and amber ambience.",
+                        icon: Moon,
+                        preview: "bg-black",
+                      },
+                      {
+                        id: "light" as DashboardTheme,
+                        label: "Light",
+                        description: "Lavender, sky blue, and warm amber mesh gradient.",
+                        icon: Sun,
+                        preview:
+                          "bg-[radial-gradient(circle_at_0%_0%,#b197fc_0%,transparent_50%),radial-gradient(circle_at_100%_0%,#ffb347_0%,transparent_50%),radial-gradient(circle_at_0%_100%,#74a0ff_0%,transparent_50%),radial-gradient(circle_at_100%_100%,#f5c6d0_0%,transparent_50%),#f5f0ff]",
+                      },
+                    ] as const
+                  ).map(({ id, label, description, icon: Icon, preview }) => {
+                    const selected = theme === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setTheme(id)}
+                        className={cn(
+                          "group flex flex-col gap-3 rounded-xl border p-4 text-left transition-all",
+                          selected
+                            ? "border-white/20 bg-white/[0.08] ring-1 ring-white/10"
+                            : "border-white/[0.08] bg-white/[0.02] hover:border-white/[0.14] hover:bg-white/[0.04]"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "h-20 w-full rounded-lg border border-white/10 shadow-inner",
+                            preview
+                          )}
+                        />
+                        <div className="flex items-start gap-3">
+                          <div className="rounded-md bg-white/[0.06] p-2">
+                            <Icon className="size-4 text-muted-foreground" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-foreground">{label}</p>
+                            <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
+                              {description}
+                            </p>
+                          </div>
+                          {selected ? (
+                            <CheckCheck className="ml-auto size-4 shrink-0 text-emerald-400" />
+                          ) : null}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}

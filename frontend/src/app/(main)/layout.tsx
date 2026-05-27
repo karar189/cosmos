@@ -6,17 +6,15 @@ import { getCookie } from "@/lib/cookies";
 import { cn } from "@/utils";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/layout/app-sidebar";
+import { DashboardThemeProvider, useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useAppSession } from "@/hooks/useAppSession";
 import { sidebarData } from "@/components/dashboard/layout/data/sidebar-data";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 import { ConnectWalletBanner } from "@/components/dashboard/connect-wallet-banner";
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function MainLayoutShell({ children }: { children: React.ReactNode }) {
+  const { theme } = useDashboardTheme();
   const pathname = usePathname();
   const router = useRouter();
   const { publicKey, disconnect } = useFreighter();
@@ -71,7 +69,12 @@ export default function MainLayout({
   const showConnectWallet = !sessionLoading && isPrivy && !publicKey;
 
   return (
-    <div className="marketing-mono font-default relative min-h-screen bg-black text-foreground antialiased dashboard-gradient-bg">
+    <div
+      className={cn(
+        "marketing-mono font-default relative min-h-screen text-foreground antialiased dashboard-gradient-bg",
+        theme === "light" ? "dashboard-light bg-[#f5f0ff]" : "bg-black"
+      )}
+    >
       <SidebarProvider defaultOpen={defaultOpen} className="!bg-transparent">
         <AppSidebar
           onDisconnect={handleSignOut}
@@ -96,5 +99,13 @@ export default function MainLayout({
         </SidebarInset>
       </SidebarProvider>
     </div>
+  );
+}
+
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <DashboardThemeProvider>
+      <MainLayoutShell>{children}</MainLayoutShell>
+    </DashboardThemeProvider>
   );
 }
