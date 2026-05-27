@@ -104,7 +104,7 @@ class FullAnalysisRequest(BaseModel):
 class FullAnalysisMetadata(BaseModel):
     generated_at: str
     cached: bool
-    model_used: str
+    llm_model: str = Field(alias="model_used")
 
 
 class FullAnalysisResponse(BaseModel):

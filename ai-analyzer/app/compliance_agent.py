@@ -157,7 +157,7 @@ class RiskItem(BaseModel):
 
 
 class ComplianceAgentResponse(BaseModel):
-    model_source: Literal["openai", "heuristic"] = Field(alias="modelSource")
+    response_source: Literal["openai", "heuristic"] = Field(alias="modelSource")
     summary: str
     compliance_health: ComplianceHealth = Field(alias="complianceHealth")
     required_licenses: list[LicenseItem] = Field(alias="requiredLicenses")
@@ -209,7 +209,7 @@ class DetailLink(BaseModel):
 
 
 class ComplianceDetailResponse(BaseModel):
-    model_source: Literal["openai", "heuristic"] = Field(alias="modelSource")
+    response_source: Literal["openai", "heuristic"] = Field(alias="modelSource")
     section: str
     item_title: str = Field(alias="itemTitle")
     why_it_matters: str = Field(alias="whyItMatters")
