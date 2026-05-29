@@ -11,6 +11,16 @@ import {
   CreditCard,
   Newspaper,
   Briefcase,
+  Wallet,
+  Workflow,
+  ListChecks,
+  Scale,
+  AlertTriangle,
+  Plug,
+  BarChart3,
+  Send,
+  UserPlus,
+  Sparkles,
 } from "lucide-react";
 import type { NavGroup, NavLink, SidebarData } from "@/components/dashboard/layout/types";
 import type { WorkspaceTierId } from "@/lib/workspace-tier-context";
@@ -68,6 +78,49 @@ export function buildBusinessTierNavGroup(sectionTitle: string, bundleId: Worksp
   return {
     title: sectionTitle,
     items: TIER_NAV[bundleId] ?? TIER_NAV["tier-2"],
+  };
+}
+
+/** Full workspace sidebar (shown after opening a workspace). */
+export function buildWorkspaceNavGroup(): NavGroup {
+  return {
+    title: "Workspace",
+    items: [
+      { title: "Overview", url: "/dashboard/overview", icon: LayoutDashboard },
+      { title: "Treasury", url: "/dashboard/withdraw", icon: Wallet },
+      {
+        title: "Operations",
+        icon: Workflow,
+        badge: "17",
+        items: [
+          { title: "Client Onboarding", url: "/dashboard/onboarding", badge: "7", icon: Users },
+          { title: "Contributor Onboarding", url: "/dashboard/employee-management", badge: "5", icon: UserPlus },
+          { title: "Agency Onboarding", url: "/dashboard/documents", badge: "3", icon: FileText },
+          { title: "Workflows", url: "/dashboard/workspace", badge: "5", icon: Workflow },
+          { title: "Tasks & Approvals", url: "/dashboard/compliance-agent", badge: "2", icon: ListChecks },
+        ],
+      },
+      { title: "Payments", url: "/dashboard/payment-links", icon: CreditCard },
+      { title: "Compliance", url: "/dashboard/compliance-agent", icon: ShieldCheck, badge: "5" },
+      { title: "Regulations", url: "/dashboard/rns", icon: Scale, badge: "3" },
+      { title: "Risk Reports", url: "/dashboard/compliance-analysis", icon: AlertTriangle, badge: "4" },
+      { title: "Integrations", url: "/dashboard/settings", icon: Plug },
+      { title: "Analytics", url: "/dashboard/overview", icon: BarChart3 },
+      { title: "Reports", url: "/dashboard/documents", icon: FileText },
+      { title: "Settings", url: "/dashboard/settings", icon: Settings },
+    ],
+  };
+}
+
+export function buildWorkspaceQuickActionsGroup(): NavGroup {
+  return {
+    title: "Quick Actions",
+    items: [
+      { title: "Send Payment", url: "/dashboard/payment-links", icon: Send },
+      { title: "Create Workflow", url: "/dashboard/workspace", icon: Sparkles },
+      { title: "Onboard Contributor", url: "/dashboard/employee-management", icon: UserPlus },
+      { title: "Invite Team", url: "/dashboard/settings", icon: Users },
+    ],
   };
 }
 
