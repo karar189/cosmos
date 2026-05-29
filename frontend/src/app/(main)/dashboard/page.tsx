@@ -1,154 +1,148 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { useFreighter } from "@/hooks/useFreighter";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DashboardMain } from "@/components/dashboard/layout/main";
-import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
-import { OverviewChart } from "@/components/dashboard/overview-chart";
-import { OverviewStats } from "@/components/dashboard/overview-stats";
-import { RecentPayments } from "@/components/dashboard/recent-payments";
-import { useOnboardingUi } from "@/components/onboarding";
+import { Button } from "@/components/ui/button";
+import { WorkspaceHubSidebar } from "@/components/dashboard/workspace-hub/workspace-hub-sidebar";
+import {
+  WorkspaceHubMain,
+  templatesToWorkspaces,
+} from "@/components/dashboard/workspace-hub/workspace-hub-main";
+import { useFreighter } from "@/hooks/useFreighter";
 import { useAppSession } from "@/hooks/useAppSession";
+import { useOnboardingUi } from "@/components/onboarding";
+import { loadSavedTemplates, type SavedTemplate } from "@/lib/my-templates-storage";
+import type { WorkspaceCardModel } from "@/components/dashboard/workspace-hub/workspace-hub-main";
 
-function DashboardContent() {
+async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedTemplate[]> {
+  try {
+    const res = await fetch("/api/templates", { cache: "no-store", credentials: "same-origin" });
+    if (res.ok) {
+      const json = (await res.json()) as { templates?: SavedTemplate[] };
+      if (Array.isArray(json.templates)) return json.templates;
+    }
+  } catch {
+    /* fall through */
+  }
+  return loadSavedTemplates(publicKey);
+}
+
+function WorkspaceHubContent() {
   const router = useRouter();
   const { publicKey, connect, isConnecting } = useFreighter();
-  const { isPrivy, loading: sessionLoading } = useAppSession();
-  const { isOnboardingComplete, openOnboardingQuiz } = useOnboardingUi();
-  const [businessId, setBusinessId] = useState<string | null>(null);
-  const [businessError, setBusinessError] = useState<string | null>(null);
+  const { isPrivy, loading: sessionLoading, privyUser } = useAppSession();
+  const { openOnboardingQuiz } = useOnboardingUi();
+
+  const [workspaces, setWorkspaces] = useState<WorkspaceCardModel[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [profileName, setProfileName] = useState("");
+
+  const loadWorkspaces = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [templates, profileRes] = await Promise.all([
+        fetchWorkspaceTemplates(publicKey),
+        fetch("/api/business/profile", { credentials: "same-origin" }).then((r) =>
+          r.ok ? r.json() : null
+        ),
+      ]);
+
+      const profile = profileRes as { name?: string } | null;
+      if (profile?.name) setProfileName(String(profile.name));
+
+      setWorkspaces(templatesToWorkspaces(templates));
+    } catch {
+      setWorkspaces([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [publicKey]);
 
   useEffect(() => {
-    let cancelled = false;
-
     if (sessionLoading) return;
     if (!publicKey && !isPrivy) {
-      setBusinessId(null);
-      setBusinessError(null);
+      setLoading(false);
+      setWorkspaces([]);
       return;
     }
+    void loadWorkspaces();
+  }, [sessionLoading, publicKey, isPrivy, loadWorkspaces]);
 
-    setBusinessError(null);
-    fetch("/api/business/profile", { credentials: "same-origin" })
-      .then(async (res) => {
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(
-            typeof json?.error === "string" ? json.error : `Failed to load profile (${res.status})`
-          );
-        }
-        return json as { businessId?: string };
-      })
-      .then((data) => {
-        if (cancelled) return;
-        if (typeof data.businessId === "string" && data.businessId.trim()) {
-          setBusinessId(data.businessId.trim());
-          setBusinessError(null);
-          return;
-        }
-        setBusinessId(null);
-        setBusinessError("Business profile not found for this wallet.");
-      })
-      .catch((e) => {
-        if (cancelled) return;
-        setBusinessId(null);
-        setBusinessError(e instanceof Error ? e.message : "Could not load business profile");
-      });
+  useEffect(() => {
+    const onProfileUpdated = () => void loadWorkspaces();
+    window.addEventListener("profile-updated", onProfileUpdated);
+    return () => window.removeEventListener("profile-updated", onProfileUpdated);
+  }, [loadWorkspaces]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [publicKey, sessionLoading, isPrivy]);
+  const displayName =
+    profileName.trim() ||
+    privyUser?.name?.trim() ||
+    (publicKey ? "Wallet User" : "there");
+
+  const email =
+    privyUser?.email?.trim() ||
+    (publicKey ? `${publicKey.slice(0, 6)}…${publicKey.slice(-4)}` : "");
+
+  const initials = displayName
+    .split(/\s+/)
+    .map((p) => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "U";
 
   if (!publicKey && !sessionLoading && !isPrivy) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground text-center max-w-xs">
-          Connect your Stellar wallet to manage payments and track activity.
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#f5f0ff] to-[#eef4ff] px-4">
+        <h1 className="text-xl font-semibold tracking-tight text-slate-900">Hypertron</h1>
+        <p className="max-w-xs text-center text-sm text-slate-600">
+          Sign in to view and manage your workspaces.
         </p>
         <Button
           onClick={connect}
           disabled={isConnecting}
-          className="mt-2 rounded-full bg-foreground px-8 py-3 text-base font-semibold text-background hover:opacity-90"
+          className="rounded-lg bg-violet-600 text-white hover:bg-violet-700"
         >
           {isConnecting ? "Connecting…" : "Connect with Freighter"}
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.push("/")}
-          className="rounded-full text-muted-foreground hover:text-foreground"
-        >
+        <Button variant="ghost" onClick={() => router.push("/")} className="text-slate-600">
           Back to home
         </Button>
       </div>
     );
   }
 
-  const onboardingIncomplete = !!publicKey && !isOnboardingComplete;
+  const activeName = workspaces[0]?.name;
 
   return (
-    <DashboardMain>
-          <div className="flex flex-col gap-8">
-            <DashboardPageHeader
-              eyebrow="Dashboard"
-              title="Overview"
-              description="Your payment activity at a glance."
-              end={
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-full border-white/20 bg-white/[0.06] text-foreground hover:bg-white/10"
-                  onClick={openOnboardingQuiz}
-                >
-                  Take onboarding quiz
-                </Button>
-              }
-            />
-
-            {/* Stat cards */}
-            <OverviewStats businessId={businessId} onboardingIncomplete={onboardingIncomplete} />
-
-            {/* Charts row */}
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-7">
-              <div className="col-span-1 flex flex-col rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl lg:col-span-4">
-                <div className="mb-5 space-y-1">
-                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Revenue</p>
-                  <p className="text-sm font-medium text-foreground">Monthly received (XLM)</p>
-                </div>
-                <OverviewChart businessId={businessId} onboardingIncomplete={onboardingIncomplete} />
-              </div>
-
-              <div className="col-span-1 flex flex-col rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl lg:col-span-3">
-                <div className="mb-5 space-y-1">
-                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Activity</p>
-                  <p className="text-sm font-medium text-foreground">Recent payments</p>
-                  <p className="text-xs text-muted-foreground">Latest activity on your links</p>
-                </div>
-                <RecentPayments businessId={businessId} onboardingIncomplete={onboardingIncomplete} />
-              </div>
-            </div>
-            {businessError && (
-              <p className="text-xs text-destructive">
-                {businessError}
-              </p>
-            )}
-          </div>
-        </DashboardMain>
+    <div className="flex min-h-screen bg-[#f4f2fa]">
+      <WorkspaceHubSidebar
+        userName={displayName}
+        userEmail={email}
+        userInitials={initials}
+        activeWorkspaceName={activeName}
+        onCreateWorkspace={openOnboardingQuiz}
+      />
+      <WorkspaceHubMain
+        userName={displayName}
+        userInitials={initials}
+        workspaces={workspaces}
+        loading={loading || sessionLoading}
+        onCreateWorkspace={openOnboardingQuiz}
+      />
+    </div>
   );
 }
 
-export default function DashboardPage() {
+export default function WorkspaceHubPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-muted-foreground">Loading…</p>
-      </div>
-    }>
-      <DashboardContent />
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#f4f2fa]">
+          <p className="text-sm text-slate-600">Loading workspaces…</p>
+        </div>
+      }
+    >
+      <WorkspaceHubContent />
     </Suspense>
   );
 }

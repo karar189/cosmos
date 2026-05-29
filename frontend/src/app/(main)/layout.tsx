@@ -67,6 +67,25 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
       : sidebarData.user;
 
   const showConnectWallet = !sessionLoading && isPrivy && !publicKey;
+  const isWorkspaceHub = pathname === "/dashboard";
+
+  if (isWorkspaceHub) {
+    return (
+      <div className="workspace-hub-root font-default relative min-h-screen bg-[#f4f2fa] text-slate-900 antialiased">
+        <OnboardingGate
+          when={!sessionLoading && !!session}
+          walletAddress={publicKey}
+          scopeKey={
+            publicKey && publicKey.length === 56 && publicKey.startsWith("G")
+              ? publicKey
+              : privyUser?.id ?? null
+          }
+        >
+          {children}
+        </OnboardingGate>
+      </div>
+    );
+  }
 
   return (
     <div

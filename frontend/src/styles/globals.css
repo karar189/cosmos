@@ -496,3 +496,13 @@ html, body {
 .dashboard-light ::-webkit-scrollbar {
   scrollbar-color: rgba(45, 52, 130, 0.22) transparent;
 }
+
+/* Workspace hub — isolated from dashboard-light / gradient overlays */
+.workspace-hub-root {
+  background: #f4f2fa;
+  color: #0f172a;
+}
+
+.workspace-hub-root .text-white {
+  color: #ffffff;
+}

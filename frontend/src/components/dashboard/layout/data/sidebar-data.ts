@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  LayoutGrid,
   Settings,
   Zap,
   Users,
@@ -25,7 +26,8 @@ export const FEATURES_BY_WIDGET: { widgetId: string; title: string; url: string;
 export const DASHBOARD_GROUP: NavGroup = {
   title: "Dashboard",
   items: [
-    { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
+    { title: "Workspaces", url: "/dashboard", icon: LayoutGrid },
+    { title: "Overview", url: "/dashboard/overview", icon: LayoutDashboard },
     { title: "My Templates", url: "/dashboard/documents", icon: FileText },
     { title: "Settings", url: "/dashboard/settings", icon: Settings },
   ],

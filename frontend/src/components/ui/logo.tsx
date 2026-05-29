@@ -7,17 +7,23 @@ interface Props {
     className?: string;
 }
 
+const HypertronWordmark = ({ className }: { className?: string }) => (
+    <span className={cn("text-lg font-semibold tracking-tight text-slate-900", className)}>
+        Hypertron
+    </span>
+);
+
 const Logo = ({ variant = "icon", className }: Props) => {
     return (
         <>
             {variant === "icon" ? (
                 <Icons.logo className={cn("w-8 h-8 transition-all", className)} />
             ) : variant === "text" ? (
-                <Icons.wordmark className={cn("w-auto h-5 transition-all", className)} />
+                <HypertronWordmark className={className} />
             ) : (
-                <div className={cn("w-auto h-8 flex items-center space-x-2 transition-all", className)}>
-                    <Icons.logo className="w-8 h-8 transition-all" />
-                    <Icons.wordmark className="w-auto h-5 transition-all" />
+                <div className={cn("flex h-8 w-auto items-center space-x-2 transition-all", className)}>
+                    <Icons.logo className="h-8 w-8 transition-all" />
+                    <HypertronWordmark className="text-base" />
                 </div>
             )}
         </>
