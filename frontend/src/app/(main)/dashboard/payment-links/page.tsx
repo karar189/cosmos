@@ -4,8 +4,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter } from "next/navigation";
-import { DashboardMain } from "@/components/dashboard/layout/main";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
+import {
+  WorkspacePageShell,
+  workspaceHubBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-page-shell";
 import { CreatePaymentLinkForm } from "@/components/create-payment-link-form";
 import { PaymentLinkList } from "@/components/payment-link-list";
 import { PayAnyAmountCard } from "@/components/pay-any-amount-card";
@@ -57,25 +60,20 @@ export default function PaymentLinksPage() {
     };
   }, [publicKey]);
 
-  if (!publicKey) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <p className="text-white/50 text-center text-sm">Connect your wallet to manage payment links.</p>
-        <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
-      </div>
-    );
-  }
-
   return (
-    <DashboardMain>
+    <WorkspacePageShell
+      breadcrumbs={workspaceHubBreadcrumbs("Payment links")}
+      connectMessage="Connect your wallet to manage payment links."
+    >
       <div className="flex flex-col gap-8">
         <DashboardPageHeader
+          variant="hub"
           eyebrow="Payments"
           title="Payment links"
           description="Create and manage your Stellar payment links."
         />
 
-        {businessId ? (
+        {!publicKey ? null : businessId ? (
           <div className="flex flex-col gap-6">
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
               <PayAnyAmountCard businessId={businessId} onCreated={() => {}} />
@@ -84,11 +82,11 @@ export default function PaymentLinksPage() {
             <PaymentLinkList businessId={businessId} />
           </div>
         ) : !businessError ? (
-          <p className="text-white/30 text-sm">Loading…</p>
+          <p className="text-sm text-neutral-500">Loading…</p>
         ) : (
-          <p className="text-destructive text-sm">{businessError}</p>
+          <p className="text-sm text-destructive">{businessError}</p>
         )}
       </div>
-    </DashboardMain>
+    </WorkspacePageShell>
   );
 }

@@ -17,10 +17,11 @@ import {
   Target,
 } from "lucide-react";
 
-import { DashboardHeader } from "@/components/dashboard/layout/header";
-import { DashboardMain } from "@/components/dashboard/layout/main";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
-import { ThemeSwitch } from "@/components/dashboard/theme-switch";
+import {
+  WorkspacePageShell,
+  workspaceHubBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-page-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -196,7 +197,7 @@ async function readErrorMessage(res: Response, fallback: string): Promise<string
 
 export default function RnsPage() {
   const router = useRouter();
-  const { publicKey, disconnect, isConnecting } = useFreighter();
+  const { publicKey } = useFreighter();
 
   const [profileForm, setProfileForm] = useState<RnsProfileForm>(defaultProfileForm);
   const [schedule, setSchedule] = useState<RnsSchedule>(defaultSchedule);
@@ -499,32 +500,17 @@ export default function RnsPage() {
     }
   };
 
-  if (!publicKey) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4">
-        <p className="text-center text-sm text-muted-foreground">Connect your wallet to use Regulation News Sniper.</p>
-        <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
-      </div>
-    );
-  }
-
   return (
-    <>
-      <DashboardHeader fixed>
-        <div className="flex flex-1 items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">Regulation News Sniper</span>
-        </div>
-        <div className="ml-auto flex items-center gap-1">
-          <ThemeSwitch />
-          <Button variant="ghost" size="sm" onClick={() => router.push("/dashboard")}>Dashboard</Button>
-          <Button variant="ghost" size="sm" onClick={disconnect} disabled={isConnecting}>Disconnect</Button>
-        </div>
-      </DashboardHeader>
-
-      <DashboardMain>
-        <div className="flex flex-col gap-6">
+    <WorkspacePageShell
+      breadcrumbs={workspaceHubBreadcrumbs("Regulations")}
+      connectMessage="Connect your wallet to use Regulation News Sniper."
+    >
+      <div className="flex flex-col gap-6">
+        {!publicKey ? null : (
+          <>
           <DashboardPageHeader
-            eyebrow="Tier 2+"
+            variant="hub"
+            eyebrow="Regulations"
             title="RNS: Regulation News Sniper"
             description="Track daily news signals by geography, score sentiment impact on your business, and schedule report workflows."
             end={
@@ -983,8 +969,9 @@ export default function RnsPage() {
               </Card>
             </div>
           </div>
-        </div>
-      </DashboardMain>
-    </>
+          </>
+        )}
+      </div>
+    </WorkspacePageShell>
   );
 }

@@ -1,15 +1,17 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import {
+  WorkspaceHubShellBar,
+  type HubBreadcrumb,
+} from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
 import { WorkspaceOverviewSidebar } from "@/components/dashboard/workspace-hub/workspace-overview-sidebar";
-import { WorkspaceHubTopChrome } from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
 import {
   templatesToWorkspaces,
   type WorkspaceCardModel,
 } from "@/components/dashboard/workspace-hub/workspace-hub-main";
-import { WorkspaceOverviewDashboard } from "@/components/dashboard/workspace-overview/workspace-overview-dashboard";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useAppSession } from "@/hooks/useAppSession";
 import { loadSavedTemplates, type SavedTemplate } from "@/lib/my-templates-storage";
@@ -31,18 +33,34 @@ async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedT
   return loadSavedTemplates(publicKey);
 }
 
-function initialsFromName(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) return (parts[0]![0]! + parts[1]![0]!).toUpperCase();
-  return (name.trim()[0] ?? "U").toUpperCase();
+export function workspaceHubBreadcrumbs(currentPage: string): HubBreadcrumb[] {
+  return [
+    { label: "Workspaces", href: "/dashboard" },
+    { label: "Overview", href: "/dashboard/overview" },
+    { label: currentPage, current: true },
+  ];
 }
 
-function OverviewContent() {
+type WorkspacePageShellProps = {
+  breadcrumbs: HubBreadcrumb[];
+  children: ReactNode;
+  /** Shown in sidebar workspace switcher when tier state is missing */
+  workspaceName?: string;
+  connectMessage?: string;
+};
+
+export function WorkspacePageShell({
+  breadcrumbs,
+  children,
+  workspaceName: workspaceNameProp,
+  connectMessage = "Connect your wallet to continue.",
+}: WorkspacePageShellProps) {
   const router = useRouter();
   const { publicKey, connect, disconnect, isConnecting } = useFreighter();
   const { isPrivy, loading: sessionLoading, privyUser } = useAppSession();
+
   const [workspaces, setWorkspaces] = useState<WorkspaceCardModel[]>([]);
-  const [workspaceName, setWorkspaceName] = useState("Workspace");
+  const [workspaceName, setWorkspaceName] = useState(workspaceNameProp?.trim() || "Workspace");
   const [profileName, setProfileName] = useState("");
 
   const loadData = useCallback(async () => {
@@ -54,11 +72,7 @@ function OverviewContent() {
         ),
       ]);
 
-      const profile = profileRes as {
-        name?: string;
-        activeTemplate?: { businessName?: string; name?: string };
-      } | null;
-
+      const profile = profileRes as { name?: string; activeTemplate?: { businessName?: string; name?: string } } | null;
       if (profile?.name) setProfileName(String(profile.name));
 
       const tpl = profile?.activeTemplate;
@@ -66,20 +80,20 @@ function OverviewContent() {
         setWorkspaceName(tpl.businessName.trim());
       } else if (tpl && typeof tpl.name === "string" && tpl.name.trim()) {
         setWorkspaceName(tpl.name.trim());
+      } else if (workspaceNameProp?.trim()) {
+        setWorkspaceName(workspaceNameProp.trim());
       }
 
       setWorkspaces(templatesToWorkspaces(templates));
     } catch {
       setWorkspaces([]);
     }
-  }, [publicKey]);
+  }, [publicKey, workspaceNameProp]);
 
   useEffect(() => {
     const syncTier = () => {
       const state = getWorkspaceTierState();
-      if (state?.businessName?.trim()) {
-        setWorkspaceName(state.businessName.trim());
-      }
+      if (state?.businessName?.trim()) setWorkspaceName(state.businessName.trim());
     };
     syncTier();
     window.addEventListener(WORKSPACE_TIER_UPDATED_EVENT, syncTier);
@@ -91,12 +105,6 @@ function OverviewContent() {
     if (!publicKey && !isPrivy) return;
     void loadData();
   }, [sessionLoading, publicKey, isPrivy, loadData]);
-
-  useEffect(() => {
-    const onProfileUpdated = () => void loadData();
-    window.addEventListener("profile-updated", onProfileUpdated);
-    return () => window.removeEventListener("profile-updated", onProfileUpdated);
-  }, [loadData]);
 
   const displayName =
     profileName.trim() ||
@@ -116,11 +124,8 @@ function OverviewContent() {
 
   if (!publicKey && !sessionLoading && !isPrivy) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#f5f0ff] to-[#eef4ff] px-4">
-        <h1 className="text-xl font-semibold tracking-tight text-slate-900">Overview</h1>
-        <p className="max-w-xs text-center text-sm text-slate-600">
-          Connect your Stellar wallet to open a workspace.
-        </p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-transparent px-4">
+        <p className="max-w-xs text-center text-sm text-neutral-600">{connectMessage}</p>
         <Button
           onClick={connect}
           disabled={isConnecting}
@@ -128,14 +133,12 @@ function OverviewContent() {
         >
           {isConnecting ? "Connecting…" : "Connect with Freighter"}
         </Button>
-        <Button variant="ghost" onClick={() => router.push("/dashboard")} className="text-slate-600">
+        <Button variant="ghost" onClick={() => router.push("/dashboard")} className="text-neutral-600">
           Back to workspaces
         </Button>
       </div>
     );
   }
-
-  const firstName = displayName.split(" ")[0] || displayName;
 
   return (
     <div className="flex min-h-screen bg-transparent">
@@ -146,37 +149,13 @@ function OverviewContent() {
         onSignOut={handleSignOut}
       />
       <div className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden bg-transparent">
-        <WorkspaceHubTopChrome
-          breadcrumbs={[
-            { label: "Workspaces", href: "/dashboard" },
-            { label: "Overview", current: true },
-          ]}
-          title={`Hello, ${firstName}`}
-          subtitle={workspaceName}
-          workspaces={workspaces}
-        />
-        <div className="flex-1 overflow-y-auto px-8 pb-8 pt-2">
-          <WorkspaceOverviewDashboard
-            workspaceName={workspaceName}
-            userName={displayName}
-            userInitials={initialsFromName(displayName)}
-          />
+        <WorkspaceHubShellBar breadcrumbs={breadcrumbs} workspaces={workspaces} />
+        <div className="flex-1 overflow-y-auto">
+          <div className="workspace-hub-page-content mx-auto w-full max-w-7xl px-8 pb-10 pt-6">
+            {children}
+          </div>
         </div>
       </div>
     </div>
-  );
-}
-
-export default function OverviewPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[60vh] items-center justify-center">
-          <p className="text-sm text-slate-500">Loading workspace…</p>
-        </div>
-      }
-    >
-      <OverviewContent />
-    </Suspense>
   );
 }

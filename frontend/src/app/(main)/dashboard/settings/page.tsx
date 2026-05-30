@@ -12,8 +12,11 @@ import {
   Moon,
   Palette,
 } from "lucide-react";
-import { DashboardMain } from "@/components/dashboard/layout/main";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
+import {
+  WorkspacePageShell,
+  workspaceHubBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-page-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,7 +55,7 @@ const navItems: { id: SettingsSection; label: string; icon: React.ElementType }[
 ];
 
 const inputCls =
-  "h-9 border border-white/[0.1] bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:border-white/25 focus:ring-0";
+  "h-9 border border-ui-border/80 bg-white text-neutral-900 placeholder:text-neutral-400 focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-0";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -238,15 +241,6 @@ export default function SettingsPage() {
     }
   };
 
-  if (!publicKey) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4">
-        <p className="text-white/40 text-center text-sm">Connect your wallet to view settings.</p>
-        <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
-      </div>
-    );
-  }
-
   const SaveButton = ({ label = "Save changes" }: { label?: string }) => (
     <Button
       onClick={handleUpdateProfile}
@@ -255,7 +249,7 @@ export default function SettingsPage() {
         "min-w-[130px] rounded-full font-semibold transition-all",
         saved
           ? "border-0 bg-emerald-600 text-white hover:bg-emerald-600"
-          : "border border-white/10 bg-foreground text-background hover:opacity-90"
+          : "border border-ui-border/80 bg-blue-600 text-white hover:bg-blue-700"
       )}
     >
       {saved ? <><CheckCheck className="h-4 w-4 mr-1.5" /> Saved</> : label}
@@ -263,14 +257,19 @@ export default function SettingsPage() {
   );
 
   return (
-    <DashboardMain>
+    <WorkspacePageShell
+      breadcrumbs={workspaceHubBreadcrumbs("Settings")}
+      connectMessage="Connect your wallet to view settings."
+    >
       <div className="flex flex-col gap-6">
         <DashboardPageHeader
+          variant="hub"
           eyebrow="Workspace"
           title="Settings"
           description="Manage your account, appearance, and notifications."
         />
 
+        {!publicKey ? null : (
         <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
 
           {/* ── Side nav ── */}
@@ -283,8 +282,8 @@ export default function SettingsPage() {
                 className={cn(
                   "flex items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm transition-colors whitespace-nowrap",
                   section === id
-                    ? "border border-white/12 bg-white/[0.08] font-medium text-foreground"
-                    : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+                    ? "border border-ui-border/80 bg-neutral-100 font-medium text-neutral-900 shadow-sm"
+                    : "text-neutral-500 hover:bg-neutral-100/60 hover:text-neutral-900"
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -298,32 +297,32 @@ export default function SettingsPage() {
 
             {/* Profile */}
             {section === "profile" && (
-              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-5">
+              <div className="rounded-xl border border-ui-border/80 bg-white p-5 flex flex-col gap-5 shadow-sm">
                 <div>
-                  <p className="text-sm font-medium text-white">Profile</p>
-                  <p className="text-xs text-white/35 mt-0.5">This is how others will see you on the platform.</p>
+                  <p className="text-sm font-medium text-neutral-900">Profile</p>
+                  <p className="text-xs text-neutral-500 mt-0.5">This is how others will see you on the platform.</p>
                 </div>
 
                 <div className="flex flex-col gap-4 max-w-lg">
                   <div className="space-y-1.5">
-                    <Label htmlFor="settings-username" className="text-xs text-white/50">Display name</Label>
+                    <Label htmlFor="settings-username" className="text-xs text-neutral-500">Display name</Label>
                     <Input id="settings-username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Your name" className={inputCls} />
-                    <p className="text-[11px] text-white/25">Can be your real name or a pseudonym.</p>
+                    <p className="text-[11px] text-neutral-400">Can be your real name or a pseudonym.</p>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="settings-email" className="text-xs text-white/50">Email</Label>
+                    <Label htmlFor="settings-email" className="text-xs text-neutral-500">Email</Label>
                     <Input id="settings-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className={inputCls} />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="settings-bio" className="text-xs text-white/50">Bio</Label>
+                    <Label htmlFor="settings-bio" className="text-xs text-neutral-500">Bio</Label>
                     <Textarea
                       id="settings-bio"
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="Tell us a little about yourself…"
-                      className="min-h-[80px] resize-none border border-white/[0.1] bg-white/[0.04] text-foreground placeholder:text-muted-foreground focus:border-white/25 focus:ring-0"
+                      className={cn("min-h-[80px] resize-none", inputCls)}
                     />
                   </div>
 
@@ -543,7 +542,8 @@ export default function SettingsPage() {
 
           </div>
         </div>
+        )}
       </div>
-    </DashboardMain>
+    </WorkspacePageShell>
   );
 }

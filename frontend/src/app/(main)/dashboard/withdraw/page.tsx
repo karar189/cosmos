@@ -4,8 +4,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useRouter } from "next/navigation";
-import { DashboardMain } from "@/components/dashboard/layout/main";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
+import {
+  WorkspacePageShell,
+  workspaceHubBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-page-shell";
 import { WithdrawTab } from "@/components/dashboard/withdraw-tab";
 import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
 
@@ -34,30 +37,25 @@ export default function WithdrawPage() {
     }
   }, [publicKey]);
 
-  if (!publicKey) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <p className="text-white/40 text-center text-sm">Connect your wallet to withdraw funds.</p>
-        <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
-      </div>
-    );
-  }
-
   return (
-    <DashboardMain>
+    <WorkspacePageShell
+      breadcrumbs={workspaceHubBreadcrumbs("Withdraw")}
+      connectMessage="Connect your wallet to withdraw funds."
+    >
       <div className="flex flex-col gap-8">
         <DashboardPageHeader
+          variant="hub"
           eyebrow="Treasury"
           title="Withdraw"
           description="Transfer settled funds to your Stellar receive address."
         />
 
-        {businessId ? (
+        {!publicKey ? null : businessId ? (
           <WithdrawTab businessId={businessId} walletAddress={publicKey} receiveAddress={receiveAddress} />
         ) : !businessError ? (
-          <p className="text-white/30 text-sm">Loading…</p>
+          <p className="text-sm text-neutral-500">Loading…</p>
         ) : null}
       </div>
-    </DashboardMain>
+    </WorkspacePageShell>
   );
 }

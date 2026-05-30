@@ -12,9 +12,10 @@ import { useAppSession } from "@/hooks/useAppSession";
 import { sidebarData } from "@/components/dashboard/layout/data/sidebar-data";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 import { ConnectWalletBanner } from "@/components/dashboard/connect-wallet-banner";
+import { usesWorkspaceHubShell } from "@/lib/workspace-hub-shell-routes";
 
 function MainLayoutShell({ children }: { children: React.ReactNode }) {
-  const { theme } = useDashboardTheme();
+  const { theme, setTheme } = useDashboardTheme();
   const pathname = usePathname();
   const router = useRouter();
   const { publicKey, disconnect } = useFreighter();
@@ -67,11 +68,17 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
       : sidebarData.user;
 
   const showConnectWallet = !sessionLoading && isPrivy && !publicKey;
-  const isWorkspaceHub = pathname === "/dashboard";
+  const hubShell = usesWorkspaceHubShell(pathname);
 
-  if (isWorkspaceHub) {
+  useEffect(() => {
+    if (hubShell && theme !== "light") {
+      setTheme("light");
+    }
+  }, [hubShell, theme, setTheme]);
+
+  if (hubShell) {
     return (
-      <div className="workspace-hub-root font-default relative min-h-screen bg-[#f4f2fa] text-slate-900 antialiased">
+      <div className="workspace-hub-root font-default relative min-h-screen text-slate-900 antialiased">
         <OnboardingGate
           when={!sessionLoading && !!session}
           walletAddress={publicKey}

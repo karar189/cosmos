@@ -1,5 +1,5 @@
 import React from 'react'
-import { Icons } from "@/components";
+import { HypertronLogoMark } from "@/components/global/hypertron-logo-mark";
 import { cn } from "@/utils";
 
 interface Props {
@@ -17,12 +17,14 @@ const Logo = ({ variant = "icon", className }: Props) => {
     return (
         <>
             {variant === "icon" ? (
-                <Icons.logo className={cn("w-8 h-8 transition-all", className)} />
+                <div className={cn("transition-all", className)}>
+                    <HypertronLogoMark size={32} />
+                </div>
             ) : variant === "text" ? (
                 <HypertronWordmark className={className} />
             ) : (
                 <div className={cn("flex h-8 w-auto items-center space-x-2 transition-all", className)}>
-                    <Icons.logo className="h-8 w-8 transition-all" />
+                    <HypertronLogoMark size={32} />
                     <HypertronWordmark className="text-base" />
                 </div>
             )}

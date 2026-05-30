@@ -1,3 +1,5 @@
+@import "./tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -497,12 +499,132 @@ html, body {
   scrollbar-color: rgba(45, 52, 130, 0.22) transparent;
 }
 
-/* Workspace hub — isolated from dashboard-light / gradient overlays */
+/* Workspace hub — mostly white with whisper-soft corner tints */
 .workspace-hub-root {
-  background: #f4f2fa;
-  color: #0f172a;
+  background: #fafbff;
+  color: #1e1b4b;
+  position: relative;
+  isolation: isolate;
+  /* Light tokens so outline buttons/inputs never pick up near-black :root borders */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 96%;
+  --secondary-foreground: 215 25% 27%;
+  --muted: 214 32% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 214 32% 96%;
+  --accent-foreground: 215 25% 27%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 213 94% 68%;
+}
+
+.workspace-hub-root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 42% at 0% 0%, rgba(177, 151, 252, 0.08) 0%, transparent 52%),
+    radial-gradient(ellipse 70% 58% at 100% 0%, rgba(245, 198, 208, 0.22) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 48% at 92% 8%, rgba(255, 179, 71, 0.14) 0%, transparent 52%),
+    radial-gradient(ellipse 48% 40% at 100% 0%, rgba(177, 151, 252, 0.12) 0%, transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #fafbff 45%, #f8f9fc 100%);
+}
+
+.workspace-hub-root > * {
+  position: relative;
+  z-index: 1;
+}
+
+.workspace-hub-root .workspace-hub-sidebar {
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
 .workspace-hub-root .text-white {
   color: #ffffff;
+}
+
+/* No black focus/active halos on hub controls */
+.workspace-hub-root button:focus,
+.workspace-hub-root button:focus-visible,
+.workspace-hub-root button:active,
+.workspace-hub-root [role="button"]:focus-visible,
+.workspace-hub-root [data-radix-select-trigger]:focus,
+.workspace-hub-root [data-radix-select-trigger][data-state="open"] {
+  outline: none;
+}
+
+/* Action cards — soft fill + diagonal border (grey at top-left, tinted at bottom-right) */
+.workspace-hub-root .workspace-hub-action-card--blue {
+  border: 1px solid transparent !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f6f9ff 45%, #e8f0fc 100%) padding-box,
+    linear-gradient(135deg, rgb(var(--ui-border)) 0%, rgb(var(--ui-border-muted)) 40%, #dce8f8 100%) border-box !important;
+}
+
+/* Force blue palette on Avvvatars user avatars in workspace hub */
+.workspace-hub-root .hub-avatar-blue > div {
+  background-color: #e8f4ff !important;
+}
+
+.workspace-hub-root .hub-avatar-blue svg path {
+  fill: #2563eb !important;
+}
+
+/* Account menu — flat panel (no shadow / zoom popover feel) */
+.workspace-hub-user-menu-content {
+  box-shadow: none !important;
+  filter: none !important;
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+  outline: none !important;
+}
+
+.workspace-hub-user-menu-content .hub-menu-item[data-highlighted] {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+}
+
+.workspace-hub-user-menu-content .hub-menu-item--destructive[data-highlighted] {
+  color: #b91c1c !important;
+}
+
+.workspace-hub-root .workspace-hub-promo-card {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f6f9ff 50%, #e8f0fc 100%) padding-box,
+    linear-gradient(135deg, #ffffff 0%, #dce8f8 100%) border-box !important;
+}
+
+.workspace-hub-root .workspace-hub-action-card--peach {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #fffcf9 45%, #fff4eb 100%) padding-box,
+    linear-gradient(135deg, rgb(var(--ui-border)) 0%, #f1f5f9 40%, #ffe4cc 100%) border-box !important;
+}
+
+/* Workspace feature pages — white cards on mesh background */
+.workspace-hub-root .workspace-hub-page-content {
+  color: #1e293b;
+}
+
+.workspace-hub-root .workspace-hub-page-content .rounded-lg.border,
+.workspace-hub-root .workspace-hub-page-content .rounded-xl.border,
+.workspace-hub-root .workspace-hub-page-content [data-slot="card"] {
+  border-color: rgb(var(--ui-border) / 0.85) !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }

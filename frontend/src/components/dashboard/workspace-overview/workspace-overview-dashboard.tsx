@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import {
-  Search,
-  Bell,
   Wallet,
   Clock,
   Users,
@@ -31,10 +29,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { cn } from "@/utils";
 
 const TREASURY_SERIES = [
@@ -56,7 +51,7 @@ const ASSET_BREAKDOWN = [
 ];
 
 const PAYMENT_STATUS = [
-  { name: "Completed", value: 65, color: "#7c3aed" },
+  { name: "Completed", value: 65, color: "#2563eb" },
   { name: "Pending", value: 18, color: "#f59e0b" },
   { name: "Failed", value: 5, color: "#ef4444" },
   { name: "Upcoming", value: 12, color: "#38bdf8" },
@@ -84,22 +79,12 @@ type WorkspaceOverviewDashboardProps = {
   userInitials: string;
 };
 
-function usePanelClass() {
-  const { theme } = useDashboardTheme();
-  const isLight = theme === "light";
-  return {
-    isLight,
-    panel: cn(
-      "rounded-2xl border",
-      isLight
-        ? "border-slate-200/90 bg-white shadow-sm"
-        : "border-white/[0.12] bg-white/[0.04] backdrop-blur-xl"
-    ),
-    title: isLight ? "text-slate-900" : "text-foreground",
-    muted: isLight ? "text-slate-500" : "text-muted-foreground",
-    tick: isLight ? "rgba(45, 52, 130, 0.45)" : "rgba(255,255,255,0.35)",
-  };
-}
+const overviewStyles = {
+  panel: "rounded-2xl border border-slate-200/90 bg-white shadow-sm",
+  title: "text-slate-900",
+  muted: "text-slate-500",
+  tick: "rgba(45, 52, 130, 0.45)",
+} as const;
 
 function KpiCard({
   label,
@@ -118,21 +103,16 @@ function KpiCard({
   positive?: boolean;
   icon: typeof Wallet;
   spark: number[];
-  styles: ReturnType<typeof usePanelClass>;
+  styles: typeof overviewStyles;
 }) {
   const data = spark.map((v, i) => ({ i, v }));
-  const stroke = styles.isLight ? "#7c3aed" : "rgba(167, 139, 250, 0.9)";
+  const stroke = "#2563eb";
 
   return (
     <div className={cn(styles.panel, "flex flex-col gap-3 p-4")}>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-lg",
-              styles.isLight ? "bg-violet-50 text-violet-700" : "bg-white/[0.06] text-white/70"
-            )}
-          >
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
             <Icon className="h-4 w-4" />
           </span>
           <span className={cn("text-xs font-medium", styles.muted)}>{label}</span>
@@ -162,66 +142,16 @@ function KpiCard({
 }
 
 export function WorkspaceOverviewDashboard({
-  workspaceName,
-  userName,
-  userInitials,
+  workspaceName: _workspaceName,
+  userName: _userName,
+  userInitials: _userInitials,
 }: WorkspaceOverviewDashboardProps) {
-  const styles = usePanelClass();
-  const firstName = userName.split(" ")[0] || userName;
-  const areaFill = styles.isLight ? "rgba(124, 58, 237, 0.15)" : "rgba(139, 92, 246, 0.25)";
-  const areaStroke = styles.isLight ? "#7c3aed" : "rgba(167, 139, 250, 0.95)";
+  const styles = overviewStyles;
+  const areaFill = "rgba(37, 99, 235, 0.12)";
+  const areaStroke = "#2563eb";
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className={cn("text-sm font-medium", styles.muted)}>{workspaceName}</p>
-          <h1 className={cn("text-2xl font-semibold tracking-tight", styles.title)}>
-            Hello, {firstName}
-          </h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative hidden sm:block">
-            <Search className={cn("absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2", styles.muted)} />
-            <Input
-              placeholder="Search"
-              className={cn(
-                "h-10 w-52 rounded-lg pl-9",
-                styles.isLight
-                  ? "border-slate-200 bg-white text-slate-900"
-                  : "border-white/10 bg-white/[0.04]"
-              )}
-            />
-            <kbd
-              className={cn(
-                "pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 rounded border px-1.5 text-[10px] lg:inline",
-                styles.isLight ? "border-slate-200 bg-slate-50 text-slate-400" : "border-white/10 text-white/30"
-              )}
-            >
-              ⌘ K
-            </kbd>
-          </div>
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn(
-              "relative rounded-lg",
-              styles.isLight ? "border-slate-200 bg-white" : "border-white/10"
-            )}
-          >
-            <Bell className="h-4 w-4" />
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
-              12
-            </span>
-          </Button>
-          <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-            <AvatarFallback className="bg-violet-100 font-semibold text-violet-800">
-              {userInitials}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </header>
-
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard
           label="Total Treasury"
@@ -296,8 +226,8 @@ export function WorkspaceOverviewDashboard({
                 <Tooltip
                   contentStyle={{
                     borderRadius: 8,
-                    border: styles.isLight ? "1px solid #e2e8f0" : "1px solid rgba(255,255,255,0.1)",
-                    background: styles.isLight ? "#fff" : "rgba(0,0,0,0.85)",
+                    border: "1px solid #e2e8f0",
+                    background: "#fff",
                   }}
                   formatter={(v: number) => [`$${v.toLocaleString()}`, "Balance"]}
                 />
@@ -311,7 +241,7 @@ export function WorkspaceOverviewDashboard({
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-4 sm:grid-cols-5 dark:border-white/[0.06]">
+          <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-4 sm:grid-cols-5">
             {ASSET_BREAKDOWN.map((a) => (
               <div key={a.name}>
                 <p className={cn("text-[10px] font-medium uppercase tracking-wide", styles.muted)}>{a.name}</p>
@@ -336,9 +266,9 @@ export function WorkspaceOverviewDashboard({
               </li>
             ))}
           </ul>
-          <div className="mt-4 rounded-lg border border-red-200/80 bg-red-50 px-3 py-2.5 dark:border-red-500/20 dark:bg-red-500/10">
-            <p className="text-xs font-semibold text-red-700 dark:text-red-300">Tasks Overdue</p>
-            <p className="text-[11px] text-red-600/90 dark:text-red-200/80">5 action needed</p>
+          <div className="mt-4 rounded-lg border border-red-200/80 bg-red-50 px-3 py-2.5">
+            <p className="text-xs font-semibold text-red-700">Tasks Overdue</p>
+            <p className="text-[11px] text-red-600/90">5 action needed</p>
           </div>
         </div>
 
@@ -352,12 +282,7 @@ export function WorkspaceOverviewDashboard({
               { icon: Scale, text: "Regulation update flagged", time: "1d ago" },
             ].map((item) => (
               <li key={item.text} className="flex gap-3">
-                <span
-                  className={cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-                    styles.isLight ? "bg-slate-100 text-slate-600" : "bg-white/[0.06] text-white/60"
-                  )}
-                >
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
                   <item.icon className="h-3.5 w-3.5" />
                 </span>
                 <div className="min-w-0">
@@ -413,7 +338,7 @@ export function WorkspaceOverviewDashboard({
                   axisLine={false}
                   tickLine={false}
                 />
-                <Bar dataKey="value" fill={styles.isLight ? "#7c3aed" : "rgba(167, 139, 250, 0.85)"} radius={[0, 4, 4, 0]} barSize={10} />
+                <Bar dataKey="value" fill="#2563eb" radius={[0, 4, 4, 0]} barSize={10} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -438,31 +363,24 @@ export function WorkspaceOverviewDashboard({
         </div>
       </div>
 
-      <div
-        className={cn(
-          "flex flex-wrap items-center justify-between gap-4 rounded-2xl border px-5 py-4",
-          styles.isLight
-            ? "border-slate-200/90 bg-white shadow-sm"
-            : "border-white/[0.12] bg-white/[0.04]"
-        )}
-      >
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white px-5 py-4 shadow-sm">
         <div className="flex flex-wrap gap-6">
           <div>
             <p className={cn("text-[10px] font-semibold uppercase tracking-wide", styles.muted)}>Regulatory Watch</p>
             <div className="mt-1 flex flex-wrap gap-4 text-xs">
               <span className={styles.title}>
                 <Calendar className="mr-1 inline h-3 w-3" />
-                New Regulations <strong className="text-violet-600">3</strong>
+                New Regulations <strong className="text-blue-600">3</strong>
               </span>
               <span className={styles.title}>
-                Updates <strong className="text-violet-600">5</strong>
+                Updates <strong className="text-blue-600">5</strong>
               </span>
               <span className={styles.title}>
                 Deadlines <strong className="text-amber-600">2</strong>
               </span>
             </div>
           </div>
-          <div className="hidden h-10 w-px bg-slate-200 sm:block dark:bg-white/10" />
+          <div className="hidden h-10 w-px bg-slate-200 sm:block" />
           <div>
             <p className={cn("text-[10px] font-semibold uppercase tracking-wide", styles.muted)}>Risk Overview</p>
             <div className="mt-1 flex flex-wrap gap-4 text-xs">
@@ -478,14 +396,7 @@ export function WorkspaceOverviewDashboard({
             </div>
           </div>
         </div>
-        <Button
-          asChild
-          variant="outline"
-          className={cn(
-            "rounded-lg",
-            styles.isLight ? "border-slate-200" : "border-white/15"
-          )}
-        >
+        <Button asChild variant="outline" className="rounded-lg border-slate-200">
           <Link href="/dashboard/compliance-analysis">
             View Risk Report
             <ArrowUpRight className="ml-1 h-3.5 w-3.5" />

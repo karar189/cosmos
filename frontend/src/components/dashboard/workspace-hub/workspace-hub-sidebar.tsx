@@ -1,20 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { HypertronLogoMark } from "@/components/global/hypertron-logo-mark";
 import { usePathname } from "next/navigation";
 import {
   LayoutGrid,
-  Bell,
   FileText,
   CreditCard,
   Settings,
   LifeBuoy,
   Plus,
-  ChevronDown,
-  Sparkles,
+  Search,
+  Check,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { WorkspaceHubUserMenu } from "@/components/dashboard/workspace-hub/workspace-hub-user-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
 
@@ -25,7 +24,6 @@ const NAV: {
   badge?: number;
 }[] = [
   { label: "Workspaces", href: "/dashboard", icon: LayoutGrid },
-  { label: "Notifications", href: "/dashboard", icon: Bell, badge: 12 },
   { label: "Templates", href: "/dashboard/documents", icon: FileText },
   { label: "Billing & Plans", href: "/dashboard/settings", icon: CreditCard },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -35,52 +33,48 @@ const NAV: {
 type WorkspaceHubSidebarProps = {
   userName: string;
   userEmail: string;
-  userInitials: string;
-  activeWorkspaceName?: string;
-  activeWorkspaceRole?: string;
   onCreateWorkspace: () => void;
+  onSignOut: () => void | Promise<void>;
 };
 
 export function WorkspaceHubSidebar({
   userName,
   userEmail,
-  userInitials,
-  activeWorkspaceName,
-  activeWorkspaceRole = "Founder",
   onCreateWorkspace,
+  onSignOut,
 }: WorkspaceHubSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-screen w-[260px] shrink-0 flex-col border-r border-slate-200/80 bg-white/90 backdrop-blur-xl">
-      <div className="flex items-center gap-2.5 px-5 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-600 text-white shadow-sm">
-          <Sparkles className="h-4 w-4" />
-        </div>
-        <span className="text-lg font-semibold tracking-tight text-slate-900">Hypertron</span>
+    <aside className="workspace-hub-sidebar flex h-screen w-[248px] shrink-0 flex-col rounded-tl-[28px] border-r border-ui-border/80 shadow-[inset_1px_0_0_rgba(255,255,255,0.75)]">
+      {/* Brand */}
+      <div className="px-4 pb-3 pt-5">
+        <Link href="/dashboard" className="flex min-w-0 items-center gap-2.5">
+          <HypertronLogoMark size={32} />
+          <span className="truncate text-[15px] font-semibold tracking-tight text-neutral-900">
+            Hypertron
+          </span>
+        </Link>
       </div>
 
-      <div className="mx-4 mb-4 rounded-xl border border-slate-200/80 bg-slate-50/80 p-3">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10 border border-white shadow-sm">
-            <AvatarFallback className="bg-violet-100 text-sm font-semibold text-violet-800">
-              {userInitials}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <p className="truncate text-sm font-semibold text-slate-900">{userName}</p>
-              <Badge className="h-5 shrink-0 border-0 bg-violet-100 px-1.5 text-[10px] font-medium text-violet-700 hover:bg-violet-100">
-                Owner
-              </Badge>
-            </div>
-            <p className="truncate text-xs text-slate-500">{userEmail}</p>
-          </div>
-          <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
+      {/* Search */}
+      <div className="px-4 pb-5">
+        <div className="relative flex h-10 items-center rounded-full border border-ui-border/60 bg-neutral-100/90">
+          <Search className="pointer-events-none absolute left-3.5 h-4 w-4 text-neutral-400" strokeWidth={1.75} />
+          <input
+            type="search"
+            placeholder="Search"
+            className="h-full w-full rounded-full bg-transparent pl-10 pr-12 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
+            aria-label="Search"
+          />
+          <kbd className="pointer-events-none absolute right-2 flex h-6 min-w-6 items-center justify-center rounded-md border border-ui-border/80 bg-white px-1.5 text-[11px] font-medium text-neutral-400">
+            /
+          </kbd>
         </div>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-0.5 px-3">
+      {/* Navigation */}
+      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3">
         {NAV.map(({ label, href, icon: Icon, badge }) => {
           const active = label === "Workspaces" && pathname === "/dashboard";
           return (
@@ -88,16 +82,22 @@ export function WorkspaceHubSidebar({
               key={label}
               href={href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-colors",
                 active
-                  ? "bg-violet-50 text-violet-900"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-neutral-100 text-neutral-900 shadow-sm"
+                  : "text-neutral-500 hover:bg-neutral-100/60 hover:text-neutral-900"
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-violet-600" : "text-slate-400")} />
+              <Icon
+                className={cn(
+                  "h-[18px] w-[18px] shrink-0",
+                  active ? "text-neutral-900" : "text-neutral-500 group-hover:text-neutral-900"
+                )}
+                strokeWidth={1.75}
+              />
               <span className="flex-1">{label}</span>
               {badge ? (
-                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+                <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white">
                   {badge}
                 </span>
               ) : null}
@@ -106,41 +106,37 @@ export function WorkspaceHubSidebar({
         })}
       </nav>
 
-      <div className="mx-4 mb-4 rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50/80 p-4">
-        <p className="text-sm font-semibold leading-snug text-slate-900">
-          Run your entire Web3 company, from one place.
-        </p>
-        <ul className="mt-3 space-y-1.5 text-xs text-slate-600">
-          {["Treasury", "Operations", "Compliance", "Governance", "Analytics"].map((item) => (
-            <li key={item} className="flex items-center gap-2">
-              <span className="h-1 w-1 rounded-full bg-violet-400" />
-              {item}
-            </li>
-          ))}
-        </ul>
-        <Button
-          type="button"
-          onClick={onCreateWorkspace}
-          className="mt-4 w-full rounded-lg bg-violet-600 text-white shadow-sm hover:bg-violet-700"
-        >
-          <Plus className="mr-1.5 h-4 w-4" />
-          Create Workspace
-        </Button>
-      </div>
-
-      {activeWorkspaceName ? (
-        <div className="border-t border-slate-200/80 px-4 py-3">
-          <div className="flex items-center gap-2.5 rounded-lg bg-slate-50 px-2 py-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-violet-600 text-xs font-bold text-white">
-              {activeWorkspaceName.slice(0, 1).toUpperCase()}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-slate-900">{activeWorkspaceName}</p>
-              <p className="text-[10px] text-slate-500">{activeWorkspaceRole}</p>
-            </div>
-          </div>
+      {/* Promo + signed-in user */}
+      <div className="space-y-3 px-4 pb-5 pt-2">
+        <div className="workspace-hub-promo-card rounded-2xl p-4 shadow-none">
+          <p className="text-[13px] font-semibold leading-snug text-neutral-900">
+            Run your entire Web3 company, from one place.
+          </p>
+          <ul className="mt-3 space-y-2">
+            {["Treasury", "Operations", "Compliance", "And more…"].map((item) => (
+              <li key={item} className="flex items-center gap-2 text-[12px] text-neutral-700">
+                <Check className="h-3.5 w-3.5 shrink-0 text-blue-600" strokeWidth={2.5} />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <Button
+            type="button"
+            onClick={onCreateWorkspace}
+            variant="ghost"
+            className="mt-4 h-10 w-full rounded-xl bg-blue-50 text-sm font-semibold text-blue-600 hover:bg-blue-100 hover:text-blue-700"
+          >
+            <Plus className="mr-1.5 h-4 w-4" strokeWidth={2} />
+            Create Workspace
+          </Button>
         </div>
-      ) : null}
+
+        <WorkspaceHubUserMenu
+          userName={userName}
+          userEmail={userEmail}
+          onSignOut={onSignOut}
+        />
+      </div>
     </aside>
   );
 }

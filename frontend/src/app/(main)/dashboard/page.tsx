@@ -29,7 +29,7 @@ async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedT
 
 function WorkspaceHubContent() {
   const router = useRouter();
-  const { publicKey, connect, isConnecting } = useFreighter();
+  const { publicKey, connect, disconnect, isConnecting } = useFreighter();
   const { isPrivy, loading: sessionLoading, privyUser } = useAppSession();
   const { openOnboardingQuiz } = useOnboardingUi();
 
@@ -83,12 +83,12 @@ function WorkspaceHubContent() {
     privyUser?.email?.trim() ||
     (publicKey ? `${publicKey.slice(0, 6)}…${publicKey.slice(-4)}` : "");
 
-  const initials = displayName
-    .split(/\s+/)
-    .map((p) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase() || "U";
+  const handleSignOut = async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+    window.dispatchEvent(new Event("hypertron-sign-out"));
+    disconnect();
+    router.push("/?launch=1");
+  };
 
   if (!publicKey && !sessionLoading && !isPrivy) {
     return (
@@ -111,20 +111,16 @@ function WorkspaceHubContent() {
     );
   }
 
-  const activeName = workspaces[0]?.name;
-
   return (
-    <div className="flex min-h-screen bg-[#f4f2fa]">
+    <div className="flex min-h-screen bg-transparent">
       <WorkspaceHubSidebar
         userName={displayName}
         userEmail={email}
-        userInitials={initials}
-        activeWorkspaceName={activeName}
         onCreateWorkspace={openOnboardingQuiz}
+        onSignOut={handleSignOut}
       />
       <WorkspaceHubMain
         userName={displayName}
-        userInitials={initials}
         workspaces={workspaces}
         loading={loading || sessionLoading}
         onCreateWorkspace={openOnboardingQuiz}
@@ -137,7 +133,7 @@ export default function WorkspaceHubPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#f4f2fa]">
+        <div className="flex min-h-screen items-center justify-center bg-transparent">
           <p className="text-sm text-slate-600">Loading workspaces…</p>
         </div>
       }
