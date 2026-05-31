@@ -70,15 +70,15 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
   const showConnectWallet = !sessionLoading && isPrivy && !publicKey;
   const hubShell = usesWorkspaceHubShell(pathname);
 
-  useEffect(() => {
-    if (hubShell && theme !== "light") {
-      setTheme("light");
-    }
-  }, [hubShell, theme, setTheme]);
-
   if (hubShell) {
     return (
-      <div className="workspace-hub-root font-default relative min-h-screen text-slate-900 antialiased">
+      <div
+        data-theme={theme}
+        className={cn(
+          "workspace-hub-root font-default relative min-h-screen antialiased",
+          theme === "light" ? "text-slate-900" : "text-slate-100"
+        )}
+      >
         <OnboardingGate
           when={!sessionLoading && !!session}
           walletAddress={publicKey}

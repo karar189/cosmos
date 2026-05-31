@@ -2,7 +2,8 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import { Bell, LayoutGrid, Moon, Sun } from "lucide-react";
+import { Bell, LayoutGrid } from "lucide-react";
+import { HubThemeToggleButton } from "@/components/dashboard/hub-theme-toggle-button";
 import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
@@ -13,12 +14,12 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import {
   buildHubNotifications,
   summarizeWorkspaces,
 } from "@/components/dashboard/workspace-hub/workspace-hub-notifications";
 import type { WorkspaceStatsSource } from "./workspace-hub-notifications";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { cn } from "@/utils";
 
 export type HubBreadcrumb = {
@@ -71,7 +72,7 @@ function WorkspaceHubHeaderActions({
 }: {
   workspaces: WorkspaceStatsSource[];
 }) {
-  const { theme, setTheme } = useDashboardTheme();
+  const { theme } = useDashboardTheme();
   const {
     hubNotifications,
     notificationBadgeCount,
@@ -82,28 +83,26 @@ function WorkspaceHubHeaderActions({
 
   return (
     <div className="flex shrink-0 items-center gap-2">
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-        className="h-10 w-10 rounded-full border-ui-border/80 bg-white shadow-none hover:bg-neutral-50"
-        aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-      >
-        {theme === "light" ? (
-          <Moon className="h-[18px] w-[18px] text-neutral-700" strokeWidth={1.75} />
-        ) : (
-          <Sun className="h-[18px] w-[18px] text-neutral-700" strokeWidth={1.75} />
-        )}
-      </Button>
+      <HubThemeToggleButton />
       <Popover>
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-ui-border/80 bg-white shadow-none hover:bg-neutral-50"
+            className={cn(
+              "relative flex h-10 w-10 items-center justify-center rounded-full border shadow-none transition-colors",
+              theme === "light"
+                ? "border-ui-border/80 bg-white hover:bg-neutral-50"
+                : "border-white/12 bg-white/[0.08] hover:bg-white/[0.12]"
+            )}
             aria-label="Notifications"
           >
-            <Bell className="h-[18px] w-[18px] text-neutral-700" strokeWidth={1.75} />
+            <Bell
+              className={cn(
+                "h-[18px] w-[18px]",
+                theme === "light" ? "text-neutral-700" : "text-slate-200"
+              )}
+              strokeWidth={1.75}
+            />
             {notificationBadgeCount > 0 ? (
               <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white">
                 {notificationBadgeCount > 99 ? "99+" : notificationBadgeCount}
@@ -114,7 +113,12 @@ function WorkspaceHubHeaderActions({
         <PopoverContent
           align="end"
           sideOffset={8}
-          className="w-[min(100vw-2rem,380px)] overflow-hidden rounded-xl border border-slate-200 bg-white p-0 text-slate-900 shadow-lg"
+          className={cn(
+            "w-[min(100vw-2rem,380px)] overflow-hidden rounded-xl border p-0 shadow-lg",
+            theme === "light"
+              ? "border-slate-200 bg-white text-slate-900"
+              : "border-white/10 bg-slate-900 text-slate-100"
+          )}
         >
           <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
             <div>
@@ -197,33 +201,31 @@ function WorkspaceHubHeaderActions({
 }
 
 function HubBreadcrumbTrail({ breadcrumbs }: { breadcrumbs: HubBreadcrumb[] }) {
+  const { theme } = useDashboardTheme();
+  const muted = theme === "dark" ? "text-slate-400" : "text-neutral-500";
+  const current = theme === "dark" ? "text-slate-100" : "text-neutral-900";
+  const link = theme === "dark" ? "text-slate-400 hover:text-slate-200" : "text-neutral-500 hover:text-neutral-700";
+  const sep = theme === "dark" ? "text-slate-500" : "text-neutral-400";
+  const icon = theme === "dark" ? "text-slate-500" : "text-neutral-400";
+
   return (
     <Breadcrumb>
-      <BreadcrumbList className="flex-wrap gap-2 text-sm text-neutral-500">
+      <BreadcrumbList className={cn("flex-wrap gap-2 text-sm", muted)}>
         {breadcrumbs.map((crumb, index) => (
           <span key={`${crumb.label}-${index}`} className="contents">
             {index > 0 ? (
-              <BreadcrumbSeparator className="text-neutral-400 [&>svg]:hidden">
-                <span className="text-neutral-400">/</span>
+              <BreadcrumbSeparator className={cn(sep, "[&>svg]:hidden")}>
+                <span className={sep}>/</span>
               </BreadcrumbSeparator>
             ) : null}
             <BreadcrumbItem className={cn(index === 0 && "gap-2")}>
               {index === 0 ? (
-                <LayoutGrid
-                  className="h-4 w-4 text-neutral-400"
-                  strokeWidth={1.75}
-                  aria-hidden
-                />
+                <LayoutGrid className={cn("h-4 w-4", icon)} strokeWidth={1.75} aria-hidden />
               ) : null}
               {crumb.current ? (
-                <BreadcrumbPage className="font-semibold text-neutral-900">
-                  {crumb.label}
-                </BreadcrumbPage>
+                <BreadcrumbPage className={cn("font-semibold", current)}>{crumb.label}</BreadcrumbPage>
               ) : (
-                <BreadcrumbLink
-                  asChild
-                  className="font-normal text-neutral-500 hover:text-neutral-700"
-                >
+                <BreadcrumbLink asChild className={cn("font-normal", link)}>
                   <Link href={crumb.href ?? "#"}>{crumb.label}</Link>
                 </BreadcrumbLink>
               )}
@@ -243,8 +245,14 @@ export function WorkspaceHubShellBar({
   breadcrumbs: HubBreadcrumb[];
   workspaces: WorkspaceStatsSource[];
 }) {
+  const { theme } = useDashboardTheme();
   return (
-    <header className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-100/90 px-8 py-3">
+    <header
+      className={cn(
+        "flex shrink-0 items-center justify-between gap-4 border-b px-5 py-3 lg:px-6",
+        theme === "light" ? "border-slate-100/90" : "border-white/[0.08]"
+      )}
+    >
       <HubBreadcrumbTrail breadcrumbs={breadcrumbs} />
       <WorkspaceHubHeaderActions workspaces={workspaces} />
     </header>
@@ -262,17 +270,37 @@ export function WorkspaceHubTopChrome({
   subtitle?: string;
   workspaces: WorkspaceStatsSource[];
 }) {
+  const { theme } = useDashboardTheme();
   return (
     <>
-      <div className="shrink-0 border-b border-slate-100/90 px-8 py-3">
+      <div
+        className={cn(
+          "shrink-0 border-b px-8 py-3",
+          theme === "light" ? "border-slate-100/90" : "border-white/[0.08]"
+        )}
+      >
         <HubBreadcrumbTrail breadcrumbs={breadcrumbs} />
       </div>
 
       <header className="flex items-start justify-between gap-4 px-8 pb-3 pt-5">
         <div>
-          <h1 className="text-[17px] font-semibold tracking-tight text-neutral-900">{title}</h1>
+          <h1
+            className={cn(
+              "text-[17px] font-semibold tracking-tight",
+              theme === "light" ? "text-neutral-900" : "text-slate-100"
+            )}
+          >
+            {title}
+          </h1>
           {subtitle ? (
-            <p className="mt-0.5 text-[12px] text-neutral-500">{subtitle}</p>
+            <p
+              className={cn(
+                "mt-0.5 text-[12px]",
+                theme === "light" ? "text-neutral-500" : "text-slate-400"
+              )}
+            >
+              {subtitle}
+            </p>
           ) : null}
         </div>
         <WorkspaceHubHeaderActions workspaces={workspaces} />

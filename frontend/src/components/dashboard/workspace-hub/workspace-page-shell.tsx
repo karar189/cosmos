@@ -151,7 +151,7 @@ export function WorkspacePageShell({
       <div className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden bg-transparent">
         <WorkspaceHubShellBar breadcrumbs={breadcrumbs} workspaces={workspaces} />
         <div className="flex-1 overflow-y-auto">
-          <div className="workspace-hub-page-content mx-auto w-full max-w-7xl px-8 pb-10 pt-6">
+          <div className="workspace-hub-page-content w-full px-5 pb-8 pt-4 lg:px-6">
             {children}
           </div>
         </div>

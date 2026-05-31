@@ -15,6 +15,7 @@ export function usesWorkspaceHubShell(pathname: string | null): boolean {
   if (!pathname) return false;
   const base = pathname.split("?")[0] ?? pathname;
   if (WORKSPACE_HUB_SHELL_PATHS.has(base)) return true;
+  if (base.startsWith("/dashboard/payment-links")) return true;
   if (base.startsWith("/dashboard/documents/")) return true;
   return false;
 }

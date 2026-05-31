@@ -10,6 +10,11 @@ import {
   type ReactNode,
 } from "react";
 import {
+  DashboardThemeTransitionOverlay,
+  type ActiveThemeReveal,
+  type ThemeRevealOrigin,
+} from "@/components/dashboard/dashboard-theme-transition-overlay";
+import {
   DASHBOARD_THEME_UPDATED_EVENT,
   getStoredDashboardTheme,
   setStoredDashboardTheme,
@@ -19,7 +24,9 @@ import {
 type DashboardThemeContextValue = {
   theme: DashboardTheme;
   setTheme: (theme: DashboardTheme) => void;
+  toggleThemeAt: (origin: ThemeRevealOrigin) => void;
   isReady: boolean;
+  isTransitioning: boolean;
 };
 
 const DashboardThemeContext = createContext<DashboardThemeContextValue | null>(null);
@@ -27,6 +34,7 @@ const DashboardThemeContext = createContext<DashboardThemeContextValue | null>(n
 export function DashboardThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<DashboardTheme>("dark");
   const [isReady, setIsReady] = useState(false);
+  const [reveal, setReveal] = useState<ActiveThemeReveal | null>(null);
 
   useEffect(() => {
     setThemeState(getStoredDashboardTheme());
@@ -48,13 +56,46 @@ export function DashboardThemeProvider({ children }: { children: ReactNode }) {
     setThemeState(next);
   }, []);
 
+  const toggleThemeAt = useCallback(
+    (origin: ThemeRevealOrigin) => {
+      const next: DashboardTheme = theme === "light" ? "dark" : "light";
+
+      const prefersReducedMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (prefersReducedMotion) {
+        setTheme(next);
+        return;
+      }
+
+      setReveal({ ...origin, nextTheme: next });
+    },
+    [theme, setTheme]
+  );
+
+  const onRevealComplete = useCallback(() => {
+    if (!reveal) return;
+    setTheme(reveal.nextTheme);
+    setReveal(null);
+  }, [reveal, setTheme]);
+
   const value = useMemo(
-    () => ({ theme, setTheme, isReady }),
-    [theme, setTheme, isReady]
+    () => ({
+      theme,
+      setTheme,
+      toggleThemeAt,
+      isReady,
+      isTransitioning: reveal !== null,
+    }),
+    [theme, setTheme, toggleThemeAt, isReady, reveal]
   );
 
   return (
-    <DashboardThemeContext.Provider value={value}>{children}</DashboardThemeContext.Provider>
+    <DashboardThemeContext.Provider value={value}>
+      {children}
+      <DashboardThemeTransitionOverlay reveal={reveal} onRevealComplete={onRevealComplete} />
+    </DashboardThemeContext.Provider>
   );
 }
 
