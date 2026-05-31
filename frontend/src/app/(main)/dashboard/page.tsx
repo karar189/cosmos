@@ -10,7 +10,6 @@ import {
 } from "@/components/dashboard/workspace-hub/workspace-hub-main";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useAppSession } from "@/hooks/useAppSession";
-import { useOnboardingUi } from "@/components/onboarding";
 import { loadSavedTemplates, type SavedTemplate } from "@/lib/my-templates-storage";
 import type { WorkspaceCardModel } from "@/components/dashboard/workspace-hub/workspace-hub-main";
 
@@ -31,7 +30,6 @@ function WorkspaceHubContent() {
   const router = useRouter();
   const { publicKey, connect, disconnect, isConnecting } = useFreighter();
   const { isPrivy, loading: sessionLoading, privyUser } = useAppSession();
-  const { openOnboardingQuiz } = useOnboardingUi();
 
   const [workspaces, setWorkspaces] = useState<WorkspaceCardModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,6 +88,10 @@ function WorkspaceHubContent() {
     router.push("/?launch=1");
   };
 
+  const handleCreateWorkspace = () => {
+    router.push("/CreateWorkspace");
+  };
+
   if (!publicKey && !sessionLoading && !isPrivy) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#f5f0ff] to-[#eef4ff] px-4">
@@ -116,14 +118,14 @@ function WorkspaceHubContent() {
       <WorkspaceHubSidebar
         userName={displayName}
         userEmail={email}
-        onCreateWorkspace={openOnboardingQuiz}
+        onCreateWorkspace={handleCreateWorkspace}
         onSignOut={handleSignOut}
       />
       <WorkspaceHubMain
         userName={displayName}
         workspaces={workspaces}
         loading={loading || sessionLoading}
-        onCreateWorkspace={openOnboardingQuiz}
+        onCreateWorkspace={handleCreateWorkspace}
       />
     </div>
   );

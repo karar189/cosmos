@@ -18,6 +18,8 @@ type OnboardingGateProps = {
   children: React.ReactNode;
   /** Open onboarding modal when app session is ready (Privy or wallet). */
   when?: boolean;
+  /** Disable automatic legacy modal display on routes with a dedicated onboarding UI. */
+  autoOpen?: boolean;
   /** Stellar G... when Freighter is connected (optional with Privy). */
   walletAddress?: string | null;
   /** Stable key for dismiss/completion storage (wallet G... or Privy app user id). */
@@ -67,6 +69,7 @@ export function useOnboardingUi(): OnboardingUiContextValue {
 export function OnboardingGate({
   children,
   when = true,
+  autoOpen = true,
   walletAddress,
   scopeKey,
 }: OnboardingGateProps) {
@@ -166,7 +169,7 @@ export function OnboardingGate({
     mounted &&
     when &&
     scopeOk &&
-    (manualOpen || (!profileLoading && !profileComplete && !dismissed));
+    (manualOpen || (autoOpen && !profileLoading && !profileComplete && !dismissed));
 
   const isOnboardingComplete = useMemo(() => {
     if (!when || !scopeOk) return true;

@@ -1,5 +1,6 @@
 /** Routes that use the workspace hub shell (sidebar, mesh bg, light tokens). */
 export const WORKSPACE_HUB_SHELL_PATHS = new Set([
+  "/CreateWorkspace",
   "/dashboard",
   "/dashboard/overview",
   "/dashboard/payment-links",

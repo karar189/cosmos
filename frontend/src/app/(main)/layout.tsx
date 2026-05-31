@@ -81,6 +81,7 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
       <div className="workspace-hub-root font-default relative min-h-screen text-slate-900 antialiased">
         <OnboardingGate
           when={!sessionLoading && !!session}
+          autoOpen={pathname !== "/CreateWorkspace"}
           walletAddress={publicKey}
           scopeKey={
             publicKey && publicKey.length === 56 && publicKey.startsWith("G")
