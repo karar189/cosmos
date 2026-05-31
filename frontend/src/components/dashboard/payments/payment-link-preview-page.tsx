@@ -131,20 +131,19 @@ export function PaymentLinkPreviewPage() {
         </div>
       </div>
 
-      <div className="grid w-full min-w-0 grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
-        {/* Customer-facing preview */}
-        <div className="min-w-0">
-          <p className={cn("mb-3 text-[11px] font-semibold uppercase tracking-wider", t.pageSubheading)}>
-            Customer checkout preview
-          </p>
-          <PaymentPreviewCustomerCard
-            preview={preview}
-            businessName={businessName}
-            linkId={linkId}
-            usdApprox={usdApprox}
-            expiresAt={expiresAt}
-          />
-        </div>
+      <p className={cn("mb-3 text-[11px] font-semibold uppercase tracking-wider", t.pageSubheading)}>
+        Customer checkout preview
+      </p>
+
+      <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <PaymentPreviewCustomerCard
+          preview={preview}
+          businessName={businessName}
+          linkId={linkId}
+          usdApprox={usdApprox}
+          expiresAt={expiresAt}
+          className="h-full min-h-[620px]"
+        />
 
         {/* Right sidebar */}
         <aside className="flex min-w-0 flex-col gap-4">

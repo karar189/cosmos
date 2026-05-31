@@ -204,7 +204,7 @@ export function WorkspaceOverviewDashboard({
       </div>
 
       <div className="grid gap-5 lg:grid-cols-12">
-        <div className={cn(styles.panel, "lg:col-span-7 p-5")}>
+        <div className={cn(styles.panel, "lg:col-span-5 p-5")}>
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className={cn("text-sm font-semibold", styles.title)}>Treasury Overview</h2>
@@ -251,7 +251,7 @@ export function WorkspaceOverviewDashboard({
           </div>
         </div>
 
-        <div className={cn(styles.panel, "lg:col-span-2 flex flex-col p-5")}>
+        <div className={cn(styles.panel, "lg:col-span-4 flex flex-col p-5")}>
           <h2 className={cn("text-sm font-semibold", styles.title)}>Operations Overview</h2>
           <ul className="mt-4 flex flex-1 flex-col gap-3">
             {[

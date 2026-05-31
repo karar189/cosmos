@@ -50,7 +50,7 @@ export function WorkspaceHubSidebar({
   const t = hubThemeClasses(theme);
 
   return (
-    <aside className="workspace-hub-sidebar flex h-screen w-[248px] shrink-0 flex-col rounded-tl-[28px] border-r border-ui-border/80 shadow-[inset_1px_0_0_rgba(255,255,255,0.75)]">
+    <aside className="workspace-hub-sidebar flex h-screen w-[248px] shrink-0 flex-col rounded-tl-[28px] border-r border-ui-border/80">
       {/* Brand */}
       <div className="px-4 pb-3 pt-5">
         <Link href="/dashboard" className="flex min-w-0 items-center gap-2.5">

@@ -74,6 +74,7 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
     return (
       <div
         data-theme={theme}
+        suppressHydrationWarning
         className={cn(
           "workspace-hub-root font-default relative min-h-screen antialiased",
           theme === "light" ? "text-slate-900" : "text-slate-100"

@@ -32,12 +32,11 @@ type DashboardThemeContextValue = {
 const DashboardThemeContext = createContext<DashboardThemeContextValue | null>(null);
 
 export function DashboardThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<DashboardTheme>("dark");
+  const [theme, setThemeState] = useState<DashboardTheme>(() => getStoredDashboardTheme());
   const [isReady, setIsReady] = useState(false);
   const [reveal, setReveal] = useState<ActiveThemeReveal | null>(null);
 
   useEffect(() => {
-    setThemeState(getStoredDashboardTheme());
     setIsReady(true);
 
     const onThemeUpdated = (event: Event) => {

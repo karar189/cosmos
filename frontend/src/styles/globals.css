@@ -128,6 +128,72 @@ html, body {
   background: rgba(0, 0, 0, 0);
 }
 
+@layer utilities {
+  .scrollbar-subtle {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.35);
+    border-radius: 9999px;
+  }
+
+  .workspace-hub-root[data-theme="dark"] .scrollbar-subtle {
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  }
+
+  .workspace-hub-root[data-theme="dark"] .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* Workspace hub — soft scrollbars (overrides global dark thumb) */
+.workspace-hub-root[data-theme="light"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.workspace-hub-root[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+.workspace-hub-root[data-theme="light"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-hub-root[data-theme="light"] {
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+
+.workspace-hub-root[data-theme="dark"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.workspace-hub-root[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+
+.workspace-hub-root[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-hub-root[data-theme="dark"] {
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
 .gradient {
   background: conic-gradient(from 200deg at 50% 50%, rgb(14, 165, 233) 0deg, rgb(59, 130, 246) 120deg, rgb(37, 99, 235) 240deg, rgb(6, 182, 212) 360deg);
 }
@@ -727,28 +793,42 @@ html, body {
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
-/* Payment preview — customer checkout mock (isolated from hub text remaps) */
-.workspace-hub-root .payment-customer-preview {
-  color: #0f172a;
+/* Payment preview — theme-aware checkout mock */
+.workspace-hub-root[data-theme="light"] .payment-customer-preview {
+  border-color: transparent !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
 }
 
-.workspace-hub-root[data-theme="light"] .payment-preview-brand,
-.workspace-hub-root[data-theme="light"] .payment-preview-brand p,
-.workspace-hub-root[data-theme="light"] .payment-preview-brand span,
-.workspace-hub-root[data-theme="light"] .payment-preview-brand svg:not(.payment-preview-brand-logo-letter) {
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-checkout {
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview {
+  border-color: transparent !important;
+  background-color: #0c1222 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-checkout {
+  color: #e2e8f0;
+  background-color: #0c1222;
+}
+
+.workspace-hub-root .payment-preview-brand,
+.workspace-hub-root .payment-preview-brand p,
+.workspace-hub-root .payment-preview-brand span,
+.workspace-hub-root .payment-preview-brand svg:not(.payment-preview-brand-logo-letter) {
   color: #ffffff !important;
 }
 
-.workspace-hub-root[data-theme="light"] .payment-preview-brand .payment-preview-brand-muted {
+.workspace-hub-root .payment-preview-brand .payment-preview-brand-muted {
   color: rgba(255, 255, 255, 0.78) !important;
 }
 
-.workspace-hub-root[data-theme="light"] .payment-preview-brand .payment-preview-brand-logo-letter {
+.workspace-hub-root .payment-preview-brand .payment-preview-brand-logo-letter {
   color: #4338ca !important;
-}
-
-.workspace-hub-root .payment-customer-preview .payment-preview-checkout {
-  color: #0f172a;
 }
 
 /* Workspace hub — dark mode */
@@ -905,6 +985,70 @@ html, body {
 .workspace-hub-root[data-theme="dark"] .workspace-hub-user-menu-content .hub-menu-item[data-highlighted] {
   background-color: rgba(255, 255, 255, 0.08) !important;
   color: #e2e8f0 !important;
+}
+
+/* Payment preview — hub overrides for inner checkout surfaces */
+.workspace-hub-root[data-theme="light"] .workspace-hub-page-content .payment-customer-preview .rounded-lg.border,
+.workspace-hub-root[data-theme="light"] .workspace-hub-page-content .payment-customer-preview .rounded-xl.border {
+  border-color: #e2e8f0 !important;
+  background-color: #f8fafc !important;
+  box-shadow: none;
+}
+
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-checkout .bg-white\/5,
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-qr-surface {
+  background-color: #ffffff !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-checkout .border-white\/10,
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-page-content .payment-customer-preview .rounded-lg.border,
+.workspace-hub-root[data-theme="dark"] .workspace-hub-page-content .payment-customer-preview .rounded-xl.border {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none;
+}
+
+/* Brand panel — white text on dark gradient (both hub themes) */
+.workspace-hub-root .payment-customer-preview .payment-preview-brand,
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-brand,
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-brand :is(p, span, li),
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-brand :is(p, span, li),
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand :is(p, span, li) {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-brand .payment-preview-brand-muted,
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand .payment-preview-brand-muted {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-brand svg:not(.payment-preview-brand-logo-letter),
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand svg:not(.payment-preview-brand-logo-letter) {
+  color: #bae6fd !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-brand .payment-preview-brand-logo-letter {
+  color: #4338ca !important;
+}
+
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand :is(.text-white, .text-white\/80) {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand .text-white\/80 {
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

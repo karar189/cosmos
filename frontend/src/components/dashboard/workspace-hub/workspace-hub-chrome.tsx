@@ -73,6 +73,7 @@ function WorkspaceHubHeaderActions({
   workspaces: WorkspaceStatsSource[];
 }) {
   const { theme } = useDashboardTheme();
+  const dark = theme === "dark";
   const {
     hubNotifications,
     notificationBadgeCount,
@@ -92,7 +93,7 @@ function WorkspaceHubHeaderActions({
               "relative flex h-10 w-10 items-center justify-center rounded-full border shadow-none transition-colors",
               theme === "light"
                 ? "border-ui-border/80 bg-white hover:bg-neutral-50"
-                : "border-white/12 bg-white/[0.08] hover:bg-white/[0.12]"
+                : "border-0 bg-white/[0.08] hover:bg-white/[0.12]"
             )}
             aria-label="Notifications"
           >
@@ -120,10 +121,17 @@ function WorkspaceHubHeaderActions({
               : "border-white/10 bg-slate-900 text-slate-100"
           )}
         >
-          <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
+          <div
+            className={cn(
+              "flex items-center justify-between gap-3 border-b px-4 py-3",
+              dark ? "border-white/10" : "border-slate-100"
+            )}
+          >
             <div>
-              <p className="text-sm font-semibold text-slate-900">Notifications</p>
-              <p className="mt-0.5 text-xs text-slate-500">
+              <p className={cn("text-sm font-semibold", dark ? "text-slate-100" : "text-slate-900")}>
+                Notifications
+              </p>
+              <p className={cn("mt-0.5 text-xs", dark ? "text-slate-400" : "text-slate-500")}>
                 {notificationBadgeCount > 0
                   ? `${notificationBadgeCount} unread`
                   : "You're all caught up"}
@@ -133,13 +141,23 @@ function WorkspaceHubHeaderActions({
               <button
                 type="button"
                 onClick={markAllNotificationsRead}
-                className="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-700"
+                className={cn(
+                  "shrink-0 text-xs font-medium",
+                  dark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700"
+                )}
               >
                 Mark all read
               </button>
             ) : null}
           </div>
-          <div className="max-h-[min(70vh,400px)] overflow-y-auto [scrollbar-color:rgb(226_232_240)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-track]:bg-transparent">
+          <div
+            className={cn(
+              "max-h-[min(70vh,400px)] overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent",
+              dark
+                ? "[scrollbar-color:rgba(255,255,255,0.15)_transparent] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/15"
+                : "[scrollbar-color:rgb(226_232_240)_transparent] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200"
+            )}
+          >
             {hubNotifications.map((item) => {
               const unread = isNotificationUnread(item.id, item.defaultUnread);
               const Icon = item.icon;
@@ -149,35 +167,64 @@ function WorkspaceHubHeaderActions({
                   type="button"
                   onClick={() => markNotificationRead(item.id)}
                   className={cn(
-                    "flex w-full items-start gap-3 border-b border-slate-50 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-slate-50/80",
-                    unread && "bg-blue-50/50"
+                    "flex w-full items-start gap-3 border-b px-4 py-3 text-left transition-colors last:border-b-0",
+                    dark
+                      ? cn(
+                          "border-white/[0.06] hover:bg-white/[0.06]",
+                          unread && "bg-blue-500/10"
+                        )
+                      : cn(
+                          "border-slate-50 hover:bg-slate-50/80",
+                          unread && "bg-blue-50/50"
+                        )
                   )}
                 >
                   <div
                     className={cn(
                       "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-                      item.iconBg,
-                      unread ? "ring-1 ring-blue-100" : "opacity-80"
+                      dark ? item.iconBgDark : item.iconBg,
+                      unread
+                        ? dark
+                          ? "ring-1 ring-blue-500/30"
+                          : "ring-1 ring-blue-100"
+                        : "opacity-80"
                     )}
                   >
-                    <Icon className={cn("h-4 w-4", item.iconColor)} strokeWidth={1.75} />
+                    <Icon
+                      className={cn("h-4 w-4", dark ? item.iconColorDark : item.iconColor)}
+                      strokeWidth={1.75}
+                    />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <p
                         className={cn(
                           "text-[13px] leading-snug",
-                          unread ? "font-semibold text-slate-900" : "font-medium text-slate-600"
+                          unread
+                            ? dark
+                              ? "font-semibold text-slate-100"
+                              : "font-semibold text-slate-900"
+                            : dark
+                              ? "font-medium text-slate-400"
+                              : "font-medium text-slate-600"
                         )}
                       >
                         {item.title}
                       </p>
-                      <span className="shrink-0 text-[11px] text-slate-400">{item.time}</span>
+                      <span className={cn("shrink-0 text-[11px]", dark ? "text-slate-500" : "text-slate-400")}>
+                        {item.time}
+                      </span>
                     </div>
                     <p
                       className={cn(
                         "mt-0.5 text-xs leading-relaxed",
-                        unread ? "text-slate-600" : "text-slate-400"
+                        unread
+                          ? dark
+                            ? "text-slate-300"
+                            : "text-slate-600"
+                          : dark
+                            ? "text-slate-500"
+                            : "text-slate-400"
                       )}
                     >
                       {item.message}

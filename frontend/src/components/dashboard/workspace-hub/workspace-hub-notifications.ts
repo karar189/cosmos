@@ -14,7 +14,9 @@ export type HubNotificationItem = {
   defaultUnread: boolean;
   icon: LucideIcon;
   iconBg: string;
+  iconBgDark: string;
   iconColor: string;
+  iconColorDark: string;
 };
 
 export type WorkspaceStatsSource = {
@@ -58,7 +60,9 @@ export function buildHubNotifications(summary: {
       defaultUnread: summary.openTasks > 0,
       icon: CheckCircle2,
       iconBg: "bg-red-50",
+      iconBgDark: "bg-red-500/15",
       iconColor: "text-red-500",
+      iconColorDark: "text-red-400",
     },
     {
       id: "pending-approvals",
@@ -74,7 +78,9 @@ export function buildHubNotifications(summary: {
       defaultUnread: summary.pendingApprovals > 0,
       icon: Clock,
       iconBg: "bg-amber-50",
+      iconBgDark: "bg-amber-500/15",
       iconColor: "text-amber-600",
+      iconColorDark: "text-amber-400",
     },
     {
       id: "compliance-alerts",
@@ -90,7 +96,9 @@ export function buildHubNotifications(summary: {
       defaultUnread: summary.complianceAlerts > 0,
       icon: AlertTriangle,
       iconBg: "bg-red-50",
+      iconBgDark: "bg-red-500/15",
       iconColor: "text-red-500",
+      iconColorDark: "text-red-400",
     },
     {
       id: "deadlines",
@@ -100,7 +108,9 @@ export function buildHubNotifications(summary: {
       defaultUnread: summary.deadlines > 0,
       icon: Clock,
       iconBg: "bg-blue-50",
+      iconBgDark: "bg-blue-500/15",
       iconColor: "text-blue-600",
+      iconColorDark: "text-blue-400",
     },
     {
       id: "workspaces",
@@ -110,7 +120,9 @@ export function buildHubNotifications(summary: {
       defaultUnread: false,
       icon: Building2,
       iconBg: "bg-emerald-50",
+      iconBgDark: "bg-emerald-500/15",
       iconColor: "text-emerald-600",
+      iconColorDark: "text-emerald-400",
     },
     {
       id: "members",
@@ -120,7 +132,9 @@ export function buildHubNotifications(summary: {
       defaultUnread: false,
       icon: Users,
       iconBg: "bg-blue-50",
+      iconBgDark: "bg-blue-500/15",
       iconColor: "text-blue-600",
+      iconColorDark: "text-blue-400",
     },
   ];
 }

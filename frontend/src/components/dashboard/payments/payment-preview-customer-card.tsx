@@ -32,6 +32,7 @@ import { Switch } from "@/components/ui/switch";
 import { fallbackBusiness } from "@/data/fallback";
 import type { PaymentLinkPreviewData } from "@/components/dashboard/payments/payment-link-preview-utils";
 import { formatPreviewDateTime } from "@/components/dashboard/payments/payment-link-preview-utils";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { cn } from "@/utils";
 import { useQRCode } from "next-qrcode";
 
@@ -87,12 +88,62 @@ function splitPaymentDescription(description: string) {
   return { label: "Payment for", subject: description };
 }
 
+function previewCheckoutStyles(dark: boolean) {
+  return {
+    shell: dark
+      ? "bg-[#0c1222] shadow-[0_8px_30px_rgba(0,0,0,0.45)]"
+      : "bg-white shadow-[0_8px_30px_rgba(15,23,42,0.08)]",
+    checkout: dark ? "bg-[#0c1222] text-slate-100" : "bg-white text-slate-900",
+    muted: dark ? "text-slate-400" : "text-slate-500",
+    heading: dark ? "text-slate-50" : "text-slate-900",
+    label: dark ? "text-slate-300" : "text-slate-700",
+    usdBadge: dark
+      ? "border-white/10 bg-white/5 text-slate-300"
+      : "border-slate-200 bg-slate-50 text-slate-600",
+    card: dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-slate-50/90",
+    cardSoft: dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-slate-50/60",
+    cardFlat: dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white",
+    cardTitle: dark ? "text-slate-100" : "text-slate-900",
+    cardMeta: dark ? "text-slate-400" : "text-slate-500",
+    tabInactive: dark
+      ? "border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:text-slate-200"
+      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
+    tabActiveWallet: dark
+      ? "border-blue-500/60 bg-blue-500/15 text-blue-200 shadow-sm"
+      : "border-blue-500 bg-blue-50 text-blue-700 shadow-sm",
+    tabActiveOnramp: dark
+      ? "border-violet-500/60 bg-violet-500/15 text-violet-200 shadow-sm"
+      : "border-violet-500 bg-violet-50 text-violet-700 shadow-sm",
+    divider: dark ? "bg-white/10" : "bg-slate-200",
+    link: dark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700",
+    select: dark
+      ? "border-white/10 bg-white/5 text-slate-100"
+      : "border-slate-200 bg-white text-slate-900",
+    emeraldBadge: dark
+      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/10"
+      : "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50",
+    footerBorder: dark ? "border-white/10" : "border-slate-100",
+    footerText: dark ? "text-slate-400" : "text-slate-500",
+    footerIcon: dark ? "text-slate-500" : "text-slate-400",
+    outlineBtn: dark
+      ? "border-white/10 bg-white/5 text-violet-300 hover:bg-white/10"
+      : "border-slate-200 text-violet-700 hover:bg-violet-50",
+    stepNum: dark ? "bg-violet-500/20 text-violet-200" : "bg-violet-100 text-violet-700",
+    stepText: dark ? "text-slate-400" : "text-slate-600",
+    stepChevron: dark ? "text-slate-600" : "text-slate-300",
+    vaultName: dark ? "text-slate-200" : "text-slate-700",
+  };
+}
+
+type PreviewCheckoutStyles = ReturnType<typeof previewCheckoutStyles>;
+
 type CustomerPreviewCardProps = {
   preview: PaymentLinkPreviewData;
   businessName: string;
   linkId: string;
   usdApprox: string;
   expiresAt: Date | null;
+  className?: string;
 };
 
 export function PaymentPreviewCustomerCard({
@@ -101,7 +152,11 @@ export function PaymentPreviewCustomerCard({
   linkId,
   usdApprox,
   expiresAt,
+  className,
 }: CustomerPreviewCardProps) {
+  const { theme } = useDashboardTheme();
+  const dark = theme === "dark";
+  const s = previewCheckoutStyles(dark);
   const [activePayTab, setActivePayTab] = useState<PayTabId>("wallet");
   const [privateEnabled, setPrivateEnabled] = useState(preview.privateSettlement);
   const [payPageUrl, setPayPageUrl] = useState("");
@@ -131,132 +186,107 @@ export function PaymentPreviewCustomerCard({
     setTimeout(() => setCopied(null), 1800);
   }
 
-  const isQr = activePayTab === "qr";
-
   return (
-    <div className="payment-customer-preview overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.08)] dark:border-white/10">
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] lg:min-h-[680px]">
-        {/* Brand panel */}
-        <div
-          className={cn(
-            "payment-preview-brand relative flex min-h-[360px] flex-col justify-between overflow-hidden p-8 lg:min-h-full",
-            isQr
-              ? "bg-gradient-to-b from-[#1e1b4b] via-[#1e3a8a] to-[#172554]"
-              : "bg-gradient-to-b from-[#4c1d95] via-[#5b21b6] to-[#2563eb]"
-          )}
-        >
+    <div
+      className={cn(
+        "payment-customer-preview flex h-full min-h-[620px] flex-col overflow-hidden rounded-2xl border-0",
+        s.shell,
+        className
+      )}
+    >
+      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
+        {/* Brand panel — shared dark style for all payment methods */}
+        <div className="payment-preview-brand relative flex h-full min-h-[320px] flex-col justify-between overflow-hidden bg-gradient-to-b from-[#1e1b4b] via-[#1e3a8a] to-[#172554] p-6 lg:min-h-0">
           <div
             className="pointer-events-none absolute inset-0 opacity-40"
             aria-hidden
             style={{
-              backgroundImage: isQr
-                ? "radial-gradient(circle at 20% 90%, rgba(96,165,250,0.2) 0%, transparent 50%), radial-gradient(circle at 80% 10%, rgba(129,140,248,0.15) 0%, transparent 45%)"
-                : "radial-gradient(circle at 15% 85%, rgba(255,255,255,0.18) 0%, transparent 45%), radial-gradient(circle at 85% 15%, rgba(147,197,253,0.25) 0%, transparent 40%)",
+              backgroundImage:
+                "radial-gradient(circle at 20% 90%, rgba(96,165,250,0.2) 0%, transparent 50%), radial-gradient(circle at 80% 10%, rgba(129,140,248,0.15) 0%, transparent 45%)",
             }}
           />
 
-          {isQr ? (
-            <>
-              <div className="relative space-y-6">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
-                    <span className="payment-preview-brand-logo-letter text-sm font-bold">
-                      {businessName.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-semibold">{businessName}</span>
-                    <BadgeCheck className="h-4 w-4 shrink-0 text-sky-200" />
-                  </div>
-                </div>
-                <div>
-                  <p className="payment-preview-brand-muted text-sm">{paymentDesc.label}</p>
-                  <p className="mt-1 text-xl font-semibold leading-snug sm:text-2xl">
-                    {paymentDesc.subject}
-                  </p>
-                </div>
-                <ul className="space-y-4">
-                  {BRAND_FEATURES.map(({ icon: Icon, title, desc }) => (
-                    <li key={title} className="flex items-start gap-3">
-                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-sky-200" />
-                      <div>
-                        <p className="text-sm font-semibold">{title}</p>
-                        <p className="payment-preview-brand-muted text-xs">{desc}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+          <div className="relative space-y-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm">
+                <span className="payment-preview-brand-logo-letter text-sm font-bold">
+                  {businessName.charAt(0).toUpperCase()}
+                </span>
               </div>
-              <div className="payment-preview-brand-muted relative mt-8 flex items-center gap-2 text-xs lg:mt-0">
-                <Shield className="h-3.5 w-3.5 shrink-0" />
-                Secured by Hypertron
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-semibold text-white">{businessName}</span>
+                <BadgeCheck className="h-4 w-4 shrink-0 text-sky-200" />
               </div>
-            </>
-          ) : (
-            <>
-              <div className="relative space-y-5">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm">
-                    <span className="payment-preview-brand-logo-letter text-sm font-bold">
-                      {businessName.charAt(0).toUpperCase()}
-                    </span>
+            </div>
+            <div>
+              <p className="payment-preview-brand-muted text-sm text-white/80">{paymentDesc.label}</p>
+              <p className="mt-0.5 text-lg font-semibold leading-snug text-white">{paymentDesc.subject}</p>
+            </div>
+            <ul className="space-y-3">
+              {BRAND_FEATURES.map(({ icon: Icon, title, desc }) => (
+                <li key={title} className="flex items-start gap-3">
+                  <Icon className="mt-0.5 h-4 w-4 shrink-0 text-sky-200" />
+                  <div>
+                    <p className="text-sm font-semibold text-white">{title}</p>
+                    <p className="payment-preview-brand-muted text-xs text-white/80">{desc}</p>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-semibold">{businessName}</span>
-                    <BadgeCheck className="h-4 w-4 shrink-0 text-sky-200" />
-                  </div>
-                </div>
-                <p className="text-lg font-semibold leading-snug sm:text-xl">{preview.description}</p>
-              </div>
-              <div className="relative mt-10 space-y-3 lg:mt-0">
-                <p className="payment-preview-brand-muted text-sm leading-relaxed">
-                  Thank you for your business. Please complete your payment securely.
-                </p>
-                <div className="payment-preview-brand-muted flex items-center gap-2 text-xs">
-                  <Shield className="h-3.5 w-3.5 shrink-0" />
-                  Secured by Hypertron
-                </div>
-              </div>
-            </>
-          )}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="payment-preview-brand-muted relative mt-4 flex items-center gap-2 text-xs text-white/80">
+            <Shield className="h-3.5 w-3.5 shrink-0 text-sky-200" />
+            Secured by Hypertron
+          </div>
         </div>
 
         {/* Checkout panel */}
-        <div className="payment-preview-checkout flex min-h-[560px] flex-col p-8 sm:p-9 lg:min-h-full">
-          <AmountHeader amount={preview.amount} usdApprox={usdApprox} />
+        <div className={cn("payment-preview-checkout flex h-full min-h-0 flex-col overflow-hidden p-6 sm:p-7", s.checkout)}>
+          <AmountHeader amount={preview.amount} usdApprox={usdApprox} styles={s} />
 
-          <PayWithTabs tabs={tabs} activePayTab={activePayTab} onChange={setActivePayTab} />
+          <PayWithTabs tabs={tabs} activePayTab={activePayTab} onChange={setActivePayTab} styles={s} />
 
-          {activePayTab === "wallet" ? (
-            <WalletCheckoutBody />
-          ) : activePayTab === "qr" ? (
-            <QrCheckoutBody
-              privateEnabled={privateEnabled}
-              onPrivateChange={setPrivateEnabled}
-              payPageUrl={payPageUrl}
-              receiveAddress={receiveAddress}
-              copied={copied}
-              onCopyAddress={() => void copyText(receiveAddress, "address")}
-              onShareQr={() => void copyText(payPageUrl, "qr")}
-              expiresAt={expiresAt}
-            />
-          ) : (
-            <OnRampCheckoutBody vaultName={vaultName} />
-          )}
+          <div className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden">
+            {activePayTab === "wallet" ? (
+              <WalletCheckoutBody styles={s} />
+            ) : activePayTab === "qr" ? (
+              <QrCheckoutBody
+                styles={s}
+                privateEnabled={privateEnabled}
+                onPrivateChange={setPrivateEnabled}
+                payPageUrl={payPageUrl}
+                receiveAddress={receiveAddress}
+                copied={copied}
+                onCopyAddress={() => void copyText(receiveAddress, "address")}
+                onShareQr={() => void copyText(payPageUrl, "qr")}
+                expiresAt={expiresAt}
+              />
+            ) : (
+              <OnRampCheckoutBody vaultName={vaultName} styles={s} />
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function AmountHeader({ amount, usdApprox }: { amount: string; usdApprox: string }) {
+function AmountHeader({
+  amount,
+  usdApprox,
+  styles: s,
+}: {
+  amount: string;
+  usdApprox: string;
+  styles: PreviewCheckoutStyles;
+}) {
   return (
-    <div>
-      <p className="text-sm text-slate-500">Amount to pay</p>
-      <p className="mt-1 text-[1.75rem] font-semibold leading-tight tracking-tight text-slate-900 sm:text-3xl">
-        {amount} <span className="text-xl font-medium text-slate-500">USDC</span>
+    <div className="shrink-0">
+      <p className={cn("text-sm", s.muted)}>Amount to pay</p>
+      <p className={cn("mt-0.5 text-2xl font-semibold leading-tight tracking-tight", s.heading)}>
+        {amount} <span className={cn("text-lg font-medium", s.muted)}>USDC</span>
       </p>
-      <span className="mt-2 inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs text-slate-600">
+      <span className={cn("mt-1.5 inline-flex rounded-full border px-2.5 py-0.5 text-xs", s.usdBadge)}>
         ≈ ${usdApprox} USD
       </span>
     </div>
@@ -267,22 +297,22 @@ function PayWithTabs({
   tabs,
   activePayTab,
   onChange,
+  styles: s,
 }: {
   tabs: ReadonlyArray<(typeof PAY_TABS)[number]>;
   activePayTab: PayTabId;
   onChange: (tab: PayTabId) => void;
+  styles: PreviewCheckoutStyles;
 }) {
   return (
-    <div className="mt-6 space-y-3">
-      <p className="text-sm font-medium text-slate-700">Pay with</p>
+    <div className="mt-1 shrink-0 space-y-2.5">
+      <p className={cn("text-sm font-medium", s.label)}>Pay with</p>
       <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const active = activePayTab === tab.id;
           const activeCls =
-            tab.id === "onramp"
-              ? "border-violet-500 bg-violet-50 text-violet-700 shadow-sm"
-              : "border-blue-500 bg-blue-50 text-blue-700 shadow-sm";
+            tab.id === "onramp" ? s.tabActiveOnramp : s.tabActiveWallet;
           return (
             <button
               key={tab.id}
@@ -290,9 +320,7 @@ function PayWithTabs({
               onClick={() => onChange(tab.id)}
               className={cn(
                 "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-                active
-                  ? activeCls
-                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                active ? activeCls : s.tabInactive
               )}
             >
               <Icon className="h-4 w-4" />
@@ -305,45 +333,42 @@ function PayWithTabs({
   );
 }
 
-function WalletCheckoutBody() {
+function WalletCheckoutBody({ styles: s }: { styles: PreviewCheckoutStyles }) {
   return (
-    <>
-      <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/90 px-4 py-3.5">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className={cn("mt-3 flex items-center justify-between gap-3 rounded-xl border px-3.5 py-3", s.card)}>
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-xs font-bold text-white">
             S
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-slate-900">USDC on Stellar</p>
-            <p className="text-xs text-slate-500">Recommended network</p>
+            <p className={cn("truncate text-sm font-medium", s.cardTitle)}>USDC on Stellar</p>
+            <p className={cn("text-xs", s.cardMeta)}>Recommended network</p>
           </div>
         </div>
-        <Badge className="shrink-0 border-emerald-200 bg-emerald-50 text-[11px] text-emerald-700 hover:bg-emerald-50">
+        <Badge className={cn("shrink-0 text-[11px]", s.emeraldBadge)}>
           Fast &amp; low fees
         </Badge>
       </div>
 
-      <Button type="button" className="mt-5 h-12 w-full gap-2 bg-blue-600 text-white hover:bg-blue-500">
+      <Button type="button" className="mt-3 h-10 w-full gap-2 bg-blue-600 text-white hover:bg-blue-500">
         <Wallet className="h-4 w-4" />
         Pay with Stellar Wallet
       </Button>
 
-      <button
-        type="button"
-        className="mt-2.5 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700"
-      >
+      <button type="button" className={cn("mt-2 inline-flex items-center gap-1.5 text-sm", s.link)}>
         Don&apos;t have a wallet? Create one instantly
         <ExternalLink className="h-3.5 w-3.5" />
       </button>
 
-      <div className="my-5 flex items-center gap-3">
-        <div className="h-px flex-1 bg-slate-200" />
-        <span className="text-xs text-slate-400">or</span>
-        <div className="h-px flex-1 bg-slate-200" />
+      <div className="my-3 flex items-center gap-3">
+        <div className={cn("h-px flex-1", s.divider)} />
+        <span className={cn("text-xs", s.footerText)}>or</span>
+        <div className={cn("h-px flex-1", s.divider)} />
       </div>
 
       <Select defaultValue="other">
-        <SelectTrigger className="h-10 border-slate-200 bg-white text-slate-900">
+        <SelectTrigger className={cn("h-10", s.select)}>
           <SelectValue placeholder="Pay with another wallet" />
         </SelectTrigger>
         <SelectContent>
@@ -353,21 +378,22 @@ function WalletCheckoutBody() {
         </SelectContent>
       </Select>
 
-      <CheckoutTrustFooter />
-    </>
+      <CheckoutTrustFooter styles={s} />
+    </div>
   );
 }
 
 function QrCheckoutBody({
+  styles: s,
   privateEnabled,
   onPrivateChange,
   payPageUrl,
-  receiveAddress,
   copied,
   onCopyAddress,
   onShareQr,
   expiresAt,
 }: {
+  styles: PreviewCheckoutStyles;
   privateEnabled: boolean;
   onPrivateChange: (v: boolean) => void;
   payPageUrl: string;
@@ -378,16 +404,17 @@ function QrCheckoutBody({
   expiresAt: Date | null;
 }) {
   const { Canvas: QRCanvas } = useQRCode();
+  const qrSize = 132;
 
   return (
-    <>
-      <div className="mt-5 flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3.5">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className={cn("mt-1 flex shrink-0 items-start justify-between gap-3 rounded-xl border px-3.5 py-2.5", s.cardSoft)}>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-sm font-medium text-slate-900">Private settlement (opt-in)</p>
-            <Info className="h-3.5 w-3.5 text-slate-400" />
+            <p className={cn("text-sm font-medium", s.cardTitle)}>Private settlement (opt-in)</p>
+            <Info className={cn("h-3.5 w-3.5", s.footerIcon)} />
           </div>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className={cn("mt-0.5 text-[11px]", s.cardMeta)}>
             Settle this payment privately with on-chain proof.
           </p>
         </div>
@@ -398,97 +425,109 @@ function QrCheckoutBody({
         />
       </div>
 
-      <div className="mt-6 flex flex-1 flex-col">
-        <h3 className="text-base font-semibold text-slate-900">Scan with any wallet</h3>
-        <p className="mt-1 text-sm text-slate-500">
+      <div className="mt-3 min-h-0 flex-1 overflow-hidden">
+        <h3 className={cn("text-sm font-semibold", s.cardTitle)}>Scan with any wallet</h3>
+        <p className={cn("mt-0.5 text-xs", s.cardMeta)}>
           Use your wallet app to scan the QR code and complete the payment.
         </p>
 
-        <div className="mt-5 flex justify-center">
-          <div className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            {payPageUrl ? (
-              <>
-                <QRCanvas
-                  text={payPageUrl}
-                  options={{ errorCorrectionLevel: "H", width: 200, margin: 1 }}
-                />
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-violet-600 text-sm font-bold text-white shadow-sm">
-                    S
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="flex shrink-0 justify-center sm:justify-start">
+            <div className="payment-preview-qr-surface relative rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm">
+              {payPageUrl ? (
+                <>
+                  <QRCanvas
+                    text={payPageUrl}
+                    options={{ errorCorrectionLevel: "H", width: qrSize, margin: 1 }}
+                  />
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-[3px] border-white bg-violet-600 text-[10px] font-bold text-white">
+                      S
+                    </div>
                   </div>
+                </>
+              ) : (
+                <div
+                  className="flex items-center justify-center bg-slate-100 text-xs text-slate-500"
+                  style={{ width: qrSize, height: qrSize }}
+                >
+                  Loading…
                 </div>
-              </>
-            ) : (
-              <div className="flex h-[200px] w-[200px] items-center justify-center bg-slate-50 text-xs text-slate-400">
-                Loading QR…
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
-              $
+              )}
             </div>
-            <p className="text-sm font-medium text-slate-900">USDC on Stellar</p>
           </div>
-          <Badge className="gap-1 border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50">
-            <Check className="h-3 w-3" />
-            Verified
-          </Badge>
-        </div>
 
-        <div className="my-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs text-slate-400">or</span>
-          <div className="h-px flex-1 bg-slate-200" />
-        </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+            <div className={cn("flex items-center justify-between gap-2 rounded-lg border px-3 py-2", s.cardFlat)}>
+              <div className="flex min-w-0 items-center gap-2">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white">
+                  $
+                </div>
+                <p className={cn("truncate text-xs font-medium", s.cardTitle)}>USDC on Stellar</p>
+              </div>
+              <Badge className={cn("gap-0.5 px-1.5 text-[10px]", s.emeraldBadge)}>
+                <Check className="h-2.5 w-2.5" />
+                Verified
+              </Badge>
+            </div>
 
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <Button
-            type="button"
-            variant="outline"
-            className="h-10 gap-2 border-slate-200 text-violet-700 hover:bg-violet-50"
-            onClick={onCopyAddress}
-          >
-            <Copy className="h-4 w-4" />
-            {copied === "address" ? "Copied" : "Copy Address"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-10 gap-2 border-slate-200 text-violet-700 hover:bg-violet-50"
-          >
-            <Wallet className="h-4 w-4" />
-            Open in Wallet
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-10 gap-2 border-slate-200 text-violet-700 hover:bg-violet-50"
-            onClick={onShareQr}
-          >
-            <Share2 className="h-4 w-4" />
-            {copied === "qr" ? "Copied" : "Share QR"}
-          </Button>
+            <div className="grid grid-cols-3 gap-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={cn("h-8 gap-1 px-2 text-[11px]", s.outlineBtn)}
+                onClick={onCopyAddress}
+              >
+                <Copy className="h-3 w-3" />
+                {copied === "address" ? "Copied" : "Copy"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={cn("h-8 gap-1 px-2 text-[11px]", s.outlineBtn)}
+              >
+                <Wallet className="h-3 w-3" />
+                Open
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={cn("h-8 gap-1 px-2 text-[11px]", s.outlineBtn)}
+                onClick={onShareQr}
+              >
+                <Share2 className="h-3 w-3" />
+                Share
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mt-auto flex items-center justify-between gap-3 border-t border-slate-100 pt-5 text-xs text-slate-500">
-        <span className="inline-flex items-center gap-1.5">
-          <Clock className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-          {expiresAt
-            ? `Link expires on ${formatPreviewDateTime(expiresAt)}`
-            : "Link does not expire"}
+      <div className={cn("mt-auto flex shrink-0 items-center justify-between gap-3 border-t pt-3 text-[11px]", s.footerBorder, s.footerText)}>
+        <span className="inline-flex min-w-0 items-center gap-1.5">
+          <Clock className={cn("h-3 w-3 shrink-0", s.footerIcon)} />
+          <span className="truncate">
+            {expiresAt
+              ? `Expires ${formatPreviewDateTime(expiresAt)}`
+              : "Link does not expire"}
+          </span>
         </span>
-        <Calendar className="h-4 w-4 shrink-0 text-slate-400" />
+        <Calendar className={cn("h-3.5 w-3.5 shrink-0", s.footerIcon)} />
       </div>
-    </>
+    </div>
   );
 }
 
-function OnRampCheckoutBody({ vaultName }: { vaultName: string }) {
+function OnRampCheckoutBody({
+  vaultName,
+  styles: s,
+}: {
+  vaultName: string;
+  styles: PreviewCheckoutStyles;
+}) {
   const steps = [
     "Choose on-ramp partner",
     "Complete fiat payment",
@@ -496,88 +535,85 @@ function OnRampCheckoutBody({ vaultName }: { vaultName: string }) {
   ] as const;
 
   return (
-    <>
-      <div className="mt-5 flex flex-1 flex-col">
-        <h3 className="text-base font-semibold text-slate-900">Buy USDC with fiat</h3>
-        <p className="mt-1 text-sm text-slate-500">
-          Choose your preferred on-ramp partner to pay and we&apos;ll deliver USDC to{" "}
-          <span className="font-medium text-slate-700">{vaultName}</span>.
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mt-1 shrink-0">
+        <h3 className={cn("text-sm font-semibold", s.cardTitle)}>Buy USDC with fiat</h3>
+        <p className={cn("mt-0.5 text-xs", s.cardMeta)}>
+          Pay via a partner — USDC is delivered to{" "}
+          <span className={cn("font-medium", s.vaultName)}>{vaultName}</span>.
         </p>
+      </div>
 
-        <ul className="mt-5 space-y-3">
-          {ON_RAMP_PARTNERS.map((partner) => (
-            <li
-              key={partner.id}
-              className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+      <ul className="mt-2.5 min-h-0 flex-1 space-y-2 overflow-y-auto pr-0.5">
+        {ON_RAMP_PARTNERS.map((partner) => (
+          <li
+            key={partner.id}
+            className={cn("flex items-center gap-2.5 rounded-lg border px-3 py-2.5", s.cardFlat)}
+          >
+            <div
+              className={cn(
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold text-white",
+                partner.iconClass
+              )}
             >
-              <div className="flex min-w-0 flex-1 items-start gap-3">
-                <div
-                  className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white",
-                    partner.iconClass
-                  )}
-                >
-                  {partner.initial}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-900">{partner.name}</p>
-                  <p className="text-xs text-slate-500">{partner.desc}</p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <Badge className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700 hover:bg-emerald-50">
-                      {partner.badge}
-                    </Badge>
-                    <span className="text-[11px] text-slate-400">{partner.time}</span>
-                  </div>
-                </div>
+              {partner.initial}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <p className={cn("text-xs font-semibold", s.cardTitle)}>{partner.name}</p>
+                <Badge className={cn("px-1.5 py-0 text-[9px]", s.emeraldBadge)}>
+                  {partner.badge}
+                </Badge>
               </div>
-              <Button
-                type="button"
-                className="h-9 shrink-0 bg-violet-600 px-5 text-white hover:bg-violet-500 sm:ml-2"
-              >
-                Continue
-              </Button>
-            </li>
-          ))}
-        </ul>
+              <p className={cn("truncate text-[10px]", s.cardMeta)}>{partner.desc}</p>
+              <p className={cn("text-[10px]", s.footerText)}>{partner.time}</p>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              className="h-8 shrink-0 bg-violet-600 px-3 text-xs text-white hover:bg-violet-500"
+            >
+              Continue
+            </Button>
+          </li>
+        ))}
+      </ul>
 
-        <div className="mt-8">
-          <p className="text-sm font-semibold text-slate-900">How it works</p>
-          <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
-            {steps.map((step, i) => (
-              <div key={step} className="flex min-w-0 flex-1 items-center gap-2">
-                <div className="flex min-w-0 flex-1 items-start gap-2.5">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-violet-100 text-xs font-semibold text-violet-700">
-                    {i + 1}
-                  </span>
-                  <p className="pt-0.5 text-xs leading-snug text-slate-600">{step}</p>
-                </div>
-                {i < steps.length - 1 ? (
-                  <ChevronRight className="hidden h-4 w-4 shrink-0 text-slate-300 sm:block" />
-                ) : null}
-              </div>
-            ))}
-          </div>
+      <div className={cn("mt-2 shrink-0 border-t pt-2.5", s.footerBorder)}>
+        <p className={cn("text-[11px] font-semibold", s.cardTitle)}>How it works</p>
+        <div className="mt-1.5 flex items-start gap-1">
+          {steps.map((step, i) => (
+            <div key={step} className="flex min-w-0 flex-1 items-start gap-1">
+              <span className={cn("flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold", s.stepNum)}>
+                {i + 1}
+              </span>
+              <p className={cn("text-[10px] leading-tight", s.stepText)}>{step}</p>
+              {i < steps.length - 1 ? (
+                <ChevronRight className={cn("mx-0.5 mt-0.5 hidden h-3 w-3 shrink-0 lg:block", s.stepChevron)} />
+              ) : null}
+            </div>
+          ))}
         </div>
       </div>
 
-      <CheckoutTrustFooter />
-    </>
+      <CheckoutTrustFooter styles={s} />
+    </div>
   );
 }
 
-function CheckoutTrustFooter() {
+function CheckoutTrustFooter({ styles: s }: { styles: PreviewCheckoutStyles }) {
   return (
-    <div className="mt-auto flex flex-wrap gap-x-4 gap-y-2 border-t border-slate-100 pt-6 text-[11px] text-slate-500">
+    <div className={cn("mt-auto flex shrink-0 flex-wrap gap-x-3 gap-y-1 border-t pt-3 text-[10px]", s.footerBorder, s.footerText)}>
       <span className="inline-flex items-center gap-1.5">
-        <ShieldCheck className="h-3.5 w-3.5 text-slate-400" />
+        <ShieldCheck className={cn("h-3.5 w-3.5", s.footerIcon)} />
         Private &amp; secure payments
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <Shield className="h-3.5 w-3.5 text-slate-400" />
+        <Shield className={cn("h-3.5 w-3.5", s.footerIcon)} />
         Opt-in privacy available
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <Check className="h-3.5 w-3.5 text-slate-400" />
+        <Check className={cn("h-3.5 w-3.5", s.footerIcon)} />
         Proof of payment
       </span>
     </div>

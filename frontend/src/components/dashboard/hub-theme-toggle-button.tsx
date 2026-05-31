@@ -35,7 +35,7 @@ export function HubThemeToggleButton() {
         "h-10 w-10 rounded-full shadow-none transition-colors",
         theme === "light"
           ? "border-ui-border/80 bg-white hover:bg-neutral-50"
-          : "border-white/12 bg-white/[0.08] text-slate-100 hover:bg-white/[0.12]"
+          : "border-0 bg-white/[0.08] text-slate-100 hover:bg-white/[0.12]"
       )}
       aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
     >
