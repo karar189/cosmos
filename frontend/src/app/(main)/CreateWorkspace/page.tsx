@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
+  AlertTriangle,
   BriefcaseBusiness,
   Building2,
   Check,
   CheckCircle2,
+  CreditCard,
   ExternalLink,
+  FileText,
   Globe2,
   ImageUp,
   Landmark,
@@ -18,9 +21,12 @@ import {
   Network,
   Rocket,
   Server,
+  ShieldCheck,
   Sparkles,
   Users,
   UserRound,
+  Wallet,
+  Workflow,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -40,13 +46,14 @@ type WorkspaceType = {
 type TeamSize = "1-5" | "5-20" | "20-50" | "50+";
 
 type WorkspaceDraft = {
-  currentStep: 1 | 2;
+  currentStep: 1 | 2 | 3;
   workspaceType: string;
   businessName: string;
   website: string;
   teamSize: TeamSize;
   logoDataUrl: string;
   logoName: string;
+  operationModules: string[];
 };
 
 const WORKSPACE_DRAFT_KEY = "hypertron:create-workspace:draft";
@@ -60,6 +67,17 @@ const DEFAULT_DRAFT: WorkspaceDraft = {
   teamSize: "1-5",
   logoDataUrl: "",
   logoName: "",
+  operationModules: [
+    "treasury",
+    "payments",
+    "contributor-management",
+    "compliance-monitoring",
+    "regulations-feed",
+    "risk-reports",
+    "client-operations",
+    "agency-operations",
+    "workflow-automation",
+  ],
 };
 
 const STEPS = [
@@ -147,6 +165,81 @@ const WORKSPACE_TYPES: WorkspaceType[] = [
   },
 ];
 
+const OPERATION_MODULES: WorkspaceType[] = [
+  {
+    id: "treasury",
+    title: "Treasury",
+    description: "Manage multi-chain treasury and wallets",
+    icon: Wallet,
+    iconClassName: "text-[#5b46ff]",
+    iconBackground: "bg-[#f0edff]",
+  },
+  {
+    id: "payments",
+    title: "Payments",
+    description: "Send, receive and track payments",
+    icon: CreditCard,
+    iconClassName: "text-[#ff8a18]",
+    iconBackground: "bg-[#fff3e6]",
+  },
+  {
+    id: "contributor-management",
+    title: "Contributor Management",
+    description: "Onboard, manage and pay contributors",
+    icon: Users,
+    iconClassName: "text-[#3976ff]",
+    iconBackground: "bg-[#eaf2ff]",
+  },
+  {
+    id: "compliance-monitoring",
+    title: "Compliance Monitoring",
+    description: "Monitor and stay compliant",
+    icon: ShieldCheck,
+    iconClassName: "text-[#54c94d]",
+    iconBackground: "bg-[#edfbed]",
+  },
+  {
+    id: "regulations-feed",
+    title: "Regulations Feed",
+    description: "Real-time updates on regulatory changes",
+    icon: FileText,
+    iconClassName: "text-[#f05445]",
+    iconBackground: "bg-[#fff0ed]",
+  },
+  {
+    id: "risk-reports",
+    title: "Risk Reports",
+    description: "Identify and manage operational risks",
+    icon: AlertTriangle,
+    iconClassName: "text-[#7047f2]",
+    iconBackground: "bg-[#f4f0ff]",
+  },
+  {
+    id: "client-operations",
+    title: "Client Operations",
+    description: "Manage clients, projects and deliverables",
+    icon: UserRound,
+    iconClassName: "text-[#2c9fb4]",
+    iconBackground: "bg-[#e9f9fb]",
+  },
+  {
+    id: "agency-operations",
+    title: "Agency Operations",
+    description: "Manage your agency workflows",
+    icon: Building2,
+    iconClassName: "text-[#e43d81]",
+    iconBackground: "bg-[#fff0f6]",
+  },
+  {
+    id: "workflow-automation",
+    title: "Workflow Automation",
+    description: "Automate repetitive operations",
+    icon: Workflow,
+    iconClassName: "text-[#6438ec]",
+    iconBackground: "bg-[#f2efff]",
+  },
+];
+
 function loadWorkspaceDraft(): WorkspaceDraft {
   if (typeof window === "undefined") return DEFAULT_DRAFT;
   try {
@@ -156,10 +249,15 @@ function loadWorkspaceDraft(): WorkspaceDraft {
     return {
       ...DEFAULT_DRAFT,
       ...parsed,
-      currentStep: parsed.currentStep === 2 ? 2 : 1,
+      currentStep: parsed.currentStep === 3 ? 3 : parsed.currentStep === 2 ? 2 : 1,
       teamSize: TEAM_SIZES.some((size) => size.value === parsed.teamSize)
         ? (parsed.teamSize as TeamSize)
         : DEFAULT_DRAFT.teamSize,
+      operationModules: Array.isArray(parsed.operationModules)
+        ? parsed.operationModules.filter((id): id is string =>
+            OPERATION_MODULES.some((operationModule) => operationModule.id === id)
+          )
+        : DEFAULT_DRAFT.operationModules,
     };
   } catch {
     return DEFAULT_DRAFT;
@@ -372,10 +470,12 @@ function WorkspaceDetailsStep({
   draft,
   onUpdate,
   onBack,
+  onContinue,
 }: {
   draft: WorkspaceDraft;
   onUpdate: (updates: Partial<WorkspaceDraft>) => void;
   onBack: () => void;
+  onContinue: () => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [logoError, setLogoError] = useState("");
@@ -554,6 +654,113 @@ function WorkspaceDetailsStep({
         <Button
           type="button"
           disabled={!isReady}
+          onClick={onContinue}
+          className="h-12 rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5]"
+        >
+          Continue
+          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+        </Button>
+      </div>
+    </>
+  );
+}
+
+function OperationsSetupStep({
+  draft,
+  onToggle,
+  onBack,
+}: {
+  draft: WorkspaceDraft;
+  onToggle: (moduleId: string) => void;
+  onBack: () => void;
+}) {
+  return (
+    <>
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+        <div>
+          <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+            STEP 3 OF 8
+          </span>
+          <h1 className="mt-6 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
+            Enable your operations modules
+          </h1>
+          <p className="mt-2 text-sm text-[#526080]">
+            Choose the modules you want to enable. You can change this later.
+          </p>
+        </div>
+        <div className="flex max-w-sm items-center gap-3 rounded-xl border border-[#ebe9fb] bg-gradient-to-r from-[#fbfaff] to-[#f6f4ff] px-4 py-3">
+          <Sparkles className="h-4 w-4 shrink-0 text-[#5945ff]" strokeWidth={2} />
+          <p className="text-xs leading-5 text-[#526080]">
+            You can enable or disable modules anytime from workspace settings.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {OPERATION_MODULES.map((operationModule) => {
+          const Icon = operationModule.icon;
+          const selected = draft.operationModules.includes(operationModule.id);
+          return (
+            <button
+              key={operationModule.id}
+              type="button"
+              onClick={() => onToggle(operationModule.id)}
+              className={cn(
+                "relative flex min-h-[142px] gap-4 rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#aaa0ff] hover:bg-white/80 hover:shadow-[0_12px_24px_rgba(66,61,122,0.08)]",
+                selected
+                  ? "border-[#d8d7ee] bg-white/78"
+                  : "border-[#e2e6f0] bg-white/35 opacity-75"
+              )}
+              aria-pressed={selected}
+            >
+              <span
+                className={cn(
+                  "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl",
+                  operationModule.iconBackground
+                )}
+              >
+                <Icon
+                  className={cn("h-5 w-5", operationModule.iconClassName)}
+                  strokeWidth={2.1}
+                />
+              </span>
+              <span className="min-w-0 pr-5">
+                <span className="block text-sm font-semibold text-[#151a2b]">
+                  {operationModule.title}
+                </span>
+                <span className="mt-3 block text-xs leading-5 text-[#526080]">
+                  {operationModule.description}
+                </span>
+              </span>
+              <span
+                className={cn(
+                  "absolute right-4 top-4 flex h-5 w-5 items-center justify-center rounded border transition",
+                  selected
+                    ? "border-[#5945ff] bg-[#5945ff] text-white"
+                    : "border-[#cfd4e4] bg-white text-transparent"
+                )}
+                aria-hidden
+              >
+                <Check className="h-3.5 w-3.5" strokeWidth={2.6} />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-auto flex flex-col-reverse gap-3 border-t border-[#e7e9f1] pt-7 sm:flex-row sm:items-center sm:justify-between">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="h-12 rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b]"
+        >
+          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+          Back
+        </Button>
+        <Button
+          type="button"
+          disabled={draft.operationModules.length === 0}
           className="h-12 rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5]"
         >
           Continue
@@ -589,6 +796,19 @@ export default function CreateWorkspacePage() {
 
   const showWorkspaceTypes = () => {
     updateDraft({ currentStep: 1 });
+  };
+
+  const showOperationsSetup = () => {
+    updateDraft({ currentStep: 3 });
+  };
+
+  const toggleOperationModule = (moduleId: string) => {
+    setDraft((current) => ({
+      ...current,
+      operationModules: current.operationModules.includes(moduleId)
+        ? current.operationModules.filter((id) => id !== moduleId)
+        : [...current.operationModules, moduleId],
+    }));
   };
 
   return (
@@ -634,8 +854,19 @@ export default function CreateWorkspacePage() {
               onSelectType={(workspaceType) => updateDraft({ workspaceType })}
               onContinue={showDetails}
             />
+          ) : draft.currentStep === 2 ? (
+            <WorkspaceDetailsStep
+              draft={draft}
+              onUpdate={updateDraft}
+              onBack={showWorkspaceTypes}
+              onContinue={showOperationsSetup}
+            />
           ) : (
-            <WorkspaceDetailsStep draft={draft} onUpdate={updateDraft} onBack={showWorkspaceTypes} />
+            <OperationsSetupStep
+              draft={draft}
+              onToggle={toggleOperationModule}
+              onBack={showDetails}
+            />
           )}
         </section>
       </div>
