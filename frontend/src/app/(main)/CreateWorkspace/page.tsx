@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type DragEvent,
+  type ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -10,6 +17,7 @@ import {
   Building2,
   Check,
   CheckCircle2,
+  ChevronRight,
   CreditCard,
   ExternalLink,
   FileText,
@@ -19,6 +27,7 @@ import {
   LifeBuoy,
   MoreHorizontal,
   Network,
+  Plus,
   Rocket,
   Server,
   ShieldCheck,
@@ -44,9 +53,10 @@ type WorkspaceType = {
 };
 
 type TeamSize = "1-5" | "5-20" | "20-50" | "50+";
+type WalletProvider = "freighter" | "metamask" | "walletconnect" | "coinbase" | "phantom";
 
 type WorkspaceDraft = {
-  currentStep: 1 | 2 | 3;
+  currentStep: 1 | 2 | 3 | 4;
   workspaceType: string;
   businessName: string;
   website: string;
@@ -54,6 +64,8 @@ type WorkspaceDraft = {
   logoDataUrl: string;
   logoName: string;
   operationModules: string[];
+  walletProvider: WalletProvider;
+  supportedChains: string[];
 };
 
 const WORKSPACE_DRAFT_KEY = "hypertron:create-workspace:draft";
@@ -78,6 +90,8 @@ const DEFAULT_DRAFT: WorkspaceDraft = {
     "agency-operations",
     "workflow-automation",
   ],
+  walletProvider: "freighter",
+  supportedChains: ["ethereum", "polygon", "arbitrum", "base", "solana"],
 };
 
 const STEPS = [
@@ -240,6 +254,55 @@ const OPERATION_MODULES: WorkspaceType[] = [
   },
 ];
 
+type TreasuryOption = {
+  id: string;
+  title: string;
+  logo: ReactNode;
+  recommended?: boolean;
+};
+
+type ChainOption = {
+  id: string;
+  title: string;
+  logo: ReactNode;
+};
+
+function WalletLogo({ wallet }: { wallet: WalletProvider }) {
+  return <img src={`/assets/wallets/${wallet}.png`} alt="" className="h-12 w-12 object-contain" aria-hidden />;
+}
+
+function ChainLogo({ chain }: { chain: string }) {
+  const logoPaths: Record<string, string> = {
+    ethereum: "/assets/chains/ethereum.png",
+    polygon: "/assets/chains/polygon.png",
+    arbitrum: "/assets/chains/arbitrum.png",
+    base: "/assets/chains/base.png",
+    solana: "/assets/chains/solana.png",
+    "bnb-chain": "/assets/chains/binance.png",
+    stellar: "/assets/chains/stellar.png",
+  };
+
+  return <img src={logoPaths[chain]} alt="" className="h-8 w-8 shrink-0 object-contain" aria-hidden />;
+}
+
+const TREASURY_PROVIDERS: TreasuryOption[] = [
+  { id: "freighter", title: "Freighter", logo: <WalletLogo wallet="freighter" />, recommended: true },
+  { id: "metamask", title: "MetaMask", logo: <WalletLogo wallet="metamask" /> },
+  { id: "walletconnect", title: "WalletConnect", logo: <WalletLogo wallet="walletconnect" /> },
+  { id: "coinbase", title: "Coinbase Wallet", logo: <WalletLogo wallet="coinbase" /> },
+  { id: "phantom", title: "Phantom", logo: <WalletLogo wallet="phantom" /> },
+];
+
+const SUPPORTED_CHAINS: ChainOption[] = [
+  { id: "ethereum", title: "Ethereum", logo: <ChainLogo chain="ethereum" /> },
+  { id: "polygon", title: "Polygon", logo: <ChainLogo chain="polygon" /> },
+  { id: "arbitrum", title: "Arbitrum", logo: <ChainLogo chain="arbitrum" /> },
+  { id: "base", title: "Base", logo: <ChainLogo chain="base" /> },
+  { id: "solana", title: "Solana", logo: <ChainLogo chain="solana" /> },
+  { id: "bnb-chain", title: "BNB Chain", logo: <ChainLogo chain="bnb-chain" /> },
+  { id: "stellar", title: "Stellar", logo: <ChainLogo chain="stellar" /> },
+];
+
 function loadWorkspaceDraft(): WorkspaceDraft {
   if (typeof window === "undefined") return DEFAULT_DRAFT;
   try {
@@ -249,7 +312,8 @@ function loadWorkspaceDraft(): WorkspaceDraft {
     return {
       ...DEFAULT_DRAFT,
       ...parsed,
-      currentStep: parsed.currentStep === 3 ? 3 : parsed.currentStep === 2 ? 2 : 1,
+      currentStep:
+        parsed.currentStep === 4 ? 4 : parsed.currentStep === 3 ? 3 : parsed.currentStep === 2 ? 2 : 1,
       teamSize: TEAM_SIZES.some((size) => size.value === parsed.teamSize)
         ? (parsed.teamSize as TeamSize)
         : DEFAULT_DRAFT.teamSize,
@@ -258,6 +322,14 @@ function loadWorkspaceDraft(): WorkspaceDraft {
             OPERATION_MODULES.some((operationModule) => operationModule.id === id)
           )
         : DEFAULT_DRAFT.operationModules,
+      walletProvider: TREASURY_PROVIDERS.some((provider) => provider.id === parsed.walletProvider)
+        ? (parsed.walletProvider as WalletProvider)
+        : DEFAULT_DRAFT.walletProvider,
+      supportedChains: Array.isArray(parsed.supportedChains)
+        ? parsed.supportedChains.filter((id): id is string =>
+            SUPPORTED_CHAINS.some((chain) => chain.id === id)
+          )
+        : DEFAULT_DRAFT.supportedChains,
     };
   } catch {
     return DEFAULT_DRAFT;
@@ -669,10 +741,12 @@ function OperationsSetupStep({
   draft,
   onToggle,
   onBack,
+  onContinue,
 }: {
   draft: WorkspaceDraft;
   onToggle: (moduleId: string) => void;
   onBack: () => void;
+  onContinue: () => void;
 }) {
   return (
     <>
@@ -761,7 +835,199 @@ function OperationsSetupStep({
         <Button
           type="button"
           disabled={draft.operationModules.length === 0}
+          onClick={onContinue}
           className="h-12 rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5]"
+        >
+          Continue
+          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+        </Button>
+      </div>
+    </>
+  );
+}
+
+function CompactStepProgress({ currentStep }: { currentStep: number }) {
+  return (
+    <div className="hidden items-center gap-2 lg:flex" aria-label={`Step ${currentStep} of 8`}>
+      {STEPS.map((step, index) => {
+        const stepNumber = index + 1;
+        const isCompleted = stepNumber < currentStep;
+        const isActive = stepNumber === currentStep;
+        return (
+          <span
+            key={step}
+            className={cn(
+              "flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-semibold",
+              isCompleted
+                ? "border-[#a89bff] bg-[#a89bff] text-white"
+                : isActive
+                  ? "border-[#5945ff] bg-[#5945ff] text-white"
+                  : "border-[#cfd4e4] bg-white/60 text-[#7b86a4]"
+            )}
+          >
+            {isCompleted ? <Check className="h-3 w-3" strokeWidth={2.6} /> : stepNumber}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function TreasurySetupStep({
+  draft,
+  onSelectProvider,
+  onToggleChain,
+  onBack,
+}: {
+  draft: WorkspaceDraft;
+  onSelectProvider: (provider: WalletProvider) => void;
+  onToggleChain: (chainId: string) => void;
+  onBack: () => void;
+}) {
+  return (
+    <>
+      <div>
+        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+          STEP 4 OF 8
+        </span>
+        <h1 className="mt-6 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
+          Connect your treasury
+        </h1>
+        <p className="mt-2 text-sm text-[#526080]">
+          Connect a wallet or multi-sig to manage your funds across chains.
+        </p>
+      </div>
+
+      <div className="mt-9 grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.95fr)]">
+        <section className="rounded-2xl border border-[#e1e5ef] bg-white/48 p-5">
+          <h2 className="text-sm font-semibold text-[#151a2b]">Connect Wallet / Multi-sig</h2>
+          <p className="mt-1 text-xs text-[#526080]">Select your preferred wallet provider.</p>
+
+          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {TREASURY_PROVIDERS.map((provider) => {
+              const selected = draft.walletProvider === provider.id;
+              return (
+                <button
+                  key={provider.id}
+                  type="button"
+                  onClick={() => onSelectProvider(provider.id as WalletProvider)}
+                  className={cn(
+                    "relative flex min-h-[152px] flex-col items-center justify-center rounded-xl border px-3 py-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[#aaa0ff] hover:bg-white/80",
+                    selected
+                      ? "border-[#7664ff] bg-[#fbfaff] shadow-[0_10px_20px_rgba(89,69,255,0.06)]"
+                      : "border-[#e1e5ef] bg-white/55"
+                  )}
+                  aria-pressed={selected}
+                >
+                  <span
+                    className={cn(
+                      "absolute right-3 top-3 flex h-4 w-4 items-center justify-center rounded-full border",
+                      selected
+                        ? "border-[#5945ff] bg-[#5945ff] text-white"
+                        : "border-[#d5dbea] bg-white text-transparent"
+                    )}
+                    aria-hidden
+                  >
+                    <Check className="h-2.5 w-2.5" strokeWidth={2.8} />
+                  </span>
+                  {provider.logo}
+                  <span className="mt-4 text-[11px] font-semibold leading-4 text-[#151a2b]">
+                    {provider.title}
+                  </span>
+                  {provider.recommended ? (
+                    <span className="mt-2 rounded-full bg-[#f0edff] px-2 py-0.5 text-[9px] font-semibold text-[#5945ff]">
+                      Recommended
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="my-6 flex items-center gap-3 text-xs text-[#7b86a4]">
+            <span className="h-px flex-1 bg-[#e1e5ef]" />
+            or
+            <span className="h-px flex-1 bg-[#e1e5ef]" />
+          </div>
+
+          <button
+            type="button"
+            className="flex h-12 w-full items-center gap-3 rounded-xl border border-[#e1e5ef] bg-white/55 px-4 text-left text-xs font-medium text-[#34405e] transition hover:border-[#c8cef0] hover:bg-white/85"
+          >
+            <Wallet className="h-4 w-4 text-[#657091]" strokeWidth={1.8} />
+            <span className="flex-1">Import existing treasury addresses</span>
+            <ChevronRight className="h-4 w-4 text-[#657091]" strokeWidth={1.8} />
+          </button>
+
+          <div className="mt-7 flex items-center gap-3 text-xs text-[#526080]">
+            <ShieldCheck className="h-4 w-4 shrink-0 text-[#7664ff]" strokeWidth={1.9} />
+            <p>Your keys are never stored. We only read data to help you operate.</p>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-[#e1e5ef] bg-white/48 p-5">
+          <h2 className="text-sm font-semibold text-[#151a2b]">Select supported chains</h2>
+          <p className="mt-1 text-xs text-[#526080]">
+            Choose the networks where your treasury operates.
+          </p>
+
+          <div className="mt-6 overflow-hidden rounded-xl border border-[#e1e5ef] bg-white/62">
+            {SUPPORTED_CHAINS.map((chain, index) => {
+              const selected = draft.supportedChains.includes(chain.id);
+              return (
+                <button
+                  key={chain.id}
+                  type="button"
+                  onClick={() => onToggleChain(chain.id)}
+                  className={cn(
+                    "flex w-full items-center gap-3 px-3 py-2.5 text-left transition hover:bg-[#f8f8ff]",
+                    index > 0 && "border-t border-[#eef0f5]"
+                  )}
+                  aria-pressed={selected}
+                >
+                  {chain.logo}
+                  <span className="flex-1 text-xs font-semibold text-[#151a2b]">{chain.title}</span>
+                  <span
+                    className={cn(
+                      "flex h-5 w-5 items-center justify-center rounded border",
+                      selected
+                        ? "border-[#5945ff] bg-[#5945ff] text-white"
+                        : "border-[#cfd4e4] bg-white text-transparent"
+                    )}
+                    aria-hidden
+                  >
+                    <Check className="h-3.5 w-3.5" strokeWidth={2.6} />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            className="mt-3 flex h-12 w-full items-center gap-3 rounded-xl border border-[#e1e5ef] bg-white/55 px-4 text-left text-xs font-medium text-[#34405e] transition hover:border-[#c8cef0] hover:bg-white/85"
+          >
+            <Plus className="h-4 w-4 text-[#657091]" strokeWidth={1.8} />
+            Add Custom Chain
+          </button>
+        </section>
+      </div>
+
+      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
+        >
+          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+          Back
+        </Button>
+        <CompactStepProgress currentStep={4} />
+        <Button
+          type="button"
+          disabled={draft.supportedChains.length === 0}
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
@@ -802,12 +1068,25 @@ export default function CreateWorkspacePage() {
     updateDraft({ currentStep: 3 });
   };
 
+  const showTreasurySetup = () => {
+    updateDraft({ currentStep: 4 });
+  };
+
   const toggleOperationModule = (moduleId: string) => {
     setDraft((current) => ({
       ...current,
       operationModules: current.operationModules.includes(moduleId)
         ? current.operationModules.filter((id) => id !== moduleId)
         : [...current.operationModules, moduleId],
+    }));
+  };
+
+  const toggleSupportedChain = (chainId: string) => {
+    setDraft((current) => ({
+      ...current,
+      supportedChains: current.supportedChains.includes(chainId)
+        ? current.supportedChains.filter((id) => id !== chainId)
+        : [...current.supportedChains, chainId],
     }));
   };
 
@@ -861,11 +1140,19 @@ export default function CreateWorkspacePage() {
               onBack={showWorkspaceTypes}
               onContinue={showOperationsSetup}
             />
-          ) : (
+          ) : draft.currentStep === 3 ? (
             <OperationsSetupStep
               draft={draft}
               onToggle={toggleOperationModule}
               onBack={showDetails}
+              onContinue={showTreasurySetup}
+            />
+          ) : (
+            <TreasurySetupStep
+              draft={draft}
+              onSelectProvider={(walletProvider) => updateDraft({ walletProvider })}
+              onToggleChain={toggleSupportedChain}
+              onBack={showOperationsSetup}
             />
           )}
         </section>
