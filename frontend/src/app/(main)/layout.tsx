@@ -83,14 +83,15 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
             theme === "light" ? "text-slate-900" : "text-slate-100"
           )}
         >
-          <OnboardingGate
-            when={!sessionLoading && !!session}
-            walletAddress={publicKey}
-            scopeKey={
-              publicKey && publicKey.length === 56 && publicKey.startsWith("G")
-                ? publicKey
-                : privyUser?.id ?? null
-            }
+         <OnboardingGate
+          when={!sessionLoading && !!session}
+          autoOpen={pathname !== "/CreateWorkspace"}
+          walletAddress={publicKey}
+          scopeKey={
+            publicKey && publicKey.length === 56 && publicKey.startsWith("G")
+              ? publicKey
+              : privyUser?.id ?? null
+          }
           >
             {children}
           </OnboardingGate>

@@ -15,7 +15,7 @@ export type Team = {
 type BaseNavItem = {
   title: string;
   badge?: string;
-  icon?: LucideIcon;
+  icon?: ComponentType<{ className?: string; strokeWidth?: string | number }>;
 };
 
 export type NavLink = BaseNavItem & {
