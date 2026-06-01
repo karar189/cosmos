@@ -64,6 +64,10 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        ui: {
+          border: "rgb(var(--ui-border) / <alpha-value>)",
+          "border-muted": "rgb(var(--ui-border-muted) / <alpha-value>)",
+        },
         heroSubtitle: "hsl(var(--hero-subtitle))",
       },
       borderRadius: {

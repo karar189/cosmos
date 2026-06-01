@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
-import { requireSessionWallet } from "@/lib/require-session-wallet";
+import { getBusinessForAppSession } from "@/lib/business-for-session";
 
 const ALLOWED_TIER_IDS = new Set(["tier-1", "tier-2", "tier-3"]);
 
@@ -101,47 +101,9 @@ function profileJson(
  */
 export async function GET(req: NextRequest) {
   try {
-    const session = await requireSessionWallet(req);
-    if (session instanceof NextResponse) return session;
-    const walletAddress = session;
-
-    let business = await db.business.findUnique({
-      where: { walletAddress: walletAddress },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        businessNature: true,
-        selectedWidgets: true,
-        selectedTier: true,
-        selectedTierName: true,
-        selectedTierAt: true,
-        receiveAddress: true,
-        complianceForm: true,
-        activeTemplateId: true,
-        activeTemplateAt: true,
-      },
-    });
-
-    if (!business) {
-      business = await db.business.create({
-        data: { walletAddress: walletAddress },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          businessNature: true,
-          selectedWidgets: true,
-          selectedTier: true,
-          selectedTierName: true,
-          selectedTierAt: true,
-          receiveAddress: true,
-          complianceForm: true,
-          activeTemplateId: true,
-          activeTemplateAt: true,
-        },
-      });
-    }
+    const resolved = await getBusinessForAppSession(req);
+    if (resolved instanceof NextResponse) return resolved;
+    const { business } = resolved;
 
     const active = await resolveActiveTemplate(business);
     return NextResponse.json(profileJson(business as BusinessRow, active));
@@ -161,9 +123,14 @@ export async function GET(req: NextRequest) {
  */
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await requireSessionWallet(req);
-    if (session instanceof NextResponse) return session;
-    const walletAddress = session;
+    const resolved = await getBusinessForAppSession(req);
+    if (resolved instanceof NextResponse) return resolved;
+    let business = await db.business.findUnique({
+      where: { id: resolved.business.id },
+    });
+    if (!business) {
+      return NextResponse.json({ error: "Business not found" }, { status: 404 });
+    }
 
     const body = await req.json().catch(() => ({}));
     const name = typeof body.name === "string" ? body.name.trim() : undefined;
@@ -193,40 +160,9 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    let business = await db.business.findUnique({
-      where: { walletAddress: walletAddress },
-    });
-
     const now = new Date();
 
-    if (!business) {
-      const createData: Parameters<typeof db.business.create>[0]["data"] = {
-        walletAddress: walletAddress,
-        ...(name != null && { name: name || null }),
-        ...(email != null && { email: email || null }),
-        ...(businessNature != null && { businessNature: businessNature || null }),
-        ...(selectedWidgets != null && { selectedWidgets: selectedWidgets }),
-        ...(complianceForm != null && { complianceForm: complianceForm as object }),
-        ...(selectedTier !== undefined && {
-          selectedTier: selectedTier,
-          selectedTierAt: selectedTier ? now : null,
-        }),
-        ...(selectedTierName !== undefined && { selectedTierName: selectedTierName }),
-      };
-      business = await db.business.create({ data: createData });
-      if (activeTemplateIdUpdate !== undefined && activeTemplateIdUpdate !== null) {
-        const tpl = await db.businessTemplate.findFirst({
-          where: { id: activeTemplateIdUpdate, businessId: business.id },
-        });
-        if (!tpl) {
-          return NextResponse.json({ error: "activeTemplateId not found for this business" }, { status: 400 });
-        }
-        business = await db.business.update({
-          where: { id: business.id },
-          data: { activeTemplateId: tpl.id, activeTemplateAt: now },
-        });
-      }
-    } else {
+    {
       const update: {
         name?: string | null;
         email?: string | null;

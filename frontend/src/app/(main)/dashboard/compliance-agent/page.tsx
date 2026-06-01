@@ -3,9 +3,11 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, FileBarChart2, Plus, ShieldCheck, Upload, X } from "lucide-react";
-import { DashboardHeader } from "@/components/dashboard/layout/header";
-import { DashboardMain } from "@/components/dashboard/layout/main";
-import { ThemeSwitch } from "@/components/dashboard/theme-switch";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
+import {
+  WorkspacePageShell,
+  workspaceHubBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-page-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -78,7 +80,7 @@ function dedupeFiles(files: File[]): File[] {
 
 export default function ComplianceAgentPage() {
   const router = useRouter();
-  const { publicKey, disconnect, isConnecting } = useFreighter();
+  const { publicKey } = useFreighter();
 
   const [country, setCountry] = useState<string>("");
   const [companyDetails, setCompanyDetails] = useState("");
@@ -90,15 +92,6 @@ export default function ComplianceAgentPage() {
   const [error, setError] = useState<string | null>(null);
 
   const hasLastAnalysis = useMemo(() => !!getLatestComplianceResult(), []);
-
-  if (!publicKey) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4">
-        <p className="text-muted-foreground text-center">Connect your wallet to view this page.</p>
-        <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
-      </div>
-    );
-  }
 
   const addWebsite = () => {
     const candidate = websiteInput.trim();
@@ -186,38 +179,36 @@ export default function ComplianceAgentPage() {
   };
 
   return (
-    <>
-      <DashboardHeader fixed>
-        <div className="flex flex-1 items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">Compliance Agent</span>
-        </div>
-        <div className="ml-auto flex items-center gap-1">
-          <ThemeSwitch />
-          <Button variant="ghost" size="sm" onClick={() => router.push("/dashboard")}>Dashboard</Button>
-          <Button variant="ghost" size="sm" onClick={disconnect} disabled={isConnecting}>Disconnect</Button>
-        </div>
-      </DashboardHeader>
-
-      <DashboardMain>
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-                <ShieldCheck className="h-6 w-6" />
-                Compliance Agent
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Configure your context and launch AI analysis. You will be redirected to a live analysis screen.
-              </p>
-            </div>
-            {hasLastAnalysis && (
-              <Button variant="outline" onClick={() => router.push("/dashboard/compliance-agent/analysis")}> 
+    <WorkspacePageShell
+      breadcrumbs={workspaceHubBreadcrumbs("Compliance")}
+      connectMessage="Connect your wallet to use Compliance Agent."
+    >
+      <div className="flex flex-col gap-6">
+        <DashboardPageHeader
+          variant="hub"
+          eyebrow="Compliance"
+          title={
+            <span className="inline-flex items-center gap-2">
+              <ShieldCheck className="h-8 w-8 text-blue-600" strokeWidth={1.75} />
+              Compliance Agent
+            </span>
+          }
+          description="Configure your context and launch AI analysis. You will be redirected to a live analysis screen."
+          end={
+            hasLastAnalysis ? (
+              <Button
+                variant="outline"
+                className="rounded-xl border-ui-border/80 bg-white hover:bg-neutral-50"
+                onClick={() => router.push("/dashboard/compliance-agent/analysis")}
+              >
                 <FileBarChart2 className="mr-2 h-4 w-4" />
                 View Last Analysis
               </Button>
-            )}
-          </div>
+            ) : undefined
+          }
+        />
 
+        {!publicKey ? null : (
           <Card>
             <CardHeader>
               <CardTitle>Inputs</CardTitle>
@@ -241,9 +232,9 @@ export default function ComplianceAgentPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
-                  <p className="text-xs font-medium text-amber-200">Safety note</p>
-                  <p className="mt-1 text-xs text-amber-100/80">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                  <p className="text-xs font-medium text-amber-900">Safety note</p>
+                  <p className="mt-1 text-xs text-amber-800/90">
                     Do not upload secrets unless necessary. AI-generated guidance should be validated with legal and
                     compliance professionals.
                   </p>
@@ -359,8 +350,8 @@ export default function ComplianceAgentPage() {
               </Button>
             </CardContent>
           </Card>
-        </div>
-      </DashboardMain>
-    </>
+        )}
+      </div>
+    </WorkspacePageShell>
   );
 }

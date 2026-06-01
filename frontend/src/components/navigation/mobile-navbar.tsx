@@ -41,11 +41,11 @@ const MobileNavbar = () => {
                     </SheetClose>
                     <div className="flex flex-col items-start w-full py-2 mt-10">
                         <div className="flex items-center justify-evenly w-full space-x-2">
-                            <Link href="/auth/sign-in" className={buttonVariants({ variant: "outline", className: "w-full" })}>
-                                Sign In
+                            <Link href="/?launch=1" className={buttonVariants({ variant: "outline", className: "w-full" })}>
+                                Launch
                             </Link>
-                            <Link href="/auth/sign-up" className={buttonVariants({ className: "w-full" })}>
-                                Sign Up
+                            <Link href="https://calendly.com/kararsweta/30min" target="_blank" rel="noopener noreferrer" className={buttonVariants({ className: "w-full" })}>
+                                Book a Demo
                             </Link>
                         </div>
                         <ul className="flex flex-col items-start w-full mt-6">
