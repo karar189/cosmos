@@ -10,12 +10,14 @@ import {
   MessageCircle,
   ExternalLink,
 } from "lucide-react";
-import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import {
-  WorkspacePageShell,
-  workspaceHubBreadcrumbs,
-} from "@/components/dashboard/workspace-hub/workspace-page-shell";
+  WorkspaceHubPageShell,
+  hubNavBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-hub-page-shell";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
+import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,7 +43,7 @@ const CHANNELS = [
     title: "Documentation",
     description: "Browse guides, API references, and tutorials.",
     action: "Open docs",
-    href: "#",
+    href: "/docs",
   },
 ];
 
@@ -64,15 +66,21 @@ const FAQS = [
   },
 ];
 
-const inputCls =
-  "h-9 border border-ui-border/80 bg-white text-neutral-900 placeholder:text-neutral-400 focus:border-blue-500/40 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-0";
-
 export default function SupportPage() {
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const inputCls = cn(
+    "rounded-lg border shadow-none",
+    t.dark
+      ? "border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500 focus:border-blue-500/40 focus:ring-blue-500/20"
+      : "border-ui-border/80 bg-white text-neutral-900 placeholder:text-neutral-400 focus:border-blue-500/40 focus:ring-blue-500/20"
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,31 +96,28 @@ export default function SupportPage() {
   };
 
   return (
-    <WorkspacePageShell
-      breadcrumbs={workspaceHubBreadcrumbs("Support")}
-      connectMessage="Connect your wallet to contact support."
+    <WorkspaceHubPageShell
+      breadcrumbs={hubNavBreadcrumbs("Support")}
+      title="Support"
+      subtitle="Get help, browse answers, or reach out to our team."
+      connectMessage="Sign in to contact support."
     >
-      <div className="flex flex-col gap-6">
-        <DashboardPageHeader
-          variant="hub"
-          eyebrow="Workspace"
-          title="Support"
-          description="Get help, browse answers, or reach out to our team."
-        />
-
-        {/* Channels */}
+      <div className="flex w-full flex-col gap-8">
         <div className="grid gap-4 md:grid-cols-3">
           {CHANNELS.map(({ icon: Icon, title, description, action, href }) => (
             <a
               key={title}
               href={href}
-              className="group flex flex-col rounded-xl border border-ui-border/80 bg-white p-5 shadow-sm transition-colors hover:border-blue-300"
+              className={cn(
+                "group flex flex-col rounded-2xl border p-5 transition-colors hover:border-blue-300/60",
+                t.card
+              )}
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <Icon className="h-5 w-5" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
+                <Icon className="h-5 w-5" strokeWidth={1.75} />
               </div>
-              <p className="mt-3 text-sm font-semibold text-neutral-900">{title}</p>
-              <p className="mt-1 flex-1 text-xs leading-relaxed text-neutral-500">{description}</p>
+              <p className={cn("mt-3 text-sm font-semibold", t.cardTitle)}>{title}</p>
+              <p className={cn("mt-1 flex-1 text-xs leading-relaxed", t.cardMeta)}>{description}</p>
               <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-blue-600">
                 {action}
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -122,96 +127,102 @@ export default function SupportPage() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-5">
-          {/* FAQ */}
-          <div className="lg:col-span-3">
-            <div className="rounded-xl border border-ui-border/80 bg-white shadow-sm">
-              <div className="border-b border-ui-border/80 px-5 py-4">
-                <p className="text-sm font-medium text-neutral-900">Frequently asked questions</p>
-                <p className="mt-0.5 text-xs text-neutral-500">Quick answers to common questions.</p>
-              </div>
-              <div className="divide-y divide-ui-border/70">
-                {FAQS.map((faq, i) => {
-                  const open = openFaq === i;
-                  return (
-                    <div key={faq.q}>
-                      <button
-                        type="button"
-                        onClick={() => setOpenFaq(open ? null : i)}
-                        className="flex w-full items-center justify-between gap-4 px-5 py-3.5 text-left"
-                      >
-                        <span className="text-sm font-medium text-neutral-800">{faq.q}</span>
-                        <ChevronDown
-                          className={cn(
-                            "h-4 w-4 shrink-0 text-neutral-400 transition-transform",
-                            open && "rotate-180"
-                          )}
-                        />
-                      </button>
-                      {open ? (
-                        <p className="px-5 pb-4 text-sm leading-relaxed text-neutral-500">{faq.a}</p>
-                      ) : null}
-                    </div>
-                  );
-                })}
-              </div>
+          <Card className={cn("overflow-hidden rounded-2xl border shadow-none lg:col-span-3", t.card)}>
+            <div className={cn("border-b px-5 py-4", t.cardDivider)}>
+              <p className={cn("text-sm font-semibold", t.cardTitle)}>Frequently asked questions</p>
+              <p className={cn("mt-0.5 text-xs", t.cardMeta)}>Quick answers to common questions.</p>
             </div>
-          </div>
+            <div className={cn("divide-y", t.cardDivider)}>
+              {FAQS.map((faq, i) => {
+                const open = openFaq === i;
+                return (
+                  <div key={faq.q}>
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaq(open ? null : i)}
+                      className="flex w-full items-center justify-between gap-4 px-5 py-3.5 text-left"
+                    >
+                      <span className={cn("text-sm font-medium", t.cardTitle)}>{faq.q}</span>
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 shrink-0 transition-transform",
+                          t.cardMuted,
+                          open && "rotate-180"
+                        )}
+                      />
+                    </button>
+                    {open ? (
+                      <p className={cn("px-5 pb-4 text-sm leading-relaxed", t.cardMeta)}>{faq.a}</p>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
 
-          {/* Contact form */}
-          <div className="lg:col-span-2">
-            <form
-              onSubmit={handleSubmit}
-              className="flex flex-col gap-4 rounded-xl border border-ui-border/80 bg-white p-5 shadow-sm"
-            >
-              <div>
-                <p className="text-sm font-medium text-neutral-900">Send us a message</p>
-                <p className="mt-0.5 text-xs text-neutral-500">We typically reply within one business day.</p>
-              </div>
+          <Card className={cn("rounded-2xl border shadow-none lg:col-span-2", t.card)}>
+            <CardContent className="p-5">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div>
+                  <p className={cn("text-sm font-semibold", t.cardTitle)}>Send us a message</p>
+                  <p className={cn("mt-0.5 text-xs", t.cardMeta)}>
+                    We typically reply within one business day.
+                  </p>
+                </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="support-subject" className="text-xs text-neutral-500">Subject</Label>
-                <Input
-                  id="support-subject"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="What do you need help with?"
-                  className={inputCls}
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="support-subject" className={cn("text-xs", t.cardMeta)}>
+                    Subject
+                  </Label>
+                  <Input
+                    id="support-subject"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder="What do you need help with?"
+                    className={cn("h-10", inputCls)}
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="support-message" className="text-xs text-neutral-500">Message</Label>
-                <Textarea
-                  id="support-message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Describe your issue in detail…"
-                  className={cn("min-h-[120px] resize-none", inputCls)}
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="support-message" className={cn("text-xs", t.cardMeta)}>
+                    Message
+                  </Label>
+                  <Textarea
+                    id="support-message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Describe your issue in detail…"
+                    className={cn("min-h-[120px] resize-none", inputCls)}
+                  />
+                </div>
 
-              <Button
-                type="submit"
-                disabled={sending || !subject.trim() || !message.trim()}
-                className={cn(
-                  "rounded-full font-semibold transition-all",
-                  sent
-                    ? "border-0 bg-emerald-600 text-white hover:bg-emerald-600"
-                    : "border border-ui-border/80 bg-blue-600 text-white hover:bg-blue-700"
-                )}
-              >
-                {sent ? (
-                  <><CheckCheck className="mr-1.5 h-4 w-4" /> Message sent</>
-                ) : sending ? (
-                  <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Sending…</>
-                ) : (
-                  "Send message"
-                )}
-              </Button>
-            </form>
-          </div>
+                <Button
+                  type="submit"
+                  disabled={sending || !subject.trim() || !message.trim()}
+                  className={cn(
+                    "h-10 rounded-xl text-sm font-semibold shadow-none",
+                    sent
+                      ? "bg-emerald-600 text-white hover:bg-emerald-600"
+                      : "hub-cta bg-blue-600 text-white hover:bg-blue-500"
+                  )}
+                >
+                  {sent ? (
+                    <>
+                      <CheckCheck className="mr-1.5 h-4 w-4" /> Message sent
+                    </>
+                  ) : sending ? (
+                    <>
+                      <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Sending…
+                    </>
+                  ) : (
+                    "Send message"
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </WorkspacePageShell>
+    </WorkspaceHubPageShell>
   );
 }

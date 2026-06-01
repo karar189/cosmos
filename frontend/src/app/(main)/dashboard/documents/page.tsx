@@ -104,7 +104,7 @@ export default function MyTemplatesPage() {
 
   return (
     <WorkspacePageShell
-      breadcrumbs={workspaceHubBreadcrumbs("Reports")}
+      breadcrumbs={workspaceHubBreadcrumbs("My Templates")}
       connectMessage="Connect your wallet to view your templates."
     >
       <div className="flex flex-col gap-8">
@@ -112,7 +112,7 @@ export default function MyTemplatesPage() {
           variant="hub"
           eyebrow="Documents"
           title="My templates"
-          description="Saved from Compliance Maker. Open a read-only dashboard preview, or edit layouts in the workspace."
+          description="Saved from Compliance Maker for this workspace. Open a preview or edit layouts in the workspace builder."
           end={
             <Button
               type="button"

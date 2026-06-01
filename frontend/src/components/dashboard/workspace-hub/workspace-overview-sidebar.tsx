@@ -258,7 +258,7 @@ export function WorkspaceOverviewSidebar({
       {/* Help + user */}
       <div className="space-y-3 px-4 pb-5 pt-2">
         <Link
-          href="/dashboard/settings"
+          href="/dashboard/workspace/help"
           className={cn(
             "flex items-center gap-3 rounded-2xl border px-3 py-3 transition-colors",
             t.dark

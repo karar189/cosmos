@@ -9,6 +9,10 @@ export const WORKSPACE_HUB_SHELL_PATHS = new Set([
   "/dashboard/rns",
   "/dashboard/settings",
   "/dashboard/documents",
+  "/dashboard/billing",
+  "/dashboard/support",
+  "/dashboard/templates",
+  "/dashboard/account",
 ]);
 
 export function usesWorkspaceHubShell(pathname: string | null): boolean {
@@ -17,5 +21,6 @@ export function usesWorkspaceHubShell(pathname: string | null): boolean {
   if (WORKSPACE_HUB_SHELL_PATHS.has(base)) return true;
   if (base.startsWith("/dashboard/payment-links")) return true;
   if (base.startsWith("/dashboard/documents/")) return true;
+  if (base.startsWith("/dashboard/workspace/")) return true;
   return false;
 }

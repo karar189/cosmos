@@ -395,7 +395,7 @@ export function WorkspaceHubMain({
                     t.templateCta
                   )}
                 >
-                  <Link href="/dashboard/documents">
+                  <Link href="/dashboard/templates">
                     Explore Templates
                     <ArrowRight className="ml-1.5 h-4 w-4" />
                   </Link>

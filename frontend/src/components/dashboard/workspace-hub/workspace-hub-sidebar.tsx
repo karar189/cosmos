@@ -26,9 +26,9 @@ const NAV: {
   badge?: number;
 }[] = [
   { label: "Workspaces", href: "/dashboard", icon: LayoutGrid },
-  { label: "Templates", href: "/dashboard/documents", icon: FileText },
+  { label: "Templates", href: "/dashboard/templates", icon: FileText },
   { label: "Billing & Plans", href: "/dashboard/billing", icon: CreditCard },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Settings", href: "/dashboard/account", icon: Settings },
   { label: "Support", href: "/dashboard/support", icon: LifeBuoy },
 ];
 

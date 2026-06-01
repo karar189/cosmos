@@ -5,16 +5,19 @@ import {
   CheckCheck,
   CreditCard,
   Download,
-  Sparkles,
   Check,
   Loader2,
+  Sparkles,
 } from "lucide-react";
-import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import {
-  WorkspacePageShell,
-  workspaceHubBreadcrumbs,
-} from "@/components/dashboard/workspace-hub/workspace-page-shell";
+  WorkspaceHubPageShell,
+  hubNavBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-hub-page-shell";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
+import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useFreighter } from "@/hooks/useFreighter";
 import {
   getWorkspaceTierState,
@@ -54,7 +57,7 @@ const PLAN_OPTIONS: PlanOption[] = [
     price: "$149",
     cadence: "/mo",
     description: "Tier 2 plus escrow-based project management.",
-    features: ["Everything in Tier 2", "Escrow-based project management", "Priority support"],
+    features: ["Everything in Tier 2", "Escrow project management", "Priority support"],
   },
 ];
 
@@ -66,6 +69,8 @@ const INVOICES = [
 
 export default function BillingPage() {
   const { publicKey } = useFreighter();
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   const [selectedTier, setSelectedTier] = useState("tier-2");
   const [selectedTierName, setSelectedTierName] = useState("Tier 2");
   const [activeTier, setActiveTier] = useState("tier-2");
@@ -133,51 +138,75 @@ export default function BillingPage() {
   };
 
   const currentPlan = PLAN_OPTIONS.find((p) => p.id === activeTier) ?? PLAN_OPTIONS[1]!;
+  const planChanged = selectedTier !== activeTier;
 
   return (
-    <WorkspacePageShell
-      breadcrumbs={workspaceHubBreadcrumbs("Billing & Plans")}
-      connectMessage="Connect your wallet to view billing."
+    <WorkspaceHubPageShell
+      breadcrumbs={hubNavBreadcrumbs("Billing & Plans")}
+      title="Billing & Plans"
+      subtitle="Manage your subscription, payment method, and invoices."
+      connectMessage="Sign in to view billing."
     >
-      <div className="flex flex-col gap-6">
-        <DashboardPageHeader
-          variant="hub"
-          eyebrow="Workspace"
-          title="Billing & Plans"
-          description="Manage your subscription, payment method, and invoices."
-        />
-
-        {/* Current plan */}
-        <div className="rounded-xl border border-ui-border/80 bg-white p-5 shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <Sparkles className="h-5 w-5" />
+      <div className="flex w-full flex-col gap-8">
+        {/* Active subscription */}
+        <Card className={cn("overflow-hidden rounded-2xl border shadow-none", t.card)}>
+          <div className={cn("flex flex-wrap items-center justify-between gap-4 px-6 py-5", t.cardHeader)}>
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+                <Sparkles className="h-5 w-5" strokeWidth={1.75} />
               </div>
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">Current plan</p>
-                <p className="mt-0.5 text-lg font-semibold text-neutral-900">{currentPlan.name}</p>
-                <p className="mt-0.5 text-sm text-neutral-500">{currentPlan.description}</p>
+                <p className={cn("text-xs font-medium", t.cardMeta)}>Active subscription</p>
+                <p className={cn("text-lg font-semibold leading-tight", t.cardTitle)}>{currentPlan.name}</p>
+                <p className={cn("mt-0.5 max-w-md text-sm", t.cardMeta)}>{currentPlan.description}</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold tabular-nums text-neutral-900">
+              <p className={cn("text-3xl font-bold tabular-nums tracking-tight", t.cardStat)}>
                 {currentPlan.price}
-                <span className="text-sm font-medium text-neutral-400">{currentPlan.cadence}</span>
+                <span className={cn("text-sm font-medium", t.cardMuted)}>{currentPlan.cadence}</span>
               </p>
-              <p className="mt-0.5 text-xs text-neutral-400">Renews Jun 1, 2026</p>
+              <p className={cn("mt-1 text-xs", t.cardMuted)}>Renews Jun 1, 2026</p>
             </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Plan options */}
-        <div className="rounded-xl border border-ui-border/80 bg-white p-5 shadow-sm">
-          <div className="mb-4">
-            <p className="text-sm font-medium text-neutral-900">Available plans</p>
-            <p className="mt-0.5 text-xs text-neutral-500">Choose the tier that fits your workspace.</p>
+        {/* Plan picker */}
+        <section>
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className={cn("text-base font-semibold", t.pageHeading)}>Choose a plan</h2>
+              <p className={cn("mt-0.5 text-sm", t.pageSubheading)}>
+                Select the tier that fits your workspace needs.
+              </p>
+            </div>
+            <Button
+              onClick={handleUpdatePlan}
+              disabled={loading || saving || !planChanged}
+              className={cn(
+                "h-10 rounded-xl px-5 text-sm font-semibold shadow-none transition-all",
+                saved
+                  ? "bg-emerald-600 text-white hover:bg-emerald-600"
+                  : "hub-cta bg-blue-600 text-white hover:bg-blue-500"
+              )}
+            >
+              {saved ? (
+                <>
+                  <CheckCheck className="mr-1.5 h-4 w-4" /> Saved
+                </>
+              ) : saving ? (
+                <>
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Saving…
+                </>
+              ) : planChanged ? (
+                `Switch to ${selectedTierName}`
+              ) : (
+                "Current plan"
+              )}
+            </Button>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             {PLAN_OPTIONS.map((plan) => {
               const selected = selectedTier === plan.id;
               const isActive = activeTier === plan.id;
@@ -187,26 +216,42 @@ export default function BillingPage() {
                   type="button"
                   onClick={() => handleSelectTier(plan.id)}
                   className={cn(
-                    "relative flex flex-col rounded-xl border p-4 text-left transition-colors",
+                    "group flex flex-col rounded-2xl border p-5 text-left transition-all",
                     selected
-                      ? "border-blue-500/60 bg-blue-50/50 ring-1 ring-blue-500/30"
-                      : "border-ui-border/80 bg-white hover:border-blue-300"
+                      ? t.dark
+                        ? "border-blue-500/50 bg-blue-500/10 ring-1 ring-blue-500/30"
+                        : "border-blue-400/70 bg-gradient-to-b from-blue-50/90 to-white ring-1 ring-blue-200/80"
+                      : cn(t.card, "hover:border-blue-300/60")
                   )}
                 >
-                  {isActive ? (
-                    <span className="absolute right-3 top-3 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                      Current
-                    </span>
-                  ) : null}
-                  <p className="text-sm font-semibold text-neutral-900">{plan.name}</p>
-                  <p className="mt-1 text-xl font-bold tabular-nums text-neutral-900">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className={cn("text-sm font-semibold", t.cardTitle)}>{plan.name}</p>
+                    {isActive ? (
+                      <Badge
+                        className={cn(
+                          "shrink-0 border-0 px-2 py-0 text-[10px] font-semibold",
+                          t.dark ? "bg-emerald-500/20 text-emerald-300" : "bg-emerald-100 text-emerald-700"
+                        )}
+                      >
+                        Active
+                      </Badge>
+                    ) : null}
+                  </div>
+                  <p className={cn("mt-2 text-2xl font-bold tabular-nums", t.cardStat)}>
                     {plan.price}
-                    <span className="text-xs font-medium text-neutral-400">{plan.cadence}</span>
+                    <span className={cn("text-xs font-medium", t.cardMuted)}>{plan.cadence}</span>
                   </p>
-                  <ul className="mt-3 space-y-1.5">
+                  <p className={cn("mt-2 text-xs leading-relaxed", t.cardMeta)}>{plan.description}</p>
+                  <ul className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: "inherit" }}>
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2 text-xs text-neutral-600">
-                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue-600" strokeWidth={2.5} />
+                      <li key={feature} className={cn("flex items-start gap-2 text-xs", t.cardRowValue)}>
+                        <Check
+                          className={cn(
+                            "mt-0.5 h-3.5 w-3.5 shrink-0",
+                            selected ? "text-blue-500" : t.dark ? "text-slate-500" : "text-slate-400"
+                          )}
+                          strokeWidth={2.5}
+                        />
                         {feature}
                       </li>
                     ))}
@@ -215,86 +260,87 @@ export default function BillingPage() {
               );
             })}
           </div>
+        </section>
 
-          <div className="mt-5 flex items-center gap-3">
-            <Button
-              onClick={handleUpdatePlan}
-              disabled={loading || saving || selectedTier === activeTier}
-              className={cn(
-                "min-w-[140px] rounded-full font-semibold transition-all",
-                saved
-                  ? "border-0 bg-emerald-600 text-white hover:bg-emerald-600"
-                  : "border border-ui-border/80 bg-blue-600 text-white hover:bg-blue-700"
-              )}
-            >
-              {saved ? (
-                <><CheckCheck className="mr-1.5 h-4 w-4" /> Saved</>
-              ) : saving ? (
-                <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Saving…</>
-              ) : (
-                "Update plan"
-              )}
-            </Button>
-            {selectedTier !== activeTier ? (
-              <p className="text-xs text-neutral-500">
-                Switching to <span className="font-medium text-neutral-700">{selectedTierName}</span>
-              </p>
-            ) : null}
-          </div>
-        </div>
-
-        {/* Payment method */}
-        <div className="rounded-xl border border-ui-border/80 bg-white p-5 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-14 shrink-0 items-center justify-center rounded-lg border border-ui-border/80 bg-neutral-50 text-neutral-600">
-                <CreditCard className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-neutral-900">Visa ending in 4242</p>
-                <p className="text-xs text-neutral-500">Expires 08 / 2028</p>
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              className="rounded-full border-ui-border/80 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
-            >
-              Update payment method
-            </Button>
-          </div>
-        </div>
-
-        {/* Billing history */}
-        <div className="rounded-xl border border-ui-border/80 bg-white shadow-sm">
-          <div className="border-b border-ui-border/80 px-5 py-4">
-            <p className="text-sm font-medium text-neutral-900">Billing history</p>
-            <p className="mt-0.5 text-xs text-neutral-500">Download invoices for your records.</p>
-          </div>
-          <div className="divide-y divide-ui-border/70">
-            {INVOICES.map((invoice) => (
-              <div key={invoice.id} className="flex items-center justify-between gap-4 px-5 py-3.5">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-neutral-900">{invoice.id}</p>
-                  <p className="text-xs text-neutral-500">{invoice.date}</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                    {invoice.status}
-                  </span>
-                  <span className="text-sm font-medium tabular-nums text-neutral-900">{invoice.amount}</span>
-                  <button
-                    type="button"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
-                    aria-label={`Download ${invoice.id}`}
+        {/* Payment + history */}
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card className={cn("rounded-2xl border shadow-none", t.card)}>
+            <CardContent className="p-5">
+              <p className={cn("text-sm font-semibold", t.cardTitle)}>Payment method</p>
+              <p className={cn("mt-0.5 text-xs", t.cardMeta)}>Default card on file</p>
+              <div className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-inherit bg-black/[0.02] p-4 dark:bg-white/[0.03]">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={cn(
+                      "flex h-10 w-14 shrink-0 items-center justify-center rounded-lg border",
+                      t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
+                    )}
                   >
-                    <Download className="h-4 w-4" />
-                  </button>
+                    <CreditCard className={cn("h-5 w-5", t.cardMeta)} strokeWidth={1.75} />
+                  </div>
+                  <div>
+                    <p className={cn("text-sm font-medium", t.cardTitle)}>Visa ···· 4242</p>
+                    <p className={cn("text-xs", t.cardMeta)}>Expires 08 / 2028</p>
+                  </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "h-9 rounded-lg px-3 text-xs font-semibold shadow-none",
+                    t.outlineBtn
+                  )}
+                >
+                  Update
+                </Button>
               </div>
-            ))}
-          </div>
+            </CardContent>
+          </Card>
+
+          <Card className={cn("overflow-hidden rounded-2xl border shadow-none", t.card)}>
+            <div className={cn("border-b px-5 py-4", t.cardDivider)}>
+              <p className={cn("text-sm font-semibold", t.cardTitle)}>Billing history</p>
+              <p className={cn("mt-0.5 text-xs", t.cardMeta)}>Recent invoices</p>
+            </div>
+            <div className={cn("divide-y", t.cardDivider)}>
+              {INVOICES.map((invoice) => (
+                <div
+                  key={invoice.id}
+                  className="flex items-center justify-between gap-3 px-5 py-3.5"
+                >
+                  <div className="min-w-0">
+                    <p className={cn("truncate text-sm font-medium", t.cardTitle)}>{invoice.id}</p>
+                    <p className={cn("text-xs", t.cardMeta)}>{invoice.date}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3">
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "rounded-full border-0 px-2 py-0 text-[10px] font-semibold",
+                        t.dark ? "bg-emerald-500/15 text-emerald-300" : "bg-emerald-50 text-emerald-700"
+                      )}
+                    >
+                      {invoice.status}
+                    </Badge>
+                    <span className={cn("text-sm font-semibold tabular-nums", t.cardStat)}>
+                      {invoice.amount}
+                    </span>
+                    <button
+                      type="button"
+                      className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+                        t.menuBtn
+                      )}
+                      aria-label={`Download ${invoice.id}`}
+                    >
+                      <Download className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
       </div>
-    </WorkspacePageShell>
+    </WorkspaceHubPageShell>
   );
 }
