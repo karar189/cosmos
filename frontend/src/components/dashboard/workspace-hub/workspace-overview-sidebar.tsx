@@ -26,7 +26,9 @@ import {
   buildWorkspaceQuickActionsGroup,
 } from "@/components/dashboard/layout/data/sidebar-data";
 import type { NavCollapsible, NavItem, NavLink } from "@/components/dashboard/layout/types";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { WorkspaceHubUserMenu } from "@/components/dashboard/workspace-hub/workspace-hub-user-menu";
+import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import {
   getWorkspaceTierState,
   syncWorkspaceTierFromLatestTemplate,
@@ -58,6 +60,8 @@ function NavItemBadge({ children }: { children: string }) {
 }
 
 function HubNavLink({ item, pathname }: { item: NavLink; pathname: string }) {
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   const active = isPathActive(pathname, item.url);
   const Icon = item.icon;
   return (
@@ -65,19 +69,11 @@ function HubNavLink({ item, pathname }: { item: NavLink; pathname: string }) {
       href={item.url}
       className={cn(
         "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-colors",
-        active
-          ? "bg-neutral-100 text-neutral-900 shadow-sm"
-          : "text-neutral-500 hover:bg-neutral-100/60 hover:text-neutral-900"
+        active ? t.sidebarNavActive : t.sidebarNav
       )}
     >
       {Icon ? (
-        <Icon
-          className={cn(
-            "h-[18px] w-[18px] shrink-0",
-            active ? "text-neutral-900" : "text-neutral-500 group-hover:text-neutral-900"
-          )}
-          strokeWidth={1.75}
-        />
+        <Icon className={cn("h-[18px] w-[18px] shrink-0", t.sidebarNavIcon(active))} strokeWidth={1.75} />
       ) : null}
       <span className="flex-1 truncate">{item.title}</span>
       {item.badge ? <NavItemBadge>{item.badge}</NavItemBadge> : null}
@@ -86,6 +82,8 @@ function HubNavLink({ item, pathname }: { item: NavLink; pathname: string }) {
 }
 
 function HubNavCollapsible({ item, pathname }: { item: NavCollapsible; pathname: string }) {
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   const Icon = item.icon;
   const childActive = item.items.some((sub) => isPathActive(pathname, sub.url));
   const [open, setOpen] = useState(childActive);
@@ -100,17 +98,12 @@ function HubNavCollapsible({ item, pathname }: { item: NavCollapsible; pathname:
         type="button"
         className={cn(
           "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium transition-colors",
-          childActive
-            ? "bg-neutral-100/80 text-neutral-900"
-            : "text-neutral-500 hover:bg-neutral-100/60 hover:text-neutral-900"
+          childActive ? t.sidebarNavActive : t.sidebarNav
         )}
       >
         {Icon ? (
           <Icon
-            className={cn(
-              "h-[18px] w-[18px] shrink-0",
-              childActive ? "text-neutral-900" : "text-neutral-500 group-hover:text-neutral-900"
-            )}
+            className={cn("h-[18px] w-[18px] shrink-0", t.sidebarNavIcon(childActive))}
             strokeWidth={1.75}
           />
         ) : null}
@@ -118,7 +111,8 @@ function HubNavCollapsible({ item, pathname }: { item: NavCollapsible; pathname:
         {item.badge ? <NavItemBadge>{item.badge}</NavItemBadge> : null}
         <ChevronRight
           className={cn(
-            "h-4 w-4 shrink-0 text-neutral-400 transition-transform",
+            "h-4 w-4 shrink-0 transition-transform",
+            t.dark ? "text-slate-500" : "text-neutral-400",
             open && "rotate-90"
           )}
           strokeWidth={1.75}
@@ -134,17 +128,12 @@ function HubNavCollapsible({ item, pathname }: { item: NavCollapsible; pathname:
               href={sub.url}
               className={cn(
                 "group flex items-center gap-3 rounded-lg py-2 pl-7 pr-3 text-[12px] font-medium transition-colors",
-                active
-                  ? "bg-neutral-100 text-neutral-900"
-                  : "text-neutral-500 hover:bg-neutral-100/60 hover:text-neutral-900"
+                active ? t.sidebarNavActive : t.sidebarNav
               )}
             >
               {SubIcon ? (
                 <SubIcon
-                  className={cn(
-                    "h-4 w-4 shrink-0",
-                    active ? "text-neutral-900" : "text-neutral-500 group-hover:text-neutral-900"
-                  )}
+                  className={cn("h-4 w-4 shrink-0", t.sidebarNavIcon(active))}
                   strokeWidth={1.75}
                 />
               ) : null}
@@ -159,9 +148,16 @@ function HubNavCollapsible({ item, pathname }: { item: NavCollapsible; pathname:
 }
 
 function HubNavGroup({ title, items, pathname }: { title: string; items: NavItem[]; pathname: string }) {
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   return (
     <div className="space-y-0.5">
-      <p className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+      <p
+        className={cn(
+          "px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wider",
+          t.dark ? "text-slate-500" : "text-neutral-400"
+        )}
+      >
         {title}
       </p>
       {items.map((item) => {
@@ -197,11 +193,13 @@ export function WorkspaceOverviewSidebar({
     return () => window.removeEventListener(WORKSPACE_TIER_UPDATED_EVENT, sync);
   }, [workspaceNameProp]);
 
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   const workspaceGroup = buildWorkspaceNavGroup();
   const quickActionsGroup = buildWorkspaceQuickActionsGroup();
 
   return (
-    <aside className="workspace-hub-sidebar flex h-screen w-[248px] shrink-0 flex-col rounded-tl-[28px] border-r border-ui-border/80 shadow-[inset_1px_0_0_rgba(255,255,255,0.75)]">
+    <aside className="workspace-hub-sidebar flex h-screen w-[248px] shrink-0 flex-col rounded-tl-[28px] border-r border-ui-border/80">
       {/* Workspace switcher */}
       <div className="px-4 pb-2 pt-5">
         <DropdownMenu>
@@ -209,20 +207,25 @@ export function WorkspaceOverviewSidebar({
             <button
               type="button"
               className={cn(
-                "flex w-full items-center gap-3 rounded-2xl border border-ui-border/80 bg-white px-3 py-3 text-left transition-colors",
-                "hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                "flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30",
+                t.dark
+                  ? "border-white/10 bg-white/10 hover:bg-white/15"
+                  : "border-ui-border/80 bg-white hover:bg-neutral-50"
               )}
             >
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
                 <Building2 className="h-4 w-4" strokeWidth={1.75} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold tracking-tight text-neutral-900">
+                <p className={cn("truncate text-sm font-semibold tracking-tight", t.brandText)}>
                   {workspaceName}
                 </p>
-                <p className="text-[11px] text-neutral-500">Founder</p>
+                <p className={cn("text-[11px]", t.cardMeta)}>Founder</p>
               </div>
-              <ChevronDown className="h-4 w-4 shrink-0 text-neutral-400" strokeWidth={1.75} />
+              <ChevronDown
+                className={cn("h-4 w-4 shrink-0", t.dark ? "text-slate-500" : "text-neutral-400")}
+                strokeWidth={1.75}
+              />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -255,15 +258,25 @@ export function WorkspaceOverviewSidebar({
       {/* Help + user */}
       <div className="space-y-3 px-4 pb-5 pt-2">
         <Link
-          href="/dashboard/settings"
-          className="flex items-center gap-3 rounded-2xl border border-ui-border/60 bg-blue-50/50 px-3 py-3 transition-colors hover:bg-blue-50"
+          href="/dashboard/workspace/help"
+          className={cn(
+            "flex items-center gap-3 rounded-2xl border px-3 py-3 transition-colors",
+            t.dark
+              ? "border-white/10 bg-blue-950/40 hover:bg-blue-950/60"
+              : "border-ui-border/60 bg-blue-50/50 hover:bg-blue-50"
+          )}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+          <div
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-lg",
+              t.dark ? "bg-blue-600/30 text-blue-300" : "bg-blue-100 text-blue-600"
+            )}
+          >
             <LifeBuoy className="h-4 w-4" strokeWidth={1.75} />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-neutral-900">Need Help?</p>
-            <p className="text-[11px] text-neutral-500">Chat with support</p>
+            <p className={cn("text-xs font-semibold", t.promoTitle)}>Need Help?</p>
+            <p className={cn("text-[11px]", t.cardMeta)}>Chat with support</p>
           </div>
         </Link>
 

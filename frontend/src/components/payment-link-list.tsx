@@ -3,7 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { Copy, ExternalLink, RefreshCw, CheckCircle2, Clock, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
+import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
+import { cn } from "@/utils";
 import { getExplorerTxUrl } from "@/lib/stellar-explorer";
+import { USE_MOCK_DASHBOARD_DATA, fallbackPaymentLinks } from "@/data/fallback";
 
 function truncate(str: string, head = 28, tail = 10) {
   if (str.length <= head + tail + 3) return str;
@@ -29,6 +33,8 @@ interface PaymentLinkListProps {
 }
 
 export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   const [links, setLinks] = useState<PaymentLinkItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +46,11 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
     setError(null);
     setLoading(true);
     try {
+      if (USE_MOCK_DASHBOARD_DATA) {
+        setLinks(fallbackPaymentLinks);
+        return;
+      }
+
       const res = await fetch(`/api/payment-link?businessId=${encodeURIComponent(businessId)}`, {
         credentials: "same-origin",
       });
@@ -79,12 +90,22 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
   }
 
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl border shadow-sm",
+        t.dark ? "border-white/10 bg-white/5" : "border-ui-border/80 bg-white"
+      )}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+      <div
+        className={cn(
+          "flex items-center justify-between border-b px-5 py-4",
+          t.dark ? "border-white/10" : "border-ui-border/70"
+        )}
+      >
         <div>
-          <p className="text-sm font-medium text-white">Your payment links</p>
-          <p className="text-xs text-white/35 mt-0.5">
+          <p className={cn("text-sm font-medium", t.pageHeading)}>Your payment links</p>
+          <p className={cn("mt-0.5 text-xs", t.pageSubheading)}>
             {loading ? "Loading…" : `${links.length} link${links.length !== 1 ? "s" : ""} · payments go to your verified balance`}
           </p>
         </div>
@@ -93,7 +114,12 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
           size="sm"
           onClick={fetchLinks}
           disabled={loading}
-          className="h-8 gap-1.5 text-xs text-white/50 hover:text-white hover:bg-white/[0.06] border border-white/[0.07]"
+          className={cn(
+            "h-8 gap-1.5 border text-xs",
+            t.dark
+              ? "border-white/10 text-slate-300 hover:bg-white/10 hover:text-slate-100"
+              : "border-ui-border/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          )}
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           Refresh
@@ -109,27 +135,32 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
         )}
         
         {statusHint && (
-          <p className="text-white/40 text-xs rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 mb-3">
+          <p
+            className={cn(
+              "mb-3 rounded-lg border px-3 py-2 text-xs",
+              t.dark ? "border-white/10 bg-white/5 text-slate-400" : "border-ui-border/80 bg-slate-50 text-slate-600"
+            )}
+          >
             {statusHint}
           </p>
         )}
 
         {!loading && links.length === 0 && (
           <div className="flex flex-col items-center gap-2 py-10 text-center">
-            <Link2 className="h-8 w-8 text-white/15" />
-            <p className="text-sm text-white/30">No payment links yet.</p>
-            <p className="text-xs text-white/20">Create one using the forms below.</p>
+            <Link2 className={cn("h-8 w-8", t.emptyIcon)} />
+            <p className={cn("text-sm", t.emptyTitle)}>No payment links yet.</p>
+            <p className={cn("text-xs", t.emptyBody)}>Create one using the forms above.</p>
           </div>
         )}
 
         {links.length > 0 && (
-          <ul className="divide-y divide-white/[0.05]">
+          <ul className={cn("divide-y", t.dark ? "divide-white/10" : "divide-ui-border/70")}>
             {links.map((link) => (
-              <li key={link.id} className="py-3.5 flex flex-col gap-2">
+              <li key={link.id} className="flex flex-col gap-2 py-3.5">
                 {/* Top row */}
-                <div className="flex items-center gap-2.5 flex-wrap">
+                <div className="flex flex-wrap items-center gap-2.5">
                   {/* Amount */}
-                  <span className="text-sm font-semibold text-white">
+                  <span className={cn("text-sm font-semibold", t.pageHeading)}>
                     {link.amount ? `${link.amount} XLM` : "Any amount"}
                   </span>
 
@@ -148,17 +179,20 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
 
                   {/* Purpose / client */}
                   {link.purpose && (
-                    <span className="text-white/35 text-xs">· {link.purpose}</span>
+                    <span className={cn("text-xs", t.pageSubheading)}>· {link.purpose}</span>
                   )}
                   {link.clientName && (
-                    <span className="text-white/25 text-xs">({link.clientName})</span>
+                    <span className={cn("text-xs", t.cardMuted)}>({link.clientName})</span>
                   )}
 
                   {/* Check status — pushed right */}
                   <button
                     onClick={() => checkStatus(link.id)}
                     disabled={checking === link.id}
-                    className="ml-auto text-[11px] text-white/30 hover:text-white/70 transition-colors disabled:opacity-50"
+                    className={cn(
+                      "ml-auto text-[11px] transition-colors disabled:opacity-50",
+                      t.dark ? "text-slate-500 hover:text-slate-200" : "text-slate-400 hover:text-slate-700"
+                    )}
                   >
                     {checking === link.id ? "Checking…" : "Check status"}
                   </button>
@@ -170,7 +204,10 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-w-0 items-center gap-1 font-mono text-xs text-sky-300/80 transition-colors hover:text-sky-200"
+                    className={cn(
+                      "inline-flex min-w-0 items-center gap-1 font-mono text-xs transition-colors",
+                      t.dark ? "text-sky-300 hover:text-sky-200" : "text-blue-700 hover:text-blue-900"
+                    )}
                     title={link.url}
                   >
                     <span className="truncate">{truncate(link.url)}</span>
@@ -180,7 +217,10 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
                   <button
                     onClick={() => copyLink(link.url)}
                     title="Copy link"
-                    className="ml-0.5 text-white/25 hover:text-white/60 transition-colors"
+                    className={cn(
+                      "ml-0.5 transition-colors",
+                      t.dark ? "text-slate-500 hover:text-slate-200" : "text-slate-400 hover:text-slate-700"
+                    )}
                   >
                     <Copy className={`h-3.5 w-3.5 ${copied === link.url ? "text-emerald-400" : ""}`} />
                   </button>
@@ -190,7 +230,10 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
                       href={getExplorerTxUrl(link.commitmentTxHash)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-2 text-[11px] text-sky-300/75 transition-colors hover:text-sky-200"
+                      className={cn(
+                        "ml-2 text-[11px] transition-colors",
+                        t.dark ? "text-sky-300 hover:text-sky-200" : "text-blue-700 hover:text-blue-900"
+                      )}
                     >
                       On-chain proof ↗
                     </a>

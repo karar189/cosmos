@@ -19,6 +19,7 @@ import {
   getWorkspaceTierState,
   WORKSPACE_TIER_UPDATED_EVENT,
 } from "@/lib/workspace-tier-context";
+import { POST_SIGN_OUT_PATH } from "@/lib/launch-auth";
 
 async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedTemplate[]> {
   try {
@@ -119,7 +120,7 @@ export function WorkspacePageShell({
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
     window.dispatchEvent(new Event("hypertron-sign-out"));
     disconnect();
-    router.push("/?launch=1");
+    router.push(POST_SIGN_OUT_PATH);
   };
 
   if (!publicKey && !sessionLoading && !isPrivy) {
@@ -151,7 +152,7 @@ export function WorkspacePageShell({
       <div className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden bg-transparent">
         <WorkspaceHubShellBar breadcrumbs={breadcrumbs} workspaces={workspaces} />
         <div className="flex-1 overflow-y-auto">
-          <div className="workspace-hub-page-content mx-auto w-full max-w-7xl px-8 pb-10 pt-6">
+          <div className="workspace-hub-page-content w-full px-5 pb-8 pt-4 lg:px-6">
             {children}
           </div>
         </div>

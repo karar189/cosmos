@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { LucideIcon } from "lucide-react";
 
 export type User = {
   name: string;
@@ -8,7 +8,7 @@ export type User = {
 
 export type Team = {
   name: string;
-  logo: ComponentType<{ className?: string }>;
+  logo: LucideIcon;
   plan: string;
 };
 

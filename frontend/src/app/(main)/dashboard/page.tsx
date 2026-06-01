@@ -12,6 +12,7 @@ import { useFreighter } from "@/hooks/useFreighter";
 import { useAppSession } from "@/hooks/useAppSession";
 import { loadSavedTemplates, type SavedTemplate } from "@/lib/my-templates-storage";
 import type { WorkspaceCardModel } from "@/components/dashboard/workspace-hub/workspace-hub-main";
+import { POST_SIGN_OUT_PATH } from "@/lib/launch-auth";
 
 async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedTemplate[]> {
   try {
@@ -85,7 +86,7 @@ function WorkspaceHubContent() {
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
     window.dispatchEvent(new Event("hypertron-sign-out"));
     disconnect();
-    router.push("/?launch=1");
+    router.push(POST_SIGN_OUT_PATH);
   };
 
   const handleCreateWorkspace = () => {

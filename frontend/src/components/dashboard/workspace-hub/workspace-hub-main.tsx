@@ -23,7 +23,9 @@ import {
   Archive,
   ExternalLink,
 } from "lucide-react";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { WorkspaceHubTopChrome } from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
+import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -83,14 +85,17 @@ export function templatesToWorkspaces(templates: SavedTemplate[]): WorkspaceCard
   }));
 }
 
-const ROLE_STYLES = {
+const ROLE_STYLES_LIGHT = {
   Owner: "bg-blue-100 text-blue-800 border-blue-200",
   Admin: "bg-sky-100 text-sky-800 border-sky-200",
   Member: "bg-slate-100 text-slate-700 border-slate-200",
 } as const;
 
-const WORKSPACE_MENU_ITEM =
-  "cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium text-neutral-700 focus:bg-neutral-100 focus:text-neutral-700 data-[highlighted]:bg-neutral-100 data-[highlighted]:text-neutral-700";
+const ROLE_STYLES_DARK = {
+  Owner: "bg-blue-500/20 text-blue-200 border-blue-500/30",
+  Admin: "bg-sky-500/20 text-sky-200 border-sky-500/30",
+  Member: "bg-white/10 text-slate-300 border-white/15",
+} as const;
 
 function WorkspaceHubCard({
   workspace: ws,
@@ -101,9 +106,13 @@ function WorkspaceHubCard({
   opening: boolean;
   onOpen: () => void;
 }) {
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
+  const roleStyles = t.dark ? ROLE_STYLES_DARK : ROLE_STYLES_LIGHT;
+
   return (
-    <Card className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)]">
-      <div className="bg-gradient-to-br from-blue-100/80 via-sky-50/70 to-white px-5 pb-4 pt-5">
+    <Card className={cn("overflow-hidden rounded-2xl border", t.card)}>
+      <div className={cn("px-5 pb-4 pt-5", t.cardHeader)}>
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-900 text-sm font-bold text-white shadow-sm">
@@ -111,18 +120,20 @@ function WorkspaceHubCard({
             </div>
             <div className="min-w-0 flex flex-col justify-center gap-1">
               <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
-                <p className="truncate text-[15px] font-semibold leading-none text-slate-900">{ws.name}</p>
+                <p className={cn("truncate text-[15px] font-semibold leading-none", t.cardTitle)}>
+                  {ws.name}
+                </p>
                 <Badge
                   variant="outline"
                   className={cn(
-                    "shrink-0 rounded-full border-0 px-2 py-0 text-[10px] font-semibold leading-5",
-                    ROLE_STYLES[ws.role]
+                    "shrink-0 rounded-full border px-2 py-0 text-[10px] font-semibold leading-5",
+                    roleStyles[ws.role]
                   )}
                 >
                   {ws.role}
                 </Badge>
               </div>
-              <p className="text-xs leading-none text-slate-500">
+              <p className={cn("text-xs leading-none", t.cardMeta)}>
                 {ws.type} • {ws.members} members
               </p>
             </div>
@@ -131,7 +142,10 @@ function WorkspaceHubCard({
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="-mr-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 outline-none hover:bg-white/60 hover:text-slate-600 focus:ring-0 focus-visible:ring-0 data-[state=open]:bg-white/60 data-[state=open]:text-slate-600"
+                className={cn(
+                  "-mr-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg outline-none focus:ring-0 focus-visible:ring-0",
+                  t.menuBtn
+                )}
                 aria-label="Workspace options"
               >
                 <MoreVertical className="h-4 w-4" />
@@ -139,32 +153,33 @@ function WorkspaceHubCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="z-50 min-w-[200px] rounded-xl border border-slate-200 bg-white p-1 text-slate-900 shadow-md"
+              className={cn("z-50 min-w-[200px] rounded-xl border", t.menuContent)}
             >
               <DropdownMenuItem
-                className={WORKSPACE_MENU_ITEM}
+                className={cn("cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium", t.menuItem)}
                 onSelect={() => onOpen()}
               >
-                <ExternalLink className="h-4 w-4 text-neutral-700" strokeWidth={1.75} />
+                <ExternalLink className={cn("h-4 w-4", t.menuIcon)} strokeWidth={1.75} />
                 Open workspace
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className={WORKSPACE_MENU_ITEM}>
+              <DropdownMenuItem asChild className={cn("cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium", t.menuItem)}>
                 <Link href="/dashboard/settings" className="flex items-center gap-2.5">
-                  <Settings className="h-4 w-4 text-neutral-700" strokeWidth={1.75} />
+                  <Settings className={cn("h-4 w-4", t.menuIcon)} strokeWidth={1.75} />
                   Workspace settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className={WORKSPACE_MENU_ITEM}>
+              <DropdownMenuItem asChild className={cn("cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium", t.menuItem)}>
                 <Link href="/dashboard/employee-management" className="flex items-center gap-2.5">
-                  <Users className="h-4 w-4 text-neutral-700" strokeWidth={1.75} />
+                  <Users className={cn("h-4 w-4", t.menuIcon)} strokeWidth={1.75} />
                   Manage members
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="my-1 bg-slate-200" />
+              <DropdownMenuSeparator className={cn("my-1", t.menuSeparator)} />
               <DropdownMenuItem
                 className={cn(
-                  WORKSPACE_MENU_ITEM,
-                  "text-red-700 focus:text-red-700 data-[highlighted]:text-red-700"
+                  "cursor-pointer gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium",
+                  t.menuItem,
+                  "text-red-400 focus:text-red-300 data-[highlighted]:text-red-300"
                 )}
               >
                 <Archive className="h-4 w-4 text-red-700" strokeWidth={1.75} />
@@ -176,54 +191,54 @@ function WorkspaceHubCard({
       </div>
 
       <CardContent className="p-0">
-        <div className="border-b border-slate-100 px-4 py-3.5">
-          <div className="grid grid-cols-3 divide-x divide-slate-100">
-            <p className="pr-3 text-left text-lg font-bold tabular-nums leading-none text-slate-900">
+        <div className={cn("border-b px-4 py-3.5", t.cardDivider)}>
+          <div className={cn("grid grid-cols-3 divide-x", t.cardDivider)}>
+            <p className={cn("pr-3 text-left text-lg font-bold tabular-nums leading-none", t.cardStat)}>
               {ws.openTasks}
             </p>
-            <p className="px-3 text-left text-lg font-bold tabular-nums leading-none text-slate-900">
+            <p className={cn("px-3 text-left text-lg font-bold tabular-nums leading-none", t.cardStat)}>
               {ws.pendingApprovals}
             </p>
-            <p className="pl-3 text-left text-lg font-bold tabular-nums leading-none text-slate-900">
+            <p className={cn("pl-3 text-left text-lg font-bold tabular-nums leading-none", t.cardStat)}>
               {ws.complianceAlerts}
             </p>
           </div>
-          <div className="mt-1.5 grid grid-cols-3 divide-x divide-slate-100">
-            <p className="pr-3 text-left text-xs text-slate-500">Open Tasks</p>
-            <p className="px-3 text-left text-xs text-slate-500">Pending Approvals</p>
-            <p className="pl-3 text-left text-xs text-slate-500">Compliance Alerts</p>
+          <div className={cn("mt-1.5 grid grid-cols-3 divide-x", t.cardDivider)}>
+            <p className={cn("pr-3 text-left text-xs", t.cardLabel)}>Open Tasks</p>
+            <p className={cn("px-3 text-left text-xs", t.cardLabel)}>Pending Approvals</p>
+            <p className={cn("pl-3 text-left text-xs", t.cardLabel)}>Compliance Alerts</p>
           </div>
-          <div className="mt-1 grid grid-cols-3 divide-x divide-slate-100">
+          <div className={cn("mt-1 grid grid-cols-3 divide-x", t.cardDivider)}>
             {ws.openTasks > 0 ? (
-              <p className="pr-3 text-left text-[10px] font-medium text-red-500">Needs attention</p>
+              <p className="pr-3 text-left text-[10px] font-medium text-red-400">Needs attention</p>
             ) : (
-              <p className="pr-3 text-left text-[10px] text-slate-400">—</p>
+              <p className={cn("pr-3 text-left text-[10px]", t.cardMuted)}>—</p>
             )}
             {ws.pendingApprovals > 0 ? (
-              <p className="px-3 text-left text-[10px] font-medium text-amber-600">Action required</p>
+              <p className="px-3 text-left text-[10px] font-medium text-amber-400">Action required</p>
             ) : (
-              <p className="px-3 text-left text-[10px] text-slate-400">—</p>
+              <p className={cn("px-3 text-left text-[10px]", t.cardMuted)}>—</p>
             )}
             {ws.complianceAlerts > 0 ? (
-              <p className="pl-3 text-left text-[10px] font-medium text-red-500">
+              <p className="pl-3 text-left text-[10px] font-medium text-red-400">
                 {ws.complianceAlerts >= 3 ? "High priority" : "Medium priority"}
               </p>
             ) : (
-              <p className="pl-3 text-left text-[10px] font-medium text-emerald-600">All clear</p>
+              <p className="pl-3 text-left text-[10px] font-medium text-emerald-400">All clear</p>
             )}
           </div>
         </div>
 
-        <div className="space-y-2 border-b border-slate-100 px-5 py-3.5 text-xs">
+        <div className={cn("space-y-2 border-b px-5 py-3.5 text-xs", t.cardDivider)}>
           <div className="flex items-center justify-between gap-3">
-            <span className="text-slate-500">Last accessed</span>
-            <span className="font-medium text-slate-700">
+            <span className={t.cardRowLabel}>Last accessed</span>
+            <span className={cn("font-medium", t.cardRowValue)}>
               {formatDistanceToNow(new Date(ws.lastAccessed), { addSuffix: true })}
             </span>
           </div>
           <div className="flex items-center justify-between gap-3">
-            <span className="text-slate-500">Role</span>
-            <span className="font-semibold text-slate-900">{ws.role}</span>
+            <span className={t.cardRowLabel}>Role</span>
+            <span className={cn("font-semibold", t.cardRowValueStrong)}>{ws.role}</span>
           </div>
         </div>
 
@@ -233,7 +248,10 @@ function WorkspaceHubCard({
             variant="ghost"
             disabled={opening}
             onClick={onOpen}
-            className="h-11 w-full rounded-xl bg-blue-50 text-sm font-semibold text-blue-600 shadow-none transition-colors hover:bg-blue-100 hover:text-blue-700 active:scale-[0.99]"
+            className={cn(
+              "h-11 w-full rounded-xl text-sm font-semibold shadow-none transition-colors active:scale-[0.99]",
+              t.openCta
+            )}
           >
             {opening ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -264,6 +282,8 @@ export function WorkspaceHubMain({
   onCreateWorkspace,
 }: WorkspaceHubMainProps) {
   const router = useRouter();
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState("recent");
   const [openingId, setOpeningId] = useState<string | null>(null);
@@ -309,8 +329,8 @@ export function WorkspaceHubMain({
             />
             <CardContent className="relative z-10 flex min-h-[240px] flex-1 flex-col p-7">
               <div className="max-w-[min(70%,340px)]">
-                <h2 className="text-lg font-semibold text-[#1e1b4b]">Create New Workspace</h2>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#475569]">
+                <h2 className={cn("text-lg font-semibold", t.actionTitle)}>Create New Workspace</h2>
+                <p className={cn("mt-1.5 text-sm leading-relaxed", t.actionBody)}>
                   Start fresh and set up a new workspace for your team or organization.
                 </p>
               </div>
@@ -318,7 +338,8 @@ export function WorkspaceHubMain({
                 <Button
                   type="button"
                   onClick={onCreateWorkspace}
-                  className="h-auto w-fit rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-5 py-3 text-white hover:from-[#2563eb] hover:to-[#3b82f6]"
+                  variant="purple"
+                  className="hub-cta h-auto w-fit rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-5 py-3 hover:from-[#2563eb] hover:to-[#3b82f6]"
                 >
                   <Plus className="mr-1.5 h-4 w-4" />
                   Create Workspace
@@ -338,19 +359,27 @@ export function WorkspaceHubMain({
             <CardContent className="relative z-10 flex min-h-[240px] flex-1 flex-col p-7">
               <div className="max-w-[min(70%,340px)]">
                 <div className="flex items-start justify-between gap-3">
-                  <h2 className="text-lg font-semibold text-[#1e1b4b]">Quick Start with Template</h2>
-                  <Badge className="shrink-0 border-0 bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-[#1e1b4b] hover:bg-violet-100">
+                  <h2 className={cn("text-lg font-semibold", t.actionTitle)}>Quick Start with Template</h2>
+                  <Badge
+                    className={cn(
+                      "shrink-0 border-0 px-2 py-0.5 text-[10px] font-semibold",
+                      t.actionBadge
+                    )}
+                  >
                     New
                   </Badge>
                 </div>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#475569]">
+                <p className={cn("mt-1.5 text-sm leading-relaxed", t.actionBody)}>
                   Choose from pre-built templates tailored for Web3 companies.
                 </p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {["DAO", "Web3 Startup", "Agency", "Foundation"].map((tag) => (
                     <span
                       key={tag}
-                      className="rounded border border-orange-200/60 bg-[#fff4eb] px-1.5 py-0.5 text-[10px] font-medium leading-tight text-[#1e1b4b]"
+                      className={cn(
+                        "rounded border px-1.5 py-0.5 text-[10px] font-medium leading-tight",
+                        t.actionTag
+                      )}
                     >
                       {tag}
                     </span>
@@ -361,9 +390,12 @@ export function WorkspaceHubMain({
                 <Button
                   variant="ghost"
                   asChild
-                  className="h-auto w-fit rounded-lg border border-orange-200/40 bg-gradient-to-r from-[#fff7ed] via-[#ffedd5] to-[#ffe8d6] px-5 py-3 text-[#1e1b4b] shadow-none transition-colors hover:border-orange-300/50 hover:bg-transparent hover:bg-gradient-to-r hover:from-[#ffedd5] hover:via-[#ffe4cc] hover:to-[#ffd9b8] hover:text-[#1e1b4b] active:scale-[0.99]"
+                  className={cn(
+                    "h-auto w-fit rounded-lg border px-5 py-3 shadow-none transition-colors active:scale-[0.99]",
+                    t.templateCta
+                  )}
                 >
-                  <Link href="/dashboard/documents">
+                  <Link href="/dashboard/templates">
                     Explore Templates
                     <ArrowRight className="ml-1.5 h-4 w-4" />
                   </Link>
@@ -375,47 +407,46 @@ export function WorkspaceHubMain({
 
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Your Workspaces</h2>
-            <p className="text-sm text-slate-500">Recently accessed</p>
+            <h2 className={cn("text-lg font-semibold", t.pageHeading)}>Your Workspaces</h2>
+            <p className={cn("text-sm", t.pageSubheading)}>Recently accessed</p>
           </div>
           <div className="flex items-center gap-2">
             <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="h-9 w-[140px] rounded-lg border border-slate-200 bg-white text-sm text-slate-900 shadow-none">
+              <SelectTrigger
+                className={cn(
+                  "h-9 w-[140px] rounded-lg border text-sm shadow-none",
+                  t.selectTrigger
+                )}
+              >
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
-              <SelectContent className="rounded-lg border-slate-200 bg-white text-slate-900 shadow-md">
-                <SelectItem
-                  value="recent"
-                  className="rounded-md text-slate-700 focus:bg-slate-100 focus:text-slate-900 data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-900"
-                >
+              <SelectContent className={cn("rounded-lg border shadow-md", t.selectContent)}>
+                <SelectItem value="recent" className={cn("rounded-md", t.selectItem)}>
                   Last Accessed
                 </SelectItem>
-                <SelectItem
-                  value="name"
-                  className="rounded-md text-slate-700 focus:bg-slate-100 focus:text-slate-900 data-[highlighted]:bg-slate-100 data-[highlighted]:text-slate-900"
-                >
+                <SelectItem value="name" className={cn("rounded-md", t.selectItem)}>
                   Name
                 </SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex rounded-lg border border-slate-200 bg-white p-0.5">
+            <div className={cn("flex rounded-lg border p-0.5", t.viewToggle)}>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className={cn("h-8 w-8 rounded-md", view === "grid" && "bg-slate-100")}
+                className={cn("h-8 w-8 rounded-md", view === "grid" && t.viewToggleActive)}
                 onClick={() => setView("grid")}
               >
-                <LayoutGrid className="h-4 w-4" />
+                <LayoutGrid className={cn("h-4 w-4", t.viewToggleIcon)} />
               </Button>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className={cn("h-8 w-8 rounded-md", view === "list" && "bg-slate-100")}
+                className={cn("h-8 w-8 rounded-md", view === "list" && t.viewToggleActive)}
                 onClick={() => setView("list")}
               >
-                <List className="h-4 w-4" />
+                <List className={cn("h-4 w-4", t.viewToggleIcon)} />
               </Button>
             </div>
           </div>
@@ -423,20 +454,21 @@ export function WorkspaceHubMain({
 
         {loading ? (
           <div className="mt-8 flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+            <Loader2 className={cn("h-8 w-8 animate-spin", t.dark ? "text-blue-400" : "text-violet-600")} />
           </div>
         ) : filtered.length === 0 ? (
-          <Card className="mt-6 border-dashed border-slate-200 bg-white">
+          <Card className={cn("mt-6 border-dashed", t.emptyCard)}>
             <CardContent className="flex flex-col items-center py-16 text-center">
-              <Building2 className="h-12 w-12 text-slate-300" />
-              <p className="mt-4 text-sm font-medium text-slate-700">No workspaces yet</p>
-              <p className="mt-1 max-w-sm text-sm text-slate-500">
+              <Building2 className={cn("h-12 w-12", t.emptyIcon)} />
+              <p className={cn("mt-4 text-sm font-medium", t.emptyTitle)}>No workspaces yet</p>
+              <p className={cn("mt-1 max-w-sm text-sm", t.emptyBody)}>
                 Create your first workspace to start managing payments, compliance, and operations.
               </p>
               <Button
                 type="button"
                 onClick={onCreateWorkspace}
-                className="mt-6 rounded-lg bg-violet-600 text-white hover:bg-violet-700"
+                variant="purple"
+                className="hub-cta mt-6 rounded-lg bg-blue-600 hover:bg-blue-500"
               >
                 <Plus className="mr-1.5 h-4 w-4" />
                 Create Workspace
@@ -463,7 +495,7 @@ export function WorkspaceHubMain({
 
         {workspaces.length > 3 ? (
           <div className="mt-8 flex justify-center">
-            <Button variant="outline" className="rounded-lg border-slate-200 bg-white">
+            <Button variant="outline" className={cn("rounded-lg border", t.outlineBtn)}>
               View All Workspaces ({workspaces.length})
               <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
