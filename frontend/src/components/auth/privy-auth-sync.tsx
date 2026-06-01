@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import { useLoginTransition, loginRedirectDelay } from "@/components/auth/login-transition-provider";
@@ -22,12 +22,15 @@ export function PrivyAuthSync() {
   const syncingRef = useRef(false);
   const syncedPrivyIdRef = useRef<string | null>(null);
 
-  const redirectAfterLogin = async (target: string) => {
-    startLoginTransition("Taking you to your dashboard…");
-    await loginRedirectDelay();
-    router.replace(target);
-    endLoginTransition();
-  };
+  const redirectAfterLogin = useCallback(
+    async (target: string) => {
+      startLoginTransition("Taking you to your dashboard…");
+      await loginRedirectDelay();
+      router.replace(target);
+      endLoginTransition();
+    },
+    [router, startLoginTransition, endLoginTransition]
+  );
 
   useEffect(() => {
     if (!isPrivyConfigured() || !ready) return;
@@ -99,6 +102,7 @@ export function PrivyAuthSync() {
     router,
     startLoginTransition,
     endLoginTransition,
+    redirectAfterLogin,
   ]);
 
   useEffect(() => {

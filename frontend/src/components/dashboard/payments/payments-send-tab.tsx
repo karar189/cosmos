@@ -170,6 +170,7 @@ export function PaymentsSendTab() {
                       <button
                         type="button"
                         role="option"
+                        aria-selected={recipient.includes(contact.detail)}
                         onClick={() => selectContact(contact)}
                         className={cn(
                           "flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors",

@@ -36,13 +36,17 @@ function useWorkspaceHubNotifications(workspaces: WorkspaceStatsSource[]) {
   const summary = useMemo(() => summarizeWorkspaces(workspaces), [workspaces]);
   const hubNotifications = useMemo(() => buildHubNotifications(summary), [summary]);
 
-  const isNotificationUnread = (id: string, defaultUnread: boolean) =>
-    defaultUnread && !readNotificationIds.has(id);
+  const isNotificationUnread = useCallback(
+    (id: string, defaultUnread: boolean) =>
+      defaultUnread && !readNotificationIds.has(id),
+    [readNotificationIds]
+  );
 
   const notificationBadgeCount = useMemo(
     () =>
-      hubNotifications.filter((item) => isNotificationUnread(item.id, item.defaultUnread))
-        .length,
+      hubNotifications.filter(
+        (item) => item.defaultUnread && !readNotificationIds.has(item.id)
+      ).length,
     [hubNotifications, readNotificationIds]
   );
 
