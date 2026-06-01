@@ -12,8 +12,9 @@ import { useAppSession } from "@/hooks/useAppSession";
 import { sidebarData } from "@/components/dashboard/layout/data/sidebar-data";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 import { ConnectWalletBanner } from "@/components/dashboard/connect-wallet-banner";
+import { ProtectedRouteGuard } from "@/components/auth/protected-route-guard";
 import { usesWorkspaceHubShell } from "@/lib/workspace-hub-shell-routes";
-import { POST_SIGN_OUT_PATH } from "@/lib/launch-auth";
+import { POST_SIGN_OUT_PATH, homeLaunchPath } from "@/lib/launch-auth";
 
 function MainLayoutShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useDashboardTheme();
@@ -36,7 +37,7 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
       if (publicKey && sessionWallet !== publicKey) {
         disconnect();
         const ret = pathname && pathname.startsWith("/") ? pathname : "/dashboard";
-        window.location.assign(`/session/wallet?returnUrl=${encodeURIComponent(ret)}`);
+        window.location.assign(homeLaunchPath(ret, { wallet: true }));
       }
     };
     void run();
@@ -73,60 +74,64 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
 
   if (hubShell) {
     return (
-      <div
-        data-theme={theme}
-        suppressHydrationWarning
-        className={cn(
-          "workspace-hub-root font-default relative min-h-screen antialiased",
-          theme === "light" ? "text-slate-900" : "text-slate-100"
-        )}
-      >
-        <OnboardingGate
-          when={!sessionLoading && !!session}
-          walletAddress={publicKey}
-          scopeKey={
-            publicKey && publicKey.length === 56 && publicKey.startsWith("G")
-              ? publicKey
-              : privyUser?.id ?? null
-          }
+      <ProtectedRouteGuard>
+        <div
+          data-theme={theme}
+          suppressHydrationWarning
+          className={cn(
+            "workspace-hub-root font-default relative min-h-screen antialiased",
+            theme === "light" ? "text-slate-900" : "text-slate-100"
+          )}
         >
-          {children}
-        </OnboardingGate>
-      </div>
+          <OnboardingGate
+            when={!sessionLoading && !!session}
+            walletAddress={publicKey}
+            scopeKey={
+              publicKey && publicKey.length === 56 && publicKey.startsWith("G")
+                ? publicKey
+                : privyUser?.id ?? null
+            }
+          >
+            {children}
+          </OnboardingGate>
+        </div>
+      </ProtectedRouteGuard>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "marketing-mono font-default relative min-h-screen text-foreground antialiased dashboard-gradient-bg",
-        theme === "light" ? "dashboard-light bg-[#f5f0ff]" : "bg-black"
-      )}
-    >
-      <SidebarProvider defaultOpen={defaultOpen} className="!bg-transparent">
-        <AppSidebar
-          onDisconnect={handleSignOut}
-          user={user}
-          isSessionConnected={!!session || !!publicKey}
-        />
-        <SidebarInset className={cn("flex flex-1 flex-col bg-transparent min-h-screen")}>
-          <div className="flex flex-1 flex-col px-4 pt-4 md:px-6 md:pt-6">
-            <ConnectWalletBanner show={showConnectWallet} />
-            <OnboardingGate
-              when={!sessionLoading && !!session}
-              walletAddress={publicKey}
-              scopeKey={
-                publicKey && publicKey.length === 56 && publicKey.startsWith("G")
-                  ? publicKey
-                  : privyUser?.id ?? null
-              }
-            >
-              {children}
-            </OnboardingGate>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </div>
+    <ProtectedRouteGuard>
+      <div
+        className={cn(
+          "marketing-mono font-default relative min-h-screen text-foreground antialiased dashboard-gradient-bg",
+          theme === "light" ? "dashboard-light bg-[#f5f0ff]" : "bg-black"
+        )}
+      >
+        <SidebarProvider defaultOpen={defaultOpen} className="!bg-transparent">
+          <AppSidebar
+            onDisconnect={handleSignOut}
+            user={user}
+            isSessionConnected={!!session || !!publicKey}
+          />
+          <SidebarInset className={cn("flex flex-1 flex-col bg-transparent min-h-screen")}>
+            <div className="flex flex-1 flex-col px-4 pt-4 md:px-6 md:pt-6">
+              <ConnectWalletBanner show={showConnectWallet} />
+              <OnboardingGate
+                when={!sessionLoading && !!session}
+                walletAddress={publicKey}
+                scopeKey={
+                  publicKey && publicKey.length === 56 && publicKey.startsWith("G")
+                    ? publicKey
+                    : privyUser?.id ?? null
+                }
+              >
+                {children}
+              </OnboardingGate>
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
+      </div>
+    </ProtectedRouteGuard>
   );
 }
 

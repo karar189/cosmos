@@ -21,9 +21,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { isPrivyConfigured } from "@/lib/privy-config";
+import { WalletSignInButton } from "@/components/auth/wallet-sign-in-button";
 import {
   INVITE_VERIFIED_KEY,
   LAUNCH_QUERY_PARAM,
+  WALLET_LAUNCH_QUERY_PARAM,
   isInviteVerifiedInSession,
   safeReturnUrl,
 } from "@/lib/launch-auth";
@@ -52,20 +54,27 @@ function MonoHeroInner() {
   const [inviteCode, setInviteCode] = useState("");
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [walletAutoStart, setWalletAutoStart] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("reason") === "config") {
       setConfigError("Server auth is not fully configured. Contact support if this persists.");
     }
-    if (searchParams.get(LAUNCH_QUERY_PARAM) !== "1") return;
+    const launchRequested = searchParams.get(LAUNCH_QUERY_PARAM) === "1";
+    const walletRequested = searchParams.get(WALLET_LAUNCH_QUERY_PARAM) === "1";
+    if (!launchRequested && !walletRequested) return;
 
     setLaunchOpen(true);
-    if (isInviteVerifiedInSession()) {
+    if (isInviteVerifiedInSession() || walletRequested) {
       setLaunchStep("sign-in");
+    }
+    if (walletRequested) {
+      setWalletAutoStart(true);
     }
 
     const url = new URL(window.location.href);
     url.searchParams.delete(LAUNCH_QUERY_PARAM);
+    url.searchParams.delete(WALLET_LAUNCH_QUERY_PARAM);
     url.searchParams.delete("returnUrl");
     url.searchParams.delete("reason");
     window.history.replaceState({}, "", url.pathname + (url.search || "") + url.hash);
@@ -117,13 +126,6 @@ function MonoHeroInner() {
     resetLaunchState();
     router.push(returnUrl);
   }, [resetLaunchState, router, returnUrl]);
-
-  const handleWalletSignIn = () => {
-    markInviteVerified();
-    setLaunchOpen(false);
-    resetLaunchState();
-    router.push(`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`);
-  };
 
   const handleBackToInvite = () => {
     setLaunchStep("invite");
@@ -311,11 +313,15 @@ function MonoHeroInner() {
                     </p>
                   )}
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-auto w-full flex-col items-start gap-1 rounded-xl border-white/20 bg-transparent px-4 py-4 text-left hover:bg-white/[0.06]"
-                    onClick={handleWalletSignIn}
+                  <WalletSignInButton
+                    returnUrl={returnUrl}
+                    autoStart={walletAutoStart}
+                    onStart={markInviteVerified}
+                    onSuccess={() => {
+                      setLaunchOpen(false);
+                      resetLaunchState();
+                    }}
+                    className="h-auto w-full flex-col items-start gap-1 rounded-xl border border-white/20 bg-transparent px-4 py-4 text-left hover:bg-white/[0.06]"
                   >
                     <span className="flex w-full items-center gap-3">
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-200">
@@ -328,7 +334,7 @@ function MonoHeroInner() {
                         </span>
                       </span>
                     </span>
-                  </Button>
+                  </WalletSignInButton>
                 </div>
                 <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
                   <Button

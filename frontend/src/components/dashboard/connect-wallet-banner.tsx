@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { Wallet } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import { WalletLinkDialog } from "@/components/auth/wallet-link-dialog";
 
 type Props = {
   show: boolean;
@@ -27,11 +26,10 @@ export function ConnectWalletBanner({ show }: Props) {
           </p>
         </div>
       </div>
-      <Button asChild size="sm" variant="outline" className="shrink-0 border-amber-400/30 text-amber-50 hover:bg-amber-400/15">
-        <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
-          Connect Freighter
-        </Link>
-      </Button>
+      <WalletLinkDialog
+        returnUrl={returnUrl}
+        triggerClassName="shrink-0 border-amber-400/30 text-amber-50 hover:bg-amber-400/15"
+      />
     </div>
   );
 }
