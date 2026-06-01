@@ -14,8 +14,10 @@ import {
   ArrowRight,
   AlertTriangle,
   BarChart3,
+  Bell,
   BriefcaseBusiness,
   Building2,
+  CalendarDays,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -27,8 +29,10 @@ import {
   Filter,
   Globe2,
   ImageUp,
+  Info,
   Landmark,
   LifeBuoy,
+  LockKeyhole,
   MoreHorizontal,
   Network,
   Plus,
@@ -63,6 +67,11 @@ type WalletProvider = "freighter" | "metamask" | "walletconnect" | "coinbase" | 
 type TeamRole = "" | "owner" | "admin" | "manager" | "member" | "viewer";
 type PermissionLevel = "full-access" | "operations-access" | "view-only";
 type IntegrationCategory = "all" | "communication" | "productivity" | "ai" | "developer";
+type ComplianceMonitoringKey =
+  | "continuous-monitoring"
+  | "risk-alerts"
+  | "compliance-reports"
+  | "scheduled-reports";
 
 type TeamInvite = {
   id: string;
@@ -73,7 +82,7 @@ type TeamInvite = {
 };
 
 type WorkspaceDraft = {
-  currentStep: 1 | 2 | 3 | 4 | 5 | 6;
+  currentStep: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   workspaceType: string;
   businessName: string;
   website: string;
@@ -86,6 +95,10 @@ type WorkspaceDraft = {
   supportedChains: string[];
   inviteMembers: TeamInvite[];
   integrations: string[];
+  complianceFrameworks: string[];
+  complianceMonitoring: ComplianceMonitoringKey[];
+  dataResidency: string;
+  dataRetention: string;
 };
 
 const WORKSPACE_DRAFT_KEY = "hypertron:create-workspace:draft";
@@ -107,6 +120,15 @@ const DEFAULT_DRAFT: WorkspaceDraft = {
     { id: "invite-1", email: "", nickname: "", role: "", permission: "full-access" },
   ],
   integrations: [],
+  complianceFrameworks: ["soc-2"],
+  complianceMonitoring: [
+    "continuous-monitoring",
+    "risk-alerts",
+    "compliance-reports",
+    "scheduled-reports",
+  ],
+  dataResidency: "us",
+  dataRetention: "7-years",
 };
 
 const STEPS = [
@@ -426,6 +448,99 @@ const INTEGRATION_CATEGORIES: { id: IntegrationCategory; title: string }[] = [
   { id: "developer", title: "Developer" },
 ];
 
+const COMPLIANCE_FRAMEWORKS: WorkspaceType[] = [
+  {
+    id: "soc-2",
+    title: "SOC 2",
+    description: "Security, Availability, Processing Integrity, Confidentiality, Privacy",
+    icon: ShieldCheck,
+    iconClassName: "text-[#5b46ff]",
+    iconBackground: "bg-[#f0edff]",
+  },
+  {
+    id: "iso-27001",
+    title: "ISO 27001",
+    description: "Information security management systems",
+    icon: Globe2,
+    iconClassName: "text-[#18b678]",
+    iconBackground: "bg-[#e5f8ef]",
+  },
+  {
+    id: "gdpr",
+    title: "GDPR",
+    description: "General Data Protection Regulation",
+    icon: LockKeyhole,
+    iconClassName: "text-[#ff8a18]",
+    iconBackground: "bg-[#fff3e6]",
+  },
+  {
+    id: "hipaa",
+    title: "HIPAA",
+    description: "Health Insurance Portability and Accountability Act",
+    icon: Landmark,
+    iconClassName: "text-[#2783ff]",
+    iconBackground: "bg-[#eaf3ff]",
+  },
+  {
+    id: "pci-dss",
+    title: "PCI DSS",
+    description: "Payment Card Industry Data Security Standard",
+    icon: Sparkles,
+    iconClassName: "text-[#e43d81]",
+    iconBackground: "bg-[#fff0f6]",
+  },
+  {
+    id: "custom",
+    title: "Other / Custom",
+    description: "Use a custom compliance framework",
+    icon: MoreHorizontal,
+    iconClassName: "text-[#61709a]",
+    iconBackground: "bg-[#f1f2fb]",
+  },
+];
+
+const COMPLIANCE_MONITORING_OPTIONS: {
+  id: ComplianceMonitoringKey;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  iconClassName: string;
+  iconBackground: string;
+}[] = [
+  {
+    id: "continuous-monitoring",
+    title: "Continuous monitoring",
+    description: "Continuously monitor activities and flag risks",
+    icon: Eye,
+    iconClassName: "text-[#7047f2]",
+    iconBackground: "bg-[#f4f0ff]",
+  },
+  {
+    id: "risk-alerts",
+    title: "Risk alerts",
+    description: "Get notified about high and medium risks",
+    icon: Bell,
+    iconClassName: "text-[#18b678]",
+    iconBackground: "bg-[#e5f8ef]",
+  },
+  {
+    id: "compliance-reports",
+    title: "Compliance reports",
+    description: "Generate automated compliance reports",
+    icon: FileText,
+    iconClassName: "text-[#ff8a18]",
+    iconBackground: "bg-[#fff3e6]",
+  },
+  {
+    id: "scheduled-reports",
+    title: "Scheduled reports",
+    description: "Receive reports on a weekly or monthly basis",
+    icon: CalendarDays,
+    iconClassName: "text-[#2783ff]",
+    iconBackground: "bg-[#eaf3ff]",
+  },
+];
+
 type TreasuryOption = {
   id: string;
   title: string;
@@ -485,17 +600,19 @@ function loadWorkspaceDraft(): WorkspaceDraft {
       ...DEFAULT_DRAFT,
       ...parsed,
       currentStep:
-        parsed.currentStep === 6
-          ? 6
-          : parsed.currentStep === 5
-            ? 5
-            : parsed.currentStep === 4
-              ? 4
-              : parsed.currentStep === 3
-                ? 3
-                : parsed.currentStep === 2
-                  ? 2
-                  : 1,
+        parsed.currentStep === 7
+          ? 7
+          : parsed.currentStep === 6
+            ? 6
+            : parsed.currentStep === 5
+              ? 5
+              : parsed.currentStep === 4
+                ? 4
+                : parsed.currentStep === 3
+                  ? 3
+                  : parsed.currentStep === 2
+                    ? 2
+                    : 1,
       teamSize: TEAM_SIZES.some((size) => size.value === parsed.teamSize)
         ? (parsed.teamSize as TeamSize)
         : DEFAULT_DRAFT.teamSize,
@@ -538,6 +655,27 @@ function loadWorkspaceDraft(): WorkspaceDraft {
             INTEGRATIONS.some((integration) => integration.id === id)
           )
         : DEFAULT_DRAFT.integrations,
+      complianceFrameworks: Array.isArray(parsed.complianceFrameworks)
+        ? parsed.complianceFrameworks.filter((id): id is string =>
+            COMPLIANCE_FRAMEWORKS.some((framework) => framework.id === id)
+          )
+        : DEFAULT_DRAFT.complianceFrameworks,
+      complianceMonitoring: Array.isArray(parsed.complianceMonitoring)
+        ? parsed.complianceMonitoring.filter((id): id is ComplianceMonitoringKey =>
+            COMPLIANCE_MONITORING_OPTIONS.some((option) => option.id === id)
+          )
+        : DEFAULT_DRAFT.complianceMonitoring,
+      dataResidency:
+        parsed.dataResidency === "us" || parsed.dataResidency === "eu" || parsed.dataResidency === "apac"
+          ? parsed.dataResidency
+          : DEFAULT_DRAFT.dataResidency,
+      dataRetention:
+        parsed.dataRetention === "1-year" ||
+        parsed.dataRetention === "3-years" ||
+        parsed.dataRetention === "7-years" ||
+        parsed.dataRetention === "indefinite"
+          ? parsed.dataRetention
+          : DEFAULT_DRAFT.dataRetention,
     };
   } catch {
     return DEFAULT_DRAFT;
@@ -1483,11 +1621,13 @@ function IntegrationsSetupStep({
   onToggle,
   onToggleRecommended,
   onBack,
+  onContinue,
 }: {
   draft: WorkspaceDraft;
   onToggle: (integrationId: string) => void;
   onToggleRecommended: () => void;
   onBack: () => void;
+  onContinue: () => void;
 }) {
   const [category, setCategory] = useState<IntegrationCategory>("all");
   const [query, setQuery] = useState("");
@@ -1699,6 +1839,219 @@ function IntegrationsSetupStep({
         <CompactStepProgress currentStep={6} />
         <Button
           type="button"
+          onClick={onContinue}
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+        >
+          Continue
+          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+        </Button>
+      </div>
+    </>
+  );
+}
+
+function CompliancePreferencesStep({
+  draft,
+  onToggleFramework,
+  onToggleMonitoring,
+  onUpdate,
+  onBack,
+}: {
+  draft: WorkspaceDraft;
+  onToggleFramework: (frameworkId: string) => void;
+  onToggleMonitoring: (monitoringId: ComplianceMonitoringKey) => void;
+  onUpdate: (updates: Partial<WorkspaceDraft>) => void;
+  onBack: () => void;
+}) {
+  const selectedFrameworks = draft.complianceFrameworks ?? DEFAULT_DRAFT.complianceFrameworks;
+  const enabledMonitoring = draft.complianceMonitoring ?? DEFAULT_DRAFT.complianceMonitoring;
+
+  return (
+    <>
+      <div>
+        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+          STEP 7 OF 8
+        </span>
+        <h1 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
+          Set your compliance preferences
+        </h1>
+        <p className="mt-2 text-sm text-[#526080]">
+          Help us tailor compliance, monitoring and reporting to your needs.
+        </p>
+      </div>
+
+      <div className="mt-8 grid gap-7 xl:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.95fr)]">
+        <section>
+          <h2 className="text-sm font-semibold text-[#151a2b]">Compliance framework</h2>
+          <p className="mt-1 text-xs text-[#526080]">
+            Select the frameworks your organization follows.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {COMPLIANCE_FRAMEWORKS.map((framework) => {
+              const selected = selectedFrameworks.includes(framework.id);
+              const Icon = framework.icon;
+              return (
+                <button
+                  key={framework.id}
+                  type="button"
+                  onClick={() => onToggleFramework(framework.id)}
+                  className={cn(
+                    "relative flex min-h-[150px] flex-col rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#aaa0ff] hover:bg-white/80",
+                    selected
+                      ? "border-[#7664ff] bg-[#fbfaff] shadow-[0_10px_20px_rgba(89,69,255,0.05)]"
+                      : "border-[#e1e5ef] bg-white/45"
+                  )}
+                  aria-pressed={selected}
+                >
+                  <span
+                    className={cn(
+                      "absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded border",
+                      selected
+                        ? "border-[#5945ff] bg-[#5945ff] text-white"
+                        : "border-[#cfd4e4] bg-white text-transparent"
+                    )}
+                    aria-hidden
+                  >
+                    <Check className="h-3.5 w-3.5" strokeWidth={2.6} />
+                  </span>
+                  <span
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-lg",
+                      framework.iconBackground
+                    )}
+                  >
+                    <Icon className={cn("h-5 w-5", framework.iconClassName)} strokeWidth={2} />
+                  </span>
+                  <h3 className="mt-4 text-sm font-semibold text-[#151a2b]">{framework.title}</h3>
+                  <p className="mt-2 text-xs leading-5 text-[#526080]">{framework.description}</p>
+                  {framework.id === "soc-2" ? (
+                    <span className="mt-auto w-fit rounded-full bg-[#f0edff] px-2 py-0.5 text-[10px] font-semibold text-[#5945ff]">
+                      Most popular
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-4 flex items-center gap-3 rounded-lg border border-[#e5e1ff] bg-[#faf9ff] px-4 py-3 text-xs text-[#526080]">
+            <Info className="h-4 w-4 shrink-0 text-[#7664ff]" strokeWidth={2} />
+            <span>You can add or change compliance frameworks anytime from Settings.</span>
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-sm font-semibold text-[#151a2b]">Monitoring & reporting</h2>
+          <p className="mt-1 text-xs text-[#526080]">Choose how you want to monitor and report.</p>
+          <div className="mt-4 overflow-hidden rounded-xl border border-[#e1e5ef] bg-white/45 px-4">
+            {COMPLIANCE_MONITORING_OPTIONS.map((option, index) => {
+              const enabled = enabledMonitoring.includes(option.id);
+              const Icon = option.icon;
+              return (
+                <div
+                  key={option.id}
+                  className={cn(
+                    "flex items-center gap-3 py-4",
+                    index > 0 && "border-t border-[#eef0f5]"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
+                      option.iconBackground
+                    )}
+                  >
+                    <Icon className={cn("h-5 w-5", option.iconClassName)} strokeWidth={2} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-xs font-semibold text-[#151a2b]">{option.title}</h3>
+                    <p className="mt-1 text-xs leading-5 text-[#526080]">{option.description}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onToggleMonitoring(option.id)}
+                    className={cn(
+                      "relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200",
+                      enabled ? "bg-[#5945ff]" : "bg-[#d7dbea]"
+                    )}
+                    aria-label={`${enabled ? "Disable" : "Enable"} ${option.title}`}
+                    aria-pressed={enabled}
+                  >
+                    <span
+                      className={cn(
+                        "absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-[left] duration-200 ease-out",
+                        enabled ? "left-6" : "left-1"
+                      )}
+                    />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+
+      <div className="mt-7 grid gap-5 lg:grid-cols-2">
+        <label className="block">
+          <span className="block text-sm font-semibold text-[#151a2b]">Data residency</span>
+          <span className="mt-1 block text-xs text-[#526080]">Select where your data should be stored.</span>
+          <span className="relative mt-3 block">
+            <Globe2 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7664ff]" strokeWidth={1.9} />
+            <select
+              value={draft.dataResidency ?? DEFAULT_DRAFT.dataResidency}
+              onChange={(event) => onUpdate({ dataResidency: event.target.value })}
+              className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 pl-11 pr-10 text-sm font-medium text-[#34405e] outline-none transition focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+            >
+              <option value="us">US (North America)</option>
+              <option value="eu">European Union</option>
+              <option value="apac">Asia Pacific</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#657091]" strokeWidth={1.8} />
+          </span>
+          <span className="mt-3 flex items-center gap-2 text-xs text-[#657091]">
+            <LockKeyhole className="h-3.5 w-3.5 text-[#7664ff]" strokeWidth={1.9} />
+            Your data is encrypted and stored securely.
+          </span>
+        </label>
+
+        <label className="block">
+          <span className="block text-sm font-semibold text-[#151a2b]">Data retention policy</span>
+          <span className="mt-1 block text-xs text-[#526080]">
+            Choose how long we should retain your data.
+          </span>
+          <span className="relative mt-3 block">
+            <CalendarDays className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#657091]" strokeWidth={1.9} />
+            <select
+              value={draft.dataRetention ?? DEFAULT_DRAFT.dataRetention}
+              onChange={(event) => onUpdate({ dataRetention: event.target.value })}
+              className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 pl-11 pr-10 text-sm font-medium text-[#34405e] outline-none transition focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+            >
+              <option value="1-year">1 year</option>
+              <option value="3-years">3 years</option>
+              <option value="7-years">7 years (Recommended)</option>
+              <option value="indefinite">Retain indefinitely</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#657091]" strokeWidth={1.8} />
+          </span>
+          <span className="mt-3 flex items-center gap-2 text-xs text-[#657091]">
+            <LockKeyhole className="h-3.5 w-3.5 text-[#7664ff]" strokeWidth={1.9} />
+            You can update this later from compliance settings.
+          </span>
+        </label>
+      </div>
+
+      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
+        >
+          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+          Back
+        </Button>
+        <CompactStepProgress currentStep={7} />
+        <Button
+          type="button"
           className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
         >
           Continue
@@ -1750,6 +2103,10 @@ export default function CreateWorkspacePage() {
 
   const showIntegrationsSetup = () => {
     updateDraft({ currentStep: 6 });
+  };
+
+  const showCompliancePreferences = () => {
+    updateDraft({ currentStep: 7 });
   };
 
   const toggleOperationModule = (moduleId: string) => {
@@ -1828,6 +2185,30 @@ export default function CreateWorkspacePage() {
     });
   };
 
+  const toggleComplianceFramework = (frameworkId: string) => {
+    setDraft((current) => {
+      const currentFrameworks = current.complianceFrameworks ?? DEFAULT_DRAFT.complianceFrameworks;
+      return {
+        ...current,
+        complianceFrameworks: currentFrameworks.includes(frameworkId)
+          ? currentFrameworks.filter((id) => id !== frameworkId)
+          : [...currentFrameworks, frameworkId],
+      };
+    });
+  };
+
+  const toggleComplianceMonitoring = (monitoringId: ComplianceMonitoringKey) => {
+    setDraft((current) => {
+      const currentMonitoring = current.complianceMonitoring ?? DEFAULT_DRAFT.complianceMonitoring;
+      return {
+        ...current,
+        complianceMonitoring: currentMonitoring.includes(monitoringId)
+          ? currentMonitoring.filter((id) => id !== monitoringId)
+          : [...currentMonitoring, monitoringId],
+      };
+    });
+  };
+
   return (
     <main className="min-h-screen bg-transparent px-4 py-5 sm:px-6 lg:px-8">
       <header className="mx-auto flex max-w-[1480px] items-center justify-between gap-5">
@@ -1902,12 +2283,21 @@ export default function CreateWorkspacePage() {
               onBack={showTreasurySetup}
               onContinue={showIntegrationsSetup}
             />
-          ) : (
+          ) : draft.currentStep === 6 ? (
             <IntegrationsSetupStep
               draft={draft}
               onToggle={toggleIntegration}
               onToggleRecommended={toggleRecommendedIntegrations}
               onBack={showInviteTeam}
+              onContinue={showCompliancePreferences}
+            />
+          ) : (
+            <CompliancePreferencesStep
+              draft={draft}
+              onToggleFramework={toggleComplianceFramework}
+              onToggleMonitoring={toggleComplianceMonitoring}
+              onUpdate={updateDraft}
+              onBack={showIntegrationsSetup}
             />
           )}
         </section>
