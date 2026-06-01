@@ -32,6 +32,7 @@ import {
   Info,
   Landmark,
   LifeBuoy,
+  Link2,
   LockKeyhole,
   MoreHorizontal,
   Network,
@@ -39,6 +40,7 @@ import {
   Rocket,
   Search,
   Server,
+  Settings,
   ShieldCheck,
   Sparkles,
   Trash2,
@@ -82,7 +84,7 @@ type TeamInvite = {
 };
 
 type WorkspaceDraft = {
-  currentStep: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  currentStep: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
   workspaceType: string;
   businessName: string;
   website: string;
@@ -600,19 +602,21 @@ function loadWorkspaceDraft(): WorkspaceDraft {
       ...DEFAULT_DRAFT,
       ...parsed,
       currentStep:
-        parsed.currentStep === 7
-          ? 7
-          : parsed.currentStep === 6
-            ? 6
-            : parsed.currentStep === 5
-              ? 5
-              : parsed.currentStep === 4
-                ? 4
-                : parsed.currentStep === 3
-                  ? 3
-                  : parsed.currentStep === 2
-                    ? 2
-                    : 1,
+        parsed.currentStep === 8
+          ? 8
+          : parsed.currentStep === 7
+            ? 7
+            : parsed.currentStep === 6
+              ? 6
+              : parsed.currentStep === 5
+                ? 5
+                : parsed.currentStep === 4
+                  ? 4
+                  : parsed.currentStep === 3
+                    ? 3
+                    : parsed.currentStep === 2
+                      ? 2
+                      : 1,
       teamSize: TEAM_SIZES.some((size) => size.value === parsed.teamSize)
         ? (parsed.teamSize as TeamSize)
         : DEFAULT_DRAFT.teamSize,
@@ -1856,12 +1860,14 @@ function CompliancePreferencesStep({
   onToggleMonitoring,
   onUpdate,
   onBack,
+  onContinue,
 }: {
   draft: WorkspaceDraft;
   onToggleFramework: (frameworkId: string) => void;
   onToggleMonitoring: (monitoringId: ComplianceMonitoringKey) => void;
   onUpdate: (updates: Partial<WorkspaceDraft>) => void;
   onBack: () => void;
+  onContinue: () => void;
 }) {
   const selectedFrameworks = draft.complianceFrameworks ?? DEFAULT_DRAFT.complianceFrameworks;
   const enabledMonitoring = draft.complianceMonitoring ?? DEFAULT_DRAFT.complianceMonitoring;
@@ -2052,10 +2058,247 @@ function CompliancePreferencesStep({
         <CompactStepProgress currentStep={7} />
         <Button
           type="button"
+          onClick={onContinue}
           className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+        </Button>
+      </div>
+    </>
+  );
+}
+
+function ReviewCard({
+  title,
+  value,
+  description,
+  icon: Icon,
+  onEdit,
+}: {
+  title: string;
+  value: string;
+  description: string;
+  icon: LucideIcon;
+  onEdit: () => void;
+}) {
+  return (
+    <article className="flex min-h-[116px] items-center gap-4 rounded-xl border border-[#e1e5ef] bg-white/45 p-4 transition hover:border-[#d2cef8] hover:bg-white/70">
+      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#f1efff]">
+        <Icon className="h-6 w-6 text-[#5945ff]" strokeWidth={2} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <h2 className="text-xs font-semibold text-[#34405e]">{title}</h2>
+        <p className="mt-2 truncate text-sm font-semibold text-[#151a2b]">{value}</p>
+        <p className="mt-1 line-clamp-2 text-xs leading-5 text-[#526080]">{description}</p>
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onEdit}
+        className="h-10 shrink-0 rounded-lg border-[#dfe3ef] bg-white/55 px-3 text-xs font-medium text-[#34405e] hover:bg-white hover:text-[#5945ff]"
+      >
+        <FileText className="mr-2 h-3.5 w-3.5" strokeWidth={1.9} />
+        Edit
+      </Button>
+    </article>
+  );
+}
+
+function ReviewWorkspaceStep({
+  draft,
+  onEditStep,
+  onBack,
+}: {
+  draft: WorkspaceDraft;
+  onEditStep: (step: WorkspaceDraft["currentStep"]) => void;
+  onBack: () => void;
+}) {
+  const workspaceType =
+    WORKSPACE_TYPES.find((option) => option.id === draft.workspaceType) ?? WORKSPACE_TYPES[0];
+  const teamSize = TEAM_SIZES.find((size) => size.value === draft.teamSize)?.label ?? draft.teamSize;
+  const walletProvider =
+    TREASURY_PROVIDERS.find((provider) => provider.id === draft.walletProvider) ??
+    TREASURY_PROVIDERS[0];
+  const selectedModules = draft.operationModules ?? [];
+  const invitedMembers = (draft.inviteMembers ?? []).filter(
+    (member) => member.email.trim().length > 0 || member.nickname.trim().length > 0
+  );
+  const selectedIntegrations = draft.integrations ?? [];
+  const selectedIntegrationNames = selectedIntegrations
+    .map((id) => INTEGRATIONS.find((integration) => integration.id === id)?.title)
+    .filter((title): title is string => Boolean(title));
+  const selectedFrameworks = draft.complianceFrameworks ?? DEFAULT_DRAFT.complianceFrameworks;
+  const selectedFrameworkNames = selectedFrameworks
+    .map((id) => COMPLIANCE_FRAMEWORKS.find((framework) => framework.id === id)?.title)
+    .filter((title): title is string => Boolean(title));
+  const enabledMonitoring = draft.complianceMonitoring ?? DEFAULT_DRAFT.complianceMonitoring;
+  const monitoringNames = enabledMonitoring
+    .map((id) => COMPLIANCE_MONITORING_OPTIONS.find((option) => option.id === id)?.title)
+    .filter((title): title is string => Boolean(title));
+  const residencyLabel =
+    draft.dataResidency === "eu"
+      ? "European Union"
+      : draft.dataResidency === "apac"
+        ? "Asia Pacific"
+        : "US (North America)";
+  const retentionLabel =
+    draft.dataRetention === "1-year"
+      ? "1 year"
+      : draft.dataRetention === "3-years"
+        ? "3 years"
+        : draft.dataRetention === "indefinite"
+          ? "Retain indefinitely"
+          : "7 years retention";
+  const operationSummary =
+    selectedModules.length === 0
+      ? "No modules enabled"
+      : `${selectedModules.length} module${selectedModules.length === 1 ? "" : "s"} enabled`;
+  const inviteSummary =
+    invitedMembers.length === 0
+      ? "No team members invited yet"
+      : `${invitedMembers.length} team member${invitedMembers.length === 1 ? "" : "s"}`;
+  const integrationSummary =
+    selectedIntegrationNames.length === 0
+      ? "No integrations selected yet"
+      : selectedIntegrationNames.join(", ");
+  const complianceSummary = [
+    ...selectedFrameworkNames,
+    ...monitoringNames.slice(0, 2),
+  ].join(", ");
+
+  return (
+    <>
+      <div>
+        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+          STEP 8 OF 8
+        </span>
+        <h1 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
+          Review & create your workspace
+        </h1>
+        <p className="mt-2 text-sm text-[#526080]">
+          Review your settings before launching your workspace.
+        </p>
+      </div>
+
+      <div className="mt-7 grid gap-4 xl:grid-cols-2">
+        <ReviewCard
+          title="Workspace Type"
+          value={workspaceType.title}
+          description={workspaceType.description}
+          icon={BriefcaseBusiness}
+          onEdit={() => onEditStep(1)}
+        />
+        <ReviewCard
+          title="Workspace Details"
+          value={draft.businessName.trim() || "Untitled workspace"}
+          description={`${draft.website.trim() || "No website added"} · ${teamSize} team members`}
+          icon={Building2}
+          onEdit={() => onEditStep(2)}
+        />
+        <ReviewCard
+          title="Operations Setup"
+          value={operationSummary}
+          description={
+            selectedModules.length > 0
+              ? selectedModules
+                  .map((id) => OPERATION_MODULES.find((module) => module.id === id)?.title)
+                  .filter((title): title is string => Boolean(title))
+                  .join(", ")
+              : "Choose modules whenever your workspace is ready."
+          }
+          icon={Settings}
+          onEdit={() => onEditStep(3)}
+        />
+        <ReviewCard
+          title="Treasury Setup"
+          value={walletProvider.title}
+          description={`Connected to ${(draft.supportedChains ?? []).length} chain${
+            (draft.supportedChains ?? []).length === 1 ? "" : "s"
+          }`}
+          icon={Wallet}
+          onEdit={() => onEditStep(4)}
+        />
+        <ReviewCard
+          title="Invite Team"
+          value={inviteSummary}
+          description={
+            invitedMembers.length > 0
+              ? Array.from(
+                  new Set(
+                    invitedMembers
+                      .map((member) => member.role)
+                      .filter((role): role is Exclude<TeamRole, ""> => role.length > 0)
+                      .map((role) => role.charAt(0).toUpperCase() + role.slice(1))
+                  )
+                ).join(", ") || "Access roles can be assigned later."
+              : "Invite collaborators whenever you are ready."
+          }
+          icon={Users}
+          onEdit={() => onEditStep(5)}
+        />
+        <ReviewCard
+          title="Integrations"
+          value={`${selectedIntegrationNames.length} integration${
+            selectedIntegrationNames.length === 1 ? "" : "s"
+          } selected`}
+          description={integrationSummary}
+          icon={Link2}
+          onEdit={() => onEditStep(6)}
+        />
+        <ReviewCard
+          title="Compliance Preferences"
+          value={selectedFrameworkNames.join(", ") || "No frameworks selected"}
+          description={`${complianceSummary || "Monitoring preferences can be configured later."} · ${residencyLabel} · ${retentionLabel}`}
+          icon={ShieldCheck}
+          onEdit={() => onEditStep(7)}
+        />
+      </div>
+
+      <div className="mt-6 grid gap-5 rounded-xl border border-[#e5e1ff] bg-[#faf9ff] p-5 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] lg:items-center">
+        <div className="flex items-center gap-4">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
+            <ShieldCheck className="h-6 w-6 text-[#5945ff]" strokeWidth={2} />
+          </span>
+          <div>
+            <h2 className="text-sm font-semibold text-[#151a2b]">You&apos;re all set!</h2>
+            <p className="mt-1 text-xs leading-5 text-[#526080]">
+              Once you create your workspace, you can start managing your operations right away.
+            </p>
+          </div>
+        </div>
+        {[
+          ["Secure by design", "Enterprise-grade security"],
+          ["Ready to scale", "Built for growth"],
+          ["Start in seconds", "Easy to set up and use"],
+        ].map(([title, description]) => (
+          <div key={title} className="flex items-start gap-3">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#5945ff]" strokeWidth={2.2} />
+            <div>
+              <h3 className="text-xs font-semibold text-[#151a2b]">{title}</h3>
+              <p className="mt-1 text-xs text-[#526080]">{description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
+        >
+          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+          Back
+        </Button>
+        <CompactStepProgress currentStep={8} />
+        <Button
+          type="button"
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+        >
+          Create Workspace
+          <Sparkles className="ml-3 h-4 w-4" strokeWidth={1.9} />
         </Button>
       </div>
     </>
@@ -2107,6 +2350,10 @@ export default function CreateWorkspacePage() {
 
   const showCompliancePreferences = () => {
     updateDraft({ currentStep: 7 });
+  };
+
+  const showReviewWorkspace = () => {
+    updateDraft({ currentStep: 8 });
   };
 
   const toggleOperationModule = (moduleId: string) => {
@@ -2291,13 +2538,20 @@ export default function CreateWorkspacePage() {
               onBack={showInviteTeam}
               onContinue={showCompliancePreferences}
             />
-          ) : (
+          ) : draft.currentStep === 7 ? (
             <CompliancePreferencesStep
               draft={draft}
               onToggleFramework={toggleComplianceFramework}
               onToggleMonitoring={toggleComplianceMonitoring}
               onUpdate={updateDraft}
               onBack={showIntegrationsSetup}
+              onContinue={showReviewWorkspace}
+            />
+          ) : (
+            <ReviewWorkspaceStep
+              draft={draft}
+              onEditStep={(currentStep) => updateDraft({ currentStep })}
+              onBack={showCompliancePreferences}
             />
           )}
         </section>
