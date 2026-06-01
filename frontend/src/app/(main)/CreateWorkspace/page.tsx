@@ -1658,7 +1658,6 @@ function IntegrationsSetupStep({
         {filteredIntegrations.length > 0 ? (
           <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             {filteredIntegrations.map((integration) => {
-              const connected = connectedIntegrations.includes(integration.id);
               return (
                 <article
                   key={integration.id}
