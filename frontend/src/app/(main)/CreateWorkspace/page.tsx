@@ -13,14 +13,18 @@ import {
   ArrowLeft,
   ArrowRight,
   AlertTriangle,
+  BarChart3,
   BriefcaseBusiness,
   Building2,
   Check,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
   CreditCard,
+  Eye,
   ExternalLink,
   FileText,
+  Filter,
   Globe2,
   ImageUp,
   Landmark,
@@ -29,9 +33,11 @@ import {
   Network,
   Plus,
   Rocket,
+  Search,
   Server,
   ShieldCheck,
   Sparkles,
+  Trash2,
   Users,
   UserRound,
   Wallet,
@@ -54,9 +60,20 @@ type WorkspaceType = {
 
 type TeamSize = "1-5" | "5-20" | "20-50" | "50+";
 type WalletProvider = "freighter" | "metamask" | "walletconnect" | "coinbase" | "phantom";
+type TeamRole = "" | "owner" | "admin" | "manager" | "member" | "viewer";
+type PermissionLevel = "full-access" | "operations-access" | "view-only";
+type IntegrationCategory = "all" | "communication" | "productivity" | "ai" | "developer";
+
+type TeamInvite = {
+  id: string;
+  email: string;
+  nickname: string;
+  role: TeamRole;
+  permission: PermissionLevel;
+};
 
 type WorkspaceDraft = {
-  currentStep: 1 | 2 | 3 | 4;
+  currentStep: 1 | 2 | 3 | 4 | 5 | 6;
   workspaceType: string;
   businessName: string;
   website: string;
@@ -64,8 +81,11 @@ type WorkspaceDraft = {
   logoDataUrl: string;
   logoName: string;
   operationModules: string[];
+  operationModulesTouched: boolean;
   walletProvider: WalletProvider;
   supportedChains: string[];
+  inviteMembers: TeamInvite[];
+  integrations: string[];
 };
 
 const WORKSPACE_DRAFT_KEY = "hypertron:create-workspace:draft";
@@ -79,19 +99,14 @@ const DEFAULT_DRAFT: WorkspaceDraft = {
   teamSize: "1-5",
   logoDataUrl: "",
   logoName: "",
-  operationModules: [
-    "treasury",
-    "payments",
-    "contributor-management",
-    "compliance-monitoring",
-    "regulations-feed",
-    "risk-reports",
-    "client-operations",
-    "agency-operations",
-    "workflow-automation",
-  ],
+  operationModules: [],
+  operationModulesTouched: false,
   walletProvider: "freighter",
   supportedChains: ["ethereum", "polygon", "arbitrum", "base", "solana"],
+  inviteMembers: [
+    { id: "invite-1", email: "", nickname: "", role: "", permission: "full-access" },
+  ],
+  integrations: [],
 };
 
 const STEPS = [
@@ -254,6 +269,163 @@ const OPERATION_MODULES: WorkspaceType[] = [
   },
 ];
 
+const SUGGESTED_ROLES: {
+  id: Exclude<TeamRole, "">;
+  title: string;
+  description: string;
+  seats: string;
+  icon: LucideIcon;
+  iconClassName: string;
+  iconBackground: string;
+  seatsClassName: string;
+}[] = [
+  {
+    id: "owner",
+    title: "Owner",
+    description: "Full control of workspace and all settings",
+    seats: "1 seat",
+    icon: ShieldCheck,
+    iconClassName: "text-[#5b46ff]",
+    iconBackground: "bg-[#f0edff]",
+    seatsClassName: "bg-[#f0edff] text-[#5945ff]",
+  },
+  {
+    id: "admin",
+    title: "Admin",
+    description: "Manage team, settings and operations",
+    seats: "2 seats",
+    icon: UserRound,
+    iconClassName: "text-[#2783ff]",
+    iconBackground: "bg-[#eaf3ff]",
+    seatsClassName: "bg-[#edf4ff] text-[#3976ff]",
+  },
+  {
+    id: "manager",
+    title: "Manager",
+    description: "Manage operations and workflows",
+    seats: "5 seats",
+    icon: BarChart3,
+    iconClassName: "text-[#18b678]",
+    iconBackground: "bg-[#e5f8ef]",
+    seatsClassName: "bg-[#e8f9ef] text-[#18a765]",
+  },
+  {
+    id: "member",
+    title: "Member",
+    description: "View and contribute to assigned tasks",
+    seats: "10 seats",
+    icon: UserRound,
+    iconClassName: "text-[#ff8a18]",
+    iconBackground: "bg-[#fff3e6]",
+    seatsClassName: "bg-[#e8f9ef] text-[#18a765]",
+  },
+  {
+    id: "viewer",
+    title: "Viewer",
+    description: "View only access to workspace data",
+    seats: "Unlimited",
+    icon: Eye,
+    iconClassName: "text-[#61709a]",
+    iconBackground: "bg-[#f1f2fb]",
+    seatsClassName: "bg-[#f0edff] text-[#5945ff]",
+  },
+];
+
+type IntegrationOption = {
+  id: string;
+  title: string;
+  description: string;
+  logo: string;
+  category: Exclude<IntegrationCategory, "all">;
+  recommended?: boolean;
+};
+
+const INTEGRATIONS: IntegrationOption[] = [
+  {
+    id: "slack",
+    title: "Slack",
+    description: "Get notifications and collaborate with your team",
+    logo: "/integrations/slack.png",
+    category: "communication",
+    recommended: true,
+  },
+  {
+    id: "gmail",
+    title: "Gmail",
+    description: "Send and receive emails from your workspace",
+    logo: "/integrations/gmail.png",
+    category: "communication",
+    recommended: true,
+  },
+  {
+    id: "notion",
+    title: "Notion",
+    description: "Sync docs, tasks and knowledge with your workspace",
+    logo: "/integrations/notion.png",
+    category: "productivity",
+    recommended: true,
+  },
+  {
+    id: "gdrive",
+    title: "Google Drive",
+    description: "Store and manage files securely",
+    logo: "/integrations/gdrive.png",
+    category: "productivity",
+    recommended: true,
+  },
+  {
+    id: "telegram",
+    title: "Telegram",
+    description: "Receive real-time alerts and updates",
+    logo: "/integrations/telegram.png",
+    category: "communication",
+    recommended: true,
+  },
+  {
+    id: "discord",
+    title: "Discord",
+    description: "Connect your community conversations",
+    logo: "/integrations/discord.png",
+    category: "communication",
+  },
+  {
+    id: "github",
+    title: "GitHub",
+    description: "Track repositories and engineering activity",
+    logo: "/integrations/github.png",
+    category: "developer",
+  },
+  {
+    id: "calendar",
+    title: "Calendar",
+    description: "Coordinate events and shared schedules",
+    logo: "/integrations/calendar.png",
+    category: "productivity",
+  },
+  {
+    id: "openai",
+    title: "OpenAI",
+    description: "Power intelligent workspace automations",
+    logo: "/integrations/openai.png",
+    category: "ai",
+  },
+  {
+    id: "anthropic",
+    title: "Anthropic",
+    description: "Connect Claude for AI-assisted workflows",
+    logo: "/integrations/anthropic.png",
+    category: "ai",
+  },
+];
+
+const INTEGRATION_CATEGORIES: { id: IntegrationCategory; title: string }[] = [
+  { id: "all", title: "All" },
+  { id: "communication", title: "Communication" },
+  { id: "productivity", title: "Productivity" },
+  { id: "ai", title: "AI" },
+  { id: "developer", title: "Developer" },
+];
+
 type TreasuryOption = {
   id: string;
   title: string;
@@ -313,15 +485,26 @@ function loadWorkspaceDraft(): WorkspaceDraft {
       ...DEFAULT_DRAFT,
       ...parsed,
       currentStep:
-        parsed.currentStep === 4 ? 4 : parsed.currentStep === 3 ? 3 : parsed.currentStep === 2 ? 2 : 1,
+        parsed.currentStep === 6
+          ? 6
+          : parsed.currentStep === 5
+            ? 5
+            : parsed.currentStep === 4
+              ? 4
+              : parsed.currentStep === 3
+                ? 3
+                : parsed.currentStep === 2
+                  ? 2
+                  : 1,
       teamSize: TEAM_SIZES.some((size) => size.value === parsed.teamSize)
         ? (parsed.teamSize as TeamSize)
         : DEFAULT_DRAFT.teamSize,
-      operationModules: Array.isArray(parsed.operationModules)
+      operationModules: parsed.operationModulesTouched && Array.isArray(parsed.operationModules)
         ? parsed.operationModules.filter((id): id is string =>
             OPERATION_MODULES.some((operationModule) => operationModule.id === id)
           )
         : DEFAULT_DRAFT.operationModules,
+      operationModulesTouched: parsed.operationModulesTouched === true,
       walletProvider: TREASURY_PROVIDERS.some((provider) => provider.id === parsed.walletProvider)
         ? (parsed.walletProvider as WalletProvider)
         : DEFAULT_DRAFT.walletProvider,
@@ -330,6 +513,31 @@ function loadWorkspaceDraft(): WorkspaceDraft {
             SUPPORTED_CHAINS.some((chain) => chain.id === id)
           )
         : DEFAULT_DRAFT.supportedChains,
+      inviteMembers: Array.isArray(parsed.inviteMembers)
+        ? parsed.inviteMembers.flatMap((invite, index) => {
+            if (!invite || typeof invite !== "object") return [];
+            const member = invite as Partial<TeamInvite>;
+            return [
+              {
+                id: typeof member.id === "string" ? member.id : `invite-${index + 1}`,
+                email: typeof member.email === "string" ? member.email : "",
+                nickname: typeof member.nickname === "string" ? member.nickname : "",
+                role: SUGGESTED_ROLES.some((role) => role.id === member.role)
+                  ? (member.role as TeamRole)
+                  : "",
+                permission:
+                  member.permission === "operations-access" || member.permission === "view-only"
+                    ? member.permission
+                    : "full-access",
+              },
+            ];
+          })
+        : DEFAULT_DRAFT.inviteMembers,
+      integrations: Array.isArray(parsed.integrations)
+        ? parsed.integrations.filter((id): id is string =>
+            INTEGRATIONS.some((integration) => integration.id === id)
+          )
+        : DEFAULT_DRAFT.integrations,
     };
   } catch {
     return DEFAULT_DRAFT;
@@ -878,11 +1086,13 @@ function TreasurySetupStep({
   onSelectProvider,
   onToggleChain,
   onBack,
+  onContinue,
 }: {
   draft: WorkspaceDraft;
   onSelectProvider: (provider: WalletProvider) => void;
   onToggleChain: (chainId: string) => void;
   onBack: () => void;
+  onContinue: () => void;
 }) {
   return (
     <>
@@ -1027,6 +1237,485 @@ function TreasurySetupStep({
         <Button
           type="button"
           disabled={draft.supportedChains.length === 0}
+          onClick={onContinue}
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+        >
+          Continue
+          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+        </Button>
+      </div>
+    </>
+  );
+}
+
+function GoogleLogo() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
+      <path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2.1H12v3.9h5.4a4.7 4.7 0 0 1-2 3.1v2.6h3.3c1.9-1.8 2.9-4.4 2.9-7.5" />
+      <path fill="#34A853" d="M12 22c2.7 0 5-.9 6.7-2.4L15.4 17c-.9.6-2.1 1-3.4 1-2.6 0-4.9-1.8-5.7-4.2H2.9v2.7A10 10 0 0 0 12 22" />
+      <path fill="#FBBC05" d="M6.3 13.8a6 6 0 0 1 0-3.7V7.5H2.9a10 10 0 0 0 0 9z" />
+      <path fill="#EA4335" d="M12 6c1.5 0 2.9.5 3.9 1.5l2.9-2.9A9.8 9.8 0 0 0 12 2a10 10 0 0 0-9.1 5.5l3.4 2.6C7.1 7.7 9.4 6 12 6" />
+    </svg>
+  );
+}
+
+function InviteTeamStep({
+  draft,
+  onUpdateMember,
+  onAddMember,
+  onRemoveMember,
+  onBack,
+  onContinue,
+}: {
+  draft: WorkspaceDraft;
+  onUpdateMember: (memberId: string, updates: Partial<TeamInvite>) => void;
+  onAddMember: () => void;
+  onRemoveMember: (memberId: string) => void;
+  onBack: () => void;
+  onContinue: () => void;
+}) {
+  return (
+    <>
+      <div>
+        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+          STEP 5 OF 8
+        </span>
+        <h1 className="mt-6 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
+          Invite your team
+        </h1>
+        <p className="mt-2 text-sm text-[#526080]">
+          Add team members who will collaborate in this workspace.
+        </p>
+      </div>
+
+      <div className="mt-8 border-t border-[#e7e9f1] pt-7">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-[#151a2b]">Invite Members</h2>
+            <p className="mt-1 text-xs text-[#526080]">
+              You can add or invite team members now or do it later.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-5 text-xs font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
+          >
+            <GoogleLogo />
+            <span className="ml-2">Import from Google</span>
+          </Button>
+        </div>
+
+        <div className="mt-5 rounded-xl border border-[#e1e5ef] bg-white/45 p-4">
+          <div className="space-y-4">
+            {draft.inviteMembers.map((member) => (
+              <div
+                key={member.id}
+                className="grid gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(130px,0.72fr)_minmax(150px,0.86fr)_minmax(170px,1fr)_48px] xl:items-end"
+              >
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold text-[#526080]">
+                    Email address
+                  </span>
+                  <input
+                    type="email"
+                    value={member.email}
+                    onChange={(event) => onUpdateMember(member.id, { email: event.target.value })}
+                    placeholder="name@company.com"
+                    className="h-12 w-full rounded-lg border border-[#dfe3ef] bg-white/65 px-4 text-sm text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold text-[#526080]">
+                    Nickname
+                  </span>
+                  <input
+                    type="text"
+                    value={member.nickname}
+                    onChange={(event) =>
+                      onUpdateMember(member.id, { nickname: event.target.value })
+                    }
+                    placeholder="e.g. Soumik"
+                    className="h-12 w-full rounded-lg border border-[#dfe3ef] bg-white/65 px-4 text-sm text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold text-[#526080]">Role</span>
+                  <span className="relative block">
+                    <select
+                      value={member.role}
+                      onChange={(event) =>
+                        onUpdateMember(member.id, { role: event.target.value as TeamRole })
+                      }
+                      className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 px-4 pr-10 text-sm text-[#526080] outline-none transition focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+                    >
+                      <option value="">Select role</option>
+                      {SUGGESTED_ROLES.map((role) => (
+                        <option key={role.id} value={role.id}>
+                          {role.title}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#657091]" strokeWidth={1.8} />
+                  </span>
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold text-[#526080]">
+                    Permission Level
+                  </span>
+                  <span className="relative block">
+                    <select
+                      value={member.permission}
+                      onChange={(event) =>
+                        onUpdateMember(member.id, {
+                          permission: event.target.value as PermissionLevel,
+                        })
+                      }
+                      className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 px-4 pr-10 text-sm text-[#526080] outline-none transition focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+                    >
+                      <option value="full-access">Full access</option>
+                      <option value="operations-access">Operations access</option>
+                      <option value="view-only">View only</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#657091]" strokeWidth={1.8} />
+                  </span>
+                </label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onRemoveMember(member.id)}
+                  className="h-12 w-12 rounded-lg border-[#dfe3ef] bg-white/65 text-[#657091] hover:border-[#ffcaca] hover:bg-[#fff7f7] hover:text-[#db5555]"
+                  aria-label={`Remove ${member.email || "team member"}`}
+                >
+                  <Trash2 className="h-4 w-4" strokeWidth={1.8} />
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onAddMember}
+            className="mt-4 h-10 rounded-lg border-[#cfc9ff] bg-white/55 px-4 text-xs font-medium text-[#34405e] hover:bg-white hover:text-[#5945ff]"
+          >
+            <Plus className="mr-2 h-4 w-4 text-[#5945ff]" strokeWidth={1.8} />
+            Add another member
+          </Button>
+        </div>
+
+        <div className="mt-7">
+          <h2 className="text-sm font-semibold text-[#151a2b]">Suggested Roles</h2>
+          <p className="mt-1 text-xs text-[#526080]">
+            Choose a role to assign the right permissions.
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            {SUGGESTED_ROLES.map((role) => {
+              const Icon = role.icon;
+              return (
+                <article
+                  key={role.id}
+                  className="flex min-h-[172px] flex-col rounded-xl border border-[#e1e5ef] bg-white/45 p-4"
+                >
+                  <span
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-lg",
+                      role.iconBackground
+                    )}
+                  >
+                    <Icon className={cn("h-5 w-5", role.iconClassName)} strokeWidth={2} />
+                  </span>
+                  <h3 className="mt-4 text-sm font-semibold text-[#151a2b]">{role.title}</h3>
+                  <p className="mt-2 text-xs leading-5 text-[#526080]">{role.description}</p>
+                  <span
+                    className={cn(
+                      "mt-auto w-fit rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                      role.seatsClassName
+                    )}
+                  >
+                    {role.seats}
+                  </span>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
+        >
+          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+          Back
+        </Button>
+        <CompactStepProgress currentStep={5} />
+        <Button
+          type="button"
+          onClick={onContinue}
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+        >
+          Continue
+          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+        </Button>
+      </div>
+    </>
+  );
+}
+
+function IntegrationLogo({ integration }: { integration: IntegrationOption }) {
+  return (
+    <img
+      src={integration.logo}
+      alt=""
+      className="h-10 w-10 shrink-0 rounded-lg object-contain"
+      aria-hidden
+    />
+  );
+}
+
+function IntegrationsSetupStep({
+  draft,
+  onToggle,
+  onToggleRecommended,
+  onBack,
+}: {
+  draft: WorkspaceDraft;
+  onToggle: (integrationId: string) => void;
+  onToggleRecommended: () => void;
+  onBack: () => void;
+}) {
+  const [category, setCategory] = useState<IntegrationCategory>("all");
+  const [query, setQuery] = useState("");
+  const connectedIntegrations = draft.integrations ?? [];
+  const recommended = INTEGRATIONS.filter((integration) => integration.recommended);
+  const allRecommendedConnected = recommended.every((integration) =>
+    connectedIntegrations.includes(integration.id)
+  );
+  const filteredIntegrations = INTEGRATIONS.filter((integration) => {
+    const matchesCategory = category === "all" || integration.category === category;
+    const normalizedQuery = query.trim().toLowerCase();
+    const matchesQuery =
+      normalizedQuery.length === 0 ||
+      integration.title.toLowerCase().includes(normalizedQuery) ||
+      integration.description.toLowerCase().includes(normalizedQuery);
+    return matchesCategory && matchesQuery;
+  });
+  const categoryCounts = INTEGRATION_CATEGORIES.reduce<Record<IntegrationCategory, number>>(
+    (counts, currentCategory) => {
+      counts[currentCategory.id] =
+        currentCategory.id === "all"
+          ? INTEGRATIONS.length
+          : INTEGRATIONS.filter((integration) => integration.category === currentCategory.id).length;
+      return counts;
+    },
+    { all: 0, communication: 0, productivity: 0, ai: 0, developer: 0 }
+  );
+
+  return (
+    <>
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+        <div>
+          <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+            STEP 6 OF 8
+          </span>
+          <h1 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
+            Connect your favorite integrations
+          </h1>
+          <p className="mt-2 text-sm text-[#526080]">
+            Connect the tools you already use. You can add or remove integrations anytime.
+          </p>
+        </div>
+        <div className="flex max-w-[300px] items-center gap-3 rounded-xl border border-[#e5e1ff] bg-[#f8f6ff] px-4 py-3 text-xs leading-5 text-[#526080]">
+          <Sparkles className="h-5 w-5 shrink-0 text-[#5945ff]" strokeWidth={1.9} />
+          <span className="font-medium">Secure, read-only connections with enterprise-grade security.</span>
+        </div>
+      </div>
+
+      <div className="mt-7 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex max-w-full overflow-x-auto rounded-xl border border-[#e1e5ef] bg-white/55 p-1">
+          {INTEGRATION_CATEGORIES.map((integrationCategory) => (
+            <button
+              key={integrationCategory.id}
+              type="button"
+              onClick={() => setCategory(integrationCategory.id)}
+              className={cn(
+                "whitespace-nowrap rounded-lg px-4 py-2 text-xs font-medium transition",
+                category === integrationCategory.id
+                  ? "bg-white text-[#5945ff] shadow-sm"
+                  : "text-[#526080] hover:bg-white/70 hover:text-[#34405e]"
+              )}
+              aria-pressed={category === integrationCategory.id}
+            >
+              {integrationCategory.title} ({categoryCounts[integrationCategory.id]})
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-3">
+          <label className="relative block min-w-0 flex-1 xl:w-[250px]">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#657091]" strokeWidth={1.8} />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search integrations..."
+              className="h-11 w-full rounded-xl border border-[#dfe3ef] bg-white/55 pl-10 pr-4 text-xs text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+            />
+          </label>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 rounded-xl border-[#dfe3ef] bg-white/55 px-4 text-xs font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b]"
+          >
+            <Filter className="mr-2 h-4 w-4" strokeWidth={1.8} />
+            Filter
+          </Button>
+        </div>
+      </div>
+
+      {category === "all" && query.trim().length === 0 ? (
+        <div className="mt-7">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#151a2b]">
+              <Sparkles className="h-4 w-4 text-[#5945ff]" strokeWidth={2} />
+              Recommended for you
+            </div>
+            <button
+              type="button"
+              onClick={onToggleRecommended}
+              className="flex items-center gap-2 text-xs font-medium text-[#526080] transition hover:text-[#5945ff]"
+            >
+              Select All Recommended
+              <span
+                className={cn(
+                  "flex h-5 w-5 items-center justify-center rounded border",
+                  allRecommendedConnected
+                    ? "border-[#5945ff] bg-[#5945ff] text-white"
+                    : "border-[#cfd4e4] bg-white text-transparent"
+                )}
+                aria-hidden
+              >
+                <Check className="h-3.5 w-3.5" strokeWidth={2.6} />
+              </span>
+            </button>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+            {recommended.map((integration) => {
+              const connected = connectedIntegrations.includes(integration.id);
+              return (
+                <article
+                  key={integration.id}
+                  className={cn(
+                    "relative flex min-h-[190px] flex-col rounded-xl border p-4 transition",
+                    connected
+                      ? "border-[#cfc9ff] bg-[#fbfaff] shadow-[0_10px_20px_rgba(89,69,255,0.05)]"
+                      : "border-[#e1e5ef] bg-white/45"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded border",
+                      connected
+                        ? "border-[#5945ff] bg-[#5945ff] text-white"
+                        : "border-[#cfd4e4] bg-white text-transparent"
+                    )}
+                    aria-hidden
+                  >
+                    <Check className="h-3.5 w-3.5" strokeWidth={2.6} />
+                  </span>
+                  <IntegrationLogo integration={integration} />
+                  <h3 className="mt-4 text-sm font-semibold text-[#151a2b]">{integration.title}</h3>
+                  <p className="mt-2 text-xs leading-5 text-[#526080]">{integration.description}</p>
+                  <button
+                    type="button"
+                    onClick={() => onToggle(integration.id)}
+                    className={cn(
+                      "mt-auto flex h-8 items-center justify-center rounded-full border text-xs font-semibold transition",
+                      connected
+                        ? "border-[#d8f0df] bg-[#f3fbf5] text-[#23ad5c]"
+                        : "border-[#dcd7ff] bg-white/65 text-[#5945ff] hover:bg-[#f8f6ff]"
+                    )}
+                  >
+                    {connected ? (
+                      <>
+                        <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" strokeWidth={2} />
+                        Connected
+                      </>
+                    ) : (
+                      "Connect"
+                    )}
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mt-7">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-sm font-semibold text-[#151a2b]">
+            {category === "all" && query.trim().length === 0 ? "All Integrations" : "Matching Integrations"}
+          </h2>
+          <span className="text-xs font-medium text-[#5945ff]">
+            {filteredIntegrations.length} integration{filteredIntegrations.length === 1 ? "" : "s"}
+          </span>
+        </div>
+        {filteredIntegrations.length > 0 ? (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            {filteredIntegrations.map((integration) => {
+              const connected = connectedIntegrations.includes(integration.id);
+              return (
+                <article
+                  key={integration.id}
+                  className="flex min-h-[84px] items-center gap-3 rounded-xl border border-[#e1e5ef] bg-white/45 p-3"
+                >
+                  <IntegrationLogo integration={integration} />
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate text-xs font-semibold text-[#151a2b]">
+                      {integration.title}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => onToggle(integration.id)}
+                      className={cn(
+                        "mt-2 h-7 w-full rounded-full border px-3 text-[11px] font-semibold transition",
+                        connected
+                          ? "border-[#d8f0df] bg-[#f3fbf5] text-[#23ad5c]"
+                          : "border-[#dcd7ff] bg-white/65 text-[#5945ff] hover:bg-[#f8f6ff]"
+                      )}
+                    >
+                      {connected ? "Connected" : "Connect"}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mt-4 rounded-xl border border-dashed border-[#dfe3ef] bg-white/35 px-5 py-8 text-center text-sm text-[#657091]">
+            No integrations match your search.
+          </div>
+        )}
+      </div>
+
+      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
+        >
+          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+          Back
+        </Button>
+        <CompactStepProgress currentStep={6} />
+        <Button
+          type="button"
           className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
         >
           Continue
@@ -1072,9 +1761,18 @@ export default function CreateWorkspacePage() {
     updateDraft({ currentStep: 4 });
   };
 
+  const showInviteTeam = () => {
+    updateDraft({ currentStep: 5 });
+  };
+
+  const showIntegrationsSetup = () => {
+    updateDraft({ currentStep: 6 });
+  };
+
   const toggleOperationModule = (moduleId: string) => {
     setDraft((current) => ({
       ...current,
+      operationModulesTouched: true,
       operationModules: current.operationModules.includes(moduleId)
         ? current.operationModules.filter((id) => id !== moduleId)
         : [...current.operationModules, moduleId],
@@ -1088,6 +1786,63 @@ export default function CreateWorkspacePage() {
         ? current.supportedChains.filter((id) => id !== chainId)
         : [...current.supportedChains, chainId],
     }));
+  };
+
+  const updateInviteMember = (memberId: string, updates: Partial<TeamInvite>) => {
+    setDraft((current) => ({
+      ...current,
+      inviteMembers: current.inviteMembers.map((member) =>
+        member.id === memberId ? { ...member, ...updates } : member
+      ),
+    }));
+  };
+
+  const addInviteMember = () => {
+    setDraft((current) => ({
+      ...current,
+      inviteMembers: [
+        ...current.inviteMembers,
+        {
+          id: `invite-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          email: "",
+          nickname: "",
+          role: "",
+          permission: "full-access",
+        },
+      ],
+    }));
+  };
+
+  const removeInviteMember = (memberId: string) => {
+    setDraft((current) => ({
+      ...current,
+      inviteMembers: current.inviteMembers.filter((member) => member.id !== memberId),
+    }));
+  };
+
+  const toggleIntegration = (integrationId: string) => {
+    setDraft((current) => ({
+      ...current,
+      integrations: (current.integrations ?? []).includes(integrationId)
+        ? (current.integrations ?? []).filter((id) => id !== integrationId)
+        : [...(current.integrations ?? []), integrationId],
+    }));
+  };
+
+  const toggleRecommendedIntegrations = () => {
+    const recommendedIds = INTEGRATIONS.filter((integration) => integration.recommended).map(
+      (integration) => integration.id
+    );
+    setDraft((current) => {
+      const currentIntegrations = current.integrations ?? [];
+      const allRecommendedConnected = recommendedIds.every((id) => currentIntegrations.includes(id));
+      return {
+        ...current,
+        integrations: allRecommendedConnected
+          ? currentIntegrations.filter((id) => !recommendedIds.includes(id))
+          : Array.from(new Set([...currentIntegrations, ...recommendedIds])),
+      };
+    });
   };
 
   return (
@@ -1147,12 +1902,29 @@ export default function CreateWorkspacePage() {
               onBack={showDetails}
               onContinue={showTreasurySetup}
             />
-          ) : (
+          ) : draft.currentStep === 4 ? (
             <TreasurySetupStep
               draft={draft}
               onSelectProvider={(walletProvider) => updateDraft({ walletProvider })}
               onToggleChain={toggleSupportedChain}
               onBack={showOperationsSetup}
+              onContinue={showInviteTeam}
+            />
+          ) : draft.currentStep === 5 ? (
+            <InviteTeamStep
+              draft={draft}
+              onUpdateMember={updateInviteMember}
+              onAddMember={addInviteMember}
+              onRemoveMember={removeInviteMember}
+              onBack={showTreasurySetup}
+              onContinue={showIntegrationsSetup}
+            />
+          ) : (
+            <IntegrationsSetupStep
+              draft={draft}
+              onToggle={toggleIntegration}
+              onToggleRecommended={toggleRecommendedIntegrations}
+              onBack={showInviteTeam}
             />
           )}
         </section>
