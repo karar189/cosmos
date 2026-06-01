@@ -26,3 +26,16 @@ export function isInviteVerifiedInSession(): boolean {
     return false;
   }
 }
+
+/** Clear launch-flow session flags after sign-out. */
+export function clearLaunchSession(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(INVITE_VERIFIED_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+/** Where users land after signing out — homepage, not the login modal. */
+export const POST_SIGN_OUT_PATH = "/";

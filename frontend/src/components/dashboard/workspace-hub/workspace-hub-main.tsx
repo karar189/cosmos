@@ -338,7 +338,8 @@ export function WorkspaceHubMain({
                 <Button
                   type="button"
                   onClick={onCreateWorkspace}
-                  className="h-auto w-fit rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-5 py-3 text-white hover:from-[#2563eb] hover:to-[#3b82f6]"
+                  variant="purple"
+                  className="hub-cta h-auto w-fit rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-5 py-3 hover:from-[#2563eb] hover:to-[#3b82f6]"
                 >
                   <Plus className="mr-1.5 h-4 w-4" />
                   Create Workspace
@@ -466,7 +467,8 @@ export function WorkspaceHubMain({
               <Button
                 type="button"
                 onClick={onCreateWorkspace}
-                className="mt-6 rounded-lg bg-violet-600 text-white hover:bg-violet-700"
+                variant="purple"
+                className="hub-cta mt-6 rounded-lg bg-blue-600 hover:bg-blue-500"
               >
                 <Plus className="mr-1.5 h-4 w-4" />
                 Create Workspace

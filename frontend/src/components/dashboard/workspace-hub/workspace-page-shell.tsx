@@ -19,6 +19,7 @@ import {
   getWorkspaceTierState,
   WORKSPACE_TIER_UPDATED_EVENT,
 } from "@/lib/workspace-tier-context";
+import { POST_SIGN_OUT_PATH } from "@/lib/launch-auth";
 
 async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedTemplate[]> {
   try {
@@ -119,7 +120,7 @@ export function WorkspacePageShell({
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
     window.dispatchEvent(new Event("hypertron-sign-out"));
     disconnect();
-    router.push("/?launch=1");
+    router.push(POST_SIGN_OUT_PATH);
   };
 
   if (!publicKey && !sessionLoading && !isPrivy) {

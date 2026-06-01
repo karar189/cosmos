@@ -668,6 +668,16 @@ html, body {
   color: #ffffff !important;
 }
 
+/* Primary CTAs — white label/icon (beats light-hub .text-white remap) */
+.workspace-hub-root[data-theme="light"] button.hub-cta,
+.workspace-hub-root[data-theme="light"] button.hub-cta svg {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root button.hub-cta svg {
+  stroke: currentColor;
+}
+
 .workspace-hub-root[data-theme="light"] .border-white\/20,
 .workspace-hub-root[data-theme="light"] .border-white\/15,
 .workspace-hub-root[data-theme="light"] .border-white\/12,

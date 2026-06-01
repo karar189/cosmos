@@ -13,6 +13,7 @@ import { sidebarData } from "@/components/dashboard/layout/data/sidebar-data";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 import { ConnectWalletBanner } from "@/components/dashboard/connect-wallet-banner";
 import { usesWorkspaceHubShell } from "@/lib/workspace-hub-shell-routes";
+import { POST_SIGN_OUT_PATH } from "@/lib/launch-auth";
 
 function MainLayoutShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useDashboardTheme();
@@ -48,7 +49,7 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
     window.dispatchEvent(new Event("hypertron-sign-out"));
     disconnect();
-    router.push("/?launch=1");
+    router.push(POST_SIGN_OUT_PATH);
   };
 
   const defaultOpen = getCookie("sidebar_state") !== "false";

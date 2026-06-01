@@ -138,13 +138,8 @@ export function WorkspaceHubSidebar({
           <Button
             type="button"
             onClick={onCreateWorkspace}
-            variant="ghost"
-            className={cn(
-              "mt-4 h-10 w-full rounded-xl text-sm font-semibold",
-              t.dark
-                ? "bg-blue-600 text-white hover:bg-blue-500"
-                : "bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700"
-            )}
+            variant="purple"
+            className="hub-cta mt-4 h-10 w-full rounded-xl bg-blue-600 text-sm font-semibold hover:bg-blue-500"
           >
             <Plus className="mr-1.5 h-4 w-4" strokeWidth={2} />
             Create Workspace
