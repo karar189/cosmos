@@ -1616,38 +1616,28 @@ function IntegrationsSetupStep({
                       : "border-[#e1e5ef] bg-white/45"
                   )}
                 >
-                  <span
+                  <button
+                    type="button"
+                    onClick={() => onToggle(integration.id)}
                     className={cn(
-                      "absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded border",
+                      "absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded border transition hover:border-[#5945ff]",
                       connected
                         ? "border-[#5945ff] bg-[#5945ff] text-white"
                         : "border-[#cfd4e4] bg-white text-transparent"
                     )}
-                    aria-hidden
+                    aria-label={`${connected ? "Deselect" : "Select"} ${integration.title}`}
+                    aria-pressed={connected}
                   >
                     <Check className="h-3.5 w-3.5" strokeWidth={2.6} />
-                  </span>
+                  </button>
                   <IntegrationLogo integration={integration} />
                   <h3 className="mt-4 text-sm font-semibold text-[#151a2b]">{integration.title}</h3>
                   <p className="mt-2 text-xs leading-5 text-[#526080]">{integration.description}</p>
                   <button
                     type="button"
-                    onClick={() => onToggle(integration.id)}
-                    className={cn(
-                      "mt-auto flex h-8 items-center justify-center rounded-full border text-xs font-semibold transition",
-                      connected
-                        ? "border-[#d8f0df] bg-[#f3fbf5] text-[#23ad5c]"
-                        : "border-[#dcd7ff] bg-white/65 text-[#5945ff] hover:bg-[#f8f6ff]"
-                    )}
+                    className="mt-auto flex h-8 items-center justify-center rounded-full border border-[#dcd7ff] bg-white/65 text-xs font-semibold text-[#5945ff] transition hover:bg-[#f8f6ff]"
                   >
-                    {connected ? (
-                      <>
-                        <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" strokeWidth={2} />
-                        Connected
-                      </>
-                    ) : (
-                      "Connect"
-                    )}
+                    Connect
                   </button>
                 </article>
               );
@@ -1681,15 +1671,9 @@ function IntegrationsSetupStep({
                     </h3>
                     <button
                       type="button"
-                      onClick={() => onToggle(integration.id)}
-                      className={cn(
-                        "mt-2 h-7 w-full rounded-full border px-3 text-[11px] font-semibold transition",
-                        connected
-                          ? "border-[#d8f0df] bg-[#f3fbf5] text-[#23ad5c]"
-                          : "border-[#dcd7ff] bg-white/65 text-[#5945ff] hover:bg-[#f8f6ff]"
-                      )}
+                      className="mt-2 h-7 w-full rounded-full border border-[#dcd7ff] bg-white/65 px-3 text-[11px] font-semibold text-[#5945ff] transition hover:bg-[#f8f6ff]"
                     >
-                      {connected ? "Connected" : "Connect"}
+                      Connect
                     </button>
                   </div>
                 </article>
