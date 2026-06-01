@@ -27,9 +27,9 @@ const NAV: {
 }[] = [
   { label: "Workspaces", href: "/dashboard", icon: LayoutGrid },
   { label: "Templates", href: "/dashboard/documents", icon: FileText },
-  { label: "Billing & Plans", href: "/dashboard/settings", icon: CreditCard },
+  { label: "Billing & Plans", href: "/dashboard/billing", icon: CreditCard },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
-  { label: "Support", href: "/dashboard/settings", icon: LifeBuoy },
+  { label: "Support", href: "/dashboard/support", icon: LifeBuoy },
 ];
 
 type WorkspaceHubSidebarProps = {
@@ -96,7 +96,8 @@ export function WorkspaceHubSidebar({
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3">
         {NAV.map(({ label, href, icon: Icon, badge }) => {
-          const active = label === "Workspaces" && pathname === "/dashboard";
+          const active =
+            href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
           return (
             <Link
               key={label}
