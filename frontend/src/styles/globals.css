@@ -1061,6 +1061,64 @@ html, body {
   color: rgba(255, 255, 255, 0.8) !important;
 }
 
+/* Public /pay page — checkout card matches dashboard preview (no workspace hub) */
+.payment-live-checkout.payment-customer-preview {
+  border-color: transparent !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+  /* Light shadcn tokens — :root defaults are dark, so outline buttons were black */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 96%;
+  --secondary-foreground: 215 25% 27%;
+  --muted: 214 32% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 214 32% 96%;
+  --accent-foreground: 215 25% 27%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 213 94% 68%;
+}
+
+.payment-live-checkout.payment-customer-preview .payment-preview-checkout {
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+.payment-live-checkout .payment-preview-brand,
+.payment-live-checkout .payment-preview-brand :is(p, span, li) {
+  color: #ffffff !important;
+}
+
+.payment-live-checkout .payment-preview-brand svg {
+  color: #bae6fd !important;
+}
+
+.payment-live-checkout .payment-preview-brand .text-white\/80 {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Avvvatars merchant mark on pay / checkout brand panel */
+.payment-live-checkout .payment-preview-brand .hub-avatar-blue > div,
+.payment-customer-preview .payment-preview-brand .hub-avatar-blue > div {
+  background-color: #e8f4ff !important;
+}
+
+.payment-live-checkout .payment-preview-brand .hub-avatar-blue svg path,
+.payment-customer-preview .payment-preview-brand .hub-avatar-blue svg path {
+  fill: #2563eb !important;
+}
+
+.payment-live-checkout .payment-preview-qr-surface {
+  background-color: #ffffff !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .theme-reveal-overlay {
     transition: none !important;

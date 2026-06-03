@@ -3,6 +3,7 @@
  * Uses /accounts/{id}/payments to find incoming payments, then matches by transaction memo.
  */
 
+import { getUsdcIssuer, type PaymentAssetCode } from "@/lib/stellar-assets";
 import { getHorizonUrl, type StellarNetwork } from "./stellar-payment";
 
 export interface HorizonTransaction {
@@ -22,8 +23,27 @@ interface HorizonPayment {
   type: string;
   transaction_hash: string;
   amount?: string;
+  asset_type?: string;
+  asset_code?: string;
+  asset_issuer?: string;
   created_at: string;
   transaction?: { memo_type?: string; memo?: string };
+}
+
+function paymentMatchesAsset(
+  payment: HorizonPayment,
+  currency: PaymentAssetCode,
+  network: StellarNetwork
+): boolean {
+  if (currency === "XLM") {
+    return payment.asset_type === "native" || !payment.asset_code;
+  }
+  const issuer = getUsdcIssuer(network);
+  return (
+    payment.asset_type === "credit_alphanum4" &&
+    payment.asset_code === "USDC" &&
+    payment.asset_issuer === issuer
+  );
 }
 
 /** Decode memo from Horizon tx. With join=transactions, Horizon may return memo already decoded (plain string); otherwise it's base64. */
@@ -91,7 +111,8 @@ export async function findPaymentToAccountByMemo(
   accountId: string,
   memoFilter: string,
   network: StellarNetwork,
-  limit = 100
+  limit = 100,
+  currency: PaymentAssetCode = "USDC"
 ): Promise<{ txHash: string; memo: string; sourceAccount: string; amount: string; createdAt: string } | null> {
   const base = getHorizonUrl(network);
   const pool = accountId.trim();
@@ -114,6 +135,7 @@ export async function findPaymentToAccountByMemo(
   for (const payment of records) {
     if (payment.type !== "payment") continue;
     if (payment.to !== pool) continue; // only incoming to pool
+    if (!paymentMatchesAsset(payment, currency, network)) continue;
 
     const txHash = payment.transaction_hash;
     let memo: string | null = null;

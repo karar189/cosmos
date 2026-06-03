@@ -1,5 +1,6 @@
 export type PaymentLinkPreviewData = {
   amount: string;
+  currency?: string;
   description: string;
   customer?: string;
   expiry: string;
@@ -12,6 +13,7 @@ export type PaymentLinkPreviewData = {
 export function buildPaymentPreviewHref(data: PaymentLinkPreviewData): string {
   const params = new URLSearchParams();
   params.set("amount", data.amount);
+  if (data.currency) params.set("currency", data.currency);
   params.set("description", data.description);
   if (data.customer?.trim()) params.set("customer", data.customer.trim());
   params.set("expiry", data.expiry);
@@ -27,11 +29,12 @@ export function parsePaymentPreviewSearchParams(
 ): PaymentLinkPreviewData {
   const methodsRaw = searchParams.get("methods");
   return {
-    amount: searchParams.get("amount")?.trim() || "1,000.00",
-    description: searchParams.get("description")?.trim() || "Payment for design services",
+    amount: searchParams.get("amount")?.trim() || "",
+    currency: searchParams.get("currency")?.trim() || "USDC",
+    description: searchParams.get("description")?.trim() || "",
     customer: searchParams.get("customer")?.trim() || undefined,
     expiry: searchParams.get("expiry")?.trim() || "30",
-    privateSettlement: searchParams.get("private") !== "0",
+    privateSettlement: false,
     methods: methodsRaw
       ? methodsRaw.split(",").map((m) => m.trim()).filter(Boolean)
       : ["wallet", "qr", "onramp"],

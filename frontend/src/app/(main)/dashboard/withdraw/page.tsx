@@ -8,7 +8,7 @@ import {
   WorkspacePageShell,
   workspaceHubBreadcrumbs,
 } from "@/components/dashboard/workspace-hub/workspace-page-shell";
-import { WithdrawTab } from "@/components/dashboard/withdraw-tab";
+import { WithdrawPage as WithdrawContent } from "@/components/dashboard/withdraw-page";
 import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
 
 export default function WithdrawPage() {
@@ -74,12 +74,12 @@ export default function WithdrawPage() {
       breadcrumbs={workspaceHubBreadcrumbs("Withdraw")}
       connectMessage="Connect your wallet to withdraw funds."
     >
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-6">
         <DashboardPageHeader
           variant="hub"
           eyebrow="Treasury"
           title="Withdraw"
-          description="Transfer settled funds to your Stellar receive address."
+          description="Transfer settled funds from your vault to any Stellar address."
         />
 
         {loading ? (
@@ -88,9 +88,9 @@ export default function WithdrawPage() {
             Loading treasury…
           </div>
         ) : businessId ? (
-          <WithdrawTab
+          <WithdrawContent
             businessId={businessId}
-            walletAddress={publicKey ?? ""}
+            walletAddress={publicKey ?? null}
             receiveAddress={receiveAddress}
           />
         ) : (
