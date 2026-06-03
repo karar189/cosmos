@@ -157,8 +157,8 @@ const WORKSPACE_TYPES: WorkspaceType[] = [
     title: "Web3 Startup / Protocol",
     description: "For early-stage and growth-stage web3 companies",
     icon: Rocket,
-    iconClassName: "text-[#5b46ff]",
-    iconBackground: "bg-[#f0edff]",
+    iconClassName: "text-[#3b82f6]",
+    iconBackground: "bg-[#eff6ff]",
   },
   {
     id: "dao",
@@ -224,8 +224,8 @@ const OPERATION_MODULES: WorkspaceType[] = [
     title: "Treasury",
     description: "Manage multi-chain treasury and wallets",
     icon: Wallet,
-    iconClassName: "text-[#5b46ff]",
-    iconBackground: "bg-[#f0edff]",
+    iconClassName: "text-[#3b82f6]",
+    iconBackground: "bg-[#eff6ff]",
   },
   {
     id: "payments",
@@ -309,9 +309,9 @@ const SUGGESTED_ROLES: {
     description: "Full control of workspace and all settings",
     seats: "1 seat",
     icon: ShieldCheck,
-    iconClassName: "text-[#5b46ff]",
-    iconBackground: "bg-[#f0edff]",
-    seatsClassName: "bg-[#f0edff] text-[#5945ff]",
+    iconClassName: "text-[#3b82f6]",
+    iconBackground: "bg-[#eff6ff]",
+    seatsClassName: "bg-[#eff6ff] text-[#3b82f6]",
   },
   {
     id: "admin",
@@ -351,7 +351,7 @@ const SUGGESTED_ROLES: {
     icon: Eye,
     iconClassName: "text-[#61709a]",
     iconBackground: "bg-[#f1f2fb]",
-    seatsClassName: "bg-[#f0edff] text-[#5945ff]",
+    seatsClassName: "bg-[#eff6ff] text-[#3b82f6]",
   },
 ];
 
@@ -456,8 +456,8 @@ const COMPLIANCE_FRAMEWORKS: WorkspaceType[] = [
     title: "SOC 2",
     description: "Security, Availability, Processing Integrity, Confidentiality, Privacy",
     icon: ShieldCheck,
-    iconClassName: "text-[#5b46ff]",
-    iconBackground: "bg-[#f0edff]",
+    iconClassName: "text-[#3b82f6]",
+    iconBackground: "bg-[#eff6ff]",
   },
   {
     id: "iso-27001",
@@ -690,14 +690,14 @@ function SetupProgress({ currentStep }: { currentStep: number }) {
   const progress = Math.round((currentStep / STEPS.length) * 100);
 
   return (
-    <div className="w-[232px] rounded-2xl border border-white/80 bg-white/80 px-4 py-3 shadow-[0_8px_30px_rgba(76,69,145,0.08)] backdrop-blur-md">
+    <div className="w-[232px] rounded-2xl border border-white/80 bg-white/80 px-4 py-3 shadow-[0_8px_30px_rgba(59,130,246,0.08)] backdrop-blur-md">
       <div className="flex items-center justify-between gap-4 text-xs">
         <span className="font-medium text-[#526080]">Setup Progress</span>
         <span className="font-semibold text-[#12182a]">{progress}%</span>
       </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#ebe9fb]">
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#dbeafe]">
         <div
-          className="h-full rounded-full bg-[#5945ff] transition-[width] duration-300"
+          className="h-full rounded-full bg-[#3b82f6] transition-[width] duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -707,7 +707,7 @@ function SetupProgress({ currentStep }: { currentStep: number }) {
 
 function ProgressRail({ currentStep }: { currentStep: number }) {
   return (
-    <aside className="flex w-full shrink-0 flex-col rounded-3xl border border-white/70 bg-white/55 px-6 py-7 shadow-[0_18px_55px_rgba(101,101,156,0.06)] backdrop-blur-sm lg:w-[292px]">
+    <aside className="flex w-full shrink-0 flex-col rounded-3xl border border-white/70 bg-white/55 px-6 py-7 shadow-[0_18px_55px_rgba(59,130,246,0.06)] backdrop-blur-sm lg:w-[292px]">
       <h2 className="text-xl font-semibold tracking-tight text-[#10162a]">Workspace Setup</h2>
       <p className="mt-1 text-sm text-[#526080]">Step {currentStep} of 8</p>
 
@@ -731,9 +731,9 @@ function ProgressRail({ currentStep }: { currentStep: number }) {
                 className={cn(
                   "relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-medium",
                   isCompleted
-                    ? "border-[#5945ff] bg-white text-[#5945ff]"
+                    ? "border-[#3b82f6] bg-white text-[#3b82f6]"
                     : isActive
-                    ? "border-[#5945ff] bg-[#5945ff] text-white shadow-[0_5px_13px_rgba(89,69,255,0.25)]"
+                    ? "border-[#3b82f6] bg-[#3b82f6] text-white shadow-[0_5px_13px_rgba(59,130,246,0.25)]"
                     : "border-[#cad2e4] bg-white/75 text-[#536382]"
                 )}
               >
@@ -743,7 +743,7 @@ function ProgressRail({ currentStep }: { currentStep: number }) {
                 <span
                   className={cn(
                     "block text-sm font-medium leading-5",
-                    isActive ? "text-[#5945ff]" : "text-[#526080]"
+                    isActive ? "text-[#3b82f6]" : "text-[#526080]"
                   )}
                 >
                   {step}
@@ -752,7 +752,7 @@ function ProgressRail({ currentStep }: { currentStep: number }) {
                   className={cn(
                     "mt-0.5 block text-xs leading-5",
                     isActive
-                      ? "font-medium text-[#5945ff]"
+                      ? "font-medium text-[#3b82f6]"
                       : isCompleted
                         ? "text-[#526080]"
                         : "text-[#526080]"
@@ -768,8 +768,8 @@ function ProgressRail({ currentStep }: { currentStep: number }) {
 
       <div className="mt-auto hidden rounded-2xl border border-[#e4e7f0] bg-white/55 p-4 lg:block">
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#f1efff]">
-            <LifeBuoy className="h-4 w-4 text-[#5945ff]" strokeWidth={2} />
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#eff6ff]">
+            <LifeBuoy className="h-4 w-4 text-[#3b82f6]" strokeWidth={2} />
           </span>
           <span className="text-sm font-semibold text-[#151a2b]">Need help?</span>
         </div>
@@ -778,7 +778,7 @@ function ProgressRail({ currentStep }: { currentStep: number }) {
         </p>
         <a
           href="#"
-          className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-[#5945ff] underline underline-offset-2"
+          className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-[#3b82f6] underline underline-offset-2"
         >
           View Guide
           <ExternalLink className="h-3 w-3" />
@@ -804,15 +804,15 @@ function WorkspaceTypeCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "relative min-h-[192px] rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#aaa0ff] hover:bg-white/80 hover:shadow-[0_12px_24px_rgba(66,61,122,0.08)]",
+        "relative min-h-[192px] rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#93c5fd] hover:bg-white/80 hover:shadow-[0_12px_24px_rgba(59,130,246,0.08)]",
         selected
-          ? "border-[#7664ff] bg-white/85 shadow-[0_12px_30px_rgba(89,69,255,0.08)] ring-1 ring-[#7664ff]/15"
+          ? "border-[#3b82f6] bg-white/85 shadow-[0_12px_30px_rgba(59,130,246,0.08)] ring-1 ring-[#3b82f6]/15"
           : "border-[#e2e6f0]"
       )}
       aria-pressed={selected}
     >
       {selected ? (
-        <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#5945ff] text-[12px] font-bold leading-none text-white">
+        <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#3b82f6] text-[12px] font-bold leading-none text-white">
           ✓
         </span>
       ) : null}
@@ -846,7 +846,7 @@ function WorkspaceTypeStep({
   return (
     <>
       <div>
-        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+        <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 1 OF 8
         </span>
         <h1 className="mt-6 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
@@ -869,8 +869,8 @@ function WorkspaceTypeStep({
       </div>
 
       <div className="mt-auto flex flex-col gap-4 pt-8 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex max-w-xl items-center gap-3 rounded-xl border border-[#ebe9fb] bg-gradient-to-r from-[#fbfaff] to-[#f6f4ff] px-4 py-3">
-          <Sparkles className="h-4 w-4 shrink-0 text-[#5945ff]" strokeWidth={2} />
+        <div className="flex max-w-xl items-center gap-3 rounded-xl border border-[#dbeafe] bg-gradient-to-r from-[#f8fbff] to-[#eff6ff] px-4 py-3">
+          <Sparkles className="h-4 w-4 shrink-0 text-[#3b82f6]" strokeWidth={2} />
           <p className="text-xs text-[#526080]">
             You can always change this later in workspace settings.
           </p>
@@ -878,7 +878,7 @@ function WorkspaceTypeStep({
         <Button
           type="button"
           onClick={onContinue}
-          className="h-12 shrink-0 rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5]"
+          className="h-12 shrink-0 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6]"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
@@ -937,7 +937,7 @@ function WorkspaceDetailsStep({
   return (
     <>
       <div>
-        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+        <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 2 OF 8
         </span>
         <h1 className="mt-6 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
@@ -959,7 +959,7 @@ function WorkspaceDetailsStep({
                 value={draft.businessName}
                 onChange={(event) => onUpdate({ businessName: event.target.value })}
                 placeholder="e.g. Hypertron Labs"
-                className="h-14 w-full rounded-xl border border-[#dfe3ef] bg-white/75 px-4 pr-12 text-sm text-[#151a2b] outline-none transition focus:border-[#7664ff] focus:ring-2 focus:ring-[#7664ff]/10"
+                className="h-14 w-full rounded-xl border border-[#dfe3ef] bg-white/75 px-4 pr-12 text-sm text-[#151a2b] outline-none transition focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/10"
               />
               {draft.businessName.trim() ? (
                 <CheckCircle2 className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#39b86b]" />
@@ -979,7 +979,7 @@ function WorkspaceDetailsStep({
                 value={draft.website}
                 onChange={(event) => onUpdate({ website: event.target.value })}
                 placeholder="https://yourcompany.xyz"
-                className="h-14 w-full rounded-xl border border-[#dfe3ef] bg-white/75 pl-11 pr-4 text-sm text-[#151a2b] outline-none transition focus:border-[#7664ff] focus:ring-2 focus:ring-[#7664ff]/10"
+                className="h-14 w-full rounded-xl border border-[#dfe3ef] bg-white/75 pl-11 pr-4 text-sm text-[#151a2b] outline-none transition focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/10"
               />
             </span>
           </label>
@@ -996,9 +996,9 @@ function WorkspaceDetailsStep({
                     type="button"
                     onClick={() => onUpdate({ teamSize: size.value })}
                     className={cn(
-                      "flex h-14 items-center justify-center gap-2 rounded-xl border bg-white/60 text-sm font-medium transition hover:border-[#aaa0ff] hover:bg-white/80",
+                      "flex h-14 items-center justify-center gap-2 rounded-xl border bg-white/60 text-sm font-medium transition hover:border-[#93c5fd] hover:bg-white/80",
                       selected
-                        ? "border-[#7664ff] bg-[#faf9ff] text-[#5945ff] ring-1 ring-[#7664ff]/15"
+                        ? "border-[#3b82f6] bg-[#f8fbff] text-[#3b82f6] ring-1 ring-[#3b82f6]/15"
                         : "border-[#dfe3ef] text-[#34405e]"
                     )}
                     aria-pressed={selected}
@@ -1031,11 +1031,11 @@ function WorkspaceDetailsStep({
             onClick={() => fileInputRef.current?.click()}
             onDragOver={(event) => event.preventDefault()}
             onDrop={handleDrop}
-            className="mt-3 flex min-h-[280px] w-full flex-col items-center justify-center rounded-2xl border border-dashed border-[#cfd4ee] bg-gradient-to-br from-white/55 to-[#fbfaff] px-6 text-center transition hover:border-[#9387ff] hover:bg-white/80"
+            className="mt-3 flex min-h-[280px] w-full flex-col items-center justify-center rounded-2xl border border-dashed border-[#cfd4ee] bg-gradient-to-br from-white/55 to-[#f8fbff] px-6 text-center transition hover:border-[#60a5fa] hover:bg-white/80"
           >
             {draft.logoDataUrl ? (
               <>
-                <span className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border border-[#e1defa] bg-white p-3 shadow-[0_10px_25px_rgba(89,69,255,0.08)]">
+                <span className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border border-[#dbeafe] bg-white p-3 shadow-[0_10px_25px_rgba(59,130,246,0.08)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={draft.logoDataUrl}
@@ -1046,12 +1046,12 @@ function WorkspaceDetailsStep({
                 <span className="mt-4 max-w-full truncate text-sm font-semibold text-[#151a2b]">
                   {draft.logoName || "Uploaded logo"}
                 </span>
-                <span className="mt-1 text-xs text-[#5945ff]">Click or drop a file to replace</span>
+                <span className="mt-1 text-xs text-[#3b82f6]">Click or drop a file to replace</span>
               </>
             ) : (
               <>
-                <span className="flex h-20 w-20 items-center justify-center rounded-2xl border border-[#e1defa] bg-[#f8f7ff]">
-                  <ImageUp className="h-8 w-8 text-[#5945ff]" strokeWidth={1.7} />
+                <span className="flex h-20 w-20 items-center justify-center rounded-2xl border border-[#dbeafe] bg-[#f8fbff]">
+                  <ImageUp className="h-8 w-8 text-[#3b82f6]" strokeWidth={1.7} />
                 </span>
                 <span className="mt-5 text-sm font-semibold text-[#151a2b]">Upload Logo</span>
                 <span className="mt-2 text-xs text-[#526080]">Drag &amp; drop or click to upload</span>
@@ -1077,7 +1077,7 @@ function WorkspaceDetailsStep({
           type="button"
           disabled={!isReady}
           onClick={onContinue}
-          className="h-12 rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5]"
+          className="h-12 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6]"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
@@ -1102,7 +1102,7 @@ function OperationsSetupStep({
     <>
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+          <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
             STEP 3 OF 8
           </span>
           <h1 className="mt-6 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
@@ -1112,8 +1112,8 @@ function OperationsSetupStep({
             Choose the modules you want to enable. You can change this later.
           </p>
         </div>
-        <div className="flex max-w-sm items-center gap-3 rounded-xl border border-[#ebe9fb] bg-gradient-to-r from-[#fbfaff] to-[#f6f4ff] px-4 py-3">
-          <Sparkles className="h-4 w-4 shrink-0 text-[#5945ff]" strokeWidth={2} />
+        <div className="flex max-w-sm items-center gap-3 rounded-xl border border-[#dbeafe] bg-gradient-to-r from-[#f8fbff] to-[#eff6ff] px-4 py-3">
+          <Sparkles className="h-4 w-4 shrink-0 text-[#3b82f6]" strokeWidth={2} />
           <p className="text-xs leading-5 text-[#526080]">
             You can enable or disable modules anytime from workspace settings.
           </p>
@@ -1130,9 +1130,9 @@ function OperationsSetupStep({
               type="button"
               onClick={() => onToggle(operationModule.id)}
               className={cn(
-                "relative flex min-h-[142px] gap-4 rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#aaa0ff] hover:bg-white/80 hover:shadow-[0_12px_24px_rgba(66,61,122,0.08)]",
+                "relative flex min-h-[142px] gap-4 rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#93c5fd] hover:bg-white/80 hover:shadow-[0_12px_24px_rgba(59,130,246,0.08)]",
                 selected
-                  ? "border-[#d8d7ee] bg-white/78"
+                  ? "border-[#bfdbfe] bg-white/78"
                   : "border-[#e2e6f0] bg-white/35 opacity-75"
               )}
               aria-pressed={selected}
@@ -1160,7 +1160,7 @@ function OperationsSetupStep({
                 className={cn(
                   "absolute right-4 top-4 flex h-5 w-5 items-center justify-center rounded border transition",
                   selected
-                    ? "border-[#5945ff] bg-[#5945ff] text-white"
+                    ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                     : "border-[#cfd4e4] bg-white text-transparent"
                 )}
                 aria-hidden
@@ -1186,7 +1186,7 @@ function OperationsSetupStep({
           type="button"
           disabled={draft.operationModules.length === 0}
           onClick={onContinue}
-          className="h-12 rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5]"
+          className="h-12 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6]"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
@@ -1209,9 +1209,9 @@ function CompactStepProgress({ currentStep }: { currentStep: number }) {
             className={cn(
               "flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-semibold",
               isCompleted
-                ? "border-[#a89bff] bg-[#a89bff] text-white"
+                ? "border-[#93c5fd] bg-[#93c5fd] text-white"
                 : isActive
-                  ? "border-[#5945ff] bg-[#5945ff] text-white"
+                  ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                   : "border-[#cfd4e4] bg-white/60 text-[#7b86a4]"
             )}
           >
@@ -1239,7 +1239,7 @@ function TreasurySetupStep({
   return (
     <>
       <div>
-        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+        <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 4 OF 8
         </span>
         <h1 className="mt-6 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
@@ -1264,9 +1264,9 @@ function TreasurySetupStep({
                   type="button"
                   onClick={() => onSelectProvider(provider.id as WalletProvider)}
                   className={cn(
-                    "relative flex min-h-[152px] flex-col items-center justify-center rounded-xl border px-3 py-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[#aaa0ff] hover:bg-white/80",
+                    "relative flex min-h-[152px] flex-col items-center justify-center rounded-xl border px-3 py-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[#93c5fd] hover:bg-white/80",
                     selected
-                      ? "border-[#7664ff] bg-[#fbfaff] shadow-[0_10px_20px_rgba(89,69,255,0.06)]"
+                      ? "border-[#3b82f6] bg-[#f8fbff] shadow-[0_10px_20px_rgba(59,130,246,0.06)]"
                       : "border-[#e1e5ef] bg-white/55"
                   )}
                   aria-pressed={selected}
@@ -1275,7 +1275,7 @@ function TreasurySetupStep({
                     className={cn(
                       "absolute right-3 top-3 flex h-4 w-4 items-center justify-center rounded-full border",
                       selected
-                        ? "border-[#5945ff] bg-[#5945ff] text-white"
+                        ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                         : "border-[#d5dbea] bg-white text-transparent"
                     )}
                     aria-hidden
@@ -1287,7 +1287,7 @@ function TreasurySetupStep({
                     {provider.title}
                   </span>
                   {provider.recommended ? (
-                    <span className="mt-2 rounded-full bg-[#f0edff] px-2 py-0.5 text-[9px] font-semibold text-[#5945ff]">
+                    <span className="mt-2 rounded-full bg-[#eff6ff] px-2 py-0.5 text-[9px] font-semibold text-[#3b82f6]">
                       Recommended
                     </span>
                   ) : null}
@@ -1304,7 +1304,7 @@ function TreasurySetupStep({
 
           <button
             type="button"
-            className="flex h-12 w-full items-center gap-3 rounded-xl border border-[#e1e5ef] bg-white/55 px-4 text-left text-xs font-medium text-[#34405e] transition hover:border-[#c8cef0] hover:bg-white/85"
+            className="flex h-12 w-full items-center gap-3 rounded-xl border border-[#e1e5ef] bg-white/55 px-4 text-left text-xs font-medium text-[#34405e] transition hover:border-[#bfdbfe] hover:bg-white/85"
           >
             <Wallet className="h-4 w-4 text-[#657091]" strokeWidth={1.8} />
             <span className="flex-1">Import existing treasury addresses</span>
@@ -1312,7 +1312,7 @@ function TreasurySetupStep({
           </button>
 
           <div className="mt-7 flex items-center gap-3 text-xs text-[#526080]">
-            <ShieldCheck className="h-4 w-4 shrink-0 text-[#7664ff]" strokeWidth={1.9} />
+            <ShieldCheck className="h-4 w-4 shrink-0 text-[#3b82f6]" strokeWidth={1.9} />
             <p>Your keys are never stored. We only read data to help you operate.</p>
           </div>
         </section>
@@ -1332,7 +1332,7 @@ function TreasurySetupStep({
                   type="button"
                   onClick={() => onToggleChain(chain.id)}
                   className={cn(
-                    "flex w-full items-center gap-3 px-3 py-2.5 text-left transition hover:bg-[#f8f8ff]",
+                    "flex w-full items-center gap-3 px-3 py-2.5 text-left transition hover:bg-[#f8fbff]",
                     index > 0 && "border-t border-[#eef0f5]"
                   )}
                   aria-pressed={selected}
@@ -1343,7 +1343,7 @@ function TreasurySetupStep({
                     className={cn(
                       "flex h-5 w-5 items-center justify-center rounded border",
                       selected
-                        ? "border-[#5945ff] bg-[#5945ff] text-white"
+                        ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                         : "border-[#cfd4e4] bg-white text-transparent"
                     )}
                     aria-hidden
@@ -1357,7 +1357,7 @@ function TreasurySetupStep({
 
           <button
             type="button"
-            className="mt-3 flex h-12 w-full items-center gap-3 rounded-xl border border-[#e1e5ef] bg-white/55 px-4 text-left text-xs font-medium text-[#34405e] transition hover:border-[#c8cef0] hover:bg-white/85"
+            className="mt-3 flex h-12 w-full items-center gap-3 rounded-xl border border-[#e1e5ef] bg-white/55 px-4 text-left text-xs font-medium text-[#34405e] transition hover:border-[#bfdbfe] hover:bg-white/85"
           >
             <Plus className="h-4 w-4 text-[#657091]" strokeWidth={1.8} />
             Add Custom Chain
@@ -1380,7 +1380,7 @@ function TreasurySetupStep({
           type="button"
           disabled={draft.supportedChains.length === 0}
           onClick={onContinue}
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
@@ -1419,7 +1419,7 @@ function InviteTeamStep({
   return (
     <>
       <div>
-        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+        <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 5 OF 8
         </span>
         <h1 className="mt-6 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
@@ -1464,7 +1464,7 @@ function InviteTeamStep({
                     value={member.email}
                     onChange={(event) => onUpdateMember(member.id, { email: event.target.value })}
                     placeholder="name@company.com"
-                    className="h-12 w-full rounded-lg border border-[#dfe3ef] bg-white/65 px-4 text-sm text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+                    className="h-12 w-full rounded-lg border border-[#dfe3ef] bg-white/65 px-4 text-sm text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#60a5fa] focus:bg-white focus:ring-4 focus:ring-[#3b82f6]/10"
                   />
                 </label>
                 <label className="block">
@@ -1478,7 +1478,7 @@ function InviteTeamStep({
                       onUpdateMember(member.id, { nickname: event.target.value })
                     }
                     placeholder="e.g. Soumik"
-                    className="h-12 w-full rounded-lg border border-[#dfe3ef] bg-white/65 px-4 text-sm text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+                    className="h-12 w-full rounded-lg border border-[#dfe3ef] bg-white/65 px-4 text-sm text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#60a5fa] focus:bg-white focus:ring-4 focus:ring-[#3b82f6]/10"
                   />
                 </label>
                 <label className="block">
@@ -1489,7 +1489,7 @@ function InviteTeamStep({
                       onChange={(event) =>
                         onUpdateMember(member.id, { role: event.target.value as TeamRole })
                       }
-                      className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 px-4 pr-10 text-sm text-[#526080] outline-none transition focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+                      className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 px-4 pr-10 text-sm text-[#526080] outline-none transition focus:border-[#60a5fa] focus:bg-white focus:ring-4 focus:ring-[#3b82f6]/10"
                     >
                       <option value="">Select role</option>
                       {SUGGESTED_ROLES.map((role) => (
@@ -1513,7 +1513,7 @@ function InviteTeamStep({
                           permission: event.target.value as PermissionLevel,
                         })
                       }
-                      className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 px-4 pr-10 text-sm text-[#526080] outline-none transition focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+                      className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 px-4 pr-10 text-sm text-[#526080] outline-none transition focus:border-[#60a5fa] focus:bg-white focus:ring-4 focus:ring-[#3b82f6]/10"
                     >
                       <option value="full-access">Full access</option>
                       <option value="operations-access">Operations access</option>
@@ -1540,9 +1540,9 @@ function InviteTeamStep({
             type="button"
             variant="outline"
             onClick={onAddMember}
-            className="mt-4 h-10 rounded-lg border-[#cfc9ff] bg-white/55 px-4 text-xs font-medium text-[#34405e] hover:bg-white hover:text-[#5945ff]"
+            className="mt-4 h-10 rounded-lg border-[#bfdbfe] bg-white/55 px-4 text-xs font-medium text-[#34405e] hover:bg-white hover:text-[#3b82f6]"
           >
-            <Plus className="mr-2 h-4 w-4 text-[#5945ff]" strokeWidth={1.8} />
+            <Plus className="mr-2 h-4 w-4 text-[#3b82f6]" strokeWidth={1.8} />
             Add another member
           </Button>
         </div>
@@ -1599,7 +1599,7 @@ function InviteTeamStep({
         <Button
           type="button"
           onClick={onContinue}
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
@@ -1664,7 +1664,7 @@ function IntegrationsSetupStep({
     <>
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+          <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
             STEP 6 OF 8
           </span>
           <h1 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
@@ -1674,8 +1674,8 @@ function IntegrationsSetupStep({
             Connect the tools you already use. You can add or remove integrations anytime.
           </p>
         </div>
-        <div className="flex max-w-[300px] items-center gap-3 rounded-xl border border-[#e5e1ff] bg-[#f8f6ff] px-4 py-3 text-xs leading-5 text-[#526080]">
-          <Sparkles className="h-5 w-5 shrink-0 text-[#5945ff]" strokeWidth={1.9} />
+        <div className="flex max-w-[300px] items-center gap-3 rounded-xl border border-[#dbeafe] bg-[#eff6ff] px-4 py-3 text-xs leading-5 text-[#526080]">
+          <Sparkles className="h-5 w-5 shrink-0 text-[#3b82f6]" strokeWidth={1.9} />
           <span className="font-medium">Secure, read-only connections with enterprise-grade security.</span>
         </div>
       </div>
@@ -1690,7 +1690,7 @@ function IntegrationsSetupStep({
               className={cn(
                 "whitespace-nowrap rounded-lg px-4 py-2 text-xs font-medium transition",
                 category === integrationCategory.id
-                  ? "bg-white text-[#5945ff] shadow-sm"
+                  ? "bg-white text-[#3b82f6] shadow-sm"
                   : "text-[#526080] hover:bg-white/70 hover:text-[#34405e]"
               )}
               aria-pressed={category === integrationCategory.id}
@@ -1707,7 +1707,7 @@ function IntegrationsSetupStep({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search integrations..."
-              className="h-11 w-full rounded-xl border border-[#dfe3ef] bg-white/55 pl-10 pr-4 text-xs text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+              className="h-11 w-full rounded-xl border border-[#dfe3ef] bg-white/55 pl-10 pr-4 text-xs text-[#151a2b] outline-none transition placeholder:text-[#8791aa] focus:border-[#60a5fa] focus:bg-white focus:ring-4 focus:ring-[#3b82f6]/10"
             />
           </label>
           <Button
@@ -1725,20 +1725,20 @@ function IntegrationsSetupStep({
         <div className="mt-7">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-[#151a2b]">
-              <Sparkles className="h-4 w-4 text-[#5945ff]" strokeWidth={2} />
+              <Sparkles className="h-4 w-4 text-[#3b82f6]" strokeWidth={2} />
               Recommended for you
             </div>
             <button
               type="button"
               onClick={onToggleRecommended}
-              className="flex items-center gap-2 text-xs font-medium text-[#526080] transition hover:text-[#5945ff]"
+              className="flex items-center gap-2 text-xs font-medium text-[#526080] transition hover:text-[#3b82f6]"
             >
               Select All Recommended
               <span
                 className={cn(
                   "flex h-5 w-5 items-center justify-center rounded border",
                   allRecommendedConnected
-                    ? "border-[#5945ff] bg-[#5945ff] text-white"
+                    ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                     : "border-[#cfd4e4] bg-white text-transparent"
                 )}
                 aria-hidden
@@ -1756,7 +1756,7 @@ function IntegrationsSetupStep({
                   className={cn(
                     "relative flex min-h-[190px] flex-col rounded-xl border p-4 transition",
                     connected
-                      ? "border-[#cfc9ff] bg-[#fbfaff] shadow-[0_10px_20px_rgba(89,69,255,0.05)]"
+                      ? "border-[#bfdbfe] bg-[#f8fbff] shadow-[0_10px_20px_rgba(59,130,246,0.05)]"
                       : "border-[#e1e5ef] bg-white/45"
                   )}
                 >
@@ -1764,9 +1764,9 @@ function IntegrationsSetupStep({
                     type="button"
                     onClick={() => onToggle(integration.id)}
                     className={cn(
-                      "absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded border transition hover:border-[#5945ff]",
+                      "absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded border transition hover:border-[#3b82f6]",
                       connected
-                        ? "border-[#5945ff] bg-[#5945ff] text-white"
+                        ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                         : "border-[#cfd4e4] bg-white text-transparent"
                     )}
                     aria-label={`${connected ? "Deselect" : "Select"} ${integration.title}`}
@@ -1779,7 +1779,7 @@ function IntegrationsSetupStep({
                   <p className="mt-2 text-xs leading-5 text-[#526080]">{integration.description}</p>
                   <button
                     type="button"
-                    className="mt-auto flex h-8 items-center justify-center rounded-full border border-[#dcd7ff] bg-white/65 text-xs font-semibold text-[#5945ff] transition hover:bg-[#f8f6ff]"
+                    className="mt-auto flex h-8 items-center justify-center rounded-full border border-[#bfdbfe] bg-white/65 text-xs font-semibold text-[#3b82f6] transition hover:bg-[#eff6ff]"
                   >
                     Connect
                   </button>
@@ -1795,7 +1795,7 @@ function IntegrationsSetupStep({
           <h2 className="text-sm font-semibold text-[#151a2b]">
             {category === "all" && query.trim().length === 0 ? "All Integrations" : "Matching Integrations"}
           </h2>
-          <span className="text-xs font-medium text-[#5945ff]">
+          <span className="text-xs font-medium text-[#3b82f6]">
             {filteredIntegrations.length} integration{filteredIntegrations.length === 1 ? "" : "s"}
           </span>
         </div>
@@ -1814,7 +1814,7 @@ function IntegrationsSetupStep({
                     </h3>
                     <button
                       type="button"
-                      className="mt-2 h-7 w-full rounded-full border border-[#dcd7ff] bg-white/65 px-3 text-[11px] font-semibold text-[#5945ff] transition hover:bg-[#f8f6ff]"
+                      className="mt-2 h-7 w-full rounded-full border border-[#bfdbfe] bg-white/65 px-3 text-[11px] font-semibold text-[#3b82f6] transition hover:bg-[#eff6ff]"
                     >
                       Connect
                     </button>
@@ -1844,7 +1844,7 @@ function IntegrationsSetupStep({
         <Button
           type="button"
           onClick={onContinue}
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
@@ -1875,7 +1875,7 @@ function CompliancePreferencesStep({
   return (
     <>
       <div>
-        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+        <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 7 OF 8
         </span>
         <h1 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
@@ -1902,9 +1902,9 @@ function CompliancePreferencesStep({
                   type="button"
                   onClick={() => onToggleFramework(framework.id)}
                   className={cn(
-                    "relative flex min-h-[150px] flex-col rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#aaa0ff] hover:bg-white/80",
+                    "relative flex min-h-[150px] flex-col rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#93c5fd] hover:bg-white/80",
                     selected
-                      ? "border-[#7664ff] bg-[#fbfaff] shadow-[0_10px_20px_rgba(89,69,255,0.05)]"
+                      ? "border-[#3b82f6] bg-[#f8fbff] shadow-[0_10px_20px_rgba(59,130,246,0.05)]"
                       : "border-[#e1e5ef] bg-white/45"
                   )}
                   aria-pressed={selected}
@@ -1913,7 +1913,7 @@ function CompliancePreferencesStep({
                     className={cn(
                       "absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded border",
                       selected
-                        ? "border-[#5945ff] bg-[#5945ff] text-white"
+                        ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                         : "border-[#cfd4e4] bg-white text-transparent"
                     )}
                     aria-hidden
@@ -1931,7 +1931,7 @@ function CompliancePreferencesStep({
                   <h3 className="mt-4 text-sm font-semibold text-[#151a2b]">{framework.title}</h3>
                   <p className="mt-2 text-xs leading-5 text-[#526080]">{framework.description}</p>
                   {framework.id === "soc-2" ? (
-                    <span className="mt-auto w-fit rounded-full bg-[#f0edff] px-2 py-0.5 text-[10px] font-semibold text-[#5945ff]">
+                    <span className="mt-auto w-fit rounded-full bg-[#eff6ff] px-2 py-0.5 text-[10px] font-semibold text-[#3b82f6]">
                       Most popular
                     </span>
                   ) : null}
@@ -1939,8 +1939,8 @@ function CompliancePreferencesStep({
               );
             })}
           </div>
-          <div className="mt-4 flex items-center gap-3 rounded-lg border border-[#e5e1ff] bg-[#faf9ff] px-4 py-3 text-xs text-[#526080]">
-            <Info className="h-4 w-4 shrink-0 text-[#7664ff]" strokeWidth={2} />
+          <div className="mt-4 flex items-center gap-3 rounded-lg border border-[#dbeafe] bg-[#f8fbff] px-4 py-3 text-xs text-[#526080]">
+            <Info className="h-4 w-4 shrink-0 text-[#3b82f6]" strokeWidth={2} />
             <span>You can add or change compliance frameworks anytime from Settings.</span>
           </div>
         </section>
@@ -1977,7 +1977,7 @@ function CompliancePreferencesStep({
                     onClick={() => onToggleMonitoring(option.id)}
                     className={cn(
                       "relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200",
-                      enabled ? "bg-[#5945ff]" : "bg-[#d7dbea]"
+                      enabled ? "bg-[#3b82f6]" : "bg-[#d7dbea]"
                     )}
                     aria-label={`${enabled ? "Disable" : "Enable"} ${option.title}`}
                     aria-pressed={enabled}
@@ -2001,11 +2001,11 @@ function CompliancePreferencesStep({
           <span className="block text-sm font-semibold text-[#151a2b]">Data residency</span>
           <span className="mt-1 block text-xs text-[#526080]">Select where your data should be stored.</span>
           <span className="relative mt-3 block">
-            <Globe2 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7664ff]" strokeWidth={1.9} />
+            <Globe2 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#3b82f6]" strokeWidth={1.9} />
             <select
               value={draft.dataResidency ?? DEFAULT_DRAFT.dataResidency}
               onChange={(event) => onUpdate({ dataResidency: event.target.value })}
-              className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 pl-11 pr-10 text-sm font-medium text-[#34405e] outline-none transition focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+              className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 pl-11 pr-10 text-sm font-medium text-[#34405e] outline-none transition focus:border-[#60a5fa] focus:bg-white focus:ring-4 focus:ring-[#3b82f6]/10"
             >
               <option value="us">US (North America)</option>
               <option value="eu">European Union</option>
@@ -2014,7 +2014,7 @@ function CompliancePreferencesStep({
             <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#657091]" strokeWidth={1.8} />
           </span>
           <span className="mt-3 flex items-center gap-2 text-xs text-[#657091]">
-            <LockKeyhole className="h-3.5 w-3.5 text-[#7664ff]" strokeWidth={1.9} />
+            <LockKeyhole className="h-3.5 w-3.5 text-[#3b82f6]" strokeWidth={1.9} />
             Your data is encrypted and stored securely.
           </span>
         </label>
@@ -2029,7 +2029,7 @@ function CompliancePreferencesStep({
             <select
               value={draft.dataRetention ?? DEFAULT_DRAFT.dataRetention}
               onChange={(event) => onUpdate({ dataRetention: event.target.value })}
-              className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 pl-11 pr-10 text-sm font-medium text-[#34405e] outline-none transition focus:border-[#8c7dff] focus:bg-white focus:ring-4 focus:ring-[#7664ff]/10"
+              className="h-12 w-full appearance-none rounded-lg border border-[#dfe3ef] bg-white/65 pl-11 pr-10 text-sm font-medium text-[#34405e] outline-none transition focus:border-[#60a5fa] focus:bg-white focus:ring-4 focus:ring-[#3b82f6]/10"
             >
               <option value="1-year">1 year</option>
               <option value="3-years">3 years</option>
@@ -2039,7 +2039,7 @@ function CompliancePreferencesStep({
             <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#657091]" strokeWidth={1.8} />
           </span>
           <span className="mt-3 flex items-center gap-2 text-xs text-[#657091]">
-            <LockKeyhole className="h-3.5 w-3.5 text-[#7664ff]" strokeWidth={1.9} />
+            <LockKeyhole className="h-3.5 w-3.5 text-[#3b82f6]" strokeWidth={1.9} />
             You can update this later from compliance settings.
           </span>
         </label>
@@ -2059,7 +2059,7 @@ function CompliancePreferencesStep({
         <Button
           type="button"
           onClick={onContinue}
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
         >
           Continue
           <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
@@ -2083,9 +2083,9 @@ function ReviewCard({
   onEdit: () => void;
 }) {
   return (
-    <article className="flex min-h-[116px] items-center gap-4 rounded-xl border border-[#e1e5ef] bg-white/45 p-4 transition hover:border-[#d2cef8] hover:bg-white/70">
-      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#f1efff]">
-        <Icon className="h-6 w-6 text-[#5945ff]" strokeWidth={2} />
+    <article className="flex min-h-[116px] items-center gap-4 rounded-xl border border-[#e1e5ef] bg-white/45 p-4 transition hover:border-[#bfdbfe] hover:bg-white/70">
+      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#eff6ff]">
+        <Icon className="h-6 w-6 text-[#3b82f6]" strokeWidth={2} />
       </span>
       <div className="min-w-0 flex-1">
         <h2 className="text-xs font-semibold text-[#34405e]">{title}</h2>
@@ -2096,7 +2096,7 @@ function ReviewCard({
         type="button"
         variant="outline"
         onClick={onEdit}
-        className="h-10 shrink-0 rounded-lg border-[#dfe3ef] bg-white/55 px-3 text-xs font-medium text-[#34405e] hover:bg-white hover:text-[#5945ff]"
+        className="h-10 shrink-0 rounded-lg border-[#dfe3ef] bg-white/55 px-3 text-xs font-medium text-[#34405e] hover:bg-white hover:text-[#3b82f6]"
       >
         <FileText className="mr-2 h-3.5 w-3.5" strokeWidth={1.9} />
         Edit
@@ -2170,7 +2170,7 @@ function ReviewWorkspaceStep({
   return (
     <>
       <div>
-        <span className="inline-flex rounded-full bg-[#f1efff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#5945ff]">
+        <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 8 OF 8
         </span>
         <h1 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-[#10162a]">
@@ -2255,10 +2255,10 @@ function ReviewWorkspaceStep({
         />
       </div>
 
-      <div className="mt-6 grid gap-5 rounded-xl border border-[#e5e1ff] bg-[#faf9ff] p-5 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] lg:items-center">
+      <div className="mt-6 grid gap-5 rounded-xl border border-[#dbeafe] bg-[#f8fbff] p-5 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] lg:items-center">
         <div className="flex items-center gap-4">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
-            <ShieldCheck className="h-6 w-6 text-[#5945ff]" strokeWidth={2} />
+            <ShieldCheck className="h-6 w-6 text-[#3b82f6]" strokeWidth={2} />
           </span>
           <div>
             <h2 className="text-sm font-semibold text-[#151a2b]">You&apos;re all set!</h2>
@@ -2273,7 +2273,7 @@ function ReviewWorkspaceStep({
           ["Start in seconds", "Easy to set up and use"],
         ].map(([title, description]) => (
           <div key={title} className="flex items-start gap-3">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#5945ff]" strokeWidth={2.2} />
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#3b82f6]" strokeWidth={2.2} />
             <div>
               <h3 className="text-xs font-semibold text-[#151a2b]">{title}</h3>
               <p className="mt-1 text-xs text-[#526080]">{description}</p>
@@ -2295,7 +2295,7 @@ function ReviewWorkspaceStep({
         <CompactStepProgress currentStep={8} />
         <Button
           type="button"
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#5945ff] to-[#3724f7] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(89,69,255,0.22)] hover:from-[#4e3bf2] hover:to-[#2f1ee5] sm:ml-auto sm:w-fit"
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
         >
           Create Workspace
           <Sparkles className="ml-3 h-4 w-4" strokeWidth={1.9} />
@@ -2477,7 +2477,7 @@ export default function CreateWorkspacePage() {
             variant="outline"
             size="icon"
             onClick={() => router.push("/dashboard")}
-            className="h-12 w-12 rounded-full border-white/90 bg-white/65 text-[#526080] shadow-[0_8px_30px_rgba(76,69,145,0.06)] hover:bg-white hover:text-[#252d47]"
+            className="h-12 w-12 rounded-full border-white/90 bg-white/65 text-[#526080] shadow-[0_8px_30px_rgba(59,130,246,0.06)] hover:bg-white hover:text-[#252d47]"
             aria-label="Close workspace setup"
           >
             <X className="h-5 w-5" strokeWidth={1.8} />
@@ -2492,7 +2492,7 @@ export default function CreateWorkspacePage() {
       <div className="mx-auto mt-6 flex max-w-[1480px] flex-col gap-5 lg:h-[calc(100vh-7.75rem)] lg:min-h-[700px] lg:flex-row">
         <ProgressRail currentStep={draft.currentStep} />
 
-        <section className="flex min-w-0 flex-1 flex-col rounded-3xl border border-white/80 bg-white/65 p-6 shadow-[0_18px_60px_rgba(101,101,156,0.08)] backdrop-blur-sm sm:p-8 lg:p-12">
+        <section className="flex min-w-0 flex-1 flex-col rounded-3xl border border-white/80 bg-white/65 p-6 shadow-[0_18px_60px_rgba(59,130,246,0.08)] backdrop-blur-sm sm:p-8 lg:p-12">
           {draft.currentStep === 1 ? (
             <WorkspaceTypeStep
               draft={draft}
