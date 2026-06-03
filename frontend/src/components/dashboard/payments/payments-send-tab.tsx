@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   ArrowRight,
   Calendar,
   CheckCheck,
-  ChevronDown,
   Clock,
   Copy,
+  ExternalLink,
   Mail,
   Shield,
   User,
@@ -21,35 +22,49 @@ import {
   SectionInfo,
   usePaymentsStyles,
 } from "@/components/dashboard/payments/payments-shared";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { fallbackBusiness } from "@/data/fallback";
+import { USDC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
 import { cn } from "@/utils";
 
-const SAVED_CONTACTS = [
-  { id: "c1", name: "Dev Contractor", detail: "GABC…7K2M", type: "wallet" as const },
-  { id: "c2", name: "Marcus Lee", detail: "marcus@acme.io", type: "email" as const },
-  { id: "c3", name: "CloudHost Inc", detail: "GBCD…9P4Q", type: "wallet" as const },
-];
+type SavedContact = {
+  id: string;
+  name: string;
+  detail: string;
+  type: "wallet";
+};
 
 const DELIVERY_METHODS = [
   { id: "wallet", label: "Stellar Wallet", sub: "Instant on-chain", icon: Wallet, enabled: true },
-  { id: "email", label: "Email Link", sub: "Claim via secure link", icon: Mail, enabled: true },
+  { id: "email", label: "Email Link", sub: "Claim via secure link", icon: Mail, enabled: false },
   { id: "priority", label: "Priority Rail", sub: "Faster settlement", icon: Zap, enabled: true },
   { id: "bank", label: "Bank Transfer", sub: "Coming soon", icon: Building2, enabled: false },
 ] as const;
 
-export function PaymentsSendTab() {
+const STELLAR_NETWORK_FEE_LABEL = "~0.00001 XLM (from pool)";
+
+type SendSuccess = {
+  payoutTxHash: string;
+  explorerUrl?: string;
+  status: string;
+  scheduledAt?: string;
+};
+
+interface PaymentsSendTabProps {
+  businessId: string;
+}
+
+export function PaymentsSendTab({ businessId }: PaymentsSendTabProps) {
   const { theme } = useDashboardTheme();
   const { t, inputCls, labelCls, hintCls, sectionTitle, cardCls, panelCls } = usePaymentsStyles(theme);
 
   const [recipient, setRecipient] = useState("");
-  const [amount, setAmount] = useState("500.00");
-  const [memo, setMemo] = useState("Invoice #1042 — May retainer");
+  const [amount, setAmount] = useState("");
+  const [currency] = useState<PaymentAssetCode>("USDC");
+  const [memo, setMemo] = useState("");
   const [timing, setTiming] = useState<"now" | "schedule">("now");
   const [scheduleDate, setScheduleDate] = useState("");
   const [privateSend, setPrivateSend] = useState(false);
@@ -60,50 +75,147 @@ export function PaymentsSendTab() {
     bank: false,
   });
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<SendSuccess | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const vaultName = useMemo(() => {
-    const base = fallbackBusiness.name?.trim() || "Hypertron";
-    return base.endsWith("Vault") ? base : `${base} Vault`;
-  }, []);
+  const [vaultName, setVaultName] = useState("Vault");
+  const [availableUsdc, setAvailableUsdc] = useState<string | null>(null);
+  const [contacts, setContacts] = useState<SavedContact[]>([]);
+  const [balanceLoading, setBalanceLoading] = useState(true);
 
-  const feeEstimate = useMemo(() => {
-    const num = parseFloat(amount.replace(/,/g, "")) || 0;
-    const baseFee = methods.priority ? 0.5 : 0.01;
-    const pctFee = methods.priority ? num * 0.001 : 0;
-    return (baseFee + pctFee).toFixed(2);
-  }, [amount, methods.priority]);
+  useEffect(() => {
+    let cancelled = false;
+    setBalanceLoading(true);
+    fetch(`/api/payment-send?businessId=${encodeURIComponent(businessId)}`, {
+      credentials: "same-origin",
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        if (typeof data.vaultName === "string") setVaultName(data.vaultName);
+        const usdc = data.balances?.virtualBalanceUsdc;
+        if (typeof usdc === "string") {
+          const n = parseFloat(usdc);
+          setAvailableUsdc(
+            Number.isFinite(n)
+              ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+              : "0.00"
+          );
+        }
+        if (Array.isArray(data.contacts)) {
+          setContacts(
+            data.contacts.map((c: SavedContact) => ({
+              id: c.id,
+              name: c.name,
+              detail: c.detail,
+              type: "wallet" as const,
+            }))
+          );
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setBalanceLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId]);
+
+  const activeDelivery = DELIVERY_METHODS.find((m) => methods[m.id])?.id ?? "wallet";
 
   const filteredContacts = useMemo(() => {
     const q = recipient.trim().toLowerCase();
     if (!q || q.length < 2) return [];
-    return SAVED_CONTACTS.filter(
+    return contacts.filter(
       (c) => c.name.toLowerCase().includes(q) || c.detail.toLowerCase().includes(q)
     );
-  }, [recipient]);
+  }, [recipient, contacts]);
 
-  function selectContact(contact: (typeof SAVED_CONTACTS)[number]) {
+  function selectContact(contact: SavedContact) {
     setRecipient(`${contact.name} · ${contact.detail}`);
   }
 
   function selectDeliveryMethod(id: string) {
+    const method = DELIVERY_METHODS.find((m) => m.id === id);
+    if (!method?.enabled) return;
     setMethods({ wallet: false, email: false, priority: false, bank: false, [id]: true });
   }
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
+    setSuccess(null);
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
-    setSent(true);
+
+    try {
+      const res = await fetch("/api/payment-send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          businessId,
+          amount: amount.replace(/,/g, "").trim(),
+          currency,
+          recipient,
+          memo,
+          deliveryMethod: activeDelivery,
+          privateSend,
+          timing,
+          scheduledAt: timing === "schedule" ? scheduleDate : undefined,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(typeof data?.error === "string" ? data.error : "Could not send payment.");
+        return;
+      }
+
+      setSuccess({
+        payoutTxHash: data.payoutTxHash ?? "",
+        explorerUrl: data.explorerUrl,
+        status: data.status ?? "completed",
+        scheduledAt: data.scheduledAt,
+      });
+
+      if (data.status === "completed" || data.status === "scheduled") {
+        const balRes = await fetch(`/api/balance?businessId=${encodeURIComponent(businessId)}`, {
+          credentials: "same-origin",
+        });
+        if (balRes.ok) {
+          const bal = await balRes.json();
+          const n = parseFloat(bal.virtualBalanceUsdc ?? "0");
+          if (Number.isFinite(n)) {
+            setAvailableUsdc(
+              n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            );
+          }
+        }
+        window.dispatchEvent(new CustomEvent("hypertron:payment-sent"));
+      }
+    } catch {
+      setError("Could not send payment. Check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   function copyReceipt() {
-    navigator.clipboard.writeText("TX-8F2A9C1D — Sent 500.00 USDC to recipient");
+    if (!success?.payoutTxHash) return;
+    const line = `${success.payoutTxHash} — Sent ${amount} ${currency} to ${recipient}`;
+    navigator.clipboard.writeText(line);
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
+
+  const amountNum = parseFloat(amount.replace(/,/g, "") || "0");
+  const availableNum = parseFloat((availableUsdc ?? "0").replace(/,/g, ""));
+  const insufficient =
+    Number.isFinite(amountNum) &&
+    amountNum > 0 &&
+    Number.isFinite(availableNum) &&
+    amountNum > availableNum;
 
   return (
     <div className={cardCls}>
@@ -112,11 +224,23 @@ export function PaymentsSendTab() {
           Send a Payment
         </h1>
         <p className={cn("mt-1 text-sm", t.pageSubheading)}>
-          Transfer USDC instantly to wallets, saved contacts, or via secure email link.
+          Transfer USDC from your vault to Stellar wallets. Funds are paid from the global pool using your
+          attributed balance.
         </p>
       </div>
 
-      {sent ? (
+      {error ? (
+        <div
+          className={cn(
+            "mb-4 rounded-lg border px-4 py-3 text-sm",
+            t.dark ? "border-red-500/30 bg-red-500/10 text-red-200" : "border-red-200 bg-red-50 text-red-800"
+          )}
+        >
+          {error}
+        </div>
+      ) : null}
+
+      {success ? (
         <div
           className={cn(
             "mb-6 flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between",
@@ -125,16 +249,40 @@ export function PaymentsSendTab() {
         >
           <div className="min-w-0">
             <p className={cn("text-sm font-medium", t.dark ? "text-emerald-200" : "text-emerald-800")}>
-              {timing === "schedule" ? "Payment scheduled" : "Payment sent successfully"}
+              {success.status === "scheduled" ? "Payment scheduled" : "Payment sent successfully"}
             </p>
-            <p className={cn("mt-0.5 text-xs", t.pageSubheading)}>
-              {amount} USDC → {recipient || "recipient"} · TX-8F2A9C1D
+            <p className={cn("mt-0.5 text-xs break-all", t.pageSubheading)}>
+              {amount} {currency} → {recipient || "recipient"}
+              {success.payoutTxHash ? ` · ${success.payoutTxHash.slice(0, 12)}…` : null}
             </p>
+            {success.status === "scheduled" && success.scheduledAt ? (
+              <p className={cn("mt-1 text-[11px]", t.pageSubheading)}>
+                Scheduled for {new Date(success.scheduledAt).toLocaleString()}
+              </p>
+            ) : null}
           </div>
-          <Button type="button" size="sm" variant="outline" className={cn("shrink-0 gap-2", t.outlineBtn)} onClick={copyReceipt}>
-            {copied ? <CheckCheck className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-            {copied ? "Copied" : "Copy receipt"}
-          </Button>
+          <div className="flex shrink-0 gap-2">
+            {success.explorerUrl ? (
+              <Button type="button" size="sm" variant="outline" className={cn("gap-2", t.outlineBtn)} asChild>
+                <Link href={success.explorerUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                  Explorer
+                </Link>
+              </Button>
+            ) : null}
+            {success.payoutTxHash ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className={cn("gap-2", t.outlineBtn)}
+                onClick={copyReceipt}
+              >
+                {copied ? <CheckCheck className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                {copied ? "Copied" : "Copy receipt"}
+              </Button>
+            ) : null}
+          </div>
         </div>
       ) : null}
 
@@ -170,7 +318,6 @@ export function PaymentsSendTab() {
                       <button
                         type="button"
                         role="option"
-                        aria-selected={recipient.includes(contact.detail)}
                         onClick={() => selectContact(contact)}
                         className={cn(
                           "flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors",
@@ -178,13 +325,15 @@ export function PaymentsSendTab() {
                         )}
                       >
                         <span className={cn("font-medium", t.pageHeading)}>{contact.name}</span>
-                        <span className={cn("truncate text-xs", t.pageSubheading)}>{contact.detail}</span>
+                        <span className={cn("truncate text-xs font-mono", t.pageSubheading)}>{contact.detail}</span>
                       </button>
                     </li>
                   ))}
                 </ul>
-              ) : recipient.length >= 2 && !SAVED_CONTACTS.some((c) => recipient.includes(c.name)) ? (
-                <p className={hintCls}>No saved contacts match — you can still send to this address.</p>
+              ) : recipient.length >= 2 && contacts.length === 0 ? (
+                <p className={hintCls}>No saved contacts — add employees with wallet addresses in your team settings.</p>
+              ) : recipient.length >= 2 ? (
+                <p className={hintCls}>No saved contacts match — you can still send to a G… address.</p>
               ) : null}
             </div>
 
@@ -195,7 +344,8 @@ export function PaymentsSendTab() {
               <div
                 className={cn(
                   "flex overflow-hidden rounded-lg border focus-within:ring-2 focus-within:ring-blue-500/20",
-                  t.dark ? "border-white/10" : "border-slate-200"
+                  t.dark ? "border-white/10" : "border-slate-200",
+                  insufficient && "border-red-300 focus-within:ring-red-500/20"
                 )}
               >
                 <Input
@@ -213,15 +363,24 @@ export function PaymentsSendTab() {
                     t.dark ? "border-white/10 bg-white/5 text-slate-200" : "border-slate-200 bg-slate-50 text-slate-700"
                   )}
                 >
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
-                    $
-                  </span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={USDC_LOGO_URL} alt="" aria-hidden className="h-5 w-5 rounded-full object-cover" />
                   USDC
                 </div>
               </div>
               <p className={hintCls}>
-                Available: <span className="font-medium text-emerald-600">38,210.00 USDC</span>
+                Available:{" "}
+                {balanceLoading ? (
+                  <span className={t.pageSubheading}>…</span>
+                ) : (
+                  <span className={cn("font-medium", insufficient ? "text-red-600" : "text-emerald-600")}>
+                    {availableUsdc ?? "0.00"} USDC
+                  </span>
+                )}
               </p>
+              {insufficient ? (
+                <p className="text-xs text-red-600">Amount exceeds available vault balance.</p>
+              ) : null}
             </div>
 
             <div className="space-y-2">
@@ -304,11 +463,10 @@ export function PaymentsSendTab() {
               <SectionInfo className={t.cardMuted} />
             </div>
 
-            <button
-              type="button"
+            <div
               className={cn(
-                "flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
-                t.dark ? "border-white/10 bg-white/5 hover:bg-white/10" : "border-slate-200 bg-white hover:border-slate-300"
+                "flex w-full items-center gap-3 rounded-lg border px-4 py-3",
+                t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
               )}
             >
               <div
@@ -321,10 +479,10 @@ export function PaymentsSendTab() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className={cn("text-sm font-semibold", t.pageHeading)}>{vaultName}</p>
-                <p className={cn("text-xs", t.pageSubheading)}>Sending from</p>
+                <p className={cn("text-xs", t.pageSubheading)}>Sending from attributed balance</p>
               </div>
               <ArrowRight className={cn("h-4 w-4 shrink-0", t.cardMuted)} />
-            </button>
+            </div>
 
             <div
               className={cn(
@@ -334,23 +492,19 @@ export function PaymentsSendTab() {
             >
               <div className="flex justify-between">
                 <span className={t.pageSubheading}>Network fee</span>
-                <span className={cn("font-medium tabular-nums", t.pageHeading)}>{feeEstimate} USDC</span>
+                <span className={cn("text-xs font-medium", t.pageHeading)}>{STELLAR_NETWORK_FEE_LABEL}</span>
               </div>
               <div className="flex justify-between">
                 <span className={t.pageSubheading}>Recipient receives</span>
                 <span className={cn("font-semibold tabular-nums", t.pageHeading)}>
-                  {amount || "0.00"} USDC
+                  {amount || "0.00"} {currency}
                 </span>
               </div>
               <div className={cn("border-t pt-2", t.cardDivider)}>
                 <div className="flex justify-between">
-                  <span className={cn("font-medium", t.pageHeading)}>Total debit</span>
+                  <span className={cn("font-medium", t.pageHeading)}>Debited from vault</span>
                   <span className={cn("font-semibold tabular-nums", t.pageHeading)}>
-                    {(parseFloat(amount.replace(/,/g, "") || "0") + parseFloat(feeEstimate)).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    USDC
+                    {amount || "0.00"} {currency}
                   </span>
                 </div>
               </div>
@@ -369,7 +523,7 @@ export function PaymentsSendTab() {
                     <SectionInfo className={t.cardMuted} />
                   </div>
                   <p className={cn("mt-1 text-xs leading-relaxed", t.pageSubheading)}>
-                    Obscure amount and memo on the public ledger.
+                    Recorded on your account; on-chain privacy features are not enabled in this release.
                   </p>
                 </div>
                 <Switch
@@ -378,27 +532,10 @@ export function PaymentsSendTab() {
                   className="shrink-0 data-[state=checked]:bg-blue-600"
                 />
               </div>
-              {privateSend ? (
-                <div className={cn("flex gap-3 rounded-lg px-3 py-2.5", t.dark ? "bg-blue-500/10" : "bg-blue-50")}>
-                  <Shield className={cn("mt-0.5 h-4 w-4 shrink-0 text-blue-600", t.dark && "text-blue-400")} />
-                  <p className={cn("text-xs leading-relaxed", t.dark ? "text-blue-200" : "text-blue-800")}>
-                    A private proof-of-payment receipt will be shared with the recipient only.
-                  </p>
-                </div>
-              ) : null}
             </div>
 
             <div className="flex items-center gap-2">
-              <Badge
-                variant="outline"
-                className={cn(
-                  "text-[11px]",
-                  t.dark ? "border-emerald-500/30 text-emerald-300" : "border-emerald-200 text-emerald-700"
-                )}
-              >
-                Stellar · USDC
-              </Badge>
-              <span className={cn("text-xs", t.pageSubheading)}>Est. arrival: ~3 sec</span>
+              <span className={cn("text-xs", t.pageSubheading)}>Stellar · USDC · Est. arrival: ~3 sec</span>
             </div>
           </div>
         </div>
@@ -430,7 +567,7 @@ export function PaymentsSendTab() {
           </p>
           <Button
             type="submit"
-            disabled={loading || !recipient.trim()}
+            disabled={loading || !recipient.trim() || !amount.trim() || insufficient || balanceLoading}
             className="h-11 min-w-[180px] bg-blue-600 px-6 text-white hover:bg-blue-500"
           >
             {loading ? "Processing…" : timing === "schedule" ? "Schedule Payment" : "Send Payment"}

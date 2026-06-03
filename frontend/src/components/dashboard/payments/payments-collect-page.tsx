@@ -59,10 +59,10 @@ export function PaymentsCollectPage({ businessId }: PaymentsCollectPageProps) {
 
       <div className="grid w-full min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px]">
         {activeTab === "collect" ? <PaymentsCollectTab businessId={businessId} /> : null}
-        {activeTab === "send" ? <PaymentsSendTab /> : null}
+        {activeTab === "send" ? <PaymentsSendTab businessId={businessId} /> : null}
         {activeTab === "subscriptions" ? <PaymentsSubscriptionsTab /> : null}
         {activeTab === "customers" ? <PaymentsCustomersTab /> : null}
-        <PaymentsSidebar tab={activeTab} theme={theme} />
+        <PaymentsSidebar tab={activeTab} theme={theme} businessId={businessId} />
       </div>
     </div>
   );

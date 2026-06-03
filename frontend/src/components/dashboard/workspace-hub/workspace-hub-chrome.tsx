@@ -299,10 +299,7 @@ export function WorkspaceHubShellBar({
   const { theme } = useDashboardTheme();
   return (
     <header
-      className={cn(
-        "flex shrink-0 items-center justify-between gap-4 border-b px-5 py-3 lg:px-6",
-        theme === "light" ? "border-slate-100/90" : "border-white/[0.08]"
-      )}
+      className="flex shrink-0 items-center justify-between gap-4 px-5 py-3 lg:px-6"
     >
       <HubBreadcrumbTrail breadcrumbs={breadcrumbs} />
       <WorkspaceHubHeaderActions workspaces={workspaces} />
@@ -324,12 +321,7 @@ export function WorkspaceHubTopChrome({
   const { theme } = useDashboardTheme();
   return (
     <>
-      <div
-        className={cn(
-          "shrink-0 border-b px-8 py-3",
-          theme === "light" ? "border-slate-100/90" : "border-white/[0.08]"
-        )}
-      >
+      <div className="shrink-0 px-8 py-3">
         <HubBreadcrumbTrail breadcrumbs={breadcrumbs} />
       </div>
 

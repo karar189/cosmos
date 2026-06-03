@@ -1,7 +1,13 @@
 /**
- * Build and submit a Stellar XLM payment (or createAccount if destination is new).
+ * Build and submit a Stellar payment (XLM native or Circle USDC).
  * Used on the pay page: build unsigned XDR -> Freighter signs -> submit to Horizon.
  */
+
+import {
+  getUsdcIssuer,
+  normalizePaymentAmount,
+  type PaymentAssetCode,
+} from "@/lib/stellar-assets";
 
 const HORIZON_TESTNET = "https://horizon-testnet.stellar.org";
 const HORIZON_MAINNET = "https://horizon.stellar.org";
@@ -37,41 +43,46 @@ function bytesToHex(bytes: Uint8Array): string {
 /** Minimum XLM to create a new account on Stellar (base reserve). */
 const MIN_CREATE_ACCOUNT_XLM = 1;
 
-/** Normalize amount to 7 decimals (Stellar format). */
-function normalizeAmount(amount: string): string {
-  const n = parseFloat(amount);
-  if (!Number.isFinite(n) || n < 0) return "0.0000000";
-  return n.toFixed(7);
-}
-
 export interface BuildPaymentXdrParams {
   horizonUrl: string;
   networkPassphrase: string;
   sourcePublicKey: string;
   destinationPublicKey: string;
-  amountXlm: string;
+  amount: string;
+  assetCode?: PaymentAssetCode;
+  /** Inferred from horizon URL when omitted. */
+  network?: StellarNetwork;
   /** Plain text memo (max 28 chars). Ignored if memoHashBase64 is set. */
   memo?: string;
   /** Dark pool: 32-byte memo for MEMO_HASH (opaque on-chain). */
   memoHashBase64?: string;
 }
 
+/** @deprecated Use `amount` — kept for callers migrating from amountXlm. */
+export type BuildPaymentXdrParamsLegacy = BuildPaymentXdrParams & { amountXlm?: string };
+
 export type BuildPaymentXdrResult =
   | { success: true; xdr: string }
   | { success: false; error: string };
 
+function horizonNetworkFromUrl(horizonUrl: string): StellarNetwork {
+  return horizonUrl.includes("testnet") ? "testnet" : "public";
+}
+
 export async function buildPaymentXdr(
-  params: BuildPaymentXdrParams
+  params: BuildPaymentXdrParams & { amountXlm?: string }
 ): Promise<BuildPaymentXdrResult> {
   const {
     horizonUrl,
     networkPassphrase,
     sourcePublicKey,
     destinationPublicKey,
-    amountXlm,
     memo,
     memoHashBase64,
   } = params;
+  const amountRaw = params.amount ?? params.amountXlm ?? "";
+  const assetCode = params.assetCode ?? "USDC";
+  const network = params.network ?? horizonNetworkFromUrl(horizonUrl);
 
   try {
     const StellarSdk = await import("@stellar/stellar-sdk");
@@ -81,13 +92,18 @@ export async function buildPaymentXdr(
     const server = new Horizon.Server(horizonUrl);
     const sourceAccount = await server.loadAccount(sourcePublicKey);
 
-    const amountStr = normalizeAmount(amountXlm);
+    const amountStr = normalizePaymentAmount(amountRaw, assetCode);
     const fee = "100";
 
     const builder = new TransactionBuilder(sourceAccount, {
       fee,
       networkPassphrase,
     });
+
+    const paymentAsset =
+      assetCode === "XLM"
+        ? Asset.native()
+        : new Asset("USDC", getUsdcIssuer(network));
 
     let destinationExists: boolean;
     try {
@@ -97,11 +113,19 @@ export async function buildPaymentXdr(
       destinationExists = false;
     }
 
+    if (!destinationExists && assetCode !== "XLM") {
+      return {
+        success: false,
+        error:
+          "Recipient account is not activated on this network. The pool must be funded with XLM before it can receive USDC.",
+      };
+    }
+
     if (destinationExists) {
       builder.addOperation(
         Operation.payment({
           destination: destinationPublicKey,
-          asset: Asset.native(),
+          asset: paymentAsset,
           amount: amountStr,
         })
       );

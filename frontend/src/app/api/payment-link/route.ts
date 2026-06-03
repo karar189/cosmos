@@ -1,15 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { resolveAppBaseUrl } from "@/lib/app-base-url";
+import {
+  parseExpiryDays,
+  parseLinkCurrency,
+  normalizePaymentMethods,
+} from "@/lib/payment-link-fields";
 import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
 
-/** Pool address where payment-link funds are sent. When set, all links pay here (business.receiveAddress is for withdraws only). */
+/** Pool address where payment-link funds are sent (legacy/privacy mode). */
 const PAYMENT_POOL_ADDRESS = (
   process.env.NEXT_PUBLIC_PAYMENT_POOL_ADDRESS?.trim() ||
   process.env.NEXT_PUBLIC_MERCHANT_RECIPIENT?.trim() ||
   ""
 ).trim();
 const FALLBACK_RECIPIENT = process.env.NEXT_PUBLIC_MERCHANT_RECIPIENT?.trim() || "";
+
+/**
+ * Determine payment destination:
+ * 1. If business has a vault, use vault address (direct vault mode)
+ * 2. Otherwise fall back to pool address (legacy/privacy mode)
+ */
+function resolveDestinationAddress(business: {
+  vaultAddress?: string | null;
+  vaultType?: string | null;
+  receiveAddress?: string | null;
+}): string {
+  if (business.vaultAddress && business.vaultType) {
+    return business.vaultAddress;
+  }
+  if (PAYMENT_POOL_ADDRESS) {
+    return PAYMENT_POOL_ADDRESS;
+  }
+  if (business.receiveAddress) {
+    return business.receiveAddress;
+  }
+  return FALLBACK_RECIPIENT;
+}
 
 function generateLinkMemo(): string {
   return "hpl_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
@@ -26,6 +53,10 @@ export async function POST(req: NextRequest) {
       clientName,
       workflowStage,
       flexibleAmount,
+      currency,
+      expiryDays,
+      metadata,
+      paymentMethods,
     } = body;
 
     const bid = typeof businessId === "string" ? businessId.trim() : "";
@@ -40,38 +71,52 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "amount required (or set flexibleAmount: true for pay-any-amount link)" }, { status: 400 });
     }
 
-    const business = await db.business.findUnique({ where: { id: bid } });
+    const business = await db.business.findUnique({
+      where: { id: bid },
+      select: {
+        id: true,
+        vaultAddress: true,
+        vaultType: true,
+        receiveAddress: true,
+      },
+    });
     if (!business) {
       return NextResponse.json({ error: "Business not found" }, { status: 404 });
     }
 
-    // Prefer pool so funds go to pool; business.receiveAddress is used for withdraws, not as payment destination when pool is set.
-    const destinationAddress = (
-      PAYMENT_POOL_ADDRESS ||
-      (business.receiveAddress ?? FALLBACK_RECIPIENT)
-    ).trim();
+    const destinationAddress = resolveDestinationAddress(business);
     if (!destinationAddress) {
       return NextResponse.json(
         {
           error:
-            "Set NEXT_PUBLIC_PAYMENT_POOL_ADDRESS (or NEXT_PUBLIC_MERCHANT_RECIPIENT) in .env so payments go to the pool, or set Receive address in the dashboard for direct receive.",
+            "No payment destination configured. Create a vault in Settings → Treasury, or set NEXT_PUBLIC_PAYMENT_POOL_ADDRESS in .env.",
         },
         { status: 400 }
       );
     }
+
+    const isDirectVault = business.vaultAddress === destinationAddress;
 
     let linkMemo = generateLinkMemo();
     while (await db.paymentLink.findUnique({ where: { linkMemo } })) {
       linkMemo = generateLinkMemo();
     }
 
+    const linkCurrency = parseLinkCurrency(currency);
+    const methods = normalizePaymentMethods(paymentMethods);
+    const expiresAt = parseExpiryDays(expiryDays);
+
     const link = await db.paymentLink.create({
       data: {
         businessId: bid,
         amount: amt || "",
+        currency: linkCurrency,
         purpose: purpose ? String(purpose).trim() : null,
         clientName: clientName ? String(clientName).trim() : null,
         workflowStage: workflowStage ? String(workflowStage).trim() : null,
+        metadata: metadata ? String(metadata).trim().slice(0, 2000) : null,
+        paymentMethods: methods,
+        expiresAt,
         linkMemo,
         destinationAddress,
       },
@@ -87,7 +132,11 @@ export async function POST(req: NextRequest) {
       qrPayload,
       memo: link.linkMemo,
       amount: link.amount,
+      currency: link.currency,
+      expiresAt: link.expiresAt,
+      paymentMethods: link.paymentMethods,
       destinationAddress: link.destinationAddress,
+      mode: isDirectVault ? "direct_vault" : "pool",
     });
   } catch (e) {
     console.error("Payment link create error:", e);
@@ -116,9 +165,13 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         amount: true,
+        currency: true,
         purpose: true,
         clientName: true,
         workflowStage: true,
+        metadata: true,
+        paymentMethods: true,
+        expiresAt: true,
         linkMemo: true,
         paidAt: true,
         paymentTxHash: true,
