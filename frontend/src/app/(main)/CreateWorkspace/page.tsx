@@ -31,6 +31,7 @@ import {
   ImageUp,
   Info,
   Landmark,
+  Loader2,
   LifeBuoy,
   Link2,
   LockKeyhole,
@@ -54,6 +55,10 @@ import {
 import { HypertronLogoMark } from "@/components/global/hypertron-logo-mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
+import { workspaceDraftToPayload } from "@/lib/create-workspace/from-draft";
+import { submitWorkspaceCreate } from "@/lib/create-workspace/submit";
+import { setOnboardingCompleted } from "@/lib/onboarding-storage";
+import { persistTierFromOnboarding } from "@/lib/workspace-tier-context";
 
 type WorkspaceType = {
   id: string;
@@ -143,6 +148,42 @@ const STEPS = [
   "Compliance Preferences",
   "Review & Create",
 ];
+
+/** Matches payment-link / overview hub cards — flat borders, no glow */
+const SETUP_CARD = "rounded-xl border border-slate-200 bg-white";
+const SETUP_PANEL = "rounded-xl border border-slate-200 bg-white shadow-sm";
+const SETUP_PRIMARY_BTN =
+  "hub-cta rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700";
+const SETUP_OUTLINE_BTN =
+  "rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50";
+const SETUP_STEP_FOOTER =
+  "grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center";
+
+function SetupStepLayout({
+  children,
+  footer,
+  footerClassName,
+}: {
+  children: ReactNode;
+  footer: ReactNode;
+  footerClassName?: string;
+}) {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="scrollbar-subtle min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+        {children}
+      </div>
+      <div
+        className={cn(
+          "shrink-0 border-t border-slate-200 bg-white pt-4",
+          footerClassName
+        )}
+      >
+        {footer}
+      </div>
+    </div>
+  );
+}
 
 const TEAM_SIZES: { value: TeamSize; label: string }[] = [
   { value: "1-5", label: "1 - 5" },
@@ -690,7 +731,7 @@ function SetupProgress({ currentStep }: { currentStep: number }) {
   const progress = Math.round((currentStep / STEPS.length) * 100);
 
   return (
-    <div className="w-[232px] rounded-2xl border border-white/80 bg-white/80 px-4 py-3 shadow-[0_8px_30px_rgba(59,130,246,0.08)] backdrop-blur-md">
+    <div className={cn("w-[232px] px-4 py-3", SETUP_PANEL)}>
       <div className="flex items-center justify-between gap-4 text-xs">
         <span className="font-medium text-[#526080]">Setup Progress</span>
         <span className="font-semibold text-[#12182a]">{progress}%</span>
@@ -707,7 +748,12 @@ function SetupProgress({ currentStep }: { currentStep: number }) {
 
 function ProgressRail({ currentStep }: { currentStep: number }) {
   return (
-    <aside className="flex w-full shrink-0 flex-col rounded-3xl border border-white/70 bg-white/55 px-6 py-7 shadow-[0_18px_55px_rgba(59,130,246,0.06)] backdrop-blur-sm lg:w-[292px]">
+    <aside
+      className={cn(
+        "flex w-full shrink-0 flex-col px-5 py-6 lg:h-full lg:min-h-0 lg:w-[280px] lg:overflow-y-auto",
+        SETUP_PANEL
+      )}
+    >
       <h2 className="text-xl font-semibold tracking-tight text-[#10162a]">Workspace Setup</h2>
       <p className="mt-1 text-sm text-[#526080]">Step {currentStep} of 8</p>
 
@@ -733,7 +779,7 @@ function ProgressRail({ currentStep }: { currentStep: number }) {
                   isCompleted
                     ? "border-[#3b82f6] bg-white text-[#3b82f6]"
                     : isActive
-                    ? "border-[#3b82f6] bg-[#3b82f6] text-white shadow-[0_5px_13px_rgba(59,130,246,0.25)]"
+                    ? "border-blue-600 bg-blue-600 text-white"
                     : "border-[#cad2e4] bg-white/75 text-[#536382]"
                 )}
               >
@@ -766,7 +812,7 @@ function ProgressRail({ currentStep }: { currentStep: number }) {
         })}
       </ol>
 
-      <div className="mt-auto hidden rounded-2xl border border-[#e4e7f0] bg-white/55 p-4 lg:block">
+      <div className={cn("mt-auto hidden p-4 lg:block", SETUP_CARD)}>
         <div className="flex items-center gap-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#eff6ff]">
             <LifeBuoy className="h-4 w-4 text-[#3b82f6]" strokeWidth={2} />
@@ -804,9 +850,9 @@ function WorkspaceTypeCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "relative min-h-[192px] rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#93c5fd] hover:bg-white/80 hover:shadow-[0_12px_24px_rgba(59,130,246,0.08)]",
+        "relative min-h-[192px] rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:border-[#93c5fd] hover:bg-white/80 hover:border-slate-300",
         selected
-          ? "border-[#3b82f6] bg-white/85 shadow-[0_12px_30px_rgba(59,130,246,0.08)] ring-1 ring-[#3b82f6]/15"
+          ? "border-[#3b82f6] bg-white/85 ring-1 ring-blue-600/20"
           : "border-[#e2e6f0]"
       )}
       aria-pressed={selected}
@@ -844,7 +890,27 @@ function WorkspaceTypeStep({
   onContinue: () => void;
 }) {
   return (
-    <>
+    <SetupStepLayout
+      footerClassName="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      footer={
+        <>
+          <div className="flex max-w-xl items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <Sparkles className="h-4 w-4 shrink-0 text-blue-600" strokeWidth={2} />
+            <p className="text-xs text-slate-600">
+              You can always change this later in workspace settings.
+            </p>
+          </div>
+          <Button
+            type="button"
+            onClick={onContinue}
+            className={cn("h-11 shrink-0 px-6", SETUP_PRIMARY_BTN)}
+          >
+            Continue
+            <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+          </Button>
+        </>
+      }
+    >
       <div>
         <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 1 OF 8
@@ -857,7 +923,7 @@ function WorkspaceTypeStep({
         </p>
       </div>
 
-      <div className="mt-9 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-9 grid gap-4 pb-2 sm:grid-cols-2 xl:grid-cols-4">
         {WORKSPACE_TYPES.map((workspaceType) => (
           <WorkspaceTypeCard
             key={workspaceType.id}
@@ -867,24 +933,7 @@ function WorkspaceTypeStep({
           />
         ))}
       </div>
-
-      <div className="mt-auto flex flex-col gap-4 pt-8 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex max-w-xl items-center gap-3 rounded-xl border border-[#dbeafe] bg-gradient-to-r from-[#f8fbff] to-[#eff6ff] px-4 py-3">
-          <Sparkles className="h-4 w-4 shrink-0 text-[#3b82f6]" strokeWidth={2} />
-          <p className="text-xs text-[#526080]">
-            You can always change this later in workspace settings.
-          </p>
-        </div>
-        <Button
-          type="button"
-          onClick={onContinue}
-          className="h-12 shrink-0 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6]"
-        >
-          Continue
-          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
-        </Button>
-      </div>
-    </>
+    </SetupStepLayout>
   );
 }
 
@@ -935,7 +984,31 @@ function WorkspaceDetailsStep({
   const isReady = draft.businessName.trim().length > 0 && draft.website.trim().length > 0;
 
   return (
-    <>
+    <SetupStepLayout
+      footerClassName="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between"
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className={cn("h-11 px-6", SETUP_OUTLINE_BTN)}
+          >
+            <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+            Back
+          </Button>
+          <Button
+            type="button"
+            disabled={!isReady}
+            onClick={onContinue}
+            className={cn("h-11 px-6", SETUP_PRIMARY_BTN)}
+          >
+            Continue
+            <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+          </Button>
+        </>
+      }
+    >
       <div>
         <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 2 OF 8
@@ -1035,7 +1108,7 @@ function WorkspaceDetailsStep({
           >
             {draft.logoDataUrl ? (
               <>
-                <span className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border border-[#dbeafe] bg-white p-3 shadow-[0_10px_25px_rgba(59,130,246,0.08)]">
+                <span className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border border-[#dbeafe] bg-white p-3 ">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={draft.logoDataUrl}
@@ -1062,28 +1135,7 @@ function WorkspaceDetailsStep({
           {logoError ? <p className="mt-2 text-xs text-red-600">{logoError}</p> : null}
         </div>
       </div>
-
-      <div className="mt-auto flex flex-col-reverse gap-3 border-t border-[#e7e9f1] pt-7 sm:flex-row sm:items-center sm:justify-between">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="h-12 rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b]"
-        >
-          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
-          Back
-        </Button>
-        <Button
-          type="button"
-          disabled={!isReady}
-          onClick={onContinue}
-          className="h-12 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6]"
-        >
-          Continue
-          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
-        </Button>
-      </div>
-    </>
+    </SetupStepLayout>
   );
 }
 
@@ -1099,7 +1151,31 @@ function OperationsSetupStep({
   onContinue: () => void;
 }) {
   return (
-    <>
+    <SetupStepLayout
+      footerClassName="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between"
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className={cn("h-11 px-6", SETUP_OUTLINE_BTN)}
+          >
+            <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+            Back
+          </Button>
+          <Button
+            type="button"
+            disabled={draft.operationModules.length === 0}
+            onClick={onContinue}
+            className={cn("h-11 px-6", SETUP_PRIMARY_BTN)}
+          >
+            Continue
+            <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+          </Button>
+        </>
+      }
+    >
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
@@ -1130,7 +1206,7 @@ function OperationsSetupStep({
               type="button"
               onClick={() => onToggle(operationModule.id)}
               className={cn(
-                "relative flex min-h-[142px] gap-4 rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#93c5fd] hover:bg-white/80 hover:shadow-[0_12px_24px_rgba(59,130,246,0.08)]",
+                "relative flex min-h-[142px] gap-4 rounded-2xl border bg-white/55 p-5 text-left transition-all duration-200 hover:border-[#93c5fd] hover:bg-white/80 hover:border-slate-300",
                 selected
                   ? "border-[#bfdbfe] bg-white/78"
                   : "border-[#e2e6f0] bg-white/35 opacity-75"
@@ -1171,28 +1247,7 @@ function OperationsSetupStep({
           );
         })}
       </div>
-
-      <div className="mt-auto flex flex-col-reverse gap-3 border-t border-[#e7e9f1] pt-7 sm:flex-row sm:items-center sm:justify-between">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="h-12 rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b]"
-        >
-          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
-          Back
-        </Button>
-        <Button
-          type="button"
-          disabled={draft.operationModules.length === 0}
-          onClick={onContinue}
-          className="h-12 rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6]"
-        >
-          Continue
-          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
-        </Button>
-      </div>
-    </>
+    </SetupStepLayout>
   );
 }
 
@@ -1237,7 +1292,32 @@ function TreasurySetupStep({
   onContinue: () => void;
 }) {
   return (
-    <>
+    <SetupStepLayout
+      footerClassName={SETUP_STEP_FOOTER}
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className={cn("h-11 w-full px-6 sm:w-fit", SETUP_OUTLINE_BTN)}
+          >
+            <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+            Back
+          </Button>
+          <CompactStepProgress currentStep={4} />
+          <Button
+            type="button"
+            disabled={draft.supportedChains.length === 0}
+            onClick={onContinue}
+            className={cn("h-11 w-full px-6 sm:ml-auto sm:w-fit", SETUP_PRIMARY_BTN)}
+          >
+            Continue
+            <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+          </Button>
+        </>
+      }
+    >
       <div>
         <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 4 OF 8
@@ -1264,9 +1344,9 @@ function TreasurySetupStep({
                   type="button"
                   onClick={() => onSelectProvider(provider.id as WalletProvider)}
                   className={cn(
-                    "relative flex min-h-[152px] flex-col items-center justify-center rounded-xl border px-3 py-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[#93c5fd] hover:bg-white/80",
+                    "relative flex min-h-[152px] flex-col items-center justify-center rounded-xl border px-3 py-4 text-center transition-all duration-200 hover:border-[#93c5fd] hover:bg-white/80",
                     selected
-                      ? "border-[#3b82f6] bg-[#f8fbff] shadow-[0_10px_20px_rgba(59,130,246,0.06)]"
+                      ? "border-[#3b82f6] bg-[#f8fbff] "
                       : "border-[#e1e5ef] bg-white/55"
                   )}
                   aria-pressed={selected}
@@ -1364,29 +1444,7 @@ function TreasurySetupStep({
           </button>
         </section>
       </div>
-
-      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
-        >
-          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
-          Back
-        </Button>
-        <CompactStepProgress currentStep={4} />
-        <Button
-          type="button"
-          disabled={draft.supportedChains.length === 0}
-          onClick={onContinue}
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
-        >
-          Continue
-          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
-        </Button>
-      </div>
-    </>
+    </SetupStepLayout>
   );
 }
 
@@ -1417,7 +1475,31 @@ function InviteTeamStep({
   onContinue: () => void;
 }) {
   return (
-    <>
+    <SetupStepLayout
+      footerClassName={SETUP_STEP_FOOTER}
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className={cn("h-11 w-full px-6 sm:w-fit", SETUP_OUTLINE_BTN)}
+          >
+            <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+            Back
+          </Button>
+          <CompactStepProgress currentStep={5} />
+          <Button
+            type="button"
+            onClick={onContinue}
+            className={cn("h-11 w-full px-6 sm:ml-auto sm:w-fit", SETUP_PRIMARY_BTN)}
+          >
+            Continue
+            <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+          </Button>
+        </>
+      }
+    >
       <div>
         <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 5 OF 8
@@ -1584,28 +1666,7 @@ function InviteTeamStep({
           </div>
         </div>
       </div>
-
-      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
-        >
-          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
-          Back
-        </Button>
-        <CompactStepProgress currentStep={5} />
-        <Button
-          type="button"
-          onClick={onContinue}
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
-        >
-          Continue
-          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
-        </Button>
-      </div>
-    </>
+    </SetupStepLayout>
   );
 }
 
@@ -1661,7 +1722,31 @@ function IntegrationsSetupStep({
   );
 
   return (
-    <>
+    <SetupStepLayout
+      footerClassName={SETUP_STEP_FOOTER}
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className={cn("h-11 w-full px-6 sm:w-fit", SETUP_OUTLINE_BTN)}
+          >
+            <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+            Back
+          </Button>
+          <CompactStepProgress currentStep={6} />
+          <Button
+            type="button"
+            onClick={onContinue}
+            className={cn("h-11 w-full px-6 sm:ml-auto sm:w-fit", SETUP_PRIMARY_BTN)}
+          >
+            Continue
+            <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+          </Button>
+        </>
+      }
+    >
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
@@ -1756,7 +1841,7 @@ function IntegrationsSetupStep({
                   className={cn(
                     "relative flex min-h-[190px] flex-col rounded-xl border p-4 transition",
                     connected
-                      ? "border-[#bfdbfe] bg-[#f8fbff] shadow-[0_10px_20px_rgba(59,130,246,0.05)]"
+                      ? "border-[#bfdbfe] bg-[#f8fbff] "
                       : "border-[#e1e5ef] bg-white/45"
                   )}
                 >
@@ -1829,28 +1914,7 @@ function IntegrationsSetupStep({
           </div>
         )}
       </div>
-
-      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
-        >
-          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
-          Back
-        </Button>
-        <CompactStepProgress currentStep={6} />
-        <Button
-          type="button"
-          onClick={onContinue}
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
-        >
-          Continue
-          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
-        </Button>
-      </div>
-    </>
+    </SetupStepLayout>
   );
 }
 
@@ -1873,7 +1937,31 @@ function CompliancePreferencesStep({
   const enabledMonitoring = draft.complianceMonitoring ?? DEFAULT_DRAFT.complianceMonitoring;
 
   return (
-    <>
+    <SetupStepLayout
+      footerClassName={SETUP_STEP_FOOTER}
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className={cn("h-11 w-full px-6 sm:w-fit", SETUP_OUTLINE_BTN)}
+          >
+            <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+            Back
+          </Button>
+          <CompactStepProgress currentStep={7} />
+          <Button
+            type="button"
+            onClick={onContinue}
+            className={cn("h-11 w-full px-6 sm:ml-auto sm:w-fit", SETUP_PRIMARY_BTN)}
+          >
+            Continue
+            <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
+          </Button>
+        </>
+      }
+    >
       <div>
         <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 7 OF 8
@@ -1902,9 +1990,9 @@ function CompliancePreferencesStep({
                   type="button"
                   onClick={() => onToggleFramework(framework.id)}
                   className={cn(
-                    "relative flex min-h-[150px] flex-col rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#93c5fd] hover:bg-white/80",
+                    "relative flex min-h-[150px] flex-col rounded-xl border p-4 text-left transition-all duration-200 hover:border-[#93c5fd] hover:bg-white/80",
                     selected
-                      ? "border-[#3b82f6] bg-[#f8fbff] shadow-[0_10px_20px_rgba(59,130,246,0.05)]"
+                      ? "border-[#3b82f6] bg-[#f8fbff] "
                       : "border-[#e1e5ef] bg-white/45"
                   )}
                   aria-pressed={selected}
@@ -2044,28 +2132,7 @@ function CompliancePreferencesStep({
           </span>
         </label>
       </div>
-
-      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
-        >
-          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
-          Back
-        </Button>
-        <CompactStepProgress currentStep={7} />
-        <Button
-          type="button"
-          onClick={onContinue}
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
-        >
-          Continue
-          <ArrowRight className="ml-3 h-4 w-4" strokeWidth={1.8} />
-        </Button>
-      </div>
-    </>
+    </SetupStepLayout>
   );
 }
 
@@ -2083,7 +2150,12 @@ function ReviewCard({
   onEdit: () => void;
 }) {
   return (
-    <article className="flex min-h-[116px] items-center gap-4 rounded-xl border border-[#e1e5ef] bg-white/45 p-4 transition hover:border-[#bfdbfe] hover:bg-white/70">
+    <article
+      className={cn(
+        "flex min-h-[100px] items-center gap-4 p-4 transition hover:border-slate-300",
+        SETUP_CARD
+      )}
+    >
       <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#eff6ff]">
         <Icon className="h-6 w-6 text-[#3b82f6]" strokeWidth={2} />
       </span>
@@ -2109,10 +2181,16 @@ function ReviewWorkspaceStep({
   draft,
   onEditStep,
   onBack,
+  onCreate,
+  creating,
+  createError,
 }: {
   draft: WorkspaceDraft;
   onEditStep: (step: WorkspaceDraft["currentStep"]) => void;
   onBack: () => void;
+  onCreate: () => void;
+  creating: boolean;
+  createError: string | null;
 }) {
   const workspaceType =
     WORKSPACE_TYPES.find((option) => option.id === draft.workspaceType) ?? WORKSPACE_TYPES[0];
@@ -2168,7 +2246,41 @@ function ReviewWorkspaceStep({
   ].join(", ");
 
   return (
-    <>
+    <SetupStepLayout
+      footerClassName={SETUP_STEP_FOOTER}
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className={cn("h-11 w-full px-6 sm:w-fit", SETUP_OUTLINE_BTN)}
+          >
+            <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
+            Back
+          </Button>
+          <CompactStepProgress currentStep={8} />
+          <Button
+            type="button"
+            disabled={creating || !draft.businessName.trim() || draft.operationModules.length === 0}
+            onClick={onCreate}
+            className={cn("h-11 w-full px-6 sm:ml-auto sm:w-fit", SETUP_PRIMARY_BTN)}
+          >
+            {creating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating…
+              </>
+            ) : (
+              <>
+                Create Workspace
+                <Sparkles className="ml-3 h-4 w-4" strokeWidth={1.9} />
+              </>
+            )}
+          </Button>
+        </>
+      }
+    >
       <div>
         <span className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#3b82f6]">
           STEP 8 OF 8
@@ -2179,9 +2291,14 @@ function ReviewWorkspaceStep({
         <p className="mt-2 text-sm text-[#526080]">
           Review your settings before launching your workspace.
         </p>
+        {createError ? (
+          <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {createError}
+          </p>
+        ) : null}
       </div>
 
-      <div className="mt-7 grid gap-4 xl:grid-cols-2">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <ReviewCard
           title="Workspace Type"
           value={workspaceType.title}
@@ -2255,7 +2372,7 @@ function ReviewWorkspaceStep({
         />
       </div>
 
-      <div className="mt-6 grid gap-5 rounded-xl border border-[#dbeafe] bg-[#f8fbff] p-5 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] lg:items-center">
+      <div className="mt-5 grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-start">
         <div className="flex items-center gap-4">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
             <ShieldCheck className="h-6 w-6 text-[#3b82f6]" strokeWidth={2} />
@@ -2281,27 +2398,7 @@ function ReviewWorkspaceStep({
           </div>
         ))}
       </div>
-
-      <div className="mt-auto grid gap-3 border-t border-[#e7e9f1] pt-7 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="h-12 w-full rounded-xl border-[#dfe3ef] bg-white/55 px-6 text-sm font-medium text-[#34405e] hover:bg-white hover:text-[#151a2b] sm:w-fit"
-        >
-          <ArrowLeft className="mr-3 h-4 w-4" strokeWidth={1.8} />
-          Back
-        </Button>
-        <CompactStepProgress currentStep={8} />
-        <Button
-          type="button"
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-8 text-sm font-medium text-white shadow-[0_10px_24px_rgba(59,130,246,0.22)] hover:from-[#2563eb] hover:to-[#3b82f6] sm:ml-auto sm:w-fit"
-        >
-          Create Workspace
-          <Sparkles className="ml-3 h-4 w-4" strokeWidth={1.9} />
-        </Button>
-      </div>
-    </>
+    </SetupStepLayout>
   );
 }
 
@@ -2309,6 +2406,8 @@ export default function CreateWorkspacePage() {
   const router = useRouter();
   const [draft, setDraft] = useState<WorkspaceDraft>(DEFAULT_DRAFT);
   const [hydrated, setHydrated] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   useEffect(() => {
     setDraft(loadWorkspaceDraft());
@@ -2354,6 +2453,45 @@ export default function CreateWorkspacePage() {
 
   const showReviewWorkspace = () => {
     updateDraft({ currentStep: 8 });
+  };
+
+  const handleCreateWorkspace = async () => {
+    if (creating) return;
+    const name = draft.businessName.trim();
+    if (!name) {
+      setCreateError("Business name is required.");
+      return;
+    }
+    if (draft.operationModules.length === 0) {
+      setCreateError("Select at least one operation module.");
+      return;
+    }
+
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const result = await submitWorkspaceCreate(workspaceDraftToPayload(draft));
+      persistTierFromOnboarding({
+        bundleId: result.selectedTier,
+        businessName: result.template.businessName ?? name,
+        bundleName: result.selectedTierName,
+      });
+      setOnboardingCompleted({
+        name,
+        email: "",
+        businessNature: draft.workspaceType,
+        selectedWidgets: draft.operationModules,
+      });
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem(WORKSPACE_DRAFT_KEY);
+        window.dispatchEvent(new Event("profile-updated"));
+      }
+      router.push("/dashboard");
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Failed to create workspace");
+    } finally {
+      setCreating(false);
+    }
   };
 
   const toggleOperationModule = (moduleId: string) => {
@@ -2457,8 +2595,8 @@ export default function CreateWorkspacePage() {
   };
 
   return (
-    <main className="min-h-screen bg-transparent px-4 py-5 sm:px-6 lg:px-8">
-      <header className="mx-auto flex max-w-[1480px] items-center justify-between gap-5">
+    <main className="create-workspace-page flex h-dvh flex-col overflow-hidden bg-[#f8f9fc] px-4 py-4 sm:px-6 lg:px-8">
+      <header className="mx-auto flex w-full max-w-[1400px] shrink-0 items-center justify-between gap-5 pb-1">
         <button
           type="button"
           onClick={() => router.push("/dashboard")}
@@ -2477,7 +2615,7 @@ export default function CreateWorkspacePage() {
             variant="outline"
             size="icon"
             onClick={() => router.push("/dashboard")}
-            className="h-12 w-12 rounded-full border-white/90 bg-white/65 text-[#526080] shadow-[0_8px_30px_rgba(59,130,246,0.06)] hover:bg-white hover:text-[#252d47]"
+            className={cn("h-11 w-11 rounded-full text-slate-600", SETUP_OUTLINE_BTN)}
             aria-label="Close workspace setup"
           >
             <X className="h-5 w-5" strokeWidth={1.8} />
@@ -2485,14 +2623,15 @@ export default function CreateWorkspacePage() {
         </div>
       </header>
 
-      <div className="mx-auto mt-6 max-w-[1480px] sm:hidden">
+      <div className="mx-auto w-full max-w-[1400px] shrink-0 pt-3 sm:hidden">
         <SetupProgress currentStep={draft.currentStep} />
       </div>
 
-      <div className="mx-auto mt-6 flex max-w-[1480px] flex-col gap-5 lg:h-[calc(100vh-7.75rem)] lg:min-h-[700px] lg:flex-row">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1400px] flex-1 flex-col gap-4 overflow-hidden pt-3 lg:flex-row">
         <ProgressRail currentStep={draft.currentStep} />
 
-        <section className="flex min-w-0 flex-1 flex-col rounded-3xl border border-white/80 bg-white/65 p-6 shadow-[0_18px_60px_rgba(59,130,246,0.08)] backdrop-blur-sm sm:p-8 lg:p-12">
+        <section className={cn("flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden", SETUP_PANEL)}>
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-5 sm:p-6 lg:p-8">
           {draft.currentStep === 1 ? (
             <WorkspaceTypeStep
               draft={draft}
@@ -2552,8 +2691,12 @@ export default function CreateWorkspacePage() {
               draft={draft}
               onEditStep={(currentStep) => updateDraft({ currentStep })}
               onBack={showCompliancePreferences}
+              onCreate={() => void handleCreateWorkspace()}
+              creating={creating}
+              createError={createError}
             />
           )}
+          </div>
         </section>
       </div>
     </main>

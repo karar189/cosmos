@@ -85,7 +85,7 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
         >
          <OnboardingGate
           when={!sessionLoading && !!session}
-          autoOpen={pathname !== "/CreateWorkspace"}
+          autoRedirect={pathname !== "/CreateWorkspace"}
           walletAddress={publicKey}
           scopeKey={
             publicKey && publicKey.length === 56 && publicKey.startsWith("G")

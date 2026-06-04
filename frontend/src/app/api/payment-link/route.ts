@@ -7,6 +7,7 @@ import {
   normalizePaymentMethods,
 } from "@/lib/payment-link-fields";
 import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
+import { isPrismaConnectionError, DB_UNAVAILABLE_MESSAGE } from "@/lib/prisma-errors";
 
 /** Pool address where payment-link funds are sent (legacy/privacy mode). */
 const PAYMENT_POOL_ADDRESS = (
@@ -139,11 +140,16 @@ export async function POST(req: NextRequest) {
       mode: isDirectVault ? "direct_vault" : "pool",
     });
   } catch (e) {
+    if (isPrismaConnectionError(e)) {
+      console.warn("Payment link create: database unavailable");
+      return NextResponse.json({ error: DB_UNAVAILABLE_MESSAGE }, { status: 503 });
+    }
     console.error("Payment link create error:", e);
-    return NextResponse.json(
-      { error: "Database error. Check DATABASE_URL and run: npx prisma db push" },
-      { status: 500 }
-    );
+    const message =
+      process.env.NODE_ENV === "development" && e instanceof Error
+        ? e.message
+        : "Database error. Run: npx prisma generate (and npx prisma db push if the schema changed).";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

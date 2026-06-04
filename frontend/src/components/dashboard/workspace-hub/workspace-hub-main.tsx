@@ -43,9 +43,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PaymentBrandAvatar } from "@/components/global/hub-avatar";
 import { activateWorkspace } from "@/lib/activate-workspace";
 import type { SavedTemplate } from "@/lib/my-templates-storage";
 import { cn } from "@/utils";
+
+const WORKSPACE_DRAFT_KEY = "hypertron:create-workspace:draft";
+
+/** Logo uploaded during workspace setup (session draft), until persisted on Business. */
+export function readCreateWorkspaceDraftLogo(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(WORKSPACE_DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { logoDataUrl?: string };
+    const url = parsed.logoDataUrl?.trim();
+    return url || null;
+  } catch {
+    return null;
+  }
+}
 
 export type WorkspaceCardModel = {
   id: string;
@@ -59,6 +76,7 @@ export type WorkspaceCardModel = {
   lastAccessed: string;
   accent: "violet" | "sky" | "amber";
   template: SavedTemplate;
+  logoUrl?: string | null;
 };
 
 function hashStat(id: string, mod: number, min: number) {
@@ -66,9 +84,13 @@ function hashStat(id: string, mod: number, min: number) {
   return (n % mod) + min;
 }
 
-export function templatesToWorkspaces(templates: SavedTemplate[]): WorkspaceCardModel[] {
+export function templatesToWorkspaces(
+  templates: SavedTemplate[],
+  options?: { logoUrl?: string | null }
+): WorkspaceCardModel[] {
   const accents: WorkspaceCardModel["accent"][] = ["violet", "sky", "amber"];
   const roles: WorkspaceCardModel["role"][] = ["Owner", "Admin", "Member"];
+  const sharedLogo = options?.logoUrl?.trim() || null;
 
   return templates.map((t, i) => ({
     id: t.id,
@@ -82,6 +104,7 @@ export function templatesToWorkspaces(templates: SavedTemplate[]): WorkspaceCard
     lastAccessed: t.savedAt,
     accent: accents[i % accents.length]!,
     template: t,
+    logoUrl: sharedLogo,
   }));
 }
 
@@ -115,9 +138,13 @@ function WorkspaceHubCard({
       <div className={cn("px-5 pb-4 pt-5", t.cardHeader)}>
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 flex-1 items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-900 text-sm font-bold text-white shadow-sm">
-              {ws.name.slice(0, 1).toUpperCase()}
-            </div>
+            <PaymentBrandAvatar
+              businessName={ws.name}
+              logoUrl={ws.logoUrl}
+              seed={ws.id}
+              size={44}
+              className="rounded-xl ring-0"
+            />
             <div className="min-w-0 flex flex-col justify-center gap-1">
               <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
                 <p className={cn("truncate text-[15px] font-semibold leading-none", t.cardTitle)}>

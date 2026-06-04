@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { WorkspaceOverviewSidebar } from "@/components/dashboard/workspace-hub/workspace-overview-sidebar";
 import { WorkspaceHubTopChrome } from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
 import {
+  readCreateWorkspaceDraftLogo,
   templatesToWorkspaces,
   type WorkspaceCardModel,
 } from "@/components/dashboard/workspace-hub/workspace-hub-main";
@@ -69,7 +70,9 @@ function OverviewContent() {
         setWorkspaceName(tpl.name.trim());
       }
 
-      setWorkspaces(templatesToWorkspaces(templates));
+      setWorkspaces(
+        templatesToWorkspaces(templates, { logoUrl: readCreateWorkspaceDraftLogo() })
+      );
     } catch {
       setWorkspaces([]);
     }

@@ -9,6 +9,7 @@ import {
 } from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
 import { WorkspaceHubSidebar } from "@/components/dashboard/workspace-hub/workspace-hub-sidebar";
 import {
+  readCreateWorkspaceDraftLogo,
   templatesToWorkspaces,
   type WorkspaceCardModel,
 } from "@/components/dashboard/workspace-hub/workspace-hub-main";
@@ -72,7 +73,9 @@ export function WorkspaceHubPageShell({
 
       const profile = profileRes as { name?: string } | null;
       if (profile?.name) setProfileName(String(profile.name));
-      setWorkspaces(templatesToWorkspaces(templates));
+      setWorkspaces(
+        templatesToWorkspaces(templates, { logoUrl: readCreateWorkspaceDraftLogo() })
+      );
     } catch {
       setWorkspaces([]);
     }

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { WorkspaceHubSidebar } from "@/components/dashboard/workspace-hub/workspace-hub-sidebar";
 import {
   WorkspaceHubMain,
+  readCreateWorkspaceDraftLogo,
   templatesToWorkspaces,
 } from "@/components/dashboard/workspace-hub/workspace-hub-main";
 import { useFreighter } from "@/hooks/useFreighter";
@@ -49,7 +50,9 @@ function WorkspaceHubContent() {
       const profile = profileRes as { name?: string } | null;
       if (profile?.name) setProfileName(String(profile.name));
 
-      setWorkspaces(templatesToWorkspaces(templates));
+      setWorkspaces(
+        templatesToWorkspaces(templates, { logoUrl: readCreateWorkspaceDraftLogo() })
+      );
     } catch {
       setWorkspaces([]);
     } finally {

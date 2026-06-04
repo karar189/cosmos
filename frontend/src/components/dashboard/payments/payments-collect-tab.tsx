@@ -37,6 +37,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/utils";
+import {
+  formatPaymentLinkForDisplay,
+  resolvePaymentLinkCopyUrl,
+} from "@/lib/payment-link-public-url";
 
 const EXPIRY_OPTIONS = [
   { value: "7", label: "7 days" },
@@ -197,7 +201,7 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
 
   function copyLink() {
     if (!result) return;
-    navigator.clipboard.writeText(result.url);
+    navigator.clipboard.writeText(resolvePaymentLinkCopyUrl(result.url, result.linkId));
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
@@ -229,14 +233,23 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
         <div
           className={cn(
             "mb-6 flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between",
-            t.dark ? "border-emerald-500/30 bg-emerald-500/10" : "border-emerald-200 bg-emerald-50/80"
+            t.dark
+              ? "border-emerald-500/35 bg-emerald-500/15"
+              : "border-emerald-200 bg-emerald-50"
           )}
         >
           <div className="min-w-0">
             <p className={cn("text-sm font-medium", t.dark ? "text-emerald-200" : "text-emerald-800")}>
               Payment link ready
             </p>
-            <p className={cn("mt-0.5 truncate text-xs", t.pageSubheading)}>{result.url}</p>
+            <p
+              className={cn(
+                "mt-0.5 truncate font-mono text-xs",
+                t.dark ? "text-emerald-100/90" : "text-emerald-700"
+              )}
+            >
+              {formatPaymentLinkForDisplay(result.url, result.linkId)}
+            </p>
           </div>
           <Button type="button" size="sm" variant="outline" className={cn("shrink-0 gap-2", t.outlineBtn)} onClick={copyLink}>
             {copied ? <CheckCheck className="h-4 w-4" /> : <Copy className="h-4 w-4" />}

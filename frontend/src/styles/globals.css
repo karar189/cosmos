@@ -607,6 +607,22 @@ html, body {
     linear-gradient(180deg, #ffffff 0%, #fafbff 45%, #f8f9fc 100%);
 }
 
+/* Workspace setup — flat surface like payment-links (no corner glow) */
+.workspace-hub-root:has(.create-workspace-page)::before {
+  display: none;
+}
+
+.workspace-hub-root:has(.create-workspace-page) {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.workspace-hub-root:has(.create-workspace-page) > * {
+  height: 100%;
+  min-height: 0;
+}
+
 .workspace-hub-root > * {
   position: relative;
   z-index: 1;
@@ -670,7 +686,9 @@ html, body {
 
 /* Primary CTAs — white label/icon (beats light-hub .text-white remap) */
 .workspace-hub-root[data-theme="light"] button.hub-cta,
-.workspace-hub-root[data-theme="light"] button.hub-cta svg {
+.workspace-hub-root[data-theme="light"] button.hub-cta svg,
+.workspace-hub-root[data-theme="light"] .create-workspace-page button.hub-cta,
+.workspace-hub-root[data-theme="light"] .create-workspace-page button.hub-cta svg {
   color: #ffffff !important;
 }
 
