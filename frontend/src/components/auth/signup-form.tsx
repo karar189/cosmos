@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { homeLaunchPath } from "@/lib/launch-auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import { useCallback, useEffect, useState } from "react";
@@ -78,9 +79,7 @@ const SignUpForm = () => {
           Configure Privy to enable email signup, or connect a Stellar wallet.
         </p>
         <Button asChild>
-          <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
-            Connect Stellar wallet
-          </Link>
+          <Link href={homeLaunchPath(returnUrl, { wallet: true })}>Connect Stellar wallet</Link>
         </Button>
       </div>
     );
@@ -105,9 +104,7 @@ const SignUpForm = () => {
       </Button>
 
       <Button variant="outline" asChild className="w-full">
-        <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
-          Use Stellar wallet instead
-        </Link>
+        <Link href={homeLaunchPath(returnUrl, { wallet: true })}>Use Stellar wallet instead</Link>
       </Button>
     </div>
   );

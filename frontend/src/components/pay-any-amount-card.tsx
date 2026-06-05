@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import { cn } from "@/utils";
+import {
+  formatPaymentLinkForDisplay,
+  resolvePaymentLinkCopyUrl,
+} from "@/lib/payment-link-public-url";
 import { useQRCode } from "next-qrcode";
 
 interface PayAnyAmountCardProps {
@@ -46,7 +50,7 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
 
   function copyLink() {
     if (!result) return;
-    navigator.clipboard.writeText(result.url);
+    navigator.clipboard.writeText(resolvePaymentLinkCopyUrl(result.url, result.linkId));
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
@@ -106,7 +110,7 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
               rel="noopener noreferrer"
               className="min-w-0 flex-1 truncate font-mono text-xs text-sky-300/90 transition-colors hover:text-sky-200"
             >
-              {result.url}
+              {formatPaymentLinkForDisplay(result.url, result.linkId)}
             </a>
             <a
               href={result.url}

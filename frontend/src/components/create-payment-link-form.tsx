@@ -8,6 +8,10 @@ import { Label } from "@/components/ui/label";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import { cn } from "@/utils";
+import {
+  formatPaymentLinkForDisplay,
+  resolvePaymentLinkCopyUrl,
+} from "@/lib/payment-link-public-url";
 
 interface CreatePaymentLinkFormProps {
   businessId: string;
@@ -70,7 +74,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
 
   function copyLink() {
     if (!result) return;
-    navigator.clipboard.writeText(result.url);
+    navigator.clipboard.writeText(resolvePaymentLinkCopyUrl(result.url, result.linkId));
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
@@ -167,7 +171,12 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
 
       {/* Result */}
       {result && (
-        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] p-3.5 space-y-3">
+        <div
+          className={cn(
+            "rounded-lg border p-3.5 space-y-3",
+            t.dark ? "border-emerald-500/30 bg-emerald-500/15" : "border-emerald-200 bg-emerald-50"
+          )}
+        >
           <div className="flex items-center gap-1.5 text-emerald-400">
             <CheckCheck className="h-4 w-4" />
             <span className="text-xs font-medium">Link created</span>
@@ -186,7 +195,7 @@ export function CreatePaymentLinkForm({ businessId, onCreated }: CreatePaymentLi
           <div className="flex items-center gap-2 min-w-0">
             <input
               readOnly
-              value={result.url}
+              value={formatPaymentLinkForDisplay(result.url, result.linkId)}
               className={cn(
                 "min-w-0 flex-1 truncate rounded-md border px-2.5 py-1.5 font-mono text-xs outline-none",
                 t.dark

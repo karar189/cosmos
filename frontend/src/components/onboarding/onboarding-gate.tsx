@@ -8,53 +8,26 @@ import {
   useMemo,
   useState,
 } from "react";
-import { BusinessOnboardingModal } from "./business-onboarding-modal";
-
-function onboardingModalDismissedKey(scopeKey: string): string {
-  return `onboarding_modal_dismissed:${scopeKey.trim()}`;
-}
+import { usePathname, useRouter } from "next/navigation";
+import { isWorkspaceSetupComplete } from "@/lib/is-workspace-setup-complete";
 
 type OnboardingGateProps = {
   children: React.ReactNode;
-  /** Open onboarding modal when app session is ready (Privy or wallet). */
+  /** When false, skip setup checks (e.g. logged out). */
   when?: boolean;
-  /** Stellar G... when Freighter is connected (optional with Privy). */
+  /** Redirect to Create Workspace when setup is incomplete. */
+  autoRedirect?: boolean;
   walletAddress?: string | null;
-  /** Stable key for dismiss/completion storage (wallet G... or Privy app user id). */
   scopeKey?: string | null;
 };
 
 export type OnboardingUiContextValue = {
-  /** True when a valid wallet is connected and onboarding quiz is completed for that wallet. */
   isOnboardingComplete: boolean;
-  /** Opens the business onboarding modal (clears “dismissed” for this wallet). */
+  /** Navigate to the Create Workspace wizard. */
   openOnboardingQuiz: () => void;
 };
 
 const OnboardingUiContext = createContext<OnboardingUiContextValue | null>(null);
-
-type BusinessProfileResponse = {
-  name?: string;
-  businessNature?: string;
-  selectedWidgets?: string[];
-  selectedTier?: string | null;
-  complianceForm?: unknown;
-};
-
-function isProfileComplete(profile: BusinessProfileResponse | null): boolean {
-  if (!profile) return false;
-  const nameOk = typeof profile.name === "string" && profile.name.trim().length > 0;
-  const tierOk =
-    typeof profile.selectedTier === "string" && profile.selectedTier.trim().length > 0;
-  if (nameOk && tierOk) return true;
-  const natureOk =
-    typeof profile.businessNature === "string" && profile.businessNature.trim().length > 0;
-  const widgetsOk =
-    Array.isArray(profile.selectedWidgets) && profile.selectedWidgets.length > 0;
-  const hasComplianceForm =
-    typeof profile.complianceForm === "object" && profile.complianceForm !== null;
-  return nameOk && (natureOk || widgetsOk || hasComplianceForm);
-}
 
 export function useOnboardingUi(): OnboardingUiContextValue {
   const ctx = useContext(OnboardingUiContext);
@@ -67,48 +40,23 @@ export function useOnboardingUi(): OnboardingUiContextValue {
 export function OnboardingGate({
   children,
   when = true,
+  autoRedirect = true,
   walletAddress,
   scopeKey,
 }: OnboardingGateProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-  const [manualOpen, setManualOpen] = useState(false);
   const [profileComplete, setProfileComplete] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
 
-  const walletOk =
-    !!walletAddress &&
-    walletAddress.length === 56 &&
-    walletAddress.startsWith("G");
-
   const storageKey = (scopeKey?.trim() || walletAddress?.trim() || "").trim();
   const scopeOk = storageKey.length > 0;
+  const onCreateWorkspaceRoute = pathname === "/CreateWorkspace";
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (!scopeOk) {
-      setDismissed(false);
-      return;
-    }
-    try {
-      setDismissed(sessionStorage.getItem(onboardingModalDismissedKey(storageKey)) === "1");
-    } catch {
-      setDismissed(false);
-    }
-  }, [storageKey, scopeOk]);
-
-  const persistDismiss = useCallback(() => {
-    if (!scopeOk) return;
-    try {
-      sessionStorage.setItem(onboardingModalDismissedKey(storageKey), "1");
-    } catch {
-      // ignore
-    }
-    setDismissed(true);
-  }, [storageKey, scopeOk]);
 
   const refreshProfileCompletion = useCallback(() => {
     if (!mounted || !when || !scopeOk) {
@@ -119,8 +67,8 @@ export function OnboardingGate({
     setProfileLoading(true);
     fetch("/api/business/profile", { credentials: "same-origin" })
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: BusinessProfileResponse | null) => {
-        setProfileComplete(isProfileComplete(data));
+      .then((data) => {
+        setProfileComplete(isWorkspaceSetupComplete(data));
       })
       .catch(() => {
         setProfileComplete(false);
@@ -139,34 +87,32 @@ export function OnboardingGate({
   }, [refreshProfileCompletion]);
 
   const openOnboardingQuiz = useCallback(() => {
-    if (!scopeOk) return;
-    try {
-      sessionStorage.removeItem(onboardingModalDismissedKey(storageKey));
-    } catch {
-      // ignore
+    router.push("/CreateWorkspace");
+  }, [router]);
+
+  useEffect(() => {
+    if (
+      !mounted ||
+      !when ||
+      !scopeOk ||
+      !autoRedirect ||
+      onCreateWorkspaceRoute ||
+      profileLoading ||
+      profileComplete
+    ) {
+      return;
     }
-    setDismissed(false);
-    setManualOpen(true);
-  }, [storageKey, scopeOk]);
-
-  const handleModalOpenChange = useCallback(
-    (next: boolean) => {
-      if (next) return;
-      setManualOpen(false);
-      refreshProfileCompletion();
-      if (profileComplete) {
-        return;
-      }
-      persistDismiss();
-    },
-    [persistDismiss, profileComplete, refreshProfileCompletion]
-  );
-
-  const showModal =
-    mounted &&
-    when &&
-    scopeOk &&
-    (manualOpen || (!profileLoading && !profileComplete && !dismissed));
+    router.replace("/CreateWorkspace");
+  }, [
+    mounted,
+    when,
+    scopeOk,
+    autoRedirect,
+    onCreateWorkspaceRoute,
+    profileLoading,
+    profileComplete,
+    router,
+  ]);
 
   const isOnboardingComplete = useMemo(() => {
     if (!when || !scopeOk) return true;
@@ -184,14 +130,6 @@ export function OnboardingGate({
   );
 
   return (
-    <OnboardingUiContext.Provider value={uiValue}>
-      {children}
-      <BusinessOnboardingModal
-        open={showModal}
-        onOpenChange={handleModalOpenChange}
-        walletAddress={walletAddress ?? null}
-        scopeKey={storageKey || null}
-      />
-    </OnboardingUiContext.Provider>
+    <OnboardingUiContext.Provider value={uiValue}>{children}</OnboardingUiContext.Provider>
   );
 }

@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import { cn } from "@/utils";
+import {
+  formatPaymentLinkForDisplay,
+  resolvePaymentLinkCopyUrl,
+} from "@/lib/payment-link-public-url";
 import { getExplorerTxUrl } from "@/lib/stellar-explorer";
 import { USE_MOCK_DASHBOARD_DATA, fallbackPaymentLinks } from "@/data/fallback";
 
@@ -83,8 +87,8 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
     finally { setChecking(null); }
   }
 
-  function copyLink(url: string) {
-    navigator.clipboard.writeText(url);
+  function copyLink(url: string, linkId: string) {
+    navigator.clipboard.writeText(resolvePaymentLinkCopyUrl(url, linkId));
     setCopied(url);
     setTimeout(() => setCopied(null), 1800);
   }
@@ -208,14 +212,14 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
                       "inline-flex min-w-0 items-center gap-1 font-mono text-xs transition-colors",
                       t.dark ? "text-sky-300 hover:text-sky-200" : "text-blue-700 hover:text-blue-900"
                     )}
-                    title={link.url}
+                    title={formatPaymentLinkForDisplay(link.url, link.id)}
                   >
-                    <span className="truncate">{truncate(link.url)}</span>
+                    <span className="truncate">{truncate(formatPaymentLinkForDisplay(link.url, link.id))}</span>
                     <ExternalLink className="h-3 w-3 shrink-0 opacity-60" />
                   </a>
 
                   <button
-                    onClick={() => copyLink(link.url)}
+                    onClick={() => copyLink(link.url, link.id)}
                     title="Copy link"
                     className={cn(
                       "ml-0.5 transition-colors",

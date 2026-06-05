@@ -8,6 +8,10 @@ https://docs.google.com/spreadsheets/d/1t3ZQOgel-9NhzT6k8WI7Pu-mJnA12t2xoRACP4Mx
 
 Hypertron enables **private, workflow-native payments** for businesses—powered by Stellar Protocol 25 (X-Ray), Poseidon commitments, and a custom Privacy Relay Layer.
 
+## API Documentation
+
+Backend and API route documentation is available in [docs/API.md](docs/API.md).
+
 Businesses can:
 
 * Create custom onboarding flows
@@ -211,5 +215,4 @@ sequenceDiagram
 * [ ] Multi-pool routing
 * [ ] Full ZK proof-of-withdrawal
 * [ ] Audit ZK attestations
-
 

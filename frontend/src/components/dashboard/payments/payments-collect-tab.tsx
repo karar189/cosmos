@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { buildPaymentPreviewHref } from "@/components/dashboard/payments/payment-link-preview-utils";
+import { STELLAR_LOGO_URL, USDC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
 import {
   MethodCard,
   SectionInfo,
@@ -33,10 +34,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { fallbackBusiness } from "@/data/fallback";
 import { cn } from "@/utils";
+import {
+  formatPaymentLinkForDisplay,
+  resolvePaymentLinkCopyUrl,
+} from "@/lib/payment-link-public-url";
 
 const EXPIRY_OPTIONS = [
   { value: "7", label: "7 days" },
@@ -48,9 +52,36 @@ const EXPIRY_OPTIONS = [
 const PAYMENT_METHODS = [
   { id: "wallet", label: "Wallet", sub: "USDC on Stellar", icon: Wallet, enabled: true },
   { id: "qr", label: "QR Code", sub: "Instant payment", icon: QrCode, enabled: true },
-  { id: "onramp", label: "On-Ramp", sub: "Buy with MoneyGram", icon: Building2, enabled: true },
+  { id: "onramp", label: "On-Ramp", sub: "MoneyGram (partner setup)", icon: Building2, enabled: true },
   { id: "card", label: "Card", sub: "Coming soon", icon: CreditCard, enabled: false },
 ] as const;
+
+const CURRENCY_OPTIONS: { value: PaymentAssetCode; label: string; logo: string }[] = [
+  { value: "USDC", label: "USDC", logo: USDC_LOGO_URL },
+  { value: "XLM", label: "XLM", logo: STELLAR_LOGO_URL },
+];
+
+function PaymentAssetLogo({ code, className }: { code: PaymentAssetCode; className?: string }) {
+  const logo = CURRENCY_OPTIONS.find((c) => c.value === code)?.logo ?? USDC_LOGO_URL;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={logo}
+      alt=""
+      aria-hidden
+      className={cn("h-5 w-5 shrink-0 rounded-full object-cover", className)}
+    />
+  );
+}
+
+function CurrencySelectLabel({ code }: { code: PaymentAssetCode }) {
+  return (
+    <span className="flex items-center gap-2">
+      <PaymentAssetLogo code={code} />
+      {code}
+    </span>
+  );
+}
 
 interface PaymentsCollectTabProps {
   businessId: string;
@@ -60,12 +91,12 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
   const { theme } = useDashboardTheme();
   const { t, inputCls, labelCls, hintCls, sectionTitle, cardCls, panelCls } = usePaymentsStyles(theme);
 
-  const [amount, setAmount] = useState("1,000.00");
-  const [description, setDescription] = useState("Payment for design services");
+  const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState<PaymentAssetCode>("USDC");
+  const [description, setDescription] = useState("");
   const [customer, setCustomer] = useState("");
   const [expiry, setExpiry] = useState("30");
   const [metadata, setMetadata] = useState("");
-  const [privateSettlement, setPrivateSettlement] = useState(true);
   const [methods, setMethods] = useState<Record<string, boolean>>({
     wallet: true,
     qr: true,
@@ -78,27 +109,53 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [result, setResult] = useState<{ linkId: string; url: string; memo: string } | null>(null);
+  const [vaultName, setVaultName] = useState("Treasury");
+  const [vaultBalance, setVaultBalance] = useState<string | null>(null);
 
-  const vaultName = useMemo(() => {
-    const base = fallbackBusiness.name?.trim() || "Hypertron";
-    return base.endsWith("Vault") ? base : `${base} Vault`;
-  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      fetch("/api/business/profile", { credentials: "same-origin" }).then((r) =>
+        r.ok ? r.json() : null
+      ),
+      fetch(`/api/dashboard-stats?businessId=${encodeURIComponent(businessId)}`, {
+        credentials: "same-origin",
+      }).then((r) => (r.ok ? r.json() : null)),
+    ])
+      .then(([profile, stats]) => {
+        if (cancelled) return;
+        const base =
+          (typeof profile?.name === "string" && profile.name.trim()) ||
+          (typeof profile?.businessName === "string" && profile.businessName.trim()) ||
+          "Hypertron";
+        setVaultName(base.endsWith("Vault") ? base : `${base} Vault`);
+        if (stats && typeof stats.totalReceivedXlm === "string") {
+          const n = parseFloat(stats.totalReceivedXlm);
+          setVaultBalance(Number.isFinite(n) ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00");
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId]);
 
   const previewHref = useMemo(
     () =>
       buildPaymentPreviewHref({
         amount,
+        currency,
         description,
         customer,
         expiry,
-        privateSettlement,
+        privateSettlement: false,
         methods: Object.entries(methods)
           .filter(([, enabled]) => enabled)
           .map(([id]) => id),
         linkId: result?.linkId,
         linkUrl: result?.url,
       }),
-    [amount, description, customer, expiry, privateSettlement, methods, result]
+    [amount, currency, description, customer, expiry, methods, result]
   );
 
   async function handleGenerate(e: React.FormEvent) {
@@ -118,14 +175,20 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
         body: JSON.stringify({
           businessId,
           amount: normalizedAmount,
+          currency,
           purpose: description.trim() || undefined,
           clientName: customer.trim() || undefined,
           workflowStage: workflowStage.trim() || undefined,
+          metadata: metadata.trim() || undefined,
+          expiryDays: expiry,
+          paymentMethods: Object.entries(methods)
+            .filter(([, on]) => on)
+            .map(([id]) => id),
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError("Could not create a payment link right now.");
+        setError(typeof data?.error === "string" ? data.error : "Could not create a payment link right now.");
         return;
       }
       setResult({ linkId: data.linkId, url: data.url, memo: data.memo });
@@ -138,7 +201,7 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
 
   function copyLink() {
     if (!result) return;
-    navigator.clipboard.writeText(result.url);
+    navigator.clipboard.writeText(resolvePaymentLinkCopyUrl(result.url, result.linkId));
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
@@ -155,7 +218,7 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
             Create a Payment Link
           </h1>
           <p className={cn("mt-1 text-sm", t.pageSubheading)}>
-            Collect payments in USDC on Stellar. Fast, secure and private.
+            Collect payments in USDC or XLM on Stellar. Funds settle to your global pool with memo attribution.
           </p>
         </div>
         <Button type="button" variant="outline" className={cn("shrink-0 gap-2 text-sm", t.outlineBtn)} asChild>
@@ -170,14 +233,23 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
         <div
           className={cn(
             "mb-6 flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between",
-            t.dark ? "border-emerald-500/30 bg-emerald-500/10" : "border-emerald-200 bg-emerald-50/80"
+            t.dark
+              ? "border-emerald-500/35 bg-emerald-500/15"
+              : "border-emerald-200 bg-emerald-50"
           )}
         >
           <div className="min-w-0">
             <p className={cn("text-sm font-medium", t.dark ? "text-emerald-200" : "text-emerald-800")}>
               Payment link ready
             </p>
-            <p className={cn("mt-0.5 truncate text-xs", t.pageSubheading)}>{result.url}</p>
+            <p
+              className={cn(
+                "mt-0.5 truncate font-mono text-xs",
+                t.dark ? "text-emerald-100/90" : "text-emerald-700"
+              )}
+            >
+              {formatPaymentLinkForDisplay(result.url, result.linkId)}
+            </p>
           </div>
           <Button type="button" size="sm" variant="outline" className={cn("shrink-0 gap-2", t.outlineBtn)} onClick={copyLink}>
             {copied ? <CheckCheck className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -208,19 +280,32 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
                   className={cn(inputCls, "h-11 flex-1 rounded-none border-0 focus-visible:ring-0")}
                   required
                 />
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center gap-2 border-l px-3 text-sm font-medium",
-                    t.dark ? "border-white/10 bg-white/5 text-slate-200" : "border-slate-200 bg-slate-50 text-slate-700"
-                  )}
+                <Select
+                  value={currency}
+                  onValueChange={(v) => setCurrency(v === "XLM" ? "XLM" : "USDC")}
                 >
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
-                    $
-                  </span>
-                  USDC
-                  <ChevronDown className={cn("h-3.5 w-3.5", t.cardMuted)} />
-                </button>
+                  <SelectTrigger
+                    className={cn(
+                      "h-11 w-[132px] shrink-0 gap-1.5 rounded-none border-0 border-l px-2.5 shadow-none focus:ring-0",
+                      t.dark ? "border-white/10 bg-white/5 text-slate-200" : "border-slate-200 bg-slate-50 text-slate-700"
+                    )}
+                  >
+                    <SelectValue>
+                      <CurrencySelectLabel code={currency} />
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className={t.selectContent}>
+                    {CURRENCY_OPTIONS.map((opt) => (
+                      <SelectItem
+                        key={opt.value}
+                        value={opt.value}
+                        className={cn(t.selectItem, "pl-9")}
+                      >
+                        <CurrencySelectLabel code={opt.value} />
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -306,12 +391,10 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
               )}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
-                  S
-                </div>
+                <PaymentAssetLogo code={currency} className="h-10 w-10 rounded-lg" />
                 <div>
                   <p className={cn("text-xs", t.pageSubheading)}>Settlement Rail</p>
-                  <p className={cn("text-sm font-semibold", t.pageHeading)}>Stellar · USDC</p>
+                  <p className={cn("text-sm font-semibold", t.pageHeading)}>Stellar · {currency}</p>
                 </div>
               </div>
               <span
@@ -328,47 +411,40 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
 
             <div
               className={cn(
-                "space-y-3 rounded-lg border px-4 py-3",
+                "space-y-2 rounded-lg border px-4 py-3 opacity-90",
                 t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
               )}
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex flex-wrap items-center gap-2">
                     <p className={cn("text-sm font-medium", t.pageHeading)}>Private Settlement</p>
-                    <SectionInfo className={t.cardMuted} />
+                    <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">
+                      Coming soon
+                    </Badge>
                   </div>
                   <p className={cn("mt-1 text-xs leading-relaxed", t.pageSubheading)}>
-                    Hide transaction details on-chain with opt-in privacy.
+                    Relayer + commitment pool privacy is not enabled yet. Payments use standard memos to your global pool.
                   </p>
                 </div>
-                <Switch
-                  checked={privateSettlement}
-                  onCheckedChange={setPrivateSettlement}
-                  className="shrink-0 data-[state=checked]:bg-blue-600"
-                />
               </div>
-
-              <div className={cn("flex gap-3 rounded-lg px-3 py-2.5", t.dark ? "bg-blue-500/10" : "bg-blue-50")}>
-                <Shield className={cn("mt-0.5 h-4 w-4 shrink-0 text-blue-600", t.dark && "text-blue-400")} />
-                <p className={cn("text-xs leading-relaxed", t.dark ? "text-blue-200" : "text-blue-800")}>
-                  Proof of payment will be generated for verification.{" "}
-                  <button type="button" className="font-medium underline underline-offset-2">
-                    Learn more →
-                  </button>
+              <div className={cn("flex gap-3 rounded-lg px-3 py-2.5", t.dark ? "bg-white/5" : "bg-slate-50")}>
+                <Shield className={cn("mt-0.5 h-4 w-4 shrink-0", t.cardMuted)} />
+                <p className={cn("text-xs leading-relaxed", t.pageSubheading)}>
+                  {/* TODO(production-privacy): enable toggle when relayer + PoolManager are live. */}
+                  Proof-of-payment receipts will ship with private settlement.
                 </p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <p className={cn("text-xs", t.pageSubheading)}>Funds will be collected in your Hypertron Vault</p>
-              <button
-                type="button"
+              <p className={cn("text-xs", t.pageSubheading)}>
+                Settles to global pool · attributed to your workspace via memo
+              </p>
+              <div
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
-                  t.dark
-                    ? "border-white/10 bg-white/5 hover:bg-white/10"
-                    : "border-slate-200 bg-white hover:border-slate-300"
+                  "flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left",
+                  t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
                 )}
               >
                 <div
@@ -383,11 +459,13 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
                   <p className={cn("text-sm font-semibold", t.pageHeading)}>{vaultName}</p>
                   <p className={cn("text-xs", t.pageSubheading)}>Available Balance</p>
                 </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  <p className={cn("text-sm font-semibold tabular-nums", t.pageHeading)}>42,140.00 USDC</p>
-                  <ChevronRight className={cn("h-4 w-4", t.cardMuted)} />
+                <div className="flex shrink-0 flex-col items-end gap-0.5">
+                  <p className={cn("text-sm font-semibold tabular-nums", t.pageHeading)}>
+                    {vaultBalance != null ? `${vaultBalance} received` : "—"}
+                  </p>
+                  <p className={cn("text-[10px]", t.pageSubheading)}>all-time (settled links)</p>
                 </div>
-              </button>
+              </div>
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { Suspense, useState, useCallback, useRef, useEffect } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Wallet } from "lucide-react";
+import { Mail, Ticket, Wallet } from "lucide-react";
 import { LaunchEmailSignInButton } from "./launch-email-sign-in-button";
 import { DarkVeil } from "./dark-veil";
 import { HeroDashboardPreview } from "./hero-dashboard-preview";
@@ -21,9 +21,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { isPrivyConfigured } from "@/lib/privy-config";
+import { WalletSignInButton } from "@/components/auth/wallet-sign-in-button";
 import {
   INVITE_VERIFIED_KEY,
   LAUNCH_QUERY_PARAM,
+  WALLET_LAUNCH_QUERY_PARAM,
   isInviteVerifiedInSession,
   safeReturnUrl,
 } from "@/lib/launch-auth";
@@ -52,20 +54,34 @@ function MonoHeroInner() {
   const [inviteCode, setInviteCode] = useState("");
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [walletAutoStart, setWalletAutoStart] = useState(false);
+  const inviteInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!launchOpen || launchStep !== "invite") return;
+    const id = window.setTimeout(() => inviteInputRef.current?.focus(), 80);
+    return () => window.clearTimeout(id);
+  }, [launchOpen, launchStep]);
 
   useEffect(() => {
     if (searchParams.get("reason") === "config") {
       setConfigError("Server auth is not fully configured. Contact support if this persists.");
     }
-    if (searchParams.get(LAUNCH_QUERY_PARAM) !== "1") return;
+    const launchRequested = searchParams.get(LAUNCH_QUERY_PARAM) === "1";
+    const walletRequested = searchParams.get(WALLET_LAUNCH_QUERY_PARAM) === "1";
+    if (!launchRequested && !walletRequested) return;
 
     setLaunchOpen(true);
-    if (isInviteVerifiedInSession()) {
+    if (isInviteVerifiedInSession() || walletRequested) {
       setLaunchStep("sign-in");
+    }
+    if (walletRequested) {
+      setWalletAutoStart(true);
     }
 
     const url = new URL(window.location.href);
     url.searchParams.delete(LAUNCH_QUERY_PARAM);
+    url.searchParams.delete(WALLET_LAUNCH_QUERY_PARAM);
     url.searchParams.delete("returnUrl");
     url.searchParams.delete("reason");
     window.history.replaceState({}, "", url.pathname + (url.search || "") + url.hash);
@@ -102,7 +118,7 @@ function MonoHeroInner() {
 
   const handleInviteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = inviteCode.trim();
+    const trimmed = inviteCode.trim().toUpperCase();
     if (trimmed !== VALID_INVITE_CODE) {
       setInviteError("Invalid invite code. Try again or contact us for access.");
       return;
@@ -117,13 +133,6 @@ function MonoHeroInner() {
     resetLaunchState();
     router.push(returnUrl);
   }, [resetLaunchState, router, returnUrl]);
-
-  const handleWalletSignIn = () => {
-    markInviteVerified();
-    setLaunchOpen(false);
-    resetLaunchState();
-    router.push(`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`);
-  };
 
   const handleBackToInvite = () => {
     setLaunchStep("invite");
@@ -238,58 +247,98 @@ function MonoHeroInner() {
         </motion.div>
 
         <Dialog open={launchOpen} onOpenChange={handleLaunchOpenChange}>
-          <DialogContent className="border-white/10 bg-zinc-950 py-8 text-foreground sm:max-w-md sm:py-10">
+          <DialogContent className="gap-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/95 p-0 text-foreground shadow-2xl shadow-black/50 ring-0 backdrop-blur-xl sm:max-w-[420px] [&>button]:right-5 [&>button]:top-5 [&>button]:rounded-lg [&>button]:text-zinc-500 [&>button]:opacity-100 [&>button]:hover:bg-white/[0.06] [&>button]:hover:text-white">
             {launchStep === "invite" ? (
               <>
-                <DialogHeader>
-                  <DialogTitle className="text-white">Enter invite code</DialogTitle>
-                  <DialogDescription className="text-zinc-400">
-                    Hypertron is invite-only during early access. Enter your code to continue.
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleInviteSubmit} className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="hypertron-invite-code" className="text-zinc-300">
+                <div className="border-b border-white/[0.06] px-6 pb-5 pt-6">
+                  <div
+                    className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.05] ring-1 ring-white/10"
+                    aria-hidden
+                  >
+                    <Ticket className="h-5 w-5 text-white/75" strokeWidth={1.75} />
+                  </div>
+                  <DialogHeader className="space-y-2 text-left">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
+                      Early access
+                    </p>
+                    <DialogTitle className="text-xl font-semibold tracking-tight text-white">
+                      Enter invite code
+                    </DialogTitle>
+                    <DialogDescription className="text-[15px] leading-relaxed text-zinc-400">
+                      Hypertron is invite-only during early access. Enter your code to continue.
+                    </DialogDescription>
+                  </DialogHeader>
+                </div>
+                <form onSubmit={handleInviteSubmit} className="px-6 pb-6">
+                  <div className="grid gap-2.5">
+                    <Label htmlFor="hypertron-invite-code" className="text-sm font-medium text-zinc-300">
                       Invite code
                     </Label>
                     <Input
+                      ref={inviteInputRef}
                       id="hypertron-invite-code"
                       name="inviteCode"
                       autoComplete="off"
-                      placeholder="e.g. INVITE101"
+                      autoCapitalize="characters"
+                      spellCheck={false}
+                      placeholder="INVITEXXX"
                       value={inviteCode}
+                      aria-invalid={inviteError ? true : undefined}
+                      aria-describedby={inviteError ? "hypertron-invite-error" : undefined}
                       onChange={(ev) => {
-                        setInviteCode(ev.target.value);
+                        setInviteCode(ev.target.value.toUpperCase());
                         if (inviteError) setInviteError(null);
                       }}
-                      className="border-white/15 bg-black/40 text-white placeholder:text-zinc-600"
+                      className="h-12 rounded-xl border-white/20 bg-white/[0.04] font-mono text-base tracking-wider text-white shadow-inner shadow-black/20 placeholder:text-zinc-600 focus-visible:border-white/35 focus-visible:ring-2 focus-visible:ring-white/15 aria-invalid:border-red-400/60 aria-invalid:ring-red-400/20"
                     />
                     {inviteError ? (
-                      <p className="text-sm text-red-400" role="alert">
+                      <p
+                        id="hypertron-invite-error"
+                        className="rounded-lg border border-red-500/25 bg-red-500/10 px-3 py-2 text-sm text-red-300"
+                        role="alert"
+                      >
                         {inviteError}
                       </p>
-                    ) : null}
+                    ) : (
+                      <p className="text-xs text-zinc-500">Codes are not case-sensitive.</p>
+                    )}
                   </div>
-                  <DialogFooter className="gap-2 sm:gap-0">
+                  <DialogFooter className="mt-6 flex-col gap-2 sm:flex-col">
+                    <Button
+                      type="submit"
+                      className="h-11 w-full rounded-full bg-white text-base font-semibold text-black hover:bg-white/90"
+                    >
+                      Continue
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
-                      className="text-zinc-400 hover:text-white"
+                      className="h-10 w-full rounded-full text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
                       onClick={() => handleLaunchOpenChange(false)}
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" className="bg-white text-black hover:bg-white/90">
-                      Continue
-                    </Button>
                   </DialogFooter>
+                  <p className="mt-4 text-center text-xs text-zinc-500">
+                    Don&apos;t have a code?{" "}
+                    <a
+                      href={BOOK_DEMO}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-zinc-300 underline-offset-2 transition-colors hover:text-white hover:underline"
+                    >
+                      Request access
+                    </a>
+                  </p>
                 </form>
               </>
             ) : (
-              <>
-                <DialogHeader>
-                  <DialogTitle className="text-white">Choose how to sign in</DialogTitle>
-                  <DialogDescription className="text-zinc-400">
+              <div className="px-6 py-8 sm:py-10">
+                <DialogHeader className="space-y-2 text-left">
+                  <DialogTitle className="text-xl font-semibold tracking-tight text-white">
+                    Choose how to sign in
+                  </DialogTitle>
+                  <DialogDescription className="text-[15px] leading-relaxed text-zinc-400">
                     Use your work email for the dashboard, or connect a Stellar wallet for on-chain actions.
                   </DialogDescription>
                 </DialogHeader>
@@ -311,11 +360,15 @@ function MonoHeroInner() {
                     </p>
                   )}
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-auto w-full flex-col items-start gap-1 rounded-xl border-white/20 bg-transparent px-4 py-4 text-left hover:bg-white/[0.06]"
-                    onClick={handleWalletSignIn}
+                  <WalletSignInButton
+                    returnUrl={returnUrl}
+                    autoStart={walletAutoStart}
+                    onStart={markInviteVerified}
+                    onSuccess={() => {
+                      setLaunchOpen(false);
+                      resetLaunchState();
+                    }}
+                    className="h-auto w-full flex-col items-start gap-1 rounded-xl border border-white/20 bg-transparent px-4 py-4 text-left hover:bg-white/[0.06]"
                   >
                     <span className="flex w-full items-center gap-3">
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-200">
@@ -328,7 +381,7 @@ function MonoHeroInner() {
                         </span>
                       </span>
                     </span>
-                  </Button>
+                  </WalletSignInButton>
                 </div>
                 <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
                   <Button
@@ -348,7 +401,7 @@ function MonoHeroInner() {
                     Cancel
                   </Button>
                 </DialogFooter>
-              </>
+              </div>
             )}
           </DialogContent>
         </Dialog>

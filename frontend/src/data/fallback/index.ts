@@ -60,4 +60,5 @@ export const fallbackWithdrawals = withdrawals.withdrawals as Array<{
 }>;
 
 
-export const USE_MOCK_DASHBOARD_DATA = true;
+/** Set true only for offline UI demos without MongoDB. Production: false. */
+export const USE_MOCK_DASHBOARD_DATA = false;

@@ -3,6 +3,11 @@ import { db } from "@/lib/prisma";
 import { executeWithdraw } from "@/lib/soroban-commit-server";
 import { sendPayout } from "@/lib/payout-server";
 import { requireBusinessOwnedBySession } from "@/lib/require-session-wallet";
+import {
+  getUnspentCommittedLinks,
+  selectLinksForAmount,
+  sumUnspent,
+} from "@/lib/virtual-balance";
 
 const STELLAR_NETWORK = (process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet") as "testnet" | "public";
 
@@ -84,44 +89,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Business not found" }, { status: 404 });
     }
 
-    // Used nullifiers from completed withdrawals
-    const completed = await db.withdrawal.findMany({
-      where: { businessId: bid, status: "completed" },
-      select: { nullifiers: true },
-    });
-    const usedNullifiers = new Set(completed.flatMap((w) => w.nullifiers));
-
-    const paidLinks = await db.paymentLink.findMany({
-      where: {
-        businessId: bid,
-        paidAt: { not: null },
-        nullifier: { not: null },
-        commitmentTxHash: { not: null },
-      },
-      select: { id: true, amount: true, nullifier: true },
-      orderBy: { paidAt: "desc" },
-    });
-
-    const unspent: { id: string; amount: number; nullifier: string }[] = [];
-    for (const link of paidLinks) {
-      if (usedNullifiers.has(link.nullifier!)) continue;
-      const a = parseFloat(link.amount ?? '');
-      if (Number.isFinite(a) && a > 0) {
-        unspent.push({
-          id: link.id,
-          amount: a,
-          nullifier: link.nullifier!,
-        });
-      }
-    }
-
-    let sum = 0;
-    const toSpend: typeof unspent = [];
-    for (const u of unspent) {
-      if (sum >= amountNum) break;
-      toSpend.push(u);
-      sum += u.amount;
-    }
+    const unspent = await getUnspentCommittedLinks(bid);
+    const sum = sumUnspent(unspent);
+    const { selected: toSpend } = selectLinksForAmount(unspent, amountNum);
 
     if (sum < amountNum) {
       return NextResponse.json(

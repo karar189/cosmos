@@ -9,6 +9,7 @@ import {
 } from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
 import { WorkspaceOverviewSidebar } from "@/components/dashboard/workspace-hub/workspace-overview-sidebar";
 import {
+  readCreateWorkspaceDraftLogo,
   templatesToWorkspaces,
   type WorkspaceCardModel,
 } from "@/components/dashboard/workspace-hub/workspace-hub-main";
@@ -85,7 +86,9 @@ export function WorkspacePageShell({
         setWorkspaceName(workspaceNameProp.trim());
       }
 
-      setWorkspaces(templatesToWorkspaces(templates));
+      setWorkspaces(
+        templatesToWorkspaces(templates, { logoUrl: readCreateWorkspaceDraftLogo() })
+      );
     } catch {
       setWorkspaces([]);
     }

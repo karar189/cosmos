@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { homeLaunchPath } from "@/lib/launch-auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import { useCallback, useEffect, useState } from "react";
@@ -81,9 +82,7 @@ const SignInForm = () => {
         </p>
         <div className="flex flex-col gap-2 w-full">
           <Button asChild>
-            <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
-              Connect Stellar wallet
-            </Link>
+            <Link href={homeLaunchPath(returnUrl, { wallet: true })}>Connect Stellar wallet</Link>
           </Button>
           <Button variant="outline" onClick={() => router.push("/")}>
             Back to home
@@ -128,7 +127,7 @@ const SignInForm = () => {
         </div>
 
         <Button variant="outline" asChild className="w-full">
-          <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
+          <Link href={homeLaunchPath(returnUrl, { wallet: true })}>
             Connect Stellar wallet (Freighter)
           </Link>
         </Button>
