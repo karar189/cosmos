@@ -1,6 +1,7 @@
 import { Providers } from "@/components";
 import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
+import { DASHBOARD_THEME_BOOTSTRAP_SCRIPT } from "@/lib/dashboard-theme";
 import { aeonik, cn, generateMetadata, instrumentSerif, inter } from "@/utils";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -30,7 +31,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en" className="scrollbar">
+        <html lang="en" className="scrollbar" suppressHydrationWarning>
+            <head>
+                <script dangerouslySetInnerHTML={{ __html: DASHBOARD_THEME_BOOTSTRAP_SCRIPT }} />
+            </head>
             <body
                 className={cn(
                     "min-h-screen bg-background text-foreground antialiased !font-default overflow-x-hidden",

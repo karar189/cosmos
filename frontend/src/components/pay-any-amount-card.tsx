@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { QrCode, Copy, ExternalLink, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
+import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
+import { cn } from "@/utils";
+import {
+  formatPaymentLinkForDisplay,
+  resolvePaymentLinkCopyUrl,
+} from "@/lib/payment-link-public-url";
 import { useQRCode } from "next-qrcode";
 
 interface PayAnyAmountCardProps {
@@ -11,6 +18,8 @@ interface PayAnyAmountCardProps {
 }
 
 export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProps) {
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
   const { Canvas: QRCanvas } = useQRCode();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,21 +50,31 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
 
   function copyLink() {
     if (!result) return;
-    navigator.clipboard.writeText(result.url);
+    navigator.clipboard.writeText(resolvePaymentLinkCopyUrl(result.url, result.linkId));
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
 
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5 flex flex-col gap-4">
+    <div
+      className={cn(
+        "flex flex-col gap-4 rounded-xl border p-5 shadow-sm",
+        t.dark ? "border-white/10 bg-white/5" : "border-ui-border/80 bg-white"
+      )}
+    >
       {/* Header */}
       <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-amber-400/25 bg-amber-400/10">
-          <QrCode className="h-4 w-4 text-amber-300" />
+        <div
+          className={cn(
+            "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border",
+            t.dark ? "border-amber-400/30 bg-amber-400/15" : "border-amber-200 bg-amber-50"
+          )}
+        >
+          <QrCode className={cn("h-4 w-4", t.dark ? "text-amber-300" : "text-amber-600")} />
         </div>
         <div>
-          <p className="text-sm font-medium text-white">Pay any amount</p>
-          <p className="text-xs text-white/35 mt-0.5 leading-relaxed">
+          <p className={cn("text-sm font-medium", t.pageHeading)}>Pay any amount</p>
+          <p className={cn("mt-0.5 text-xs leading-relaxed", t.pageSubheading)}>
             One reusable link — clients pay any amount they choose. Private and shareable.
           </p>
         </div>
@@ -91,7 +110,7 @@ export function PayAnyAmountCard({ businessId, onCreated }: PayAnyAmountCardProp
               rel="noopener noreferrer"
               className="min-w-0 flex-1 truncate font-mono text-xs text-sky-300/90 transition-colors hover:text-sky-200"
             >
-              {result.url}
+              {formatPaymentLinkForDisplay(result.url, result.linkId)}
             </a>
             <a
               href={result.url}

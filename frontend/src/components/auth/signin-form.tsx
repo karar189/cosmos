@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { homeLaunchPath } from "@/lib/launch-auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import { useCallback, useEffect, useState } from "react";
 import { isPrivyConfigured } from "@/lib/privy-config";
+import { useLoginTransition, loginRedirectDelay } from "@/components/auth/login-transition-provider";
 import { Loader2 } from "lucide-react";
 
 function safeReturnUrl(raw: string | null): string {
@@ -22,6 +24,7 @@ const SignInForm = () => {
 
   const privyOn = isPrivyConfigured();
   const { ready, authenticated, login } = usePrivy();
+  const { startLoginTransition, endLoginTransition, isActive: loginTransitionActive } = useLoginTransition();
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
@@ -29,7 +32,11 @@ const SignInForm = () => {
     fetch("/api/auth/me", { credentials: "same-origin" })
       .then((res) => {
         if (!cancelled && res.ok) {
-          router.replace(returnUrl);
+          startLoginTransition("Taking you to your dashboard…");
+          void loginRedirectDelay().then(() => {
+            router.replace(returnUrl);
+            endLoginTransition();
+          });
         }
       })
       .finally(() => {
@@ -38,25 +45,29 @@ const SignInForm = () => {
     return () => {
       cancelled = true;
     };
-  }, [router, returnUrl]);
+  }, [router, returnUrl, startLoginTransition, endLoginTransition]);
 
   useEffect(() => {
     if (!privyOn || !ready || !authenticated) return;
-    const t = window.setTimeout(() => {
+    startLoginTransition("Taking you to your dashboard…");
+    void (async () => {
+      await loginRedirectDelay();
       router.replace(returnUrl);
-    }, 400);
-    return () => window.clearTimeout(t);
-  }, [privyOn, ready, authenticated, router, returnUrl]);
+      endLoginTransition();
+    })();
+  }, [privyOn, ready, authenticated, router, returnUrl, startLoginTransition, endLoginTransition]);
 
   const handlePrivyLogin = useCallback(() => {
     login();
   }, [login]);
 
-  if (checkingSession) {
+  if (checkingSession || loginTransitionActive || (privyOn && ready && authenticated)) {
     return (
       <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">Checking session…</p>
+        <p className="text-sm text-muted-foreground">
+          {checkingSession ? "Checking session…" : "Taking you to your dashboard…"}
+        </p>
       </div>
     );
   }
@@ -71,9 +82,7 @@ const SignInForm = () => {
         </p>
         <div className="flex flex-col gap-2 w-full">
           <Button asChild>
-            <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
-              Connect Stellar wallet
-            </Link>
+            <Link href={homeLaunchPath(returnUrl, { wallet: true })}>Connect Stellar wallet</Link>
           </Button>
           <Button variant="outline" onClick={() => router.push("/")}>
             Back to home
@@ -118,7 +127,7 @@ const SignInForm = () => {
         </div>
 
         <Button variant="outline" asChild className="w-full">
-          <Link href={`/session/wallet?returnUrl=${encodeURIComponent(returnUrl)}`}>
+          <Link href={homeLaunchPath(returnUrl, { wallet: true })}>
             Connect Stellar wallet (Freighter)
           </Link>
         </Button>

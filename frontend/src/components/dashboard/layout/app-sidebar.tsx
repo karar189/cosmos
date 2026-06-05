@@ -11,18 +11,20 @@ import {
   sidebarData,
   DASHBOARD_GROUP,
   getFeaturesNavGroup,
-  buildBusinessTierNavGroup,
+  buildWorkspaceNavGroup,
+  buildWorkspaceQuickActionsGroup,
 } from "@/components/dashboard/layout/data/sidebar-data";
 import {
   getWorkspaceTierState,
   syncWorkspaceTierFromLatestTemplate,
   hydrateWorkspaceTierFromProfile,
-  workspaceSectionTitle,
   WORKSPACE_TIER_UPDATED_EVENT,
 } from "@/lib/workspace-tier-context";
 import { NavGroup } from "@/components/dashboard/layout/nav-group";
 import { NavUser } from "@/components/dashboard/layout/nav-user";
 import { TeamSwitcher } from "@/components/dashboard/layout/team-switcher";
+import { WorkspaceSwitcher } from "@/components/dashboard/layout/workspace-switcher";
+import { WorkspaceSidebarHelp } from "@/components/dashboard/layout/workspace-sidebar-help";
 import { useFreighter } from "@/hooks/useFreighter";
 
 type AppSidebarProps = {
@@ -116,13 +118,10 @@ export function AppSidebar({ onDisconnect, user, isSessionConnected }: AppSideba
     },
     [tierStorageReady, tierNavTick]
   );
-  const businessGroup =
-    tierState?.sidebarImported === true
-      ? buildBusinessTierNavGroup(workspaceSectionTitle(tierState), tierState.bundleId)
-      : null;
+  const workspaceActive = tierState?.sidebarImported === true;
 
-  const navGroups = businessGroup
-    ? [DASHBOARD_GROUP, businessGroup]
+  const navGroups = workspaceActive
+    ? [buildWorkspaceNavGroup(), buildWorkspaceQuickActionsGroup()]
     : featuresGroup.items.length > 0
       ? [DASHBOARD_GROUP, featuresGroup]
       : [DASHBOARD_GROUP];
@@ -130,7 +129,7 @@ export function AppSidebar({ onDisconnect, user, isSessionConnected }: AppSideba
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
-        <TeamSwitcher />
+        {workspaceActive ? <WorkspaceSwitcher /> : <TeamSwitcher />}
       </SidebarHeader>
       <SidebarContent>
         {navGroups.map((props) => (
@@ -138,6 +137,7 @@ export function AppSidebar({ onDisconnect, user, isSessionConnected }: AppSideba
         ))}
       </SidebarContent>
       <SidebarFooter>
+        {workspaceActive && <WorkspaceSidebarHelp />}
         <NavUser
           user={displayUser}
           onDisconnect={onDisconnect}

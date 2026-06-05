@@ -21,9 +21,11 @@ import {
   AlertCircle,
   BookOpen,
 } from "lucide-react";
-import { DashboardHeader } from "@/components/dashboard/layout/header";
-import { DashboardMain } from "@/components/dashboard/layout/main";
-import { ThemeSwitch } from "@/components/dashboard/theme-switch";
+import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
+import {
+  WorkspacePageShell,
+  workspaceHubBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-page-shell";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -299,7 +301,7 @@ function MetricCard({
 
 export default function ComplianceAnalysisPage() {
   const router = useRouter();
-  const { publicKey, disconnect, isConnecting } = useFreighter();
+  const { publicKey } = useFreighter();
 
   // Profile state
   const [profileId, setProfileId] = useState<string | null>(null);
@@ -473,20 +475,6 @@ export default function ComplianceAnalysisPage() {
       .finally(() => setSavingVault(false));
   };
 
-  // ─── Not connected ────────────────────────────────────────────────────────
-
-  if (!publicKey) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4">
-        <ShieldCheck className="h-12 w-12 text-muted-foreground" />
-        <p className="text-muted-foreground text-center max-w-xs">
-          Connect your wallet to access the Compliance Analysis dashboard.
-        </p>
-        <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
-      </div>
-    );
-  }
-
   // ─── Compliance completion score helpers ──────────────────────────────────
 
   const completion = result?.analysis?.compliance_completion ?? 0;
@@ -498,36 +486,25 @@ export default function ComplianceAnalysisPage() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <>
-      <DashboardHeader fixed>
-        <div className="flex flex-1 items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-muted-foreground">
-            Compliance Analysis
-          </span>
-        </div>
-        <div className="ml-auto flex items-center gap-1">
-          <ThemeSwitch />
-          <Button variant="ghost" size="sm" onClick={disconnect} disabled={isConnecting}>
-            Disconnect
-          </Button>
-        </div>
-      </DashboardHeader>
-
-      <DashboardMain>
-        <div className="flex flex-col gap-6">
-          {/* Page heading */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <ShieldCheck className="h-8 w-8" />
+    <WorkspacePageShell
+      breadcrumbs={workspaceHubBreadcrumbs("Risk Reports")}
+      connectMessage="Connect your wallet to access Risk Reports."
+    >
+      <div className="flex flex-col gap-6">
+        <DashboardPageHeader
+          variant="hub"
+          eyebrow="Risk Reports"
+          title={
+            <span className="inline-flex items-center gap-2">
+              <ShieldCheck className="h-8 w-8 text-blue-600" strokeWidth={1.75} />
               Compliance Analysis
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              AI-powered web3 compliance roadmap: licenses, controls, risk
-              assessment, and action plan — grounded in regulatory sources.
-            </p>
-          </div>
+            </span>
+          }
+          description="AI-powered web3 compliance roadmap: licenses, controls, risk assessment, and action plan — grounded in regulatory sources."
+        />
 
+        {!publicKey ? null : (
+          <>
           {/* Loading profile */}
           {profileLoading && (
             <p className="text-muted-foreground text-sm flex items-center gap-2">
@@ -1249,8 +1226,9 @@ export default function ComplianceAnalysisPage() {
               )}
             </>
           )}
-        </div>
-      </DashboardMain>
-    </>
+          </>
+        )}
+      </div>
+    </WorkspacePageShell>
   );
 }

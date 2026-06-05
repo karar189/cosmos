@@ -9,7 +9,7 @@ type Props = {
 
 /**
  * Wraps the app with Privy when NEXT_PUBLIC_PRIVY_APP_ID is set.
- * Email/social login; external wallets optional via Privy dashboard.
+ * Email/social login only; Stellar wallet is linked separately via Freighter.
  */
 export function HypertronPrivyProvider({ children }: Props) {
   const appId = getPrivyAppId();
@@ -22,7 +22,7 @@ export function HypertronPrivyProvider({ children }: Props) {
     <PrivyProvider
       appId={appId}
       config={{
-        loginMethods: ["email", "google", "wallet"],
+        loginMethods: ["email", "google"],
         appearance: {
           theme: "dark",
           accentColor: "#3b82f6",

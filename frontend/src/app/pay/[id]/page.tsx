@@ -1,21 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { getNetwork, signTransaction } from "@stellar/freighter-api";
+import { useEffect, useState } from "react";
+import { PaymentLiveCheckout } from "@/components/dashboard/payments/payment-live-checkout";
+import { HypertronLogoMark } from "@/components/global/hypertron-logo-mark";
 import { useFreighter } from "@/hooks/useFreighter";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
-import { useQRCode } from "next-qrcode";
+import { getExplorerTxUrl, STELLAR_NETWORK } from "@/lib/stellar-explorer";
+import { isPrivateSettlementEnabled } from "@/lib/privacy-features";
+import { STELLAR_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
 import {
   buildPaymentXdr,
-  submitSignedTransaction,
   getHorizonUrl,
   getNetworkPassphrase,
+  submitSignedTransaction,
   type StellarNetwork,
 } from "@/lib/stellar-payment";
-import { getExplorerTxUrl, STELLAR_NETWORK } from "@/lib/stellar-explorer";
 
 function stellarNetworkLabel(network: StellarNetwork): string {
   return network === "public" ? "Public Mainnet" : "Testnet";
@@ -37,71 +38,103 @@ function stellarNetworkFromPassphrase(passphrase?: string): StellarNetwork | nul
   return null;
 }
 
+type FetchedLink = {
+  amount: string;
+  memo: string;
+  destinationAddress: string;
+  currency: PaymentAssetCode;
+  purpose: string | null;
+  paymentMethods: string[];
+  expiresAt: string | null;
+  businessName: string | null;
+};
+
 export default function PayPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const { publicKey, connect, isConnecting } = useFreighter();
   const linkId = typeof params.id === "string" ? params.id : "";
-  const { Canvas: QRCanvas } = useQRCode();
+
   const [kycName, setKycName] = useState("");
   const [kycEmail, setKycEmail] = useState("");
   const kycComplete =
     kycName.trim().length > 0 &&
     kycEmail.trim().length > 0 &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(kycEmail.trim());
+
   const [payPageUrl, setPayPageUrl] = useState("");
   useEffect(() => {
     if (linkId && typeof window !== "undefined")
       setPayPageUrl(`${window.location.origin}/pay/${linkId}`);
   }, [linkId]);
 
-  const [fetchedLink, setFetchedLink] = useState<{
-    amount: string;
-    memo: string;
-    destinationAddress: string;
-  } | null>(null);
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const [fetchedLink, setFetchedLink] = useState<FetchedLink | null>(null);
 
   useEffect(() => {
     if (!linkId || linkId.startsWith("pl_")) return;
     fetch(`/api/payment-link/${linkId}`)
-      .then((res) => (res.ok ? res.json() : null))
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 410) {
+          setLinkError(typeof data?.error === "string" ? data.error : "This payment link has expired.");
+          return null;
+        }
+        if (!res.ok) {
+          setLinkError(typeof data?.error === "string" ? data.error : "Payment link not found.");
+          return null;
+        }
+        return data;
+      })
       .then((data) => {
         if (data?.destinationAddress) {
+          setLinkError(null);
+          const methods = Array.isArray(data.paymentMethods)
+            ? data.paymentMethods.filter((m: unknown) => typeof m === "string")
+            : ["wallet", "qr"];
           setFetchedLink({
             amount: data.amount != null ? String(data.amount) : "",
             memo: data.memo || "",
             destinationAddress: data.destinationAddress,
+            currency: data.currency === "XLM" ? "XLM" : "USDC",
+            purpose: typeof data.purpose === "string" ? data.purpose : null,
+            paymentMethods: methods.length ? methods : ["wallet", "qr"],
+            expiresAt: typeof data.expiresAt === "string" ? data.expiresAt : null,
+            businessName: typeof data.businessName === "string" ? data.businessName : null,
           });
         }
       })
-      .catch(() => {});
+      .catch(() => setLinkError("Could not load payment link."));
   }, [linkId]);
 
   const [customAmount, setCustomAmount] = useState("");
   const isAnyAmountLink = fetchedLink && (fetchedLink.amount === "" || fetchedLink.amount == null);
-  const amount =
-    isAnyAmountLink
-      ? (customAmount || searchParams.get("amount") || "—").trim()
-      : (fetchedLink?.amount ?? searchParams.get("amount") ?? "—");
+  const displayAmount = isAnyAmountLink
+    ? (customAmount || searchParams.get("amount") || "").trim()
+    : (fetchedLink?.amount ?? searchParams.get("amount") ?? "—").trim();
+
   const memo = fetchedLink?.memo ?? searchParams.get("memo") ?? "";
   const destination =
     fetchedLink?.destinationAddress ??
     searchParams.get("dest") ??
     (process.env.NEXT_PUBLIC_MERCHANT_RECIPIENT?.trim() || null);
 
-  const [payStatus, setPayStatus] = useState<"idle" | "building" | "signing" | "submitting" | "success" | "error">("idle");
+  const [payStatus, setPayStatus] = useState<
+    "idle" | "building" | "signing" | "submitting" | "success" | "error"
+  >("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [payError, setPayError] = useState<string | null>(null);
 
   const canPay =
+    kycComplete &&
     publicKey &&
     destination &&
-    amount &&
-    amount !== "—" &&
+    displayAmount &&
+    displayAmount !== "—" &&
     (payStatus === "idle" || payStatus === "error");
 
   async function handlePay() {
-    if (!publicKey || !destination || !amount || amount === "—") return;
+    if (!publicKey || !destination || !displayAmount || displayAmount === "—") return;
     setPayError(null);
     setPayStatus("building");
 
@@ -121,32 +154,34 @@ export default function PayPage() {
 
     const horizonUrl = getHorizonUrl(configuredNetwork);
     const networkPassphrase = getNetworkPassphrase(configuredNetwork);
-
-    // Dark pool: get one-time opaque memo (hash) so on-chain only hash is visible
+    const assetCode = fetchedLink?.currency ?? "USDC";
     let memoHashBase64: string | undefined;
-    try {
-      const amountPayload = String(amount).replace(/\s*XLM$/i, "").trim();
-      const prepRes = await fetch(`/api/payment-link/${linkId}/prepare-pay`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: amountPayload || undefined }),
-      });
-      const errBody = await prepRes.json().catch(() => ({}));
-      if (prepRes.ok) {
-        if (errBody.memoHashBase64) memoHashBase64 = errBody.memoHashBase64;
-      } else {
-        setPayError(
-          typeof errBody?.error === "string"
-            ? errBody.error
-            : `Prepare payment failed (${prepRes.status})`
-        );
+
+    if (isPrivateSettlementEnabled()) {
+      try {
+        const amountPayload = String(displayAmount).replace(/\s*(XLM|USDC)$/i, "").trim();
+        const prepRes = await fetch(`/api/payment-link/${linkId}/prepare-pay`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: amountPayload || undefined }),
+        });
+        const errBody = await prepRes.json().catch(() => ({}));
+        if (prepRes.ok) {
+          if (errBody.memoHashBase64) memoHashBase64 = errBody.memoHashBase64;
+        } else {
+          setPayError(
+            typeof errBody?.error === "string"
+              ? errBody.error
+              : `Prepare payment failed (${prepRes.status})`
+          );
+          setPayStatus("error");
+          return;
+        }
+      } catch (e) {
+        setPayError(e instanceof Error ? e.message : "Prepare payment failed");
         setPayStatus("error");
         return;
       }
-    } catch (e) {
-      setPayError(e instanceof Error ? e.message : "Prepare payment failed");
-      setPayStatus("error");
-      return;
     }
 
     const buildResult = await buildPaymentXdr({
@@ -154,8 +189,10 @@ export default function PayPage() {
       networkPassphrase,
       sourcePublicKey: publicKey,
       destinationPublicKey: destination,
-      amountXlm: String(amount),
-      memo: memoHashBase64 ? undefined : (memo || undefined),
+      amount: String(displayAmount),
+      assetCode,
+      network: configuredNetwork,
+      memo: memoHashBase64 ? undefined : memo || undefined,
       memoHashBase64,
     });
 
@@ -225,152 +262,93 @@ export default function PayPage() {
   }
 
   const explorerUrl = getExplorerTxUrl(txHash);
+  const networkLabel = stellarNetworkLabel(STELLAR_NETWORK);
+  const businessName = fetchedLink?.businessName?.trim() || "Hypertron";
+  const isLoading = !linkError && !fetchedLink && linkId && !linkId.startsWith("pl_");
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-background">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
-        {/* Left: payment info + QR */}
-        <div className="rounded-xl border border-border bg-card p-8 w-full text-center space-y-4">
-          <h1 className="text-xl font-semibold text-foreground">Payment link</h1>
-          {isAnyAmountLink ? (
-            <div className="space-y-2 text-left">
-              <Label htmlFor="pay-amount" className="text-muted-foreground">Amount (XLM)</Label>
-              <Input
-                id="pay-amount"
-                type="text"
-                inputMode="decimal"
-                placeholder="e.g. 10 or 2.5"
-                value={customAmount || searchParams.get("amount") || ""}
-                onChange={(e) => setCustomAmount(e.target.value.trim())}
-                className="bg-background"
-              />
-            </div>
-          ) : (
-            <p className="text-muted-foreground">
-              Amount: <strong className="text-foreground">{amount}</strong> XLM
-            </p>
-          )}
-          <p className="text-muted-foreground text-xs">ID: {params.id}</p>
-
-          {payPageUrl && (
-            <div className="flex flex-col items-center gap-2 py-2">
-              <p className="text-muted-foreground text-sm">Scan to open link</p>
-              <div
-                className={`relative rounded-lg border border-border bg-white p-2 inline-block transition-all duration-300 ${
-                  kycComplete ? "" : "select-none"
-                }`}
-              >
-                <div
-                  className={
-                    kycComplete
-                      ? ""
-                      : "blur-md pointer-events-none"
-                  }
-                >
-                  <QRCanvas
-                    text={payPageUrl}
-                    options={{ errorCorrectionLevel: "M", width: 180 }}
-                  />
-                </div>
-                {!kycComplete && (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center rounded-lg bg-background/80 backdrop-blur-sm"
-                    title="Complete the payment KYC to proceed"
-                  >
-                    <p className="text-sm font-medium text-muted-foreground text-center px-4">
-                      Complete the payment KYC to proceed
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <p className="text-muted-foreground text-sm font-medium">Pay with Stellar wallet</p>
-          <p className="text-muted-foreground text-xs">
-            Network: {stellarNetworkLabel(STELLAR_NETWORK)}
-          </p>
-          {!publicKey && (
-            <Button onClick={connect} disabled={isConnecting} className="mt-2 w-full">
-              {isConnecting ? "Connecting…" : "Connect wallet to pay"}
-            </Button>
-          )}
-
-          {publicKey && !destination && (
-            <p className="text-muted-foreground text-sm mt-4">
-              This link has no recipient. Use a link created from the dashboard (with recipient), or set <code className="rounded bg-muted px-1">NEXT_PUBLIC_MERCHANT_RECIPIENT</code> in .env.
-            </p>
-          )}
-
-          {canPay && (
-            <Button onClick={handlePay} className="mt-4 w-full">
-              {payStatus === "error" ? `Retry payment (${amount} XLM)` : `Pay ${amount} XLM`}
-            </Button>
-          )}
-
-          {(payStatus === "building" || payStatus === "signing" || payStatus === "submitting") && (
-            <p className="text-muted-foreground text-sm mt-4">
-              {payStatus === "building" && "Building transaction…"}
-              {payStatus === "signing" && "Confirm in Freighter…"}
-              {payStatus === "submitting" && "Submitting…"}
-            </p>
-          )}
-
-          {payStatus === "success" && txHash && (
-            <div className="pt-4 border-t border-border space-y-2">
-              <p className="text-green-600 dark:text-green-400 font-medium">Payment sent</p>
-              <a
-                href={explorerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary text-sm break-all hover:underline block"
-              >
-                View transaction
-              </a>
-            </div>
-          )}
-
-          {payStatus === "error" && payError && (
-            <p className="text-destructive text-sm mt-4">{payError}</p>
-          )}
-        </div>
-
-        {/* Right: KYC form */}
-        <div className="rounded-xl border border-border bg-card p-8 w-full space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Payment KYC</h2>
-          <p className="text-muted-foreground text-sm">
-            Enter your name and email to verify your identity before paying.
-          </p>
-          <div className="space-y-4 text-left">
-            <div className="space-y-2">
-              <Label htmlFor="pay-kyc-name">Name</Label>
-              <Input
-                id="pay-kyc-name"
-                type="text"
-                placeholder="Your name"
-                value={kycName}
-                onChange={(e) => setKycName(e.target.value)}
-                className="bg-background"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pay-kyc-email">Email</Label>
-              <Input
-                id="pay-kyc-email"
-                type="email"
-                placeholder="you@example.com"
-                value={kycEmail}
-                onChange={(e) => setKycEmail(e.target.value)}
-                className="bg-background"
-              />
+    <main className="min-h-screen w-full bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 px-4 py-8 sm:px-6 sm:py-10">
+      <div className="mx-auto w-full max-w-3xl">
+        <header className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <HypertronLogoMark size={32} />
+            <div className="leading-tight">
+              <p className="text-sm font-semibold tracking-tight text-slate-900">Hypertron</p>
+              <p className="text-[11px] text-slate-500">Secure checkout</p>
             </div>
           </div>
-          {kycComplete && (
-            <p className="text-green-600 dark:text-green-400 text-sm font-medium">
-              ✓ KYC complete — you can scan the QR or pay below.
-            </p>
-          )}
-        </div>
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={STELLAR_LOGO_URL}
+              alt=""
+              width={18}
+              height={18}
+              className="h-[18px] w-[18px] rounded-full object-cover"
+            />
+            Stellar · {networkLabel}
+          </span>
+        </header>
+
+        {linkError ? (
+          <div
+            className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            role="alert"
+          >
+            {linkError}
+          </div>
+        ) : null}
+
+        {isLoading ? (
+          <div className="flex min-h-[420px] items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <p className="text-sm text-slate-500">Loading payment…</p>
+          </div>
+        ) : fetchedLink ? (
+          <PaymentLiveCheckout
+            link={{
+              id: linkId,
+              amount: fetchedLink.amount,
+              currency: fetchedLink.currency,
+              purpose: fetchedLink.purpose,
+              paymentMethods: fetchedLink.paymentMethods,
+              expiresAt: fetchedLink.expiresAt,
+              destinationAddress: fetchedLink.destinationAddress,
+            }}
+            businessName={businessName}
+            displayAmount={displayAmount || "—"}
+            isAnyAmount={!!isAnyAmountLink}
+            customAmount={customAmount || searchParams.get("amount") || ""}
+            onCustomAmountChange={setCustomAmount}
+            payPageUrl={payPageUrl}
+            kycName={kycName}
+            kycEmail={kycEmail}
+            onKycNameChange={setKycName}
+            onKycEmailChange={setKycEmail}
+            kycComplete={kycComplete}
+            publicKey={publicKey}
+            onConnect={connect}
+            isConnecting={isConnecting}
+            canPay={!!canPay}
+            onPay={handlePay}
+            payStatus={payStatus}
+            payError={payError}
+            txHash={txHash}
+            explorerUrl={explorerUrl}
+            networkLabel={`Recommended network · ${networkLabel}`}
+          />
+        ) : null}
+
+        <footer className="mt-6 text-center text-[11px] text-slate-500">
+          By completing this payment, you agree to Hypertron&apos;s{" "}
+          <Link href="/terms" className="text-blue-600 hover:underline">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="text-blue-600 hover:underline">
+            Privacy Policy
+          </Link>
+          .
+        </footer>
       </div>
     </main>
   );

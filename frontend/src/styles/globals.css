@@ -1,3 +1,5 @@
+@import "./tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -124,6 +126,72 @@ html, body {
 
 ::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0);
+}
+
+@layer utilities {
+  .scrollbar-subtle {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.35);
+    border-radius: 9999px;
+  }
+
+  .workspace-hub-root[data-theme="dark"] .scrollbar-subtle {
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  }
+
+  .workspace-hub-root[data-theme="dark"] .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* Workspace hub — soft scrollbars (overrides global dark thumb) */
+.workspace-hub-root[data-theme="light"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.workspace-hub-root[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+.workspace-hub-root[data-theme="light"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-hub-root[data-theme="light"] {
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+
+.workspace-hub-root[data-theme="dark"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.workspace-hub-root[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+
+.workspace-hub-root[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-hub-root[data-theme="dark"] {
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 
 .gradient {
@@ -495,4 +563,582 @@ html, body {
 
 .dashboard-light ::-webkit-scrollbar {
   scrollbar-color: rgba(45, 52, 130, 0.22) transparent;
+}
+
+/* Workspace hub — mostly white with whisper-soft corner tints */
+.workspace-hub-root {
+  background: #fafbff;
+  color: #1e1b4b;
+  position: relative;
+  isolation: isolate;
+  /* Light tokens so outline buttons/inputs never pick up near-black :root borders */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 96%;
+  --secondary-foreground: 215 25% 27%;
+  --muted: 214 32% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 214 32% 96%;
+  --accent-foreground: 215 25% 27%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 213 94% 68%;
+}
+
+.workspace-hub-root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 42% at 0% 0%, rgba(177, 151, 252, 0.08) 0%, transparent 52%),
+    radial-gradient(ellipse 70% 58% at 100% 0%, rgba(245, 198, 208, 0.22) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 48% at 92% 8%, rgba(255, 179, 71, 0.14) 0%, transparent 52%),
+    radial-gradient(ellipse 48% 40% at 100% 0%, rgba(177, 151, 252, 0.12) 0%, transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #fafbff 45%, #f8f9fc 100%);
+}
+
+/* Workspace setup — flat surface like payment-links (no corner glow) */
+.workspace-hub-root:has(.create-workspace-page)::before {
+  display: none;
+}
+
+.workspace-hub-root:has(.create-workspace-page) {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.workspace-hub-root:has(.create-workspace-page) > * {
+  height: 100%;
+  min-height: 0;
+}
+
+.workspace-hub-root > * {
+  position: relative;
+  z-index: 1;
+}
+
+.workspace-hub-root .workspace-hub-sidebar {
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+
+.workspace-hub-root[data-theme="dark"] .text-white {
+  color: #ffffff;
+}
+
+/* Remap legacy dark-dashboard utilities inside light workspace hub */
+.workspace-hub-root[data-theme="light"] .text-white {
+  color: #1e293b !important;
+}
+
+.workspace-hub-root[data-theme="light"] .text-white\/90 { color: rgba(30, 41, 59, 0.92) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/80 { color: rgba(30, 41, 59, 0.85) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/70 { color: rgba(30, 41, 59, 0.78) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/60 { color: rgba(30, 41, 59, 0.68) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/50 { color: rgba(30, 41, 59, 0.6) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/45 { color: rgba(30, 41, 59, 0.58) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/40 { color: rgba(30, 41, 59, 0.55) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/35 { color: rgba(30, 41, 59, 0.52) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/30 { color: rgba(30, 41, 59, 0.5) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/25 { color: rgba(30, 41, 59, 0.48) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/20 { color: rgba(30, 41, 59, 0.45) !important; }
+.workspace-hub-root[data-theme="light"] .text-white\/15 { color: rgba(30, 41, 59, 0.42) !important; }
+
+/* Solid accent surfaces keep white foreground in light hub */
+.workspace-hub-root[data-theme="light"] :is(
+  .bg-blue-500,
+  .bg-blue-600,
+  .bg-blue-700,
+  .bg-violet-600,
+  .bg-red-500,
+  .bg-emerald-600
+).text-white,
+.workspace-hub-root[data-theme="light"] :is(
+  .bg-blue-500,
+  .bg-blue-600,
+  .bg-blue-700,
+  .bg-violet-600,
+  .bg-red-500,
+  .bg-emerald-600
+) .text-white,
+.workspace-hub-root[data-theme="light"] :is(
+  .bg-blue-500,
+  .bg-blue-600,
+  .bg-blue-700,
+  .bg-violet-600,
+  .bg-red-500,
+  .bg-emerald-600
+) .text-white svg {
+  color: #ffffff !important;
+}
+
+/* Primary CTAs — white label/icon (beats light-hub .text-white remap) */
+.workspace-hub-root[data-theme="light"] button.hub-cta,
+.workspace-hub-root[data-theme="light"] button.hub-cta svg,
+.workspace-hub-root[data-theme="light"] .create-workspace-page button.hub-cta,
+.workspace-hub-root[data-theme="light"] .create-workspace-page button.hub-cta svg {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root button.hub-cta svg {
+  stroke: currentColor;
+}
+
+.workspace-hub-root[data-theme="light"] .border-white\/20,
+.workspace-hub-root[data-theme="light"] .border-white\/15,
+.workspace-hub-root[data-theme="light"] .border-white\/12,
+.workspace-hub-root[data-theme="light"] .border-white\/10,
+.workspace-hub-root[data-theme="light"] .border-white\/08,
+.workspace-hub-root[data-theme="light"] .border-white\/07,
+.workspace-hub-root[data-theme="light"] .border-white\/06,
+.workspace-hub-root[data-theme="light"] .border-white\/05 {
+  border-color: rgb(var(--ui-border) / 0.85) !important;
+}
+
+.workspace-hub-root[data-theme="light"] .bg-white\/\[0\.02\],
+.workspace-hub-root[data-theme="light"] .bg-white\/\[0\.03\],
+.workspace-hub-root[data-theme="light"] .bg-white\/\[0\.04\],
+.workspace-hub-root[data-theme="light"] .bg-white\/\[0\.05\],
+.workspace-hub-root[data-theme="light"] .bg-white\/\[0\.06\],
+.workspace-hub-root[data-theme="light"] .bg-white\/\[0\.08\] {
+  background-color: #ffffff !important;
+}
+
+.workspace-hub-root[data-theme="light"] .divide-white\/\[0\.05\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(var(--ui-border) / 0.7) !important;
+}
+
+.workspace-hub-root[data-theme="light"] .text-sky-300,
+.workspace-hub-root[data-theme="light"] .text-sky-300\/90,
+.workspace-hub-root[data-theme="light"] .text-sky-300\/80,
+.workspace-hub-root[data-theme="light"] .text-sky-300\/75 {
+  color: #0369a1 !important;
+}
+
+.workspace-hub-root[data-theme="light"] .hover\:text-sky-200:hover {
+  color: #0c4a6e !important;
+}
+
+.workspace-hub-root[data-theme="light"] .text-amber-300 {
+  color: #b45309 !important;
+}
+
+.workspace-hub-root[data-theme="light"] .text-amber-400,
+.workspace-hub-root[data-theme="light"] .text-amber-400\/80 {
+  color: #d97706 !important;
+}
+
+.workspace-hub-root[data-theme="light"] .text-emerald-400 {
+  color: #059669 !important;
+}
+
+.workspace-hub-root[data-theme="light"] .text-red-400 {
+  color: #dc2626 !important;
+}
+
+/* No black focus/active halos on hub controls */
+.workspace-hub-root button:focus,
+.workspace-hub-root button:focus-visible,
+.workspace-hub-root button:active,
+.workspace-hub-root [role="button"]:focus-visible,
+.workspace-hub-root [data-radix-select-trigger]:focus,
+.workspace-hub-root [data-radix-select-trigger][data-state="open"] {
+  outline: none;
+}
+
+/* Action cards — soft fill + diagonal border (grey at top-left, tinted at bottom-right) */
+.workspace-hub-root .workspace-hub-action-card--blue {
+  border: 1px solid transparent !important;
+  overflow: hidden !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f6f9ff 45%, #e8f0fc 100%) padding-box,
+    linear-gradient(135deg, rgb(var(--ui-border)) 0%, rgb(var(--ui-border-muted)) 40%, #dce8f8 100%) border-box !important;
+}
+
+/* Force blue palette on Avvvatars user avatars in workspace hub */
+.workspace-hub-root .hub-avatar-blue > div {
+  background-color: #e8f4ff !important;
+}
+
+.workspace-hub-root .hub-avatar-blue svg path {
+  fill: #2563eb !important;
+}
+
+/* Account menu — flat panel (no shadow / zoom popover feel) */
+.workspace-hub-user-menu-content {
+  box-shadow: none !important;
+  filter: none !important;
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+  outline: none !important;
+}
+
+.workspace-hub-user-menu-content .hub-menu-item[data-highlighted] {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+}
+
+.workspace-hub-user-menu-content .hub-menu-item--destructive[data-highlighted] {
+  color: #b91c1c !important;
+}
+
+.workspace-hub-root .workspace-hub-promo-card {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f6f9ff 50%, #e8f0fc 100%) padding-box,
+    linear-gradient(135deg, #ffffff 0%, #dce8f8 100%) border-box !important;
+}
+
+.workspace-hub-root .workspace-hub-action-card--peach {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #fffcf9 45%, #fff4eb 100%) padding-box,
+    linear-gradient(135deg, rgb(var(--ui-border)) 0%, #f1f5f9 40%, #ffe4cc 100%) border-box !important;
+}
+
+/* Workspace feature pages — white cards on mesh background */
+.workspace-hub-root .workspace-hub-page-content {
+  color: #1e293b;
+}
+
+.workspace-hub-root .workspace-hub-page-content .rounded-lg.border,
+.workspace-hub-root .workspace-hub-page-content .rounded-xl.border,
+.workspace-hub-root .workspace-hub-page-content [data-slot="card"] {
+  border-color: rgb(var(--ui-border) / 0.85) !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+/* Payment preview — theme-aware checkout mock */
+.workspace-hub-root[data-theme="light"] .payment-customer-preview {
+  border-color: transparent !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+}
+
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-checkout {
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview {
+  border-color: transparent !important;
+  background-color: #0c1222 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-checkout {
+  color: #e2e8f0;
+  background-color: #0c1222;
+}
+
+.workspace-hub-root .payment-preview-brand,
+.workspace-hub-root .payment-preview-brand p,
+.workspace-hub-root .payment-preview-brand span,
+.workspace-hub-root .payment-preview-brand svg:not(.payment-preview-brand-logo-letter) {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root .payment-preview-brand .payment-preview-brand-muted {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.workspace-hub-root .payment-preview-brand .payment-preview-brand-logo-letter {
+  color: #4338ca !important;
+}
+
+/* Workspace hub — dark mode */
+.workspace-hub-root[data-theme="dark"] {
+  background: #070b14;
+  color: #e2e8f0;
+  --background: 222 47% 6%;
+  --foreground: 210 40% 96%;
+  --card: 222 40% 9%;
+  --card-foreground: 210 40% 96%;
+  --popover: 222 40% 9%;
+  --popover-foreground: 210 40% 96%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 217 33% 14%;
+  --secondary-foreground: 210 40% 90%;
+  --muted: 217 33% 14%;
+  --muted-foreground: 215 20% 58%;
+  --accent: 217 33% 16%;
+  --accent-foreground: 210 40% 96%;
+  --border: 217 33% 18%;
+  --input: 217 33% 18%;
+  --ring: 213 94% 68%;
+}
+
+.workspace-hub-root[data-theme="dark"]::before {
+  background:
+    radial-gradient(ellipse 55% 45% at 0% 0%, rgba(88, 28, 135, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 65% 55% at 100% 0%, rgba(30, 58, 138, 0.4) 0%, transparent 58%),
+    radial-gradient(ellipse 50% 42% at 88% 12%, rgba(15, 118, 110, 0.12) 0%, transparent 50%),
+    linear-gradient(180deg, #0c1222 0%, #070b14 50%, #05070d 100%);
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-sidebar {
+  background: rgba(12, 18, 34, 0.72);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.workspace-hub-root[data-theme="dark"] .text-slate-900,
+.workspace-hub-root[data-theme="dark"] .text-slate-800,
+.workspace-hub-root[data-theme="dark"] .text-slate-700 {
+  color: #f1f5f9 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-slate-600,
+.workspace-hub-root[data-theme="dark"] .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-slate-400 {
+  color: #64748b !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-\[\#1e1b4b\],
+.workspace-hub-root[data-theme="dark"] .text-\[\#475569\] {
+  color: #e2e8f0 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-neutral-900 {
+  color: #f1f5f9 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-neutral-800 {
+  color: #e2e8f0 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-neutral-700 {
+  color: #cbd5e1 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-neutral-600 {
+  color: #94a3b8 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-neutral-500 {
+  color: #94a3b8 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .text-neutral-400 {
+  color: #64748b !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .bg-neutral-100,
+.workspace-hub-root[data-theme="dark"] .bg-neutral-100\/80 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .bg-neutral-50,
+.workspace-hub-root[data-theme="dark"] .bg-neutral-50\/50,
+.workspace-hub-root[data-theme="dark"] .bg-neutral-50\/80 {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .border-ui-border\/80,
+.workspace-hub-root[data-theme="dark"] .border-ui-border\/60 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .bg-white {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .hover\:bg-neutral-50:hover,
+.workspace-hub-root[data-theme="dark"] .hover\:bg-neutral-100:hover,
+.workspace-hub-root[data-theme="dark"] .hover\:bg-neutral-100\/60:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-promo-card {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(30, 58, 138, 0.2) 50%, rgba(15, 23, 42, 0.5) 100%) padding-box,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(59, 130, 246, 0.25) 100%) border-box !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-action-card--blue {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(30, 58, 138, 0.25) 45%, rgba(15, 23, 42, 0.6) 100%) padding-box,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(59, 130, 246, 0.35) 100%) border-box !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-action-card--peach {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(120, 53, 15, 0.2) 45%, rgba(15, 23, 42, 0.5) 100%) padding-box,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(251, 146, 60, 0.2) 100%) border-box !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-page-content {
+  color: #cbd5e1;
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-page-content .rounded-lg.border,
+.workspace-hub-root[data-theme="dark"] .workspace-hub-page-content .rounded-xl.border,
+.workspace-hub-root[data-theme="dark"] .workspace-hub-page-content [data-slot="card"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.workspace-hub-root[data-theme="dark"] .hub-avatar-blue > div {
+  background-color: rgba(37, 99, 235, 0.2) !important;
+}
+
+.workspace-hub-user-menu-content[data-theme="dark"],
+.workspace-hub-root[data-theme="dark"] .workspace-hub-user-menu-content {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #e2e8f0 !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-user-menu-content .hub-menu-item[data-highlighted] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #e2e8f0 !important;
+}
+
+/* Payment preview — hub overrides for inner checkout surfaces */
+.workspace-hub-root[data-theme="light"] .workspace-hub-page-content .payment-customer-preview .rounded-lg.border,
+.workspace-hub-root[data-theme="light"] .workspace-hub-page-content .payment-customer-preview .rounded-xl.border {
+  border-color: #e2e8f0 !important;
+  background-color: #f8fafc !important;
+  box-shadow: none;
+}
+
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-checkout .bg-white\/5,
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-qr-surface {
+  background-color: #ffffff !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-checkout .border-white\/10,
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.workspace-hub-root[data-theme="dark"] .workspace-hub-page-content .payment-customer-preview .rounded-lg.border,
+.workspace-hub-root[data-theme="dark"] .workspace-hub-page-content .payment-customer-preview .rounded-xl.border {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none;
+}
+
+/* Brand panel — white text on dark gradient (both hub themes) */
+.workspace-hub-root .payment-customer-preview .payment-preview-brand,
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-brand,
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-brand :is(p, span, li),
+.workspace-hub-root[data-theme="dark"] .payment-customer-preview .payment-preview-brand :is(p, span, li),
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand :is(p, span, li) {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-brand .payment-preview-brand-muted,
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand .payment-preview-brand-muted {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-brand svg:not(.payment-preview-brand-logo-letter),
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand svg:not(.payment-preview-brand-logo-letter) {
+  color: #bae6fd !important;
+}
+
+.workspace-hub-root .payment-customer-preview .payment-preview-brand .payment-preview-brand-logo-letter {
+  color: #4338ca !important;
+}
+
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand :is(.text-white, .text-white\/80) {
+  color: #ffffff !important;
+}
+
+.workspace-hub-root[data-theme="light"] .payment-customer-preview .payment-preview-brand .text-white\/80 {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Public /pay page — checkout card matches dashboard preview (no workspace hub) */
+.payment-live-checkout.payment-customer-preview {
+  border-color: transparent !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+  /* Light shadcn tokens — :root defaults are dark, so outline buttons were black */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 96%;
+  --secondary-foreground: 215 25% 27%;
+  --muted: 214 32% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 214 32% 96%;
+  --accent-foreground: 215 25% 27%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 213 94% 68%;
+}
+
+.payment-live-checkout.payment-customer-preview .payment-preview-checkout {
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+.payment-live-checkout .payment-preview-brand,
+.payment-live-checkout .payment-preview-brand :is(p, span, li) {
+  color: #ffffff !important;
+}
+
+.payment-live-checkout .payment-preview-brand svg {
+  color: #bae6fd !important;
+}
+
+.payment-live-checkout .payment-preview-brand .text-white\/80 {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Avvvatars merchant mark on pay / checkout brand panel */
+.payment-live-checkout .payment-preview-brand .hub-avatar-blue > div,
+.payment-customer-preview .payment-preview-brand .hub-avatar-blue > div {
+  background-color: #e8f4ff !important;
+}
+
+.payment-live-checkout .payment-preview-brand .hub-avatar-blue svg path,
+.payment-customer-preview .payment-preview-brand .hub-avatar-blue svg path {
+  fill: #2563eb !important;
+}
+
+.payment-live-checkout .payment-preview-qr-surface {
+  background-color: #ffffff !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-reveal-overlay {
+    transition: none !important;
+  }
 }

@@ -9,6 +9,8 @@ type DashboardPageHeaderProps = {
   description?: string;
   /** Right-aligned actions (e.g. secondary buttons) */
   end?: ReactNode;
+  /** Light workspace hub pages */
+  variant?: "default" | "hub";
 };
 
 /**
@@ -19,19 +21,39 @@ export function DashboardPageHeader({
   title,
   description,
   end,
+  variant = "default",
 }: DashboardPageHeaderProps) {
+  const isHub = variant === "hub";
   const body = (
     <div className="min-w-0 space-y-3">
       {eyebrow ? (
-        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        <p
+          className={
+            isHub
+              ? "text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-600"
+              : "text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground"
+          }
+        >
           {eyebrow}
         </p>
       ) : null}
-      <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+      <h1
+        className={
+          isHub
+            ? "max-w-3xl text-3xl font-semibold tracking-tight text-neutral-900 md:text-4xl"
+            : "max-w-3xl text-3xl font-semibold tracking-tight text-foreground md:text-4xl"
+        }
+      >
         {title}
       </h1>
       {description ? (
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+        <p
+          className={
+            isHub
+              ? "max-w-2xl text-sm leading-relaxed text-neutral-500 md:text-base"
+              : "max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base"
+          }
+        >
           {description}
         </p>
       ) : null}

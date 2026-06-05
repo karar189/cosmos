@@ -1,63 +1,102 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { useFreighter } from "@/hooks/useFreighter";
-import { useRouter } from "next/navigation";
-import { DashboardMain } from "@/components/dashboard/layout/main";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
-import { WithdrawTab } from "@/components/dashboard/withdraw-tab";
+import {
+  WorkspacePageShell,
+  workspaceHubBreadcrumbs,
+} from "@/components/dashboard/workspace-hub/workspace-page-shell";
+import { WithdrawPage as WithdrawContent } from "@/components/dashboard/withdraw-page";
 import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
 
 export default function WithdrawPage() {
-  const router = useRouter();
   const { publicKey } = useFreighter();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [receiveAddress, setReceiveAddress] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
-  const [usingFallback, setUsingFallback] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!publicKey) {
-      setBusinessId(null);
-      setBusinessError(null);
-      setUsingFallback(false);
-      return;
-    }
+    let cancelled = false;
 
     if (USE_MOCK_DASHBOARD_DATA) {
       setBusinessId(fallbackBusiness.businessId);
       setReceiveAddress(fallbackBusiness.receiveAddress);
       setBusinessError(null);
-      setUsingFallback(true);
+      setLoading(false);
       return;
     }
+
+    setLoading(true);
+    setBusinessError(null);
+
+    fetch("/api/business/profile", { credentials: "same-origin" })
+      .then(async (res) => {
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(
+            typeof json?.error === "string" ? json.error : `Failed to load profile (${res.status})`
+          );
+        }
+        return json as { businessId?: string; receiveAddress?: string };
+      })
+      .then((data) => {
+        if (cancelled) return;
+        if (typeof data.businessId === "string" && data.businessId.trim()) {
+          setBusinessId(data.businessId.trim());
+          setReceiveAddress(
+            typeof data.receiveAddress === "string" ? data.receiveAddress.trim() : null
+          );
+          setBusinessError(null);
+          return;
+        }
+        setBusinessId(null);
+        setBusinessError("Business profile not found.");
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        setBusinessId(null);
+        setBusinessError(e instanceof Error ? e.message : "Could not load business profile");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [publicKey]);
 
-  if (!publicKey) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <p className="text-white/40 text-center text-sm">Connect your wallet to withdraw funds.</p>
-        <Button onClick={() => router.push("/dashboard")}>Go to Dashboard</Button>
-      </div>
-    );
-  }
-
   return (
-    <DashboardMain>
-      <div className="flex flex-col gap-8">
+    <WorkspacePageShell
+      breadcrumbs={workspaceHubBreadcrumbs("Withdraw")}
+      connectMessage="Connect your wallet to withdraw funds."
+    >
+      <div className="flex flex-col gap-6">
         <DashboardPageHeader
+          variant="hub"
           eyebrow="Treasury"
           title="Withdraw"
-          description="Transfer settled funds to your Stellar receive address."
+          description="Transfer settled funds from your vault to any Stellar address."
         />
 
-        {businessId ? (
-          <WithdrawTab businessId={businessId} walletAddress={publicKey} receiveAddress={receiveAddress} />
-        ) : !businessError ? (
-          <p className="text-white/30 text-sm">Loading…</p>
-        ) : null}
+        {loading ? (
+          <div className="flex items-center gap-2 py-8 text-sm text-neutral-500">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading treasury…
+          </div>
+        ) : businessId ? (
+          <WithdrawContent
+            businessId={businessId}
+            walletAddress={publicKey ?? null}
+            receiveAddress={receiveAddress}
+          />
+        ) : (
+          <p className="text-sm text-destructive">{businessError ?? "Unable to load treasury."}</p>
+        )}
       </div>
-    </DashboardMain>
+    </WorkspacePageShell>
   );
 }

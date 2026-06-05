@@ -5,10 +5,13 @@ import {
   findPaymentsToAccountWithHashMemo,
   getPaymentDetailsByTransactionHash,
 } from "@/lib/horizon";
+import { isLinkExpired } from "@/lib/payment-link-fields";
+import { isPrivateSettlementEnabled } from "@/lib/privacy-features";
 import {
   executeCommit,
   hashToScalar,
 } from "@/lib/soroban-commit-server";
+import { normalizePaymentAssetCode } from "@/lib/stellar-assets";
 import { isRelayerConfigured, processRelayerInbox } from "@/lib/relayer";
 import { randomBytes } from "crypto";
 
@@ -33,7 +36,7 @@ export async function GET(
   try {
     const { id } = await context.params;
 
-    if (isRelayerConfigured()) {
+    if (isPrivateSettlementEnabled() && isRelayerConfigured()) {
       await processRelayerInbox(STELLAR_NETWORK);
     }
 
@@ -44,6 +47,12 @@ export async function GET(
     if (!link) {
       return NextResponse.json({ error: "Payment link not found" }, { status: 404 });
     }
+
+    if (isLinkExpired(link.expiresAt)) {
+      return NextResponse.json({ status: "expired" as const, error: "Payment link expired" }, { status: 410 });
+    }
+
+    const linkCurrency = normalizePaymentAssetCode(link.currency);
 
     if (link.paidAt && link.paymentTxHash) {
       // Backfill amount for old pay-any-amount links that were marked paid before
@@ -94,11 +103,13 @@ export async function GET(
       await findPaymentToAccountByMemo(
         pool,
         link.linkMemo,
-        STELLAR_NETWORK
+        STELLAR_NETWORK,
+        100,
+        linkCurrency
       );
 
-    // Dark pool: match by hash memo via PendingPaymentMemo
-    if (!found) {
+    // Dark pool: match by hash memo via PendingPaymentMemo (private settlement only)
+    if (!found && isPrivateSettlementEnabled()) {
       const hashPayments = await findPaymentsToAccountWithHashMemo(
         pool,
         STELLAR_NETWORK
@@ -145,6 +156,24 @@ export async function GET(
     const paidAmount = Number.isFinite(parseFloat(found.amount)) ? String(found.amount) : "";
     const paidAtDate = found.createdAt ? new Date(found.createdAt) : new Date();
     const normalizedPaidAt = Number.isNaN(paidAtDate.getTime()) ? new Date() : paidAtDate;
+
+    const paidData = {
+      paidAt: normalizedPaidAt,
+      paymentTxHash: found.txHash,
+      ...(paidAmount && (!link.amount || String(link.amount).trim() === "") ? { amount: paidAmount } : {}),
+      payerAddress: payerAddress || undefined,
+    };
+
+    // TODO(production-privacy): re-enable PoolManager commit when private settlement launches.
+    if (!isPrivateSettlementEnabled()) {
+      await db.paymentLink.update({ where: { id }, data: paidData });
+      return NextResponse.json({
+        status: "paid" as const,
+        paymentTxHash: found.txHash,
+        paidAt: normalizedPaidAt.toISOString(),
+      });
+    }
+
     const nonce = randomBytes(16).toString("hex");
     const secretAmount = (link.amount && String(link.amount).trim()) || paidAmount || "";
     const secret = hashToScalar(payerAddress, link.businessId, secretAmount);
@@ -157,10 +186,7 @@ export async function GET(
       await db.paymentLink.update({
         where: { id },
         data: {
-          paidAt: normalizedPaidAt,
-          paymentTxHash: found.txHash,
-          ...(paidAmount && (!link.amount || String(link.amount).trim() === "") ? { amount: paidAmount } : {}),
-          payerAddress: payerAddress || undefined,
+          ...paidData,
           nonce,
           nullifier: nullifier.toString(),
         },
@@ -176,10 +202,7 @@ export async function GET(
     await db.paymentLink.update({
       where: { id },
       data: {
-        paidAt: normalizedPaidAt,
-        paymentTxHash: found.txHash,
-        ...(paidAmount && (!link.amount || String(link.amount).trim() === "") ? { amount: paidAmount } : {}),
-        payerAddress: payerAddress || undefined,
+        ...paidData,
         nonce,
         nullifier: nullifier.toString(),
         commitmentTxHash: commitResult.commitmentTxHash,

@@ -1,7 +1,22 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Prebundled UMD build; transpiling avoids occasional dev chunk / resolution issues with Turbopack/webpack.
   transpilePackages: ["@stellar/freighter-api"],
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@farcaster/mini-app-solana": path.resolve(
+        __dirname,
+        "src/lib/stubs/farcaster-mini-app-solana.ts"
+      ),
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

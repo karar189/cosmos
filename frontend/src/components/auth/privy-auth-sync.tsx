@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
+import { useLoginTransition, loginRedirectDelay } from "@/components/auth/login-transition-provider";
 import { isPrivyConfigured } from "@/lib/privy-config";
 import {
   consumePostLoginRedirect,
   POST_LOGIN_REDIRECT_KEY,
 } from "@/lib/privy-login-redirect";
-import { isInviteVerifiedInSession } from "@/lib/launch-auth";
+import { clearLaunchSession, isInviteVerifiedInSession } from "@/lib/launch-auth";
 
 /**
  * After Privy login, exchanges access token for ht_privy cookie, then redirects to dashboard.
@@ -17,33 +18,46 @@ export function PrivyAuthSync() {
   const router = useRouter();
   const pathname = usePathname();
   const { ready, authenticated, user, getAccessToken, logout } = usePrivy();
+  const { startLoginTransition, endLoginTransition } = useLoginTransition();
   const syncingRef = useRef(false);
   const syncedPrivyIdRef = useRef<string | null>(null);
-  const redirectedRef = useRef(false);
 
-  const redirectAfterLogin = (target: string) => {
-    if (redirectedRef.current) return;
-    redirectedRef.current = true;
-    router.replace(target);
-  };
+  const redirectAfterLogin = useCallback(
+    async (target: string) => {
+      startLoginTransition("Taking you to your dashboard…");
+      await loginRedirectDelay();
+      router.replace(target);
+      endLoginTransition();
+    },
+    [router, startLoginTransition, endLoginTransition]
+  );
 
   useEffect(() => {
     if (!isPrivyConfigured() || !ready) return;
 
     if (!authenticated || !user?.id) {
       syncedPrivyIdRef.current = null;
-      redirectedRef.current = false;
+      endLoginTransition();
       return;
     }
 
-    if (syncedPrivyIdRef.current === user.id && redirectedRef.current) return;
+    // Already synced for this user — dismiss overlay if still showing.
+    if (syncedPrivyIdRef.current === user.id) {
+      endLoginTransition();
+      return;
+    }
 
     void (async () => {
       if (syncingRef.current) return;
       syncingRef.current = true;
+      startLoginTransition("Signing you in…");
+
       try {
         const token = await getAccessToken();
-        if (!token) return;
+        if (!token) {
+          endLoginTransition();
+          return;
+        }
 
         const res = await fetch("/api/auth/privy/sync", {
           method: "POST",
@@ -53,6 +67,7 @@ export function PrivyAuthSync() {
 
         if (!res.ok) {
           if (res.status === 401) await logout();
+          endLoginTransition();
           return;
         }
 
@@ -60,36 +75,52 @@ export function PrivyAuthSync() {
 
         const pending = consumePostLoginRedirect();
         if (pending) {
-          redirectAfterLogin(pending);
+          await redirectAfterLogin(pending);
           return;
         }
 
-        // OAuth return often lands on `/` without the Launch dialog open
         const onHome = pathname === "/" || pathname === "";
         if (onHome && isInviteVerifiedInSession()) {
-          redirectAfterLogin("/dashboard");
+          await redirectAfterLogin("/dashboard");
+          return;
         }
+
+        endLoginTransition();
       } catch {
-        // ignore transient network errors
+        endLoginTransition();
       } finally {
         syncingRef.current = false;
       }
     })();
-  }, [ready, authenticated, user?.id, getAccessToken, logout, pathname, router]);
+  }, [
+    ready,
+    authenticated,
+    user?.id,
+    getAccessToken,
+    logout,
+    pathname,
+    router,
+    startLoginTransition,
+    endLoginTransition,
+    redirectAfterLogin,
+  ]);
 
   useEffect(() => {
     if (!isPrivyConfigured()) return;
     const onSignOut = () => {
       try {
         sessionStorage.removeItem(POST_LOGIN_REDIRECT_KEY);
+        clearLaunchSession();
       } catch {
         // ignore
       }
+      syncedPrivyIdRef.current = null;
+      endLoginTransition();
       void logout();
     };
     window.addEventListener("hypertron-sign-out", onSignOut);
     return () => window.removeEventListener("hypertron-sign-out", onSignOut);
-  }, [logout]);
+  }, [logout, endLoginTransition]);
 
   return null;
 }

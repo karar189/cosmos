@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { hasAppSession } from "@/lib/app-session";
 import { homeLaunchPath } from "@/lib/launch-auth";
-
-function isProtectedPath(pathname: string): boolean {
-  return pathname.startsWith("/dashboard") || pathname.startsWith("/regintel");
-}
+import { isProtectedAppPath } from "@/lib/protected-routes";
 
 /**
  * Dashboard and RegIntel require Privy or wallet session.
@@ -13,7 +10,7 @@ function isProtectedPath(pathname: string): boolean {
  */
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (!isProtectedPath(pathname)) {
+  if (!isProtectedAppPath(pathname)) {
     return NextResponse.next();
   }
 
