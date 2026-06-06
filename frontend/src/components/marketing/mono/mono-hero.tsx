@@ -459,20 +459,20 @@ function MonoHeroInner() {
             }}
           >
             {/* Title bar */}
-            <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.04] px-4 py-3 backdrop-blur-sm">
-            <div className="flex gap-1.5">
-              <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-              <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
-              <div className="h-3 w-3 rounded-full bg-[#28c840]" />
+            <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.04] px-3 py-2.5 backdrop-blur-sm sm:px-4 sm:py-3">
+              <div className="flex shrink-0 gap-1.5">
+                <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] sm:h-3 sm:w-3" />
+                <div className="h-2.5 w-2.5 rounded-full bg-[#febc2e] sm:h-3 sm:w-3" />
+                <div className="h-2.5 w-2.5 rounded-full bg-[#28c840] sm:h-3 sm:w-3" />
+              </div>
+              <div className="mx-auto flex min-w-0 max-w-[70%] items-center gap-2 rounded-md bg-white/[0.06] px-2.5 py-1 sm:px-3">
+                <span className="truncate font-mono text-[10px] tracking-wide text-white/45 sm:text-[11px]">
+                  app.hypertron.xyz/dashboard
+                </span>
+              </div>
             </div>
-            <div className="mx-auto flex items-center gap-2 rounded-md bg-white/[0.06] px-3 py-1">
-              <span className="font-mono text-[11px] tracking-wide text-white/45">
-                app.hypertron.xyz/dashboard
-              </span>
-            </div>
-          </div>
 
-          <HeroDashboardPreview />
+            <HeroDashboardPreview />
           </div>
         </motion.div>
       </div>
