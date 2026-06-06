@@ -314,19 +314,20 @@ export function WorkspaceHubTopChrome({
   workspaces,
 }: {
   breadcrumbs: HubBreadcrumb[];
-  title: string;
+  title?: string;
   subtitle?: string;
   workspaces: WorkspaceStatsSource[];
 }) {
   const { theme } = useDashboardTheme();
   return (
-    <>
-      <div className="shrink-0 px-8 py-3">
+    <div className="shrink-0">
+      <header className="flex items-center justify-between gap-4 px-5 py-3 lg:px-6">
         <HubBreadcrumbTrail breadcrumbs={breadcrumbs} />
-      </div>
+        <WorkspaceHubHeaderActions workspaces={workspaces} />
+      </header>
 
-      <header className="flex items-start justify-between gap-4 px-8 pb-3 pt-5">
-        <div>
+      {title ? (
+        <div className="px-5 pb-3 pt-0 lg:px-6">
           <h1
             className={cn(
               "text-[17px] font-semibold tracking-tight",
@@ -346,8 +347,7 @@ export function WorkspaceHubTopChrome({
             </p>
           ) : null}
         </div>
-        <WorkspaceHubHeaderActions workspaces={workspaces} />
-      </header>
-    </>
+      ) : null}
+    </div>
   );
 }

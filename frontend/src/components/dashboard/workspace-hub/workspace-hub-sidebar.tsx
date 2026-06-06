@@ -9,14 +9,13 @@ import {
   CreditCard,
   Settings,
   LifeBuoy,
-  Plus,
   Search,
   Check,
 } from "lucide-react";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { WorkspaceHubUserMenu } from "@/components/dashboard/workspace-hub/workspace-hub-user-menu";
+import { CreateWorkspaceButton } from "@/components/dashboard/workspace-hub/use-create-workspace-nav";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
 
 const NAV: {
@@ -35,14 +34,12 @@ const NAV: {
 type WorkspaceHubSidebarProps = {
   userName: string;
   userEmail: string;
-  onCreateWorkspace: () => void;
   onSignOut: () => void | Promise<void>;
 };
 
 export function WorkspaceHubSidebar({
   userName,
   userEmail,
-  onCreateWorkspace,
   onSignOut,
 }: WorkspaceHubSidebarProps) {
   const pathname = usePathname();
@@ -102,6 +99,7 @@ export function WorkspaceHubSidebar({
             <Link
               key={label}
               href={href}
+              prefetch
               className={cn(
                 "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-colors",
                 active ? t.sidebarNavActive : t.sidebarNav
@@ -136,15 +134,9 @@ export function WorkspaceHubSidebar({
               </li>
             ))}
           </ul>
-          <Button
-            type="button"
-            onClick={onCreateWorkspace}
-            variant="purple"
+          <CreateWorkspaceButton
             className="hub-cta mt-4 h-10 w-full rounded-xl bg-blue-600 text-sm font-semibold hover:bg-blue-500"
-          >
-            <Plus className="mr-1.5 h-4 w-4" strokeWidth={2} />
-            Create Workspace
-          </Button>
+          />
         </div>
 
         <WorkspaceHubUserMenu

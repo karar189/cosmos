@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { getCookie } from "@/lib/cookies";
 import { cn } from "@/utils";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -19,7 +19,6 @@ import { POST_SIGN_OUT_PATH, homeLaunchPath } from "@/lib/launch-auth";
 function MainLayoutShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useDashboardTheme();
   const pathname = usePathname();
-  const router = useRouter();
   const { publicKey, disconnect } = useFreighter();
   const { data: session, loading: sessionLoading, isPrivy, privyUser } = useAppSession();
 
@@ -50,7 +49,7 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
     window.dispatchEvent(new Event("hypertron-sign-out"));
     disconnect();
-    router.push(POST_SIGN_OUT_PATH);
+    window.location.assign(POST_SIGN_OUT_PATH);
   };
 
   const defaultOpen = getCookie("sidebar_state") !== "false";

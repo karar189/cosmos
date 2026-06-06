@@ -32,6 +32,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
 
+/** Soft chart palette aligned with Hypertron hub blues, sky gradients, and warm accents */
+const HYPERTRON_CHART = {
+  blue: "#60a5fa",
+  blueFill: "rgba(96, 165, 250, 0.14)",
+  amber: "#fbbf24",
+  red: "#fca5a5",
+  sky: "#7dd3fc",
+} as const;
+
 const TREASURY_SERIES = [
   { date: "May 11", value: 920000 },
   { date: "May 12", value: 980000 },
@@ -51,10 +60,10 @@ const ASSET_BREAKDOWN = [
 ];
 
 const PAYMENT_STATUS = [
-  { name: "Completed", value: 65, color: "#2563eb" },
-  { name: "Pending", value: 18, color: "#f59e0b" },
-  { name: "Failed", value: 5, color: "#ef4444" },
-  { name: "Upcoming", value: 12, color: "#38bdf8" },
+  { name: "Completed", value: 65, color: HYPERTRON_CHART.blue },
+  { name: "Pending", value: 18, color: HYPERTRON_CHART.amber },
+  { name: "Failed", value: 5, color: HYPERTRON_CHART.red },
+  { name: "Upcoming", value: 12, color: HYPERTRON_CHART.sky },
 ];
 
 const EXPENSES = [
@@ -106,7 +115,7 @@ function KpiCard({
   styles: typeof overviewStyles;
 }) {
   const data = spark.map((v, i) => ({ i, v }));
-  const stroke = "#2563eb";
+  const stroke = HYPERTRON_CHART.blue;
 
   return (
     <div className={cn(styles.panel, "flex flex-col gap-3 p-4")}>
@@ -147,8 +156,8 @@ export function WorkspaceOverviewDashboard({
   userInitials: _userInitials,
 }: WorkspaceOverviewDashboardProps) {
   const styles = overviewStyles;
-  const areaFill = "rgba(37, 99, 235, 0.12)";
-  const areaStroke = "#2563eb";
+  const areaFill = HYPERTRON_CHART.blueFill;
+  const areaStroke = HYPERTRON_CHART.blue;
 
   return (
     <div className="flex flex-col gap-6">
@@ -338,7 +347,7 @@ export function WorkspaceOverviewDashboard({
                   axisLine={false}
                   tickLine={false}
                 />
-                <Bar dataKey="value" fill="#2563eb" radius={[0, 4, 4, 0]} barSize={10} />
+                <Bar dataKey="value" fill={HYPERTRON_CHART.blue} radius={[0, 4, 4, 0]} barSize={10} />
               </BarChart>
             </ResponsiveContainer>
           </div>

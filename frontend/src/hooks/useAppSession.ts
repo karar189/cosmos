@@ -36,6 +36,15 @@ export function useAppSession() {
     void refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    const onSignOut = () => {
+      setData(null);
+      setLoading(false);
+    };
+    window.addEventListener("hypertron-sign-out", onSignOut);
+    return () => window.removeEventListener("hypertron-sign-out", onSignOut);
+  }, []);
+
   const isAuthenticated = !!data;
   const isPrivy = data?.auth === "privy";
   const isWalletSession = data?.auth === "wallet";

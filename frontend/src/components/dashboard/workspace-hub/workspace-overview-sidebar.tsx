@@ -48,6 +48,7 @@ function isPathActive(pathname: string, url: string) {
   if (base === url) return true;
   if (url === "/dashboard/overview" && base.startsWith("/dashboard/overview")) return true;
   if (url === "/dashboard/documents" && base.startsWith("/dashboard/documents")) return true;
+  if (url === "/dashboard/document-vault" && base.startsWith("/dashboard/document-vault")) return true;
   return base.startsWith(`${url}/`);
 }
 
@@ -67,6 +68,7 @@ function HubNavLink({ item, pathname }: { item: NavLink; pathname: string }) {
   return (
     <Link
       href={item.url}
+      prefetch
       className={cn(
         "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-colors",
         active ? t.sidebarNavActive : t.sidebarNav
@@ -126,6 +128,7 @@ function HubNavCollapsible({ item, pathname }: { item: NavCollapsible; pathname:
             <Link
               key={`${sub.title}-${sub.url}`}
               href={sub.url}
+              prefetch
               className={cn(
                 "group flex items-center gap-3 rounded-lg py-2 pl-7 pr-3 text-[12px] font-medium transition-colors",
                 active ? t.sidebarNavActive : t.sidebarNav

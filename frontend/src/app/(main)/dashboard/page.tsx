@@ -3,17 +3,17 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { WorkspaceHubSidebar } from "@/components/dashboard/workspace-hub/workspace-hub-sidebar";
+import { WorkspaceHubMain } from "@/components/dashboard/workspace-hub/workspace-hub-main";
 import {
-  WorkspaceHubMain,
   readCreateWorkspaceDraftLogo,
   templatesToWorkspaces,
-} from "@/components/dashboard/workspace-hub/workspace-hub-main";
+  type WorkspaceCardModel,
+} from "@/components/dashboard/workspace-hub/workspace-hub-model";
+import { HubWorkspacesContentSkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
+import { useHubPageMeta } from "@/components/dashboard/workspace-hub/hub-page-meta-context";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useAppSession } from "@/hooks/useAppSession";
 import { loadSavedTemplates, type SavedTemplate } from "@/lib/my-templates-storage";
-import type { WorkspaceCardModel } from "@/components/dashboard/workspace-hub/workspace-hub-main";
-import { POST_SIGN_OUT_PATH } from "@/lib/launch-auth";
 
 async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedTemplate[]> {
   try {
@@ -30,7 +30,7 @@ async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedT
 
 function WorkspaceHubContent() {
   const router = useRouter();
-  const { publicKey, connect, disconnect, isConnecting } = useFreighter();
+  const { publicKey, connect, isConnecting } = useFreighter();
   const { isPrivy, loading: sessionLoading, privyUser } = useAppSession();
 
   const [workspaces, setWorkspaces] = useState<WorkspaceCardModel[]>([]);
@@ -81,20 +81,21 @@ function WorkspaceHubContent() {
     privyUser?.name?.trim() ||
     (publicKey ? "Wallet User" : "there");
 
-  const email =
-    privyUser?.email?.trim() ||
-    (publicKey ? `${publicKey.slice(0, 6)}…${publicKey.slice(-4)}` : "");
+  const firstName = displayName.split(" ")[0] || displayName;
+  const chromeReady = !loading && !sessionLoading;
 
-  const handleSignOut = async () => {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-    window.dispatchEvent(new Event("hypertron-sign-out"));
-    disconnect();
-    router.push(POST_SIGN_OUT_PATH);
-  };
-
-  const handleCreateWorkspace = () => {
-    router.push("/CreateWorkspace");
-  };
+  useHubPageMeta({
+    breadcrumbs: [
+      { label: "Overview", href: "/dashboard/overview" },
+      { label: "Dashboard", current: true },
+    ],
+    ...(chromeReady
+      ? {
+          title: `Welcome back, ${firstName}! 👋`,
+          subtitle: "Select a workspace to continue or create a new one.",
+        }
+      : {}),
+  });
 
   if (!publicKey && !sessionLoading && !isPrivy) {
     return (
@@ -117,33 +118,23 @@ function WorkspaceHubContent() {
     );
   }
 
+  if (loading || sessionLoading) {
+    return <HubWorkspacesContentSkeleton />;
+  }
+
   return (
-    <div className="flex min-h-screen bg-transparent">
-      <WorkspaceHubSidebar
-        userName={displayName}
-        userEmail={email}
-        onCreateWorkspace={handleCreateWorkspace}
-        onSignOut={handleSignOut}
-      />
-      <WorkspaceHubMain
-        userName={displayName}
-        workspaces={workspaces}
-        loading={loading || sessionLoading}
-        onCreateWorkspace={handleCreateWorkspace}
-      />
-    </div>
+    <WorkspaceHubMain
+      userName={displayName}
+      workspaces={workspaces}
+      loading={false}
+      showChrome={false}
+    />
   );
 }
 
 export default function WorkspaceHubPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-transparent">
-          <p className="text-sm text-slate-600">Loading workspaces…</p>
-        </div>
-      }
-    >
+    <Suspense fallback={<HubWorkspacesContentSkeleton />}>
       <WorkspaceHubContent />
     </Suspense>
   );
