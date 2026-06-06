@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { Building2, CheckCircle2, ExternalLink, Loader2, QrCode, Wallet } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   CheckoutBrandPanel,
   CheckoutPayerDetails,
