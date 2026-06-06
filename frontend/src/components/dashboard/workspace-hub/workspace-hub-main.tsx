@@ -1,14 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import plusIllustration from "@/assets/plus.png";
 import templateIllustration from "@/assets/template.png";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import {
-  Plus,
   Users,
   LayoutGrid,
   List,
@@ -45,68 +44,16 @@ import {
 } from "@/components/ui/select";
 import { PaymentBrandAvatar } from "@/components/global/hub-avatar";
 import { activateWorkspace } from "@/lib/activate-workspace";
-import type { SavedTemplate } from "@/lib/my-templates-storage";
+import type { WorkspaceCardModel } from "@/components/dashboard/workspace-hub/workspace-hub-model";
+import { HubWorkspaceCardSkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
+import { CreateWorkspaceButton } from "@/components/dashboard/workspace-hub/use-create-workspace-nav";
 import { cn } from "@/utils";
 
-const WORKSPACE_DRAFT_KEY = "hypertron:create-workspace:draft";
-
-/** Logo uploaded during workspace setup (session draft), until persisted on Business. */
-export function readCreateWorkspaceDraftLogo(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = sessionStorage.getItem(WORKSPACE_DRAFT_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { logoDataUrl?: string };
-    const url = parsed.logoDataUrl?.trim();
-    return url || null;
-  } catch {
-    return null;
-  }
-}
-
-export type WorkspaceCardModel = {
-  id: string;
-  name: string;
-  type: string;
-  members: number;
-  role: "Owner" | "Admin" | "Member";
-  openTasks: number;
-  pendingApprovals: number;
-  complianceAlerts: number;
-  lastAccessed: string;
-  accent: "violet" | "sky" | "amber";
-  template: SavedTemplate;
-  logoUrl?: string | null;
-};
-
-function hashStat(id: string, mod: number, min: number) {
-  const n = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  return (n % mod) + min;
-}
-
-export function templatesToWorkspaces(
-  templates: SavedTemplate[],
-  options?: { logoUrl?: string | null }
-): WorkspaceCardModel[] {
-  const accents: WorkspaceCardModel["accent"][] = ["violet", "sky", "amber"];
-  const roles: WorkspaceCardModel["role"][] = ["Owner", "Admin", "Member"];
-  const sharedLogo = options?.logoUrl?.trim() || null;
-
-  return templates.map((t, i) => ({
-    id: t.id,
-    name: (t.businessName || t.name || "Untitled workspace").trim(),
-    type: t.bundleName || "Web3 Startup",
-    members: hashStat(t.id, 8, 2),
-    role: roles[i % roles.length] ?? "Owner",
-    openTasks: hashStat(t.id, 12, 1),
-    pendingApprovals: hashStat(t.id, 6, 0),
-    complianceAlerts: hashStat(t.id, 4, 0),
-    lastAccessed: t.savedAt,
-    accent: accents[i % accents.length]!,
-    template: t,
-    logoUrl: sharedLogo,
-  }));
-}
+export type { WorkspaceCardModel } from "@/components/dashboard/workspace-hub/workspace-hub-model";
+export {
+  readCreateWorkspaceDraftLogo,
+  templatesToWorkspaces,
+} from "@/components/dashboard/workspace-hub/workspace-hub-model";
 
 const ROLE_STYLES_LIGHT = {
   Owner: "bg-blue-100 text-blue-800 border-blue-200",
@@ -280,13 +227,11 @@ function WorkspaceHubCard({
               t.openCta
             )}
           >
+            Open Workspace
             {opening ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="ml-1.5 h-4 w-4 animate-spin" strokeWidth={2} />
             ) : (
-              <>
-                Open Workspace
-                <ArrowRight className="ml-1.5 h-4 w-4" />
-              </>
+              <ArrowRight className="ml-1.5 h-4 w-4" />
             )}
           </Button>
         </div>
@@ -299,21 +244,29 @@ type WorkspaceHubMainProps = {
   userName: string;
   workspaces: WorkspaceCardModel[];
   loading: boolean;
-  onCreateWorkspace: () => void;
+  /** When false, top chrome is rendered by the shared hub layout. */
+  showChrome?: boolean;
 };
 
 export function WorkspaceHubMain({
   userName,
   workspaces,
   loading,
-  onCreateWorkspace,
+  showChrome = true,
 }: WorkspaceHubMainProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { theme } = useDashboardTheme();
   const t = hubThemeClasses(theme);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState("recent");
   const [openingId, setOpeningId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (pathname?.startsWith("/dashboard/overview")) {
+      setOpeningId(null);
+    }
+  }, [pathname]);
 
   const filtered = useMemo(() => {
     const list = [...workspaces];
@@ -326,25 +279,41 @@ export function WorkspaceHubMain({
 
   const handleOpen = async (workspace: WorkspaceCardModel) => {
     setOpeningId(workspace.id);
-    await activateWorkspace(workspace.template);
-    router.push("/dashboard/overview");
+    try {
+      await activateWorkspace(workspace.template);
+      router.push("/dashboard/overview");
+    } catch {
+      setOpeningId(null);
+    }
   };
 
   const firstName = userName.split(" ")[0] || userName;
 
   return (
-    <div className="flex h-screen flex-1 flex-col overflow-hidden bg-transparent">
-      <WorkspaceHubTopChrome
-        breadcrumbs={[
-          { label: "Overview", href: "/dashboard/overview" },
-          { label: "Dashboard", current: true },
-        ]}
-        title={`Welcome back, ${firstName}! 👋`}
-        subtitle="Select a workspace to continue or create a new one."
-        workspaces={workspaces}
-      />
+    <div
+      className={cn(
+        "flex flex-1 flex-col overflow-hidden bg-transparent",
+        showChrome && "h-screen"
+      )}
+    >
+      {showChrome ? (
+        <WorkspaceHubTopChrome
+          breadcrumbs={[
+            { label: "Overview", href: "/dashboard/overview" },
+            { label: "Dashboard", current: true },
+          ]}
+          title={`Welcome back, ${firstName}! 👋`}
+          subtitle="Select a workspace to continue or create a new one."
+          workspaces={workspaces}
+        />
+      ) : null}
 
-      <div className="flex-1 overflow-y-auto px-8 pb-8 pt-4">
+      <div
+        className={cn(
+          "flex-1 overflow-y-auto",
+          showChrome ? "px-8 pb-8 pt-4" : "pb-2 pt-2"
+        )}
+      >
         <div className="grid gap-5 lg:grid-cols-2">
           <Card className="workspace-hub-action-card--blue relative flex h-full flex-col overflow-hidden rounded-2xl bg-transparent shadow-none">
             <Image
@@ -362,15 +331,9 @@ export function WorkspaceHubMain({
                 </p>
               </div>
               <div className="mt-auto pt-6">
-                <Button
-                  type="button"
-                  onClick={onCreateWorkspace}
-                  variant="purple"
+                <CreateWorkspaceButton
                   className="hub-cta h-auto w-fit rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] px-5 py-3 hover:from-[#2563eb] hover:to-[#3b82f6]"
-                >
-                  <Plus className="mr-1.5 h-4 w-4" />
-                  Create Workspace
-                </Button>
+                />
               </div>
             </CardContent>
           </Card>
@@ -480,8 +443,10 @@ export function WorkspaceHubMain({
         </div>
 
         {loading ? (
-          <div className="mt-8 flex items-center justify-center py-20">
-            <Loader2 className={cn("h-8 w-8 animate-spin", t.dark ? "text-blue-400" : "text-violet-600")} />
+          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <HubWorkspaceCardSkeleton key={i} />
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <Card className={cn("mt-6 border-dashed", t.emptyCard)}>
@@ -491,15 +456,9 @@ export function WorkspaceHubMain({
               <p className={cn("mt-1 max-w-sm text-sm", t.emptyBody)}>
                 Create your first workspace to start managing payments, compliance, and operations.
               </p>
-              <Button
-                type="button"
-                onClick={onCreateWorkspace}
-                variant="purple"
+              <CreateWorkspaceButton
                 className="hub-cta mt-6 rounded-lg bg-blue-600 hover:bg-blue-500"
-              >
-                <Plus className="mr-1.5 h-4 w-4" />
-                Create Workspace
-              </Button>
+              />
             </CardContent>
           </Card>
         ) : (

@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
 import { useFreighter } from "@/hooks/useFreighter";
-import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import {
   WorkspacePageShell,
   workspaceHubBreadcrumbs,
 } from "@/components/dashboard/workspace-hub/workspace-page-shell";
+import { WorkspaceTreasuryBodySkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
 import { WithdrawPage as WithdrawContent } from "@/components/dashboard/withdraw-page";
 import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
 
@@ -75,18 +74,8 @@ export default function WithdrawPage() {
       connectMessage="Connect your wallet to withdraw funds."
     >
       <div className="flex flex-col gap-6">
-        <DashboardPageHeader
-          variant="hub"
-          eyebrow="Treasury"
-          title="Withdraw"
-          description="Transfer settled funds from your vault to any Stellar address."
-        />
-
         {loading ? (
-          <div className="flex items-center gap-2 py-8 text-sm text-neutral-500">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Loading treasury…
-          </div>
+          <WorkspaceTreasuryBodySkeleton />
         ) : businessId ? (
           <WithdrawContent
             businessId={businessId}

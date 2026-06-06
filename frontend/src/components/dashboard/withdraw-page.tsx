@@ -36,6 +36,7 @@ import { cn } from "@/utils";
 import { getExplorerTxUrl } from "@/lib/stellar-explorer";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
+import { WorkspaceTreasuryBodySkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
 import { fallbackBalance, fallbackWithdrawals } from "@/data/fallback";
 
 interface WithdrawPageProps {
@@ -404,11 +405,7 @@ export function WithdrawPage({ businessId, walletAddress, receiveAddress }: With
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className={cn("h-6 w-6 animate-spin", s.t.dark ? "text-white/30" : "text-slate-400")} />
-      </div>
-    );
+    return <WorkspaceTreasuryBodySkeleton />;
   }
 
   return (
@@ -555,13 +552,15 @@ export function WithdrawPage({ businessId, walletAddress, receiveAddress }: With
               {pendingXdr ? (
                 <Button
                   type="button"
+                  variant="ghost"
                   onClick={handleFreighterSign}
                   disabled={signing}
                   className={cn(
-                    "w-full h-11 rounded-xl font-semibold",
+                    "h-11 w-full rounded-xl border-0 font-semibold shadow-none",
+                    "disabled:pointer-events-none disabled:opacity-100",
                     s.t.dark
-                      ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/30"
-                      : "bg-emerald-600 text-white hover:bg-emerald-700"
+                      ? "enabled:bg-emerald-600 enabled:text-white enabled:hover:bg-emerald-700 disabled:bg-white/10 disabled:text-slate-400"
+                      : "enabled:bg-emerald-600 enabled:text-white enabled:hover:bg-emerald-700 disabled:bg-emerald-50 disabled:text-emerald-400"
                   )}
                 >
                   {signing ? (
@@ -579,12 +578,14 @@ export function WithdrawPage({ businessId, walletAddress, receiveAddress }: With
               ) : (
                 <Button
                   type="submit"
+                  variant="ghost"
                   disabled={submitting || !available || available <= 0}
                   className={cn(
-                    "w-full h-11 rounded-xl font-semibold",
+                    "h-11 w-full rounded-xl border-0 font-semibold shadow-none",
+                    "disabled:pointer-events-none disabled:opacity-100",
                     s.t.dark
-                      ? "bg-white text-slate-900 hover:bg-white/90"
-                      : "bg-slate-900 text-white hover:bg-slate-800"
+                      ? "enabled:bg-blue-600 enabled:text-white enabled:hover:bg-blue-700 disabled:bg-white/10 disabled:text-slate-400"
+                      : "enabled:bg-blue-600 enabled:text-white enabled:hover:bg-blue-700 disabled:bg-slate-100 disabled:text-slate-500"
                   )}
                 >
                   {submitting ? (

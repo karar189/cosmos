@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
 import { useFreighter } from "@/hooks/useFreighter";
 import { PaymentsCollectPage } from "@/components/dashboard/payments/payments-collect-page";
 import {
   WorkspacePageShell,
   workspaceHubBreadcrumbs,
 } from "@/components/dashboard/workspace-hub/workspace-page-shell";
+import { WorkspacePaymentsContentSkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
 import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
 
 export default function PaymentLinksPage() {
@@ -69,10 +69,7 @@ export default function PaymentLinksPage() {
       connectMessage="Connect your wallet to manage payment links."
     >
       {loading ? (
-        <div className="flex items-center gap-2 py-8 text-sm text-neutral-500">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Loading payments…
-        </div>
+        <WorkspacePaymentsContentSkeleton />
       ) : businessId ? (
         <PaymentsCollectPage businessId={businessId} />
       ) : (

@@ -9,10 +9,9 @@ import {
   Loader2,
   Sparkles,
 } from "lucide-react";
-import {
-  WorkspaceHubPageShell,
-  hubNavBreadcrumbs,
-} from "@/components/dashboard/workspace-hub/workspace-hub-page-shell";
+import { useHubPageMeta } from "@/components/dashboard/workspace-hub/hub-page-meta-context";
+import { HubBillingContentSkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
+import { hubNavBreadcrumbs } from "@/lib/hub-nav-routes";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import { Badge } from "@/components/ui/badge";
@@ -78,6 +77,12 @@ export default function BillingPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  useHubPageMeta({
+    breadcrumbs: hubNavBreadcrumbs("Billing & Plans"),
+    title: "Billing & Plans",
+    subtitle: "Manage your subscription, payment method, and invoices.",
+  });
+
   useEffect(() => {
     if (publicKey?.trim().length === 56 && publicKey.startsWith("G")) {
       setLoading(true);
@@ -100,6 +105,8 @@ export default function BillingPage() {
         })
         .catch(() => {})
         .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [publicKey]);
 
@@ -140,207 +147,201 @@ export default function BillingPage() {
   const currentPlan = PLAN_OPTIONS.find((p) => p.id === activeTier) ?? PLAN_OPTIONS[1]!;
   const planChanged = selectedTier !== activeTier;
 
+  if (loading) {
+    return <HubBillingContentSkeleton />;
+  }
+
   return (
-    <WorkspaceHubPageShell
-      breadcrumbs={hubNavBreadcrumbs("Billing & Plans")}
-      title="Billing & Plans"
-      subtitle="Manage your subscription, payment method, and invoices."
-      connectMessage="Sign in to view billing."
-    >
-      <div className="flex w-full flex-col gap-8">
-        {/* Active subscription */}
-        <Card className={cn("overflow-hidden rounded-2xl border shadow-none", t.card)}>
-          <div className={cn("flex flex-wrap items-center justify-between gap-4 px-6 py-5", t.cardHeader)}>
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-                <Sparkles className="h-5 w-5" strokeWidth={1.75} />
-              </div>
-              <div>
-                <p className={cn("text-xs font-medium", t.cardMeta)}>Active subscription</p>
-                <p className={cn("text-lg font-semibold leading-tight", t.cardTitle)}>{currentPlan.name}</p>
-                <p className={cn("mt-0.5 max-w-md text-sm", t.cardMeta)}>{currentPlan.description}</p>
-              </div>
+    <div className="flex w-full flex-col gap-8">
+      <Card className={cn("overflow-hidden rounded-2xl border shadow-none", t.card)}>
+        <div className={cn("flex flex-wrap items-center justify-between gap-4 px-6 py-5", t.cardHeader)}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+              <Sparkles className="h-5 w-5" strokeWidth={1.75} />
             </div>
-            <div className="text-right">
-              <p className={cn("text-3xl font-bold tabular-nums tracking-tight", t.cardStat)}>
-                {currentPlan.price}
-                <span className={cn("text-sm font-medium", t.cardMuted)}>{currentPlan.cadence}</span>
-              </p>
-              <p className={cn("mt-1 text-xs", t.cardMuted)}>Renews Jun 1, 2026</p>
+            <div>
+              <p className={cn("text-xs font-medium", t.cardMeta)}>Active subscription</p>
+              <p className={cn("text-lg font-semibold leading-tight", t.cardTitle)}>{currentPlan.name}</p>
+              <p className={cn("mt-0.5 max-w-md text-sm", t.cardMeta)}>{currentPlan.description}</p>
             </div>
           </div>
+          <div className="text-right">
+            <p className={cn("text-3xl font-bold tabular-nums tracking-tight", t.cardStat)}>
+              {currentPlan.price}
+              <span className={cn("text-sm font-medium", t.cardMuted)}>{currentPlan.cadence}</span>
+            </p>
+            <p className={cn("mt-1 text-xs", t.cardMuted)}>Renews Jun 1, 2026</p>
+          </div>
+        </div>
+      </Card>
+
+      <section>
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className={cn("text-base font-semibold", t.pageHeading)}>Choose a plan</h2>
+            <p className={cn("mt-0.5 text-sm", t.pageSubheading)}>
+              Select the tier that fits your workspace needs.
+            </p>
+          </div>
+          <Button
+            onClick={handleUpdatePlan}
+            disabled={loading || saving || !planChanged}
+            className={cn(
+              "h-10 rounded-xl px-5 text-sm font-semibold shadow-none transition-all",
+              saved
+                ? "bg-emerald-600 text-white hover:bg-emerald-600"
+                : "hub-cta bg-blue-600 text-white hover:bg-blue-500"
+            )}
+          >
+            {saved ? (
+              <>
+                <CheckCheck className="mr-1.5 h-4 w-4" /> Saved
+              </>
+            ) : saving ? (
+              <>
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Saving…
+              </>
+            ) : planChanged ? (
+              `Switch to ${selectedTierName}`
+            ) : (
+              "Current plan"
+            )}
+          </Button>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {PLAN_OPTIONS.map((plan) => {
+            const selected = selectedTier === plan.id;
+            const isActive = activeTier === plan.id;
+            return (
+              <button
+                key={plan.id}
+                type="button"
+                onClick={() => handleSelectTier(plan.id)}
+                className={cn(
+                  "group flex flex-col rounded-2xl border p-5 text-left transition-all",
+                  selected
+                    ? t.dark
+                      ? "border-blue-500/50 bg-blue-500/10 ring-1 ring-blue-500/30"
+                      : "border-blue-400/70 bg-gradient-to-b from-blue-50/90 to-white ring-1 ring-blue-200/80"
+                    : cn(t.card, "hover:border-blue-300/60")
+                )}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <p className={cn("text-sm font-semibold", t.cardTitle)}>{plan.name}</p>
+                  {isActive ? (
+                    <Badge
+                      className={cn(
+                        "shrink-0 border-0 px-2 py-0 text-[10px] font-semibold",
+                        t.dark ? "bg-emerald-500/20 text-emerald-300" : "bg-emerald-100 text-emerald-700"
+                      )}
+                    >
+                      Active
+                    </Badge>
+                  ) : null}
+                </div>
+                <p className={cn("mt-2 text-2xl font-bold tabular-nums", t.cardStat)}>
+                  {plan.price}
+                  <span className={cn("text-xs font-medium", t.cardMuted)}>{plan.cadence}</span>
+                </p>
+                <p className={cn("mt-2 text-xs leading-relaxed", t.cardMeta)}>{plan.description}</p>
+                <ul className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: "inherit" }}>
+                  {plan.features.map((feature) => (
+                    <li key={feature} className={cn("flex items-start gap-2 text-xs", t.cardRowValue)}>
+                      <Check
+                        className={cn(
+                          "mt-0.5 h-3.5 w-3.5 shrink-0",
+                          selected ? "text-blue-500" : t.dark ? "text-slate-500" : "text-slate-400"
+                        )}
+                        strokeWidth={2.5}
+                      />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className={cn("rounded-2xl border shadow-none", t.card)}>
+          <CardContent className="p-5">
+            <p className={cn("text-sm font-semibold", t.cardTitle)}>Payment method</p>
+            <p className={cn("mt-0.5 text-xs", t.cardMeta)}>Default card on file</p>
+            <div className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-inherit bg-black/[0.02] p-4 dark:bg-white/[0.03]">
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    "flex h-10 w-14 shrink-0 items-center justify-center rounded-lg border",
+                    t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
+                  )}
+                >
+                  <CreditCard className={cn("h-5 w-5", t.cardMeta)} strokeWidth={1.75} />
+                </div>
+                <div>
+                  <p className={cn("text-sm font-medium", t.cardTitle)}>Visa ···· 4242</p>
+                  <p className={cn("text-xs", t.cardMeta)}>Expires 08 / 2028</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "h-9 rounded-lg px-3 text-xs font-semibold shadow-none",
+                  t.outlineBtn
+                )}
+              >
+                Update
+              </Button>
+            </div>
+          </CardContent>
         </Card>
 
-        {/* Plan picker */}
-        <section>
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className={cn("text-base font-semibold", t.pageHeading)}>Choose a plan</h2>
-              <p className={cn("mt-0.5 text-sm", t.pageSubheading)}>
-                Select the tier that fits your workspace needs.
-              </p>
-            </div>
-            <Button
-              onClick={handleUpdatePlan}
-              disabled={loading || saving || !planChanged}
-              className={cn(
-                "h-10 rounded-xl px-5 text-sm font-semibold shadow-none transition-all",
-                saved
-                  ? "bg-emerald-600 text-white hover:bg-emerald-600"
-                  : "hub-cta bg-blue-600 text-white hover:bg-blue-500"
-              )}
-            >
-              {saved ? (
-                <>
-                  <CheckCheck className="mr-1.5 h-4 w-4" /> Saved
-                </>
-              ) : saving ? (
-                <>
-                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Saving…
-                </>
-              ) : planChanged ? (
-                `Switch to ${selectedTierName}`
-              ) : (
-                "Current plan"
-              )}
-            </Button>
+        <Card className={cn("overflow-hidden rounded-2xl border shadow-none", t.card)}>
+          <div className={cn("border-b px-5 py-4", t.cardDivider)}>
+            <p className={cn("text-sm font-semibold", t.cardTitle)}>Billing history</p>
+            <p className={cn("mt-0.5 text-xs", t.cardMeta)}>Recent invoices</p>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {PLAN_OPTIONS.map((plan) => {
-              const selected = selectedTier === plan.id;
-              const isActive = activeTier === plan.id;
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  onClick={() => handleSelectTier(plan.id)}
-                  className={cn(
-                    "group flex flex-col rounded-2xl border p-5 text-left transition-all",
-                    selected
-                      ? t.dark
-                        ? "border-blue-500/50 bg-blue-500/10 ring-1 ring-blue-500/30"
-                        : "border-blue-400/70 bg-gradient-to-b from-blue-50/90 to-white ring-1 ring-blue-200/80"
-                      : cn(t.card, "hover:border-blue-300/60")
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className={cn("text-sm font-semibold", t.cardTitle)}>{plan.name}</p>
-                    {isActive ? (
-                      <Badge
-                        className={cn(
-                          "shrink-0 border-0 px-2 py-0 text-[10px] font-semibold",
-                          t.dark ? "bg-emerald-500/20 text-emerald-300" : "bg-emerald-100 text-emerald-700"
-                        )}
-                      >
-                        Active
-                      </Badge>
-                    ) : null}
-                  </div>
-                  <p className={cn("mt-2 text-2xl font-bold tabular-nums", t.cardStat)}>
-                    {plan.price}
-                    <span className={cn("text-xs font-medium", t.cardMuted)}>{plan.cadence}</span>
-                  </p>
-                  <p className={cn("mt-2 text-xs leading-relaxed", t.cardMeta)}>{plan.description}</p>
-                  <ul className="mt-4 space-y-2 border-t pt-4" style={{ borderColor: "inherit" }}>
-                    {plan.features.map((feature) => (
-                      <li key={feature} className={cn("flex items-start gap-2 text-xs", t.cardRowValue)}>
-                        <Check
-                          className={cn(
-                            "mt-0.5 h-3.5 w-3.5 shrink-0",
-                            selected ? "text-blue-500" : t.dark ? "text-slate-500" : "text-slate-400"
-                          )}
-                          strokeWidth={2.5}
-                        />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Payment + history */}
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card className={cn("rounded-2xl border shadow-none", t.card)}>
-            <CardContent className="p-5">
-              <p className={cn("text-sm font-semibold", t.cardTitle)}>Payment method</p>
-              <p className={cn("mt-0.5 text-xs", t.cardMeta)}>Default card on file</p>
-              <div className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-inherit bg-black/[0.02] p-4 dark:bg-white/[0.03]">
-                <div className="flex items-center gap-3">
-                  <div
+          <div className={cn("divide-y", t.cardDivider)}>
+            {INVOICES.map((invoice) => (
+              <div
+                key={invoice.id}
+                className="flex items-center justify-between gap-3 px-5 py-3.5"
+              >
+                <div className="min-w-0">
+                  <p className={cn("truncate text-sm font-medium", t.cardTitle)}>{invoice.id}</p>
+                  <p className={cn("text-xs", t.cardMeta)}>{invoice.date}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-3">
+                  <Badge
+                    variant="outline"
                     className={cn(
-                      "flex h-10 w-14 shrink-0 items-center justify-center rounded-lg border",
-                      t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
+                      "rounded-full border-0 px-2 py-0 text-[10px] font-semibold",
+                      t.dark ? "bg-emerald-500/15 text-emerald-300" : "bg-emerald-50 text-emerald-700"
                     )}
                   >
-                    <CreditCard className={cn("h-5 w-5", t.cardMeta)} strokeWidth={1.75} />
-                  </div>
-                  <div>
-                    <p className={cn("text-sm font-medium", t.cardTitle)}>Visa ···· 4242</p>
-                    <p className={cn("text-xs", t.cardMeta)}>Expires 08 / 2028</p>
-                  </div>
+                    {invoice.status}
+                  </Badge>
+                  <span className={cn("text-sm font-semibold tabular-nums", t.cardStat)}>
+                    {invoice.amount}
+                  </span>
+                  <button
+                    type="button"
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+                      t.menuBtn
+                    )}
+                    aria-label={`Download ${invoice.id}`}
+                  >
+                    <Download className="h-4 w-4" />
+                  </button>
                 </div>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "h-9 rounded-lg px-3 text-xs font-semibold shadow-none",
-                    t.outlineBtn
-                  )}
-                >
-                  Update
-                </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className={cn("overflow-hidden rounded-2xl border shadow-none", t.card)}>
-            <div className={cn("border-b px-5 py-4", t.cardDivider)}>
-              <p className={cn("text-sm font-semibold", t.cardTitle)}>Billing history</p>
-              <p className={cn("mt-0.5 text-xs", t.cardMeta)}>Recent invoices</p>
-            </div>
-            <div className={cn("divide-y", t.cardDivider)}>
-              {INVOICES.map((invoice) => (
-                <div
-                  key={invoice.id}
-                  className="flex items-center justify-between gap-3 px-5 py-3.5"
-                >
-                  <div className="min-w-0">
-                    <p className={cn("truncate text-sm font-medium", t.cardTitle)}>{invoice.id}</p>
-                    <p className={cn("text-xs", t.cardMeta)}>{invoice.date}</p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "rounded-full border-0 px-2 py-0 text-[10px] font-semibold",
-                        t.dark ? "bg-emerald-500/15 text-emerald-300" : "bg-emerald-50 text-emerald-700"
-                      )}
-                    >
-                      {invoice.status}
-                    </Badge>
-                    <span className={cn("text-sm font-semibold tabular-nums", t.cardStat)}>
-                      {invoice.amount}
-                    </span>
-                    <button
-                      type="button"
-                      className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
-                        t.menuBtn
-                      )}
-                      aria-label={`Download ${invoice.id}`}
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
+            ))}
+          </div>
+        </Card>
       </div>
-    </WorkspaceHubPageShell>
+    </div>
   );
 }
