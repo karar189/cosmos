@@ -356,7 +356,7 @@ export function WorkspaceHubMain({
                       t.actionBadge
                     )}
                   >
-                    New
+                    Coming soon
                   </Badge>
                 </div>
                 <p className={cn("mt-1.5 text-sm leading-relaxed", t.actionBody)}>
@@ -378,17 +378,15 @@ export function WorkspaceHubMain({
               </div>
               <div className="relative z-10 mt-auto pt-6">
                 <Button
+                  type="button"
                   variant="ghost"
-                  asChild
+                  disabled
                   className={cn(
-                    "h-auto w-fit rounded-lg border px-5 py-3 shadow-none transition-colors active:scale-[0.99]",
+                    "h-auto w-fit cursor-not-allowed rounded-lg border px-5 py-3 opacity-60 shadow-none",
                     t.templateCta
                   )}
                 >
-                  <Link href="/dashboard/templates">
-                    Explore Templates
-                    <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </Link>
+                  Coming soon
                 </Button>
               </div>
             </CardContent>

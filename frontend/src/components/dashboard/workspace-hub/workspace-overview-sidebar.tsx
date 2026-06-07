@@ -63,8 +63,34 @@ function NavItemBadge({ children }: { children: string }) {
 function HubNavLink({ item, pathname }: { item: NavLink; pathname: string }) {
   const { theme } = useDashboardTheme();
   const t = hubThemeClasses(theme);
-  const active = isPathActive(pathname, item.url);
+  const active = !item.disabled && isPathActive(pathname, item.url);
   const Icon = item.icon;
+
+  const content = (
+    <>
+      {Icon ? (
+        <Icon className={cn("h-[18px] w-[18px] shrink-0", t.sidebarNavIcon(active))} strokeWidth={1.75} />
+      ) : null}
+      <span className="flex-1 truncate">{item.title}</span>
+      {item.badge ? <NavItemBadge>{item.badge}</NavItemBadge> : null}
+    </>
+  );
+
+  if (item.disabled) {
+    return (
+      <span
+        aria-disabled="true"
+        title="Coming soon"
+        className={cn(
+          "group flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium opacity-45",
+          t.dark ? "text-slate-500" : "text-neutral-400"
+        )}
+      >
+        {content}
+      </span>
+    );
+  }
+
   return (
     <Link
       href={item.url}
@@ -74,11 +100,7 @@ function HubNavLink({ item, pathname }: { item: NavLink; pathname: string }) {
         active ? t.sidebarNavActive : t.sidebarNav
       )}
     >
-      {Icon ? (
-        <Icon className={cn("h-[18px] w-[18px] shrink-0", t.sidebarNavIcon(active))} strokeWidth={1.75} />
-      ) : null}
-      <span className="flex-1 truncate">{item.title}</span>
-      {item.badge ? <NavItemBadge>{item.badge}</NavItemBadge> : null}
+      {content}
     </Link>
   );
 }

@@ -14,9 +14,6 @@ import {
   Wallet,
   Scale,
   AlertTriangle,
-  Send,
-  UserPlus,
-  Sparkles,
 } from "lucide-react";
 import type { NavGroup, NavLink, SidebarData } from "@/components/dashboard/layout/types";
 import type { WorkspaceTierId } from "@/lib/workspace-tier-context";
@@ -85,10 +82,22 @@ export function buildWorkspaceNavGroup(): NavGroup {
       { title: "Overview", url: "/dashboard/overview", icon: LayoutDashboard },
       { title: "Payments", url: "/dashboard/payment-links", icon: CreditCard },
       { title: "Treasury", url: "/dashboard/withdraw", icon: Wallet },
-      { title: "Compliance", url: "/dashboard/compliance-agent", icon: ShieldCheck, badge: "5" },
-      { title: "Regulations", url: "/dashboard/rns", icon: Scale, badge: "3" },
-      { title: "Risk Reports", url: "/dashboard/compliance-analysis", icon: AlertTriangle, badge: "4" },
-      { title: "Document Vault", url: "/dashboard/document-vault", icon: FolderArchive },
+      {
+        title: "Compliance",
+        url: "/dashboard/compliance-agent",
+        icon: ShieldCheck,
+        badge: "5",
+        disabled: true,
+      },
+      { title: "Regulations", url: "/dashboard/rns", icon: Scale, badge: "3", disabled: true },
+      {
+        title: "Risk Reports",
+        url: "/dashboard/compliance-analysis",
+        icon: AlertTriangle,
+        badge: "4",
+        disabled: true,
+      },
+      { title: "Document Vault", url: "/dashboard/document-vault", icon: FolderArchive, disabled: true },
       { title: "Settings", url: "/dashboard/settings", icon: Settings },
     ],
   };
@@ -97,12 +106,7 @@ export function buildWorkspaceNavGroup(): NavGroup {
 export function buildWorkspaceQuickActionsGroup(): NavGroup {
   return {
     title: "Quick Actions",
-    items: [
-      { title: "Send Payment", url: "/dashboard/payment-links", icon: Send },
-      { title: "Create Workflow", url: "/dashboard/workspace", icon: Sparkles },
-      { title: "Onboard Contributor", url: "/dashboard/employee-management", icon: UserPlus },
-      { title: "Invite Team", url: "/dashboard/settings", icon: Users },
-    ],
+    items: [{ title: "Invite Team", url: "/dashboard/settings", icon: Users, disabled: true }],
   };
 }
 

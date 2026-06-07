@@ -29,7 +29,14 @@ export async function GET(req: NextRequest) {
 
   const user = await db.appUser.findUnique({
     where: { id: session.appUserId },
-    select: { id: true, privyId: true, email: true, name: true },
+    select: {
+      id: true,
+      privyId: true,
+      email: true,
+      name: true,
+      stellarAddress: true,
+      privyWalletId: true,
+    },
   });
 
   if (!user) {
@@ -44,5 +51,7 @@ export async function GET(req: NextRequest) {
       email: user.email,
       name: user.name,
     },
+    stellarAddress: user.stellarAddress,
+    privyWalletId: user.privyWalletId,
   });
 }

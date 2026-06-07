@@ -10,6 +10,7 @@ import { PaymentsSubscriptionsTab } from "@/components/dashboard/payments/paymen
 import {
   PaymentTabsNav,
   PaymentsSidebar,
+  isPaymentTabEnabled,
   type PaymentTabId,
   PAYMENT_TABS,
 } from "@/components/dashboard/payments/payments-shared";
@@ -17,7 +18,10 @@ import {
 const VALID_TABS = new Set<string>(PAYMENT_TABS.map((t) => t.id));
 
 function parseTab(value: string | null): PaymentTabId {
-  if (value && VALID_TABS.has(value)) return value as PaymentTabId;
+  if (value && VALID_TABS.has(value)) {
+    const tab = value as PaymentTabId;
+    if (isPaymentTabEnabled(tab)) return tab;
+  }
   return "collect";
 }
 
@@ -36,8 +40,20 @@ export function PaymentsCollectPage({ businessId }: PaymentsCollectPageProps) {
     setActiveTab(tabFromUrl);
   }, [tabFromUrl]);
 
+  useEffect(() => {
+    const raw = searchParams.get("tab");
+    if (!raw || isPaymentTabEnabled(raw as PaymentTabId)) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("tab");
+    const qs = params.toString();
+    router.replace(qs ? `/dashboard/payment-links?${qs}` : "/dashboard/payment-links", {
+      scroll: false,
+    });
+  }, [router, searchParams]);
+
   const handleTabChange = useCallback(
     (tab: PaymentTabId) => {
+      if (!isPaymentTabEnabled(tab)) return;
       setActiveTab(tab);
       const params = new URLSearchParams(searchParams.toString());
       if (tab === "collect") {

@@ -10,6 +10,7 @@ import {
   Moon,
   CreditCard,
   Loader2,
+  Wallet,
 } from "lucide-react";
 import { useHubPageMeta } from "@/components/dashboard/workspace-hub/hub-page-meta-context";
 import { HubSettingsContentSkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
@@ -21,6 +22,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFreighter } from "@/hooks/useFreighter";
+import { useAppSession } from "@/hooks/useAppSession";
+import { AccountWalletSettings } from "@/components/dashboard/account-wallet-settings";
 import { cn } from "@/utils";
 import {
   getOnboardingData,
@@ -29,15 +32,17 @@ import {
 } from "@/components/onboarding/onboarding-modal";
 import type { DashboardTheme } from "@/lib/dashboard-theme";
 
-type AccountSection = "profile" | "appearance";
+type AccountSection = "profile" | "wallet" | "appearance";
 
 const navItems: { id: AccountSection; label: string; icon: React.ElementType }[] = [
   { id: "profile", label: "Profile", icon: User },
+  { id: "wallet", label: "Wallet", icon: Wallet },
   { id: "appearance", label: "Appearance", icon: Palette },
 ];
 
 export default function AccountSettingsPage() {
   const { publicKey } = useFreighter();
+  const { isPrivy } = useAppSession();
   const { theme, setTheme } = useDashboardTheme();
   const t = hubThemeClasses(theme);
   const [section, setSection] = useState<AccountSection>("profile");
@@ -54,7 +59,7 @@ export default function AccountSettingsPage() {
   });
 
   useEffect(() => {
-    if (publicKey?.trim().length === 56 && publicKey.startsWith("G")) {
+    if (isPrivy || (publicKey?.trim().length === 56 && publicKey.startsWith("G"))) {
       setLoading(true);
       fetch("/api/business/profile", { credentials: "same-origin" })
         .then((res) => (res.ok ? res.json() : null))
@@ -74,7 +79,7 @@ export default function AccountSettingsPage() {
       setUsername(stored.name ?? "");
       setEmail(stored.email ?? "");
     }
-  }, [publicKey]);
+  }, [publicKey, isPrivy]);
 
   const handleSaveProfile = async () => {
     setSaving(true);
@@ -86,7 +91,7 @@ export default function AccountSettingsPage() {
     };
 
     try {
-      if (publicKey?.trim().length === 56 && publicKey.startsWith("G")) {
+      if (isPrivy || (publicKey?.trim().length === 56 && publicKey.startsWith("G"))) {
         const res = await fetch("/api/business/profile", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -211,6 +216,8 @@ export default function AccountSettingsPage() {
             </CardContent>
           </Card>
         ) : null}
+
+        {section === "wallet" ? <AccountWalletSettings theme={theme} /> : null}
 
         {section === "appearance" ? (
           <Card className={cn("rounded-2xl border shadow-none", t.card)}>

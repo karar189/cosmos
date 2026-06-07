@@ -96,7 +96,7 @@ const SignInForm = () => {
     <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5">
       <h2 className="text-2xl font-semibold">Sign in to Hypertron</h2>
       <p className="text-muted-foreground text-sm">
-        Use your work email or Google. You can link a Stellar wallet later for on-chain actions.
+        Use your work email or Google. A Stellar wallet is created automatically for your account.
       </p>
       {reason === "config" && (
         <p className="text-sm text-amber-600 dark:text-amber-400">

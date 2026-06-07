@@ -72,6 +72,7 @@ export function PrivyAuthSync() {
         }
 
         syncedPrivyIdRef.current = user.id;
+        window.dispatchEvent(new Event("hypertron-session-synced"));
 
         const pending = consumePostLoginRedirect();
         if (pending) {

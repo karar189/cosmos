@@ -23,9 +23,10 @@ const NAV: {
   href: string;
   icon: typeof LayoutGrid;
   badge?: number;
+  disabled?: boolean;
 }[] = [
   { label: "Workspaces", href: "/dashboard", icon: LayoutGrid },
-  { label: "Templates", href: "/dashboard/templates", icon: FileText },
+  { label: "Templates", href: "/dashboard/templates", icon: FileText, disabled: true },
   { label: "Billing & Plans", href: "/dashboard/billing", icon: CreditCard },
   { label: "Settings", href: "/dashboard/account", icon: Settings },
   { label: "Support", href: "/dashboard/support", icon: LifeBuoy },
@@ -92,19 +93,13 @@ export function WorkspaceHubSidebar({
 
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3">
-        {NAV.map(({ label, href, icon: Icon, badge }) => {
+        {NAV.map(({ label, href, icon: Icon, badge, disabled }) => {
           const active =
-            href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
-          return (
-            <Link
-              key={label}
-              href={href}
-              prefetch
-              className={cn(
-                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-colors",
-                active ? t.sidebarNavActive : t.sidebarNav
-              )}
-            >
+            !disabled &&
+            (href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href));
+
+          const itemContent = (
+            <>
               <Icon
                 className={cn("h-[18px] w-[18px] shrink-0", t.sidebarNavIcon(active))}
                 strokeWidth={1.75}
@@ -115,6 +110,36 @@ export function WorkspaceHubSidebar({
                   {badge}
                 </span>
               ) : null}
+            </>
+          );
+
+          if (disabled) {
+            return (
+              <span
+                key={label}
+                aria-disabled="true"
+                title="Coming soon"
+                className={cn(
+                  "group flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium opacity-45",
+                  t.dark ? "text-slate-500" : "text-neutral-400"
+                )}
+              >
+                {itemContent}
+              </span>
+            );
+          }
+
+          return (
+            <Link
+              key={label}
+              href={href}
+              prefetch
+              className={cn(
+                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-colors",
+                active ? t.sidebarNavActive : t.sidebarNav
+              )}
+            >
+              {itemContent}
             </Link>
           );
         })}

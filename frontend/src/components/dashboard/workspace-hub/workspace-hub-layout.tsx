@@ -13,6 +13,7 @@ import {
   templatesToWorkspaces,
   type WorkspaceCardModel,
 } from "@/components/dashboard/workspace-hub/workspace-hub-model";
+import { useLoginTransition } from "@/components/auth/login-transition-provider";
 import { useFreighter } from "@/hooks/useFreighter";
 import { useAppSession } from "@/hooks/useAppSession";
 import { CreateWorkspaceNavProvider } from "@/components/dashboard/workspace-hub/use-create-workspace-nav";
@@ -36,7 +37,8 @@ async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedT
 function WorkspaceHubLayoutInner({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { publicKey, disconnect } = useFreighter();
-  const { isPrivy, loading: sessionLoading, isAuthenticated, privyUser } = useAppSession();
+  const { isPrivy, privyUser } = useAppSession();
+  const { startLoginTransition } = useLoginTransition();
   const { meta: pageMeta } = useHubPageMetaContext() ?? { meta: null };
 
   const [workspaces, setWorkspaces] = useState<WorkspaceCardModel[]>([]);
@@ -62,10 +64,9 @@ function WorkspaceHubLayoutInner({ children }: { children: ReactNode }) {
   }, [publicKey]);
 
   useEffect(() => {
-    if (sessionLoading) return;
     if (!publicKey && !isPrivy) return;
     void loadWorkspaces();
-  }, [sessionLoading, publicKey, isPrivy, loadWorkspaces]);
+  }, [publicKey, isPrivy, loadWorkspaces]);
 
   const displayName =
     profileName.trim() ||
@@ -76,18 +77,18 @@ function WorkspaceHubLayoutInner({ children }: { children: ReactNode }) {
     privyUser?.email?.trim() ||
     (publicKey ? `${publicKey.slice(0, 6)}…${publicKey.slice(-4)}` : "");
 
-  const handleSignOut = async () => {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-    window.dispatchEvent(new Event("hypertron-sign-out"));
-    disconnect();
-    window.location.assign(POST_SIGN_OUT_PATH);
+  const handleSignOut = () => {
+    startLoginTransition("Signing out…");
+    void fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" })
+      .catch(() => {})
+      .finally(() => {
+        window.dispatchEvent(new Event("hypertron-sign-out"));
+        disconnect();
+        window.location.assign(POST_SIGN_OUT_PATH);
+      });
   };
 
   const chromeMeta = pageMeta ?? getDefaultHubPageMeta(pathname);
-
-  if (sessionLoading || !isAuthenticated) {
-    return null;
-  }
 
   return (
     <div className="flex min-h-screen bg-transparent">

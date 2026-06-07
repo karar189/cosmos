@@ -23,6 +23,7 @@ function OverviewContent() {
   const { isPrivy, loading: sessionLoading, privyUser } = useAppSession();
   const [workspaceName, setWorkspaceName] = useState("Workspace");
   const [profileName, setProfileName] = useState("");
+  const [businessId, setBusinessId] = useState<string | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
   const syncNames = useCallback(() => {
@@ -46,6 +47,11 @@ function OverviewContent() {
       .then((r) => (r.ok ? r.json() : null))
       .then((profile) => {
         if (profile?.name) setProfileName(String(profile.name));
+        if (typeof profile?.businessId === "string" && profile.businessId.trim()) {
+          setBusinessId(profile.businessId.trim());
+        } else {
+          setBusinessId(null);
+        }
         const tpl = profile?.activeTemplate;
         if (tpl?.businessName?.trim()) setWorkspaceName(String(tpl.businessName).trim());
         else if (tpl?.name?.trim()) setWorkspaceName(String(tpl.name).trim());
@@ -81,6 +87,7 @@ function OverviewContent() {
 
   return (
     <WorkspaceOverviewDashboard
+      businessId={businessId}
       workspaceName={workspaceName}
       userName={displayName}
       userInitials={initialsFromName(displayName)}

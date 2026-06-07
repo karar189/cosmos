@@ -17,6 +17,10 @@ import {
   submitSignedTransaction,
   type StellarNetwork,
 } from "@/lib/stellar-payment";
+import {
+  notifyPaymentReceived,
+  pollPaymentLinkStatus,
+} from "@/lib/poll-payment-link-status";
 
 function stellarNetworkLabel(network: StellarNetwork): string {
   return network === "public" ? "Public Mainnet" : "Testnet";
@@ -124,6 +128,34 @@ export default function PayPage() {
   >("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [payError, setPayError] = useState<string | null>(null);
+  const [confirmationStatus, setConfirmationStatus] = useState<
+    "idle" | "confirming" | "confirmed" | "timeout"
+  >("idle");
+
+  useEffect(() => {
+    if (payStatus !== "success" || !linkId || linkId.startsWith("pl_")) return;
+
+    let cancelled = false;
+    setConfirmationStatus("confirming");
+
+    pollPaymentLinkStatus(linkId, { maxAttempts: 15, intervalMs: 2000 })
+      .then((result) => {
+        if (cancelled) return;
+        if (result.status === "paid") {
+          setConfirmationStatus("confirmed");
+          notifyPaymentReceived(linkId);
+          return;
+        }
+        setConfirmationStatus("timeout");
+      })
+      .catch(() => {
+        if (!cancelled) setConfirmationStatus("timeout");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [payStatus, linkId]);
 
   const canPay =
     kycComplete &&
@@ -334,6 +366,7 @@ export default function PayPage() {
             payError={payError}
             txHash={txHash}
             explorerUrl={explorerUrl}
+            confirmationStatus={confirmationStatus}
             networkLabel={`Recommended network · ${networkLabel}`}
           />
         ) : null}

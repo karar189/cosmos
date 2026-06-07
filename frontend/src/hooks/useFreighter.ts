@@ -1,16 +1,20 @@
 /**
- * useFreighter – Connect to Freighter wallet (Stellar browser extension)
- * When user clicks "Connect Wallet", prompts Freighter to connect and returns address.
- * @see https://developers.stellar.org/docs/build/guides/freighter/integrate-freighter-react
+ * useFreighter – Stellar wallet for the active session.
+ * - Wallet sign-in: Freighter browser extension + localStorage cache.
+ * - Privy sign-in: embedded Stellar wallet via Privy (no Freighter state).
  */
 
 import { useState, useCallback, useEffect } from "react";
 import { getAddress, isConnected, requestAccess } from "@stellar/freighter-api";
+import { useAppSession } from "@/hooks/useAppSession";
+import { usePrivyStellarWallet } from "@/hooks/usePrivyStellarWallet";
+import {
+  FREIGHTER_DISCONNECTED_STORAGE_KEY,
+  FREIGHTER_PUBLIC_KEY_STORAGE_KEY,
+  FREIGHTER_STATE_EVENT,
+} from "@/lib/freighter-storage";
 
 const FREIGHTER_INSTALL_URL = "https://www.freighter.app/";
-const FREIGHTER_PUBLIC_KEY_STORAGE_KEY = "freighter_public_key";
-const FREIGHTER_DISCONNECTED_STORAGE_KEY = "freighter_disconnected";
-const FREIGHTER_STATE_EVENT = "freighter-state-changed";
 
 export interface UseFreighterResult {
   /** Current Stellar address when connected */
@@ -25,6 +29,8 @@ export interface UseFreighterResult {
   isAvailable: boolean;
   /** Truncated address for display, e.g. "GABC...XYZ" */
   truncatedAddress: string | null;
+  /** True when the address comes from a Privy embedded wallet (not Freighter). */
+  isPrivyWallet: boolean;
 }
 
 function truncateAddress(addr: string, start = 4, end = 4): string {
@@ -32,13 +38,13 @@ function truncateAddress(addr: string, start = 4, end = 4): string {
   return `${addr.slice(0, start)}...${addr.slice(-end)}`;
 }
 
-export function useFreighter(): UseFreighterResult {
+function useFreighterExtension(enabled: boolean): UseFreighterResult {
   const [publicKey, setPublicKey] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isAvailable, setIsAvailable] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (!enabled || typeof window === "undefined") return;
 
     const setStoredPublicKey = (value: string | null) => {
       if (value) {
@@ -70,7 +76,6 @@ export function useFreighter(): UseFreighterResult {
       try {
         const res = await isConnected();
         setIsAvailable(res?.isConnected ?? false);
-        // Respect explicit in-app disconnect: don't auto-reconnect until user clicks Connect.
         if (res?.isConnected && !disconnectedByUser) {
           const addrRes = await getAddress();
           if (addrRes?.address && !addrRes?.error) {
@@ -82,14 +87,14 @@ export function useFreighter(): UseFreighterResult {
         setIsAvailable(false);
       }
     };
-    check();
+    void check();
     return () => {
       window.removeEventListener(FREIGHTER_STATE_EVENT, onFreighterStateChanged as EventListener);
     };
-  }, []);
+  }, [enabled]);
 
   const connect = useCallback(async (): Promise<string | null> => {
-    if (typeof window === "undefined") return null;
+    if (!enabled || typeof window === "undefined") return null;
     setIsConnecting(true);
     try {
       const res = await requestAccess();
@@ -124,17 +129,16 @@ export function useFreighter(): UseFreighterResult {
     } finally {
       setIsConnecting(false);
     }
-  }, []);
+  }, [enabled]);
 
   const disconnect = useCallback(() => {
-    if (typeof window !== "undefined") {
-      void fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => {});
-      localStorage.removeItem(FREIGHTER_PUBLIC_KEY_STORAGE_KEY);
-      localStorage.setItem(FREIGHTER_DISCONNECTED_STORAGE_KEY, "true");
-      window.dispatchEvent(new CustomEvent(FREIGHTER_STATE_EVENT, { detail: { publicKey: null } }));
-    }
+    if (!enabled || typeof window === "undefined") return;
+    void fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => {});
+    localStorage.removeItem(FREIGHTER_PUBLIC_KEY_STORAGE_KEY);
+    localStorage.setItem(FREIGHTER_DISCONNECTED_STORAGE_KEY, "true");
+    window.dispatchEvent(new CustomEvent(FREIGHTER_STATE_EVENT, { detail: { publicKey: null } }));
     setPublicKey(null);
-  }, []);
+  }, [enabled]);
 
   const truncatedAddress = publicKey ? truncateAddress(publicKey) : null;
 
@@ -145,5 +149,41 @@ export function useFreighter(): UseFreighterResult {
     isConnecting,
     isAvailable,
     truncatedAddress,
+    isPrivyWallet: false,
   };
+}
+
+const idleWalletState: UseFreighterResult = {
+  publicKey: null,
+  connect: async () => null,
+  disconnect: () => {},
+  isConnecting: false,
+  isAvailable: false,
+  truncatedAddress: null,
+  isPrivyWallet: false,
+};
+
+export function useFreighter(): UseFreighterResult {
+  const { isPrivy, loading: sessionLoading } = useAppSession();
+  const privyWallet = usePrivyStellarWallet({ enabled: isPrivy });
+  const freighter = useFreighterExtension(!isPrivy && !sessionLoading);
+
+  if (sessionLoading) {
+    return idleWalletState;
+  }
+
+  if (isPrivy) {
+    const address = privyWallet.address;
+    return {
+      publicKey: address,
+      connect: privyWallet.createWallet,
+      disconnect: () => {},
+      isConnecting: privyWallet.isCreating,
+      isAvailable: true,
+      truncatedAddress: address ? truncateAddress(address) : null,
+      isPrivyWallet: true,
+    };
+  }
+
+  return freighter;
 }

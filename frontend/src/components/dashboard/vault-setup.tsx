@@ -15,6 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
+import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
+import { cn } from "@/utils";
 
 interface VaultSetupProps {
   businessId: string;
@@ -40,15 +43,41 @@ interface VaultInfo {
 }
 
 export function VaultSetup({ businessId, userWalletAddress, onVaultCreated }: VaultSetupProps) {
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
+
   const [vaultInfo, setVaultInfo] = useState<VaultInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const [selectedType, setSelectedType] = useState<VaultType>("custodial");
+  const [selectedType, setSelectedType] = useState<VaultType>("hybrid");
   const [externalAddress, setExternalAddress] = useState("");
   const [copied, setCopied] = useState(false);
+
+  const panelCls = cn("w-full overflow-hidden rounded-2xl border", t.card);
+  const optionCls = (active: boolean) =>
+    cn(
+      "relative flex h-full cursor-pointer flex-col rounded-xl border p-5 transition-all",
+      active
+        ? t.dark
+          ? "border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_0_1px_rgba(34,211,238,0.15)]"
+          : "border-blue-400 bg-blue-50/80 shadow-[0_0_0_1px_rgba(59,130,246,0.12)]"
+        : t.dark
+          ? "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+          : "border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-white"
+    );
+  const codeCls = cn(
+    "flex-1 truncate rounded-lg border px-3 py-2 font-mono text-xs",
+    t.dark ? "border-white/10 bg-white/5 text-slate-200" : "border-slate-200 bg-white text-slate-700"
+  );
+  const inputCls = cn(
+    "mt-1.5 h-9 w-full rounded-lg border px-3 font-mono text-xs focus:outline-none",
+    t.dark
+      ? "border-white/10 bg-white/5 text-white placeholder:text-white/30 focus:border-white/25"
+      : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-blue-400"
+  );
 
   const fetchVaultInfo = useCallback(async () => {
     if (!businessId) return;
@@ -115,7 +144,7 @@ export function VaultSetup({ businessId, userWalletAddress, onVaultCreated }: Va
       setSuccess(data.message || "Vault created successfully");
       await fetchVaultInfo();
       onVaultCreated?.();
-    } catch (e) {
+    } catch {
       setError("Failed to create vault");
     } finally {
       setCreating(false);
@@ -133,229 +162,327 @@ export function VaultSetup({ businessId, userWalletAddress, onVaultCreated }: Va
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-white/30" />
+        <Loader2 className={cn("h-6 w-6 animate-spin", t.cardMuted)} />
       </div>
     );
   }
 
   if (vaultInfo?.hasVault) {
     return (
-      <div className="flex flex-col gap-5 max-w-2xl">
-        <div className="rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
-              <Vault className="h-5 w-5 text-emerald-400" />
+      <div className={panelCls}>
+        <div
+          className={cn(
+            "border-b px-6 py-5 lg:px-8",
+            t.dark
+              ? "border-white/10 bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-slate-900/40"
+              : "border-slate-100 bg-gradient-to-r from-emerald-50/80 via-white to-sky-50/50"
+          )}
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div
+                className={cn(
+                  "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border",
+                  t.dark ? "border-emerald-500/20 bg-emerald-500/10" : "border-emerald-200 bg-emerald-50"
+                )}
+              >
+                <Vault className="h-5 w-5 text-emerald-500" />
+              </div>
+              <div>
+                <p className={cn("text-base font-semibold", t.pageHeading)}>
+                  {vaultInfo.vaultName || "Treasury Vault"}
+                </p>
+                <p className={cn("mt-0.5 text-sm capitalize", t.pageSubheading)}>
+                  {vaultInfo.vaultType} mode
+                  {vaultInfo.vaultType === "hybrid" && " · Requires your signature for withdrawals"}
+                  {vaultInfo.vaultType === "external" && " · Your own wallet"}
+                </p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white">{vaultInfo.vaultName || "Treasury Vault"}</p>
-              <p className="text-xs text-white/40 mt-0.5 capitalize">
-                {vaultInfo.vaultType} mode
-                {vaultInfo.vaultType === "hybrid" && " · Requires your signature for withdrawals"}
-                {vaultInfo.vaultType === "external" && " · Your own wallet"}
-              </p>
-            </div>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/12 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 text-[11px] font-medium">
-              <CheckCircle2 className="h-3 w-3" /> Active
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium",
+                t.dark
+                  ? "border-emerald-500/20 bg-emerald-500/12 text-emerald-400"
+                  : "border-emerald-200 bg-emerald-50 text-emerald-700"
+              )}
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" /> Active
             </span>
           </div>
+        </div>
 
-          <div className="mt-5 space-y-4">
-            <div>
-              <p className="text-xs text-white/40 mb-1.5">Vault Address</p>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-xs text-white/80 truncate">
-                  {vaultInfo.vaultAddress}
-                </code>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={copyAddress}
-                  className="shrink-0 h-8 w-8 p-0"
-                >
-                  {copied ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                  ) : (
-                    <Copy className="h-4 w-4 text-white/40" />
-                  )}
+        <div className="space-y-5 p-6 lg:p-8">
+          <div>
+            <p className={cn("mb-2 text-xs font-medium uppercase tracking-wide", t.pageSubheading)}>
+              Vault Address
+            </p>
+            <div className="flex items-center gap-2">
+              <code className={codeCls}>{vaultInfo.vaultAddress}</code>
+              <Button variant="ghost" size="sm" onClick={copyAddress} className="h-9 w-9 shrink-0 p-0">
+                {copied ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                ) : (
+                  <Copy className={cn("h-4 w-4", t.cardMuted)} />
+                )}
+              </Button>
+              <a
+                href={`https://stellar.expert/explorer/${vaultInfo.network}/account/${vaultInfo.vaultAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0"
+              >
+                <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+                  <ExternalLink className={cn("h-4 w-4", t.cardMuted)} />
                 </Button>
-                <a
-                  href={`https://stellar.expert/explorer/${vaultInfo.network}/account/${vaultInfo.vaultAddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0"
-                >
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <ExternalLink className="h-4 w-4 text-white/40" />
-                  </Button>
-                </a>
+              </a>
+            </div>
+          </div>
+
+          {vaultInfo.balance && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div
+                className={cn(
+                  "rounded-xl border p-5",
+                  t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-slate-50"
+                )}
+              >
+                <p className={cn("text-xs font-medium", t.pageSubheading)}>USDC Balance</p>
+                <p className={cn("mt-1 text-2xl font-bold tracking-tight", t.pageHeading)}>
+                  {vaultInfo.balance.usdc}
+                  <span className={cn("ml-1.5 text-sm font-medium", t.pageSubheading)}>USDC</span>
+                </p>
+              </div>
+              <div
+                className={cn(
+                  "rounded-xl border p-5",
+                  t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-slate-50"
+                )}
+              >
+                <p className={cn("text-xs font-medium", t.pageSubheading)}>XLM Balance</p>
+                <p className={cn("mt-1 text-2xl font-bold tracking-tight", t.pageHeading)}>
+                  {vaultInfo.balance.xlm}
+                  <span className={cn("ml-1.5 text-sm font-medium", t.pageSubheading)}>XLM</span>
+                </p>
               </div>
             </div>
+          )}
 
-            {vaultInfo.balance && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs text-white/40">USDC Balance</p>
-                  <p className="text-2xl font-bold text-white mt-1">
-                    {vaultInfo.balance.usdc}
-                    <span className="ml-1 text-sm font-medium text-white/40">USDC</span>
-                  </p>
-                </div>
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs text-white/40">XLM Balance</p>
-                  <p className="text-2xl font-bold text-white mt-1">
-                    {vaultInfo.balance.xlm}
-                    <span className="ml-1 text-sm font-medium text-white/40">XLM</span>
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {vaultInfo.vaultType === "hybrid" && vaultInfo.vaultCoSigner && (
-              <div>
-                <p className="text-xs text-white/40 mb-1.5">Your Co-Signer Wallet</p>
-                <code className="block rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-xs text-white/60 truncate">
-                  {vaultInfo.vaultCoSigner}
-                </code>
-              </div>
-            )}
-          </div>
+          {vaultInfo.vaultType === "hybrid" && vaultInfo.vaultCoSigner && (
+            <div>
+              <p className={cn("mb-2 text-xs font-medium uppercase tracking-wide", t.pageSubheading)}>
+                Your Co-Signer Wallet
+              </p>
+              <code className={cn(codeCls, "block")}>{vaultInfo.vaultCoSigner}</code>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5 max-w-2xl">
-      <div className="rounded-2xl border border-white/[0.12] bg-transparent p-6 backdrop-blur-xl">
-        <div className="flex items-start gap-3 mb-6">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/[0.06]">
-            <Vault className="h-5 w-5 text-cyan-400" />
+    <div className={panelCls}>
+      <div
+        className={cn(
+          "border-b px-6 py-6 lg:px-8 lg:py-7",
+          t.dark
+            ? "border-white/10 bg-gradient-to-r from-blue-950/50 via-slate-900/70 to-cyan-950/30"
+            : "border-slate-100 bg-gradient-to-r from-blue-50/90 via-white to-cyan-50/60"
+        )}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div
+              className={cn(
+                "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border shadow-sm",
+                t.dark ? "border-cyan-500/20 bg-cyan-500/10" : "border-blue-200 bg-white"
+              )}
+            >
+              <Vault className="h-6 w-6 text-cyan-500" />
+            </div>
+            <div className="max-w-2xl">
+              <h2 className={cn("text-lg font-semibold tracking-tight", t.pageHeading)}>
+                Create Treasury Vault
+              </h2>
+              <p className={cn("mt-1 text-sm leading-relaxed", t.pageSubheading)}>
+                Set up a dedicated Stellar account to receive payments directly and enable withdrawals
+                from your workspace.
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-medium text-white">Create Treasury Vault</p>
-            <p className="text-xs text-white/40 mt-0.5">
-              Set up a dedicated Stellar account for your workspace to receive payments.
-            </p>
-          </div>
-        </div>
-
-        <RadioGroup
-          value={selectedType}
-          onValueChange={(v) => setSelectedType(v as VaultType)}
-          className="space-y-3"
-        >
-          <label
-            htmlFor="vault-custodial"
-            className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition-colors ${
-              selectedType === "custodial"
-                ? "border-cyan-500/40 bg-cyan-500/5"
-                : "border-white/10 bg-white/[0.02] hover:border-white/20"
-            }`}
+          <span
+            className={cn(
+              "hidden items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium sm:inline-flex",
+              t.dark
+                ? "border-amber-500/25 bg-amber-500/10 text-amber-300"
+                : "border-amber-200 bg-amber-50 text-amber-800"
+            )}
           >
-            <RadioGroupItem value="custodial" id="vault-custodial" className="mt-0.5" />
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-cyan-400" />
-                <span className="text-sm font-medium text-white">Custodial</span>
-                <span className="text-[10px] uppercase tracking-wider text-cyan-400/60 bg-cyan-500/10 px-1.5 py-0.5 rounded">
+            Required to unlock treasury
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-6 p-6 lg:p-8">
+        <div>
+          <p className={cn("mb-4 text-sm font-medium", t.pageHeading)}>Choose vault type</p>
+          <RadioGroup
+            value={selectedType}
+            onValueChange={(v) => setSelectedType(v as VaultType)}
+            className="grid grid-cols-1 gap-4 md:grid-cols-3"
+          >
+            <label htmlFor="vault-hybrid" className={optionCls(selectedType === "hybrid")}>
+              <RadioGroupItem
+                value="hybrid"
+                id="vault-hybrid"
+                className="absolute right-4 top-4"
+              />
+              <div
+                className={cn(
+                  "mb-4 flex h-10 w-10 items-center justify-center rounded-lg border",
+                  t.dark ? "border-emerald-500/20 bg-emerald-500/10" : "border-emerald-200 bg-emerald-50"
+                )}
+              >
+                <ShieldCheck className="h-5 w-5 text-emerald-500" />
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={cn("text-sm font-semibold", t.pageHeading)}>Hybrid (Multisig)</span>
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                    t.dark ? "bg-emerald-500/15 text-emerald-400" : "bg-emerald-100 text-emerald-700"
+                  )}
+                >
                   Recommended
                 </span>
               </div>
-              <p className="text-xs text-white/40 mt-1">
-                Hypertron manages your vault. Withdrawals are instant with one click.
-              </p>
-            </div>
-          </label>
-
-          <label
-            htmlFor="vault-hybrid"
-            className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition-colors ${
-              selectedType === "hybrid"
-                ? "border-cyan-500/40 bg-cyan-500/5"
-                : "border-white/10 bg-white/[0.02] hover:border-white/20"
-            }`}
-          >
-            <RadioGroupItem value="hybrid" id="vault-hybrid" className="mt-0.5" />
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                <span className="text-sm font-medium text-white">Hybrid (Multisig)</span>
-              </div>
-              <p className="text-xs text-white/40 mt-1">
-                Both you and Hypertron must sign withdrawals. Maximum security.
+              <p className={cn("mt-2 flex-1 text-xs leading-relaxed", t.pageSubheading)}>
+                Both you and Hypertron must sign withdrawals. Best security balance for teams.
               </p>
               {selectedType === "hybrid" && !userWalletAddress && (
-                <p className="text-xs text-amber-400 mt-2">
+                <p className="mt-3 text-xs font-medium text-amber-500">
                   Connect your wallet first to use hybrid mode.
                 </p>
               )}
-            </div>
-          </label>
+            </label>
 
-          <label
-            htmlFor="vault-external"
-            className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition-colors ${
-              selectedType === "external"
-                ? "border-cyan-500/40 bg-cyan-500/5"
-                : "border-white/10 bg-white/[0.02] hover:border-white/20"
-            }`}
-          >
-            <RadioGroupItem value="external" id="vault-external" className="mt-0.5" />
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <Wallet className="h-4 w-4 text-purple-400" />
-                <span className="text-sm font-medium text-white">External Wallet</span>
+            <label htmlFor="vault-custodial" className={optionCls(selectedType === "custodial")}>
+              <RadioGroupItem
+                value="custodial"
+                id="vault-custodial"
+                className="absolute right-4 top-4"
+              />
+              <div
+                className={cn(
+                  "mb-4 flex h-10 w-10 items-center justify-center rounded-lg border",
+                  t.dark ? "border-cyan-500/20 bg-cyan-500/10" : "border-cyan-200 bg-cyan-50"
+                )}
+              >
+                <Shield className="h-5 w-5 text-cyan-500" />
               </div>
-              <p className="text-xs text-white/40 mt-1">
-                Use your own wallet. Payments go directly to your address.
+              <span className={cn("text-sm font-semibold", t.pageHeading)}>Custodial</span>
+              <p className={cn("mt-2 flex-1 text-xs leading-relaxed", t.pageSubheading)}>
+                Hypertron manages your vault. One-click withdrawals with server-held keys.
               </p>
-              {selectedType === "external" && (
-                <div className="mt-3">
-                  <Label htmlFor="external-address" className="text-xs text-white/50">
-                    Your Stellar Address
-                  </Label>
-                  <input
-                    id="external-address"
-                    type="text"
-                    placeholder="G..."
-                    value={externalAddress}
-                    onChange={(e) => setExternalAddress(e.target.value)}
-                    className="mt-1.5 w-full h-9 rounded-lg border border-white/10 bg-white/5 px-3 font-mono text-xs text-white placeholder:text-white/30 focus:border-white/25 focus:outline-none"
-                  />
-                </div>
-              )}
-            </div>
-          </label>
-        </RadioGroup>
+            </label>
+
+            <label htmlFor="vault-external" className={optionCls(selectedType === "external")}>
+              <RadioGroupItem
+                value="external"
+                id="vault-external"
+                className="absolute right-4 top-4"
+              />
+              <div
+                className={cn(
+                  "mb-4 flex h-10 w-10 items-center justify-center rounded-lg border",
+                  t.dark ? "border-violet-500/20 bg-violet-500/10" : "border-violet-200 bg-violet-50"
+                )}
+              >
+                <Wallet className="h-5 w-5 text-violet-500" />
+              </div>
+              <span className={cn("text-sm font-semibold", t.pageHeading)}>External Wallet</span>
+              <p className={cn("mt-2 flex-1 text-xs leading-relaxed", t.pageSubheading)}>
+                Use your own wallet address. Payments go directly to you — no vault account needed.
+              </p>
+            </label>
+          </RadioGroup>
+        </div>
+
+        {selectedType === "external" && (
+          <div
+            className={cn(
+              "rounded-xl border p-4",
+              t.dark ? "border-white/10 bg-white/[0.03]" : "border-slate-200 bg-slate-50/60"
+            )}
+          >
+            <Label htmlFor="external-address" className={cn("text-xs font-medium", t.pageSubheading)}>
+              Your Stellar Address
+            </Label>
+            <input
+              id="external-address"
+              type="text"
+              placeholder="G..."
+              value={externalAddress}
+              onChange={(e) => setExternalAddress(e.target.value)}
+              className={inputCls}
+            />
+          </div>
+        )}
 
         {error && (
-          <div className="mt-4 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2">
-            <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
-            <p className="text-red-400 text-xs">{error}</p>
+          <div
+            className={cn(
+              "flex items-center gap-2 rounded-lg border px-4 py-3",
+              t.dark ? "border-red-500/20 bg-red-500/10" : "border-red-200 bg-red-50"
+            )}
+          >
+            <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
+            <p className="text-sm text-red-500">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="mt-4 flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-            <p className="text-emerald-400 text-xs">{success}</p>
+          <div
+            className={cn(
+              "flex items-center gap-2 rounded-lg border px-4 py-3",
+              t.dark ? "border-emerald-500/20 bg-emerald-500/[0.06]" : "border-emerald-200 bg-emerald-50"
+            )}
+          >
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+            <p className="text-sm text-emerald-600">{success}</p>
           </div>
         )}
 
-        <Button
-          onClick={handleCreateVault}
-          disabled={creating || (selectedType === "hybrid" && !userWalletAddress)}
-          className="mt-5 w-full rounded-full border border-white/10 bg-foreground font-semibold text-background hover:opacity-90 disabled:opacity-40"
-        >
-          {creating ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating Vault...
-            </>
-          ) : (
-            "Create Vault"
+        <div
+          className={cn(
+            "flex flex-col gap-4 border-t pt-6 sm:flex-row sm:items-center sm:justify-between",
+            t.dark ? "border-white/10" : "border-slate-100"
           )}
-        </Button>
+        >
+          <p className={cn("text-xs leading-relaxed sm:max-w-md", t.pageSubheading)}>
+            Your vault is created on Stellar testnet. You can receive USDC and XLM once set up.
+          </p>
+          <Button
+            onClick={handleCreateVault}
+            disabled={creating || (selectedType === "hybrid" && !userWalletAddress)}
+            className={cn(
+              "h-11 shrink-0 rounded-xl px-8 font-semibold shadow-sm",
+              t.dark
+                ? "bg-blue-600 text-white hover:bg-blue-500 disabled:bg-white/10 disabled:text-slate-500"
+                : "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-slate-100 disabled:text-slate-400"
+            )}
+          >
+            {creating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating Vault...
+              </>
+            ) : (
+              "Create Vault"
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );
