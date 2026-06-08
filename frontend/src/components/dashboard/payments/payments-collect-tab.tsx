@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -112,8 +112,7 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
   const [vaultName, setVaultName] = useState("Treasury");
   const [vaultBalance, setVaultBalance] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  const refreshVaultStats = useCallback(() => {
     Promise.all([
       fetch("/api/business/profile", { credentials: "same-origin" }).then((r) =>
         r.ok ? r.json() : null
@@ -123,7 +122,6 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
       }).then((r) => (r.ok ? r.json() : null)),
     ])
       .then(([profile, stats]) => {
-        if (cancelled) return;
         const base =
           (typeof profile?.name === "string" && profile.name.trim()) ||
           (typeof profile?.businessName === "string" && profile.businessName.trim()) ||
@@ -131,14 +129,22 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
         setVaultName(base.endsWith("Vault") ? base : `${base} Vault`);
         if (stats && typeof stats.totalReceivedXlm === "string") {
           const n = parseFloat(stats.totalReceivedXlm);
-          setVaultBalance(Number.isFinite(n) ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00");
+          setVaultBalance(
+            Number.isFinite(n)
+              ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+              : "0.00"
+          );
         }
       })
       .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
   }, [businessId]);
+
+  useEffect(() => {
+    refreshVaultStats();
+    const onPaymentReceived = () => refreshVaultStats();
+    window.addEventListener("hypertron:payment-received", onPaymentReceived);
+    return () => window.removeEventListener("hypertron:payment-received", onPaymentReceived);
+  }, [refreshVaultStats]);
 
   const previewHref = useMemo(
     () =>

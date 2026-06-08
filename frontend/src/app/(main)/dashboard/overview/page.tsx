@@ -11,6 +11,8 @@ import {
   WORKSPACE_TIER_UPDATED_EVENT,
 } from "@/lib/workspace-tier-context";
 import { useState, useCallback } from "react";
+import { useDemoMode, useMockDashboardData } from "@/components/demo/demo-mode-provider";
+import { fallbackBusiness } from "@/data/fallback";
 
 function initialsFromName(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -19,10 +21,13 @@ function initialsFromName(name: string) {
 }
 
 function OverviewContent() {
+  const { demoPath } = useDemoMode();
+  const useMock = useMockDashboardData();
   const { publicKey } = useFreighter();
   const { isPrivy, loading: sessionLoading, privyUser } = useAppSession();
   const [workspaceName, setWorkspaceName] = useState("Workspace");
   const [profileName, setProfileName] = useState("");
+  const [businessId, setBusinessId] = useState<string | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
   const syncNames = useCallback(() => {
@@ -37,6 +42,13 @@ function OverviewContent() {
   }, [syncNames]);
 
   useEffect(() => {
+    if (useMock) {
+      setProfileName(fallbackBusiness.name);
+      setBusinessId(fallbackBusiness.businessId);
+      setWorkspaceName("Hypertron Demo");
+      setProfileLoading(false);
+      return;
+    }
     if (sessionLoading || (!publicKey && !isPrivy)) {
       setProfileLoading(false);
       return;
@@ -46,13 +58,18 @@ function OverviewContent() {
       .then((r) => (r.ok ? r.json() : null))
       .then((profile) => {
         if (profile?.name) setProfileName(String(profile.name));
+        if (typeof profile?.businessId === "string" && profile.businessId.trim()) {
+          setBusinessId(profile.businessId.trim());
+        } else {
+          setBusinessId(null);
+        }
         const tpl = profile?.activeTemplate;
         if (tpl?.businessName?.trim()) setWorkspaceName(String(tpl.businessName).trim());
         else if (tpl?.name?.trim()) setWorkspaceName(String(tpl.name).trim());
       })
       .catch(() => {})
       .finally(() => setProfileLoading(false));
-  }, [sessionLoading, publicKey, isPrivy]);
+  }, [sessionLoading, publicKey, isPrivy, useMock]);
 
   const displayName =
     profileName.trim() ||
@@ -64,7 +81,7 @@ function OverviewContent() {
 
   useWorkspacePageMeta({
     breadcrumbs: [
-      { label: "Workspaces", href: "/dashboard" },
+      { label: "Workspaces", href: demoPath("/dashboard") },
       { label: "Overview", current: true },
     ],
     ...(chromeReady
@@ -81,6 +98,7 @@ function OverviewContent() {
 
   return (
     <WorkspaceOverviewDashboard
+      businessId={businessId}
       workspaceName={workspaceName}
       userName={displayName}
       userInitials={initialsFromName(displayName)}

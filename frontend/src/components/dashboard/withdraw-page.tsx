@@ -37,6 +37,7 @@ import { getExplorerTxUrl } from "@/lib/stellar-explorer";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import { WorkspaceTreasuryBodySkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
+import { VaultSetup } from "@/components/dashboard/vault-setup";
 import { fallbackBalance, fallbackWithdrawals } from "@/data/fallback";
 
 interface WithdrawPageProps {
@@ -408,8 +409,21 @@ export function WithdrawPage({ businessId, walletAddress, receiveAddress }: With
     return <WorkspaceTreasuryBodySkeleton />;
   }
 
+  const needsVaultSetup = !usingFallback && vaultInfo && !vaultInfo.hasVault;
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4">
+      {needsVaultSetup ? (
+        <VaultSetup
+          businessId={businessId}
+          userWalletAddress={walletAddress}
+          onVaultCreated={() => {
+            fetchVaultInfo();
+            fetchWithdrawals();
+          }}
+        />
+      ) : null}
+
       {usingFallback && (
         <div
           className={cn(
@@ -423,7 +437,12 @@ export function WithdrawPage({ businessId, walletAddress, receiveAddress }: With
         </div>
       )}
 
-      <div className="grid w-full min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div
+        className={cn(
+          "grid w-full min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]",
+          needsVaultSetup && "pointer-events-none select-none opacity-50"
+        )}
+      >
         {/* Main content */}
         <div className="flex flex-col gap-4">
           {/* KPI Cards */}
@@ -459,13 +478,26 @@ export function WithdrawPage({ businessId, walletAddress, receiveAddress }: With
               <div>
                 <h2 className={s.sectionTitle}>Withdraw Funds</h2>
                 <p className={s.muted}>
-                  {vaultInfo?.vaultType === "hybrid"
-                    ? "Requires Freighter signature to complete"
-                    : "Transfer funds to any Stellar address"}
+                  {needsVaultSetup
+                    ? "Available after vault setup"
+                    : vaultInfo?.vaultType === "hybrid"
+                      ? "Requires Freighter signature to complete"
+                      : vaultInfo?.vaultType === "external"
+                        ? "External vault — manage funds in your wallet app"
+                        : "Transfer funds to any Stellar address"}
                 </p>
               </div>
             </div>
 
+            {needsVaultSetup ? (
+              <p className={cn("text-sm", s.muted)}>
+                Set up your workspace vault to unlock withdrawals from on-chain balances.
+              </p>
+            ) : vaultInfo?.vaultType === "external" ? (
+              <p className={cn("text-sm", s.muted)}>
+                This workspace uses an external wallet. Open Freighter or your wallet app to move funds.
+              </p>
+            ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
@@ -602,6 +634,7 @@ export function WithdrawPage({ businessId, walletAddress, receiveAddress }: With
                 </Button>
               )}
             </form>
+            )}
           </div>
 
           {/* Withdrawal History */}
@@ -781,7 +814,7 @@ export function WithdrawPage({ businessId, walletAddress, receiveAddress }: With
               </div>
             )}
 
-            {!vaultInfo?.hasVault && (
+            {!vaultInfo?.hasVault && !needsVaultSetup && (
               <div className="mt-2">
                 <Link href="/dashboard/settings">
                   <Button

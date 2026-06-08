@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSession } from "@/hooks/useAppSession";
+import { AppSessionLoadingShell } from "@/components/auth/app-session-loading-shell";
 import { homeLaunchPath } from "@/lib/launch-auth";
 import { isProtectedAppPath } from "@/lib/protected-routes";
 
@@ -25,16 +26,8 @@ export function ProtectedRouteGuard({ children }: ProtectedRouteGuardProps) {
     router.replace(homeLaunchPath(pathname ?? "/dashboard"));
   }, [protectedPath, loading, session, pathname, router]);
 
-  if (protectedPath && loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-transparent px-4">
-        <p className="text-sm text-slate-500">Checking session…</p>
-      </div>
-    );
-  }
-
-  if (protectedPath && !session) {
-    return null;
+  if (protectedPath && (loading || !session)) {
+    return <AppSessionLoadingShell />;
   }
 
   return <>{children}</>;

@@ -1144,3 +1144,43 @@ html, body {
     transition: none !important;
   }
 }
+
+/* Landing hero — live demo dashboard iframe (light mode only) */
+html.hero-embed-root,
+html.hero-embed-root body {
+  overflow: hidden !important;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  background: #f8fbff;
+}
+
+html.hero-embed-root .workspace-hub-root {
+  min-height: 780px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero-embed-shell {
+  height: 780px;
+  max-height: 780px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.hero-embed-shell .flex-1.overflow-y-auto {
+  overflow: hidden !important;
+}
+
+/* Ensure hub corner tints render inside the hero iframe */
+html.hero-embed-root .workspace-hub-root::before {
+  display: block;
+  background:
+    radial-gradient(ellipse 50% 42% at 0% 0%, rgba(177, 151, 252, 0.1) 0%, transparent 52%),
+    radial-gradient(ellipse 70% 58% at 100% 0%, rgba(245, 198, 208, 0.28) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 48% at 92% 8%, rgba(255, 179, 71, 0.22) 0%, transparent 52%),
+    radial-gradient(ellipse 50% 44% at 96% 6%, rgba(255, 218, 185, 0.26) 0%, transparent 54%),
+    radial-gradient(ellipse 58% 50% at 0% 100%, rgba(116, 160, 255, 0.24) 0%, transparent 54%),
+    radial-gradient(ellipse 62% 48% at 50% 100%, rgba(186, 230, 253, 0.2) 0%, transparent 52%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 42%, #f0f7ff 100%);
+}

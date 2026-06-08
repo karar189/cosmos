@@ -60,6 +60,7 @@ export type PaymentLiveCheckoutProps = {
   payError: string | null;
   txHash: string | null;
   explorerUrl: string | null;
+  confirmationStatus?: "idle" | "confirming" | "confirmed" | "timeout";
   networkLabel: string;
 };
 
@@ -208,6 +209,7 @@ export function PaymentLiveCheckout(props: PaymentLiveCheckoutProps) {
     payError,
     txHash,
     explorerUrl,
+    confirmationStatus = "idle",
     networkLabel,
   } = props;
 
@@ -296,6 +298,20 @@ export function PaymentLiveCheckout(props: PaymentLiveCheckoutProps) {
                   <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-center">
                     <CheckCircle2 className="mx-auto h-7 w-7 text-emerald-600" />
                     <p className="mt-1.5 text-sm font-semibold text-emerald-800">Payment sent</p>
+                    {confirmationStatus === "confirming" ? (
+                      <p className="mt-1.5 inline-flex items-center justify-center gap-1.5 text-xs text-emerald-700">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        Confirming with merchant…
+                      </p>
+                    ) : confirmationStatus === "confirmed" ? (
+                      <p className="mt-1.5 text-xs font-medium text-emerald-700">
+                        Payment recorded — the merchant has been notified.
+                      </p>
+                    ) : confirmationStatus === "timeout" ? (
+                      <p className="mt-1.5 text-xs text-emerald-800/80">
+                        On-chain payment succeeded. Merchant confirmation may take a minute.
+                      </p>
+                    ) : null}
                     <a
                       href={explorerUrl}
                       target="_blank"

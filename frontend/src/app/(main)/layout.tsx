@@ -13,14 +13,16 @@ import { sidebarData } from "@/components/dashboard/layout/data/sidebar-data";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 import { ConnectWalletBanner } from "@/components/dashboard/connect-wallet-banner";
 import { ProtectedRouteGuard } from "@/components/auth/protected-route-guard";
+import { useLoginTransition } from "@/components/auth/login-transition-provider";
 import { usesWorkspaceHubShell } from "@/lib/workspace-hub-shell-routes";
 import { POST_SIGN_OUT_PATH, homeLaunchPath } from "@/lib/launch-auth";
 
 function MainLayoutShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useDashboardTheme();
   const pathname = usePathname();
-  const { publicKey, disconnect } = useFreighter();
+  const { publicKey, disconnect, isPrivyWallet } = useFreighter();
   const { data: session, loading: sessionLoading, isPrivy, privyUser } = useAppSession();
+  const { startLoginTransition } = useLoginTransition();
 
   useEffect(() => {
     let cancelled = false;
@@ -30,7 +32,7 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
       const data = (await res.json().catch(() => null)) as
         | { auth?: string; walletAddress?: string }
         | null;
-      if (data?.auth !== "wallet") return;
+      if (data?.auth !== "wallet" || isPrivyWallet) return;
       const sessionWallet = data.walletAddress?.trim();
       if (!sessionWallet) return;
       if (publicKey && sessionWallet !== publicKey) {
@@ -43,13 +45,17 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [publicKey, disconnect, pathname]);
+  }, [publicKey, disconnect, pathname, isPrivyWallet]);
 
-  const handleSignOut = async () => {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-    window.dispatchEvent(new Event("hypertron-sign-out"));
-    disconnect();
-    window.location.assign(POST_SIGN_OUT_PATH);
+  const handleSignOut = () => {
+    startLoginTransition("Signing out…");
+    void fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" })
+      .catch(() => {})
+      .finally(() => {
+        window.dispatchEvent(new Event("hypertron-sign-out"));
+        disconnect();
+        window.location.assign(POST_SIGN_OUT_PATH);
+      });
   };
 
   const defaultOpen = getCookie("sidebar_state") !== "false";
@@ -73,29 +79,29 @@ function MainLayoutShell({ children }: { children: React.ReactNode }) {
 
   if (hubShell) {
     return (
-      <ProtectedRouteGuard>
-        <div
-          data-theme={theme}
-          suppressHydrationWarning
-          className={cn(
-            "workspace-hub-root font-default relative min-h-screen antialiased",
-            theme === "light" ? "text-slate-900" : "text-slate-100"
-          )}
-        >
-         <OnboardingGate
-          when={!sessionLoading && !!session}
-          autoRedirect={pathname !== "/CreateWorkspace"}
-          walletAddress={publicKey}
-          scopeKey={
-            publicKey && publicKey.length === 56 && publicKey.startsWith("G")
-              ? publicKey
-              : privyUser?.id ?? null
-          }
+      <div
+        data-theme={theme}
+        suppressHydrationWarning
+        className={cn(
+          "workspace-hub-root font-default relative min-h-screen antialiased",
+          theme === "light" ? "text-slate-900" : "text-slate-100"
+        )}
+      >
+        <ProtectedRouteGuard>
+          <OnboardingGate
+            when={!sessionLoading && !!session}
+            autoRedirect={pathname !== "/CreateWorkspace"}
+            walletAddress={publicKey}
+            scopeKey={
+              publicKey && publicKey.length === 56 && publicKey.startsWith("G")
+                ? publicKey
+                : privyUser?.id ?? null
+            }
           >
             {children}
           </OnboardingGate>
-        </div>
-      </ProtectedRouteGuard>
+        </ProtectedRouteGuard>
+      </div>
     );
   }
 

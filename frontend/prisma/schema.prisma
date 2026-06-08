@@ -90,17 +90,20 @@ model AuthChallenge {
 
 // Privy-authenticated app user (email/social/wallet via Privy). Distinct from legacy Link `User`.
 model AppUser {
-  id        String   @id @default(cuid()) @map("_id")
-  privyId   String   @unique
-  email     String?
-  name      String?
-  image     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid()) @map("_id")
+  privyId        String   @unique
+  email          String?
+  name           String?
+  image          String?
+  stellarAddress String?  // Privy embedded Stellar G-address
+  privyWalletId  String?  // Privy wallet id for server-side raw sign
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   memberships Membership[]
 
   @@index([email])
+  @@index([stellarAddress])
 }
 
 // Team membership: user ↔ business workspace with RBAC role.

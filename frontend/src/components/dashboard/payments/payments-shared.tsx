@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Info, Link2, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,8 @@ import { HubAvatar } from "@/components/global/hub-avatar";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import type { DashboardTheme } from "@/lib/dashboard-theme";
 import { cn } from "@/utils";
+import { syncPendingPaymentLinks } from "@/lib/poll-payment-link-status";
+import { useDemoMode } from "@/components/demo/demo-mode-provider";
 
 export const PAYMENT_TABS = [
   { id: "collect", label: "Collect" },
@@ -25,6 +27,14 @@ export const PAYMENT_TABS = [
 ] as const;
 
 export type PaymentTabId = (typeof PAYMENT_TABS)[number]["id"];
+
+/** Tabs hidden from navigation until the feature ships. */
+export const DISABLED_PAYMENT_TABS = new Set<PaymentTabId>(["subscriptions", "customers"]);
+
+export function isPaymentTabEnabled(tab: PaymentTabId, isDemo = false): boolean {
+  if (isDemo) return true;
+  return !DISABLED_PAYMENT_TABS.has(tab);
+}
 
 export type TransactionStatus = "Succeeded" | "Private" | "Refunded" | "Pending" | "Failed";
 
@@ -203,6 +213,7 @@ export function PaymentTabsNav({
   theme: DashboardTheme;
 }) {
   const t = hubThemeClasses(theme);
+  const { isDemo } = useDemoMode();
 
   return (
     <nav
@@ -211,6 +222,24 @@ export function PaymentTabsNav({
     >
       {PAYMENT_TABS.map((tab) => {
         const isActive = tab.id === activeTab;
+        const disabled = !isPaymentTabEnabled(tab.id, isDemo);
+
+        if (disabled) {
+          return (
+            <span
+              key={tab.id}
+              title="Coming soon"
+              aria-disabled="true"
+              className={cn(
+                "relative cursor-not-allowed pb-3 text-sm font-medium opacity-45",
+                t.pageSubheading
+              )}
+            >
+              {tab.label}
+            </span>
+          );
+        }
+
         return (
           <button
             key={tab.id}
@@ -614,52 +643,86 @@ export function PaymentsSidebar({
     };
   }, [businessId, tab]);
 
+  const applyCollectPayload = useCallback(
+    (stats: unknown, eventsBody: unknown) => {
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const statsData = stats as {
+        totalReceivedXlm?: string;
+        completed?: number;
+        pending?: number;
+      } | null;
+
+      if (statsData && typeof statsData.totalReceivedXlm === "string") {
+        const n = parseFloat(statsData.totalReceivedXlm);
+        setTotalReceived(
+          Number.isFinite(n)
+            ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            : "0.00"
+        );
+        setCompletedCount(typeof statsData.completed === "number" ? statsData.completed : null);
+        setPendingCount(typeof statsData.pending === "number" ? statsData.pending : null);
+      }
+
+      const events = ((eventsBody as { events?: LiveEvent[] } | null)?.events ?? []) as LiveEvent[];
+      const sorted = [...events].sort((a, b) => {
+        const ta = new Date(a.paidAt || a.createdAt).getTime();
+        const tb = new Date(b.paidAt || b.createdAt).getTime();
+        return tb - ta;
+      });
+      setLinkTransactions(sorted.map((e) => liveEventToTransaction(e, origin)));
+      const paid = sorted.filter((e) => e.paidAt).slice(0, 4);
+      setLiveTxRows(
+        paid.map((e) => ({
+          id: e.linkId,
+          name: (e.clientName || e.purpose || "Payment").slice(0, 24),
+          date: formatEventDate(e.paidAt!),
+          amount: `+${parseFloat(e.amount || "0").toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          currency: e.currency === "XLM" ? "XLM" : "USDC",
+          status: "Succeeded" as const,
+        }))
+      );
+      return sorted.filter((e) => !e.paidAt).map((e) => e.linkId);
+    },
+    []
+  );
+
+  const loadCollectSidebar = useCallback(
+    async (bid: string, options?: { syncPending?: boolean }) => {
+      const [stats, eventsBody] = await Promise.all([
+        fetch(`/api/dashboard-stats?businessId=${encodeURIComponent(bid)}`, {
+          credentials: "same-origin",
+        }).then((r) => (r.ok ? r.json() : null)),
+        fetch(`/api/events?businessId=${encodeURIComponent(bid)}`, {
+          credentials: "same-origin",
+        }).then((r) => (r.ok ? r.json() : null)),
+      ]);
+
+      const pendingIds = applyCollectPayload(stats, eventsBody);
+
+      if (options?.syncPending !== false && pendingIds.length > 0) {
+        const { confirmed } = await syncPendingPaymentLinks(pendingIds);
+        if (confirmed.length > 0) {
+          const [freshStats, freshEvents] = await Promise.all([
+            fetch(`/api/dashboard-stats?businessId=${encodeURIComponent(bid)}`, {
+              credentials: "same-origin",
+            }).then((r) => (r.ok ? r.json() : null)),
+            fetch(`/api/events?businessId=${encodeURIComponent(bid)}`, {
+              credentials: "same-origin",
+            }).then((r) => (r.ok ? r.json() : null)),
+          ]);
+          applyCollectPayload(freshStats, freshEvents);
+        }
+      }
+    },
+    [applyCollectPayload]
+  );
+
   useEffect(() => {
     if (!businessId || tab !== "collect") return;
     let cancelled = false;
     setTxLoading(true);
 
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
-
-    Promise.all([
-      fetch(`/api/dashboard-stats?businessId=${encodeURIComponent(businessId)}`, {
-        credentials: "same-origin",
-      }).then((r) => (r.ok ? r.json() : null)),
-      fetch(`/api/events?businessId=${encodeURIComponent(businessId)}`, {
-        credentials: "same-origin",
-      }).then((r) => (r.ok ? r.json() : null)),
-    ])
-      .then(([stats, eventsBody]) => {
-        if (cancelled) return;
-        if (stats && typeof stats.totalReceivedXlm === "string") {
-          const n = parseFloat(stats.totalReceivedXlm);
-          setTotalReceived(
-            Number.isFinite(n)
-              ? n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-              : "0.00"
-          );
-          setCompletedCount(typeof stats.completed === "number" ? stats.completed : null);
-          setPendingCount(typeof stats.pending === "number" ? stats.pending : null);
-        }
-        const events = (eventsBody?.events ?? []) as LiveEvent[];
-        const sorted = [...events].sort((a, b) => {
-          const ta = new Date(a.paidAt || a.createdAt).getTime();
-          const tb = new Date(b.paidAt || b.createdAt).getTime();
-          return tb - ta;
-        });
-        setLinkTransactions(sorted.map((e) => liveEventToTransaction(e, origin)));
-        const paid = sorted.filter((e) => e.paidAt).slice(0, 4);
-        setLiveTxRows(
-          paid.map((e) => ({
-            id: e.linkId,
-            name: (e.clientName || e.purpose || "Payment").slice(0, 24),
-            date: formatEventDate(e.paidAt!),
-            amount: `+${parseFloat(e.amount || "0").toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-            currency: e.currency === "XLM" ? "XLM" : "USDC",
-            status: "Succeeded" as const,
-          }))
-        );
-      })
+    loadCollectSidebar(businessId)
       .catch(() => {
         if (!cancelled) setLinkTransactions([]);
       })
@@ -667,10 +730,21 @@ export function PaymentsSidebar({
         if (!cancelled) setTxLoading(false);
       });
 
+    const pollPending = () => {
+      if (cancelled || !businessId) return;
+      loadCollectSidebar(businessId).catch(() => {});
+    };
+
+    const intervalId = window.setInterval(pollPending, 20_000);
+    const onPaymentReceived = () => pollPending();
+    window.addEventListener("hypertron:payment-received", onPaymentReceived);
+
     return () => {
       cancelled = true;
+      window.clearInterval(intervalId);
+      window.removeEventListener("hypertron:payment-received", onPaymentReceived);
     };
-  }, [businessId, tab]);
+  }, [businessId, tab, loadCollectSidebar]);
 
   const config = useMemo(() => {
     if (tab === "send" && businessId && sendSidebarReady) {
