@@ -6,18 +6,19 @@ import { HERO_BUILT_WITH_PARTNERS } from "@/lib/hero-built-with-partners";
 import { cn } from "@/utils";
 
 function PartnerLogo({ partner }: { partner: (typeof HERO_BUILT_WITH_PARTNERS)[number] }) {
+  const isWide = "wide" in partner && partner.wide;
   return (
     <span className="flex h-5 shrink-0 items-center justify-center" title={partner.logoAlt}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={partner.logoSrc}
         alt=""
-        width={partner.wide ? 56 : 20}
+        width={isWide ? 56 : 20}
         height={20}
         className={cn(
           "object-contain",
-          partner.wide ? "h-4 w-auto max-w-[56px]" : "h-5 w-5",
-          partner.rounded && !partner.wide && "rounded-full"
+          isWide ? "h-4 w-auto max-w-[56px]" : "h-5 w-5",
+          "rounded" in partner && partner.rounded && !isWide && "rounded-full"
         )}
         loading="lazy"
         decoding="async"
