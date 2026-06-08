@@ -443,15 +443,16 @@ function MonoHeroInner() {
           >
             {/* Title bar */}
             <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.04] px-4 py-3 backdrop-blur-sm">
-            <div className="flex gap-1.5">
-              <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-              <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
-              <div className="h-3 w-3 rounded-full bg-[#28c840]" />
-            </div>
-            <div className="mx-auto flex items-center gap-2 rounded-md bg-white/[0.06] px-3 py-1">
-              <span className="font-mono text-[11px] tracking-wide text-white/45">
-                app.hypertron.xyz
-              </span>
+              <div className="flex gap-1.5">
+                <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+                <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
+                <div className="h-3 w-3 rounded-full bg-[#28c840]" />
+              </div>
+              <div className="mx-auto flex items-center gap-2 rounded-md bg-white/[0.06] px-3 py-1">
+                <span className="font-mono text-[11px] tracking-wide text-white/45">
+                  app.hypertron.xyz
+                </span>
+              </div>
             </div>
 
             <HeroDashboardPreview />

@@ -25,6 +25,6 @@ export const HERO_BUILT_WITH_PARTNERS = [
     name: "MoneyGram",
     logoSrc: "/partners/moneygram.png",
     logoAlt: "MoneyGram",
-    rounded: true,
+    wide: true,
   },
 ] as const;
