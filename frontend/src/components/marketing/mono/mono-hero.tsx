@@ -8,6 +8,7 @@ import { Mail, Ticket, Wallet } from "lucide-react";
 import { LaunchEmailSignInButton } from "./launch-email-sign-in-button";
 import { DarkVeil } from "./dark-veil";
 import { HeroDashboardPreview } from "./hero-dashboard-preview";
+import { HeroBuiltWithStrip } from "./hero-built-with-strip";
 import { ShinyText } from "@/components/ui/shiny-text";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -172,10 +173,10 @@ function MonoHeroInner() {
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
           <span className="rounded-full bg-white px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-black">
-            Stellar
+            Public beta
           </span>
           <ShinyText
-            text="B2B workflows & pooled settlement"
+            text="From onboarding to settlement."
             speed={3}
             color="rgba(255,255,255,0.6)"
             shineColor="#ffffff"
@@ -190,12 +191,13 @@ function MonoHeroInner() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="mb-5 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-[-2px] text-foreground drop-shadow-sm sm:text-5xl md:text-7xl"
         >
-          Unified B2B onboarding{" "}
-          <span className="relative whitespace-nowrap">
-            <span className="font-serif font-normal italic text-white/90">and</span>
-          </span>{" "}
+          One{" "}
+          <span className="font-serif font-normal italic text-white/90">programmable</span> operating
+          layer{" "}
+          <span className="font-serif font-normal italic text-white/90">for</span>{" "}
           <span className="bg-gradient-to-br from-white via-white to-blue-200/80 bg-clip-text text-transparent">
-            private settlement.
+            B2B{" "}
+            <span className="whitespace-nowrap">payments & operations.</span>
           </span>
         </motion.h1>
 
@@ -205,17 +207,18 @@ function MonoHeroInner() {
           transition={{ duration: 0.6, delay: 0.25 }}
           className="mb-8 max-w-xl text-base leading-relaxed text-white/65 drop-shadow-sm md:text-[15px]"
         >
-          Replace fragmented tools and exposed financial data. Hypertron combines onboarding, payments, AI-assisted workflows, and a privacy layer into a single programmable B2B infrastructure.
+          Create onboarding flows, collect payments, automate approvals, and settle funds privately
+          across global teams.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3"
+          className="mx-auto flex w-full max-w-md flex-col gap-3 sm:max-w-lg sm:flex-row sm:justify-center"
         >
           <motion.div
-            className="w-full"
+            className="w-full sm:flex-1"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -230,34 +233,21 @@ function MonoHeroInner() {
             </Link>
           </motion.div>
           <motion.div
-            className="w-full"
+            className="w-full sm:flex-1"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
           >
             <Link
               href="/demo/dashboard/overview"
-              data-testid="hero-try-demo-btn"
-              className="flex h-12 w-full items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/15 px-6 text-base font-semibold text-white hover:bg-violet-500/25"
+              data-testid="hero-explore-sandbox-btn"
+              className="flex h-12 w-full items-center justify-center rounded-full border border-white/25 bg-transparent px-6 text-base font-semibold text-white hover:bg-white/10"
             >
-              Try Demo
+              Explore Sandbox
             </Link>
           </motion.div>
-          <motion.div
-            className="w-full"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Button
-              type="button"
-              variant="outline"
-              data-testid="hero-launch-btn"
-              onClick={() => setLaunchOpen(true)}
-              className="flex h-12 w-full items-center justify-center rounded-full border-white/25 bg-transparent px-6 text-base font-semibold text-white hover:bg-white/10 hover:text-white"
-            >
-              Launch
-            </Button>
-          </motion.div>
         </motion.div>
+
+        <HeroBuiltWithStrip />
 
         <Dialog open={launchOpen} onOpenChange={handleLaunchOpenChange}>
           <DialogContent className="gap-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/95 p-0 text-foreground shadow-2xl shadow-black/50 ring-0 backdrop-blur-xl sm:max-w-[420px] [&>button]:right-5 [&>button]:top-5 [&>button]:rounded-lg [&>button]:text-zinc-500 [&>button]:opacity-100 [&>button]:hover:bg-white/[0.06] [&>button]:hover:text-white">
@@ -419,26 +409,6 @@ function MonoHeroInner() {
           </DialogContent>
         </Dialog>
 
-        {/* Trust strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.45 }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.18em] text-white/35"
-        >
-          <span className="flex items-center gap-1.5">
-            <span className="h-1 w-1 rounded-full bg-white/40" /> Soroban-native
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-1 w-1 rounded-full bg-white/40" /> Privacy by design
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-1 w-1 rounded-full bg-white/40" /> Audit-ready
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-1 w-1 rounded-full bg-white/40" /> Invite-only
-          </span>
-        </motion.div>
       </div>
 
       {/* Dashboard preview with scroll-linked 3D tilt */}
@@ -480,7 +450,7 @@ function MonoHeroInner() {
             </div>
             <div className="mx-auto flex items-center gap-2 rounded-md bg-white/[0.06] px-3 py-1">
               <span className="font-mono text-[11px] tracking-wide text-white/45">
-                app.hypertron.xyz/dashboard
+                app.hypertron.xyz
               </span>
             </div>
           </div>

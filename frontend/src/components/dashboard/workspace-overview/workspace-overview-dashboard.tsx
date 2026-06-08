@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   Wallet,
@@ -39,6 +39,7 @@ import {
   DEMO_REGULATORY,
   DEMO_TREASURY_SERIES,
 } from "@/lib/demo-overview-data";
+import { STELLAR_LOGO_URL, USDC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
 
 const HYPERTRON_CHART = {
   blue: "#60a5fa",
@@ -88,6 +89,46 @@ const overviewStyles = {
   muted: "text-slate-500",
   tick: "rgba(45, 52, 130, 0.45)",
 } as const;
+
+function TokenIcon({
+  token,
+  size = "md",
+}: {
+  token: PaymentAssetCode;
+  size?: "sm" | "md";
+}) {
+  const src = token === "USDC" ? USDC_LOGO_URL : STELLAR_LOGO_URL;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      width={size === "sm" ? 14 : 16}
+      height={size === "sm" ? 14 : 16}
+      className={cn(
+        "shrink-0 rounded-full object-contain",
+        size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"
+      )}
+    />
+  );
+}
+
+function TokenInline({
+  token,
+  children,
+  size = "md",
+}: {
+  token: PaymentAssetCode;
+  children: ReactNode;
+  size?: "sm" | "md";
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <TokenIcon token={token} size={size} />
+      {children}
+    </span>
+  );
+}
 
 function formatTimeAgo(iso: string): string {
   const d = new Date(iso);
@@ -337,26 +378,26 @@ function KpiCard({
   styles,
 }: {
   label: string;
-  value: string;
-  sub: string;
+  value: ReactNode;
+  sub: ReactNode;
   icon: typeof Wallet;
   loading?: boolean;
   styles: typeof overviewStyles;
 }) {
   return (
-    <div className={cn(styles.panel, "flex flex-col gap-3 p-4")}>
+    <div className={cn(styles.panel, "flex flex-col gap-2 p-3")}>
       <div className="flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
-          <Icon className="h-4 w-4" />
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+          <Icon className="h-3.5 w-3.5" />
         </span>
-        <span className={cn("text-xs font-medium", styles.muted)}>{label}</span>
+        <span className={cn("text-[11px] font-medium", styles.muted)}>{label}</span>
       </div>
       {loading ? (
-        <Loader2 className="h-6 w-6 animate-spin text-slate-300" />
+        <Loader2 className="h-5 w-5 animate-spin text-slate-300" />
       ) : (
-        <p className={cn("text-2xl font-semibold tabular-nums tracking-tight", styles.title)}>{value}</p>
+        <p className={cn("text-lg font-semibold tabular-nums tracking-tight", styles.title)}>{value}</p>
       )}
-      <p className={cn("text-xs", styles.muted)}>{sub}</p>
+      <p className={cn("text-[10px] leading-snug", styles.muted)}>{sub}</p>
     </div>
   );
 }
@@ -441,14 +482,14 @@ export function WorkspaceOverviewDashboard({
   const assetBreakdown = useMemo(() => {
     if (vault?.hasVault && vault.balance) {
       return [
-        { name: "USDC", value: `$${vault.balance.usdc}` },
-        { name: "XLM", value: vault.balance.xlm },
+        { token: "USDC" as const, value: `$${vault.balance.usdc}` },
+        { token: "XLM" as const, value: vault.balance.xlm },
       ];
     }
     return [];
   }, [vault]);
 
-  const treasuryKpi = useMemo(() => {
+  const treasuryKpi = useMemo((): { value: ReactNode; sub: ReactNode } => {
     const fallbackSub = vault?.hasVault ? "Vault balance" : "Received via payment links";
 
     if (vault?.hasVault && vault.balance) {
@@ -457,20 +498,41 @@ export function WorkspaceOverviewDashboard({
       if (usdc > 0 || xlm > 0) {
         if (usdc > 0 && xlm > 0) {
           return {
-            value: `$${vault.balance.usdc}`,
-            sub: `${vault.balance.xlm} XLM · Vault balance`,
+            value: <TokenInline token="USDC">${vault.balance.usdc}</TokenInline>,
+            sub: (
+              <TokenInline token="XLM" size="sm">
+                {vault.balance.xlm} XLM · Vault balance
+              </TokenInline>
+            ),
           };
         }
         if (usdc > 0) {
-          return { value: `$${vault.balance.usdc}`, sub: fallbackSub };
+          return {
+            value: <TokenInline token="USDC">${vault.balance.usdc}</TokenInline>,
+            sub: fallbackSub,
+          };
         }
-        return { value: `${vault.balance.xlm} XLM`, sub: fallbackSub };
+        return {
+          value: (
+            <TokenInline token="XLM">
+              {vault.balance.xlm} XLM
+            </TokenInline>
+          ),
+          sub: fallbackSub,
+        };
       }
     }
 
     const received = parseFloat(stats?.totalReceivedXlm ?? "0");
     if (Number.isFinite(received) && received > 0) {
-      return { value: `${stats!.totalReceivedXlm} XLM`, sub: fallbackSub };
+      return {
+        value: (
+          <TokenInline token="XLM">
+            {stats!.totalReceivedXlm} XLM
+          </TokenInline>
+        ),
+        sub: fallbackSub,
+      };
     }
 
     return { value: "$0.00", sub: fallbackSub };
@@ -501,7 +563,7 @@ export function WorkspaceOverviewDashboard({
         const paid = Boolean(e.paidAt);
         const label = (e.clientName || e.purpose || "Payment link").trim();
         const amt = e.amount ? parseFloat(String(e.amount)) : NaN;
-        const currency = e.currency === "XLM" ? "XLM" : "USDC";
+        const currency: PaymentAssetCode = e.currency === "XLM" ? "XLM" : "USDC";
         const amountStr = Number.isFinite(amt)
           ? amt.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : null;
@@ -509,6 +571,7 @@ export function WorkspaceOverviewDashboard({
         return {
           id: e.linkId,
           icon: paid ? CreditCard : Clock,
+          currency: paid ? currency : undefined,
           text: paid
             ? amountStr
               ? `Payment received — ${amountStr} ${currency} from ${label}`
@@ -534,7 +597,11 @@ export function WorkspaceOverviewDashboard({
         />
         <KpiCard
           label="Total Received"
-          value={`${d.totalReceivedXlm} XLM`}
+          value={
+            <TokenInline token="XLM">
+              {d.totalReceivedXlm} XLM
+            </TokenInline>
+          }
           sub="All-time from payment links"
           icon={TrendingUp}
           loading={loading}
@@ -620,11 +687,12 @@ export function WorkspaceOverviewDashboard({
           {assetBreakdown.length > 0 ? (
             <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
               {assetBreakdown.map((a) => (
-                <div key={a.name}>
-                  <p className={cn("text-[10px] font-medium uppercase tracking-wide", styles.muted)}>
-                    {a.name}
+                <div key={a.token}>
+                  <p className={cn("mb-1 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide", styles.muted)}>
+                    <TokenIcon token={a.token} size="sm" />
+                    {a.token}
                   </p>
-                  <p className={cn("text-sm font-semibold", styles.title)}>{a.value}</p>
+                  <p className={cn("text-xs font-semibold tabular-nums", styles.title)}>{a.value}</p>
                 </div>
               ))}
             </div>
@@ -665,15 +733,19 @@ export function WorkspaceOverviewDashboard({
               <p className="text-sm text-slate-500">No recent activity</p>
             </div>
           ) : (
-            <ul className="mt-3 flex flex-1 flex-col gap-2.5">
+            <ul className="mt-3 flex flex-1 flex-col gap-2">
               {recentActivity.map((item) => (
-                <li key={item.id} className="flex gap-2.5">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                    <item.icon className="h-3 w-3" />
+                <li key={item.id} className="flex gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-100">
+                    {item.currency ? (
+                      <TokenIcon token={item.currency} size="sm" />
+                    ) : (
+                      <item.icon className="h-3 w-3 text-slate-500" strokeWidth={1.75} />
+                    )}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p
-                      className={cn("line-clamp-2 text-xs leading-snug", styles.title)}
+                      className={cn("line-clamp-2 text-[11px] leading-snug", styles.title)}
                       title={item.text}
                     >
                       {item.text}

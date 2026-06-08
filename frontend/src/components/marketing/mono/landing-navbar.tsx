@@ -5,9 +5,12 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { homeLaunchPath } from "@/lib/launch-auth";
 
+const BOOK_DEMO = "https://calendly.com/kararsweta/30min";
 const CONTACT_HREF = "https://x.com/hypertron_hq";
 const DOCS_HREF = "https://www.hypertron.space/docs/introduction";
+const SIGN_IN_HREF = homeLaunchPath("/dashboard");
 
 export function LandingNavbar() {
   const [open, setOpen] = useState(false);
@@ -79,7 +82,14 @@ export function LandingNavbar() {
 
         <div className="flex items-center gap-3">
           <Link
-            href={CONTACT_HREF}
+            href={SIGN_IN_HREF}
+            data-testid="navbar-sign-in-btn"
+            className="hidden rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 sm:inline-flex"
+          >
+            Sign in
+          </Link>
+          <Link
+            href={BOOK_DEMO}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-90 sm:inline-flex"
@@ -138,7 +148,14 @@ export function LandingNavbar() {
             Contact us
           </Link>
           <Link
-            href={CONTACT_HREF}
+            href={SIGN_IN_HREF}
+            className="rounded-md px-3 py-2.5 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white"
+            onClick={() => setOpen(false)}
+          >
+            Sign in
+          </Link>
+          <Link
+            href={BOOK_DEMO}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-2 rounded-full bg-foreground py-2.5 text-center text-sm font-semibold text-background"
