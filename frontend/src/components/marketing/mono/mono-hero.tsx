@@ -453,9 +453,8 @@ function MonoHeroInner() {
                 app.hypertron.xyz
               </span>
             </div>
-          </div>
 
-          <HeroDashboardPreview />
+            <HeroDashboardPreview />
           </div>
         </motion.div>
       </div>
