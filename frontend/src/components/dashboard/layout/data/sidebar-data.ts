@@ -75,7 +75,8 @@ export function buildBusinessTierNavGroup(sectionTitle: string, bundleId: Worksp
 }
 
 /** Full workspace sidebar (shown after opening a workspace). */
-export function buildWorkspaceNavGroup(): NavGroup {
+export function buildWorkspaceNavGroup(options?: { enableAllLinks?: boolean }): NavGroup {
+  const all = options?.enableAllLinks ?? false;
   return {
     title: "Workspace",
     items: [
@@ -87,26 +88,27 @@ export function buildWorkspaceNavGroup(): NavGroup {
         url: "/dashboard/compliance-agent",
         icon: ShieldCheck,
         badge: "5",
-        disabled: true,
+        disabled: all ? undefined : true,
       },
-      { title: "Regulations", url: "/dashboard/rns", icon: Scale, badge: "3", disabled: true },
+      { title: "Regulations", url: "/dashboard/rns", icon: Scale, badge: "3", disabled: all ? undefined : true },
       {
         title: "Risk Reports",
         url: "/dashboard/compliance-analysis",
         icon: AlertTriangle,
         badge: "4",
-        disabled: true,
+        disabled: all ? undefined : true,
       },
-      { title: "Document Vault", url: "/dashboard/document-vault", icon: FolderArchive, disabled: true },
+      { title: "Document Vault", url: "/dashboard/document-vault", icon: FolderArchive, disabled: all ? undefined : true },
       { title: "Settings", url: "/dashboard/settings", icon: Settings },
     ],
   };
 }
 
-export function buildWorkspaceQuickActionsGroup(): NavGroup {
+export function buildWorkspaceQuickActionsGroup(options?: { enableAllLinks?: boolean }): NavGroup {
+  const all = options?.enableAllLinks ?? false;
   return {
     title: "Quick Actions",
-    items: [{ title: "Invite Team", url: "/dashboard/settings", icon: Users, disabled: true }],
+    items: [{ title: "Invite Team", url: "/dashboard/settings", icon: Users, disabled: all ? undefined : true }],
   };
 }
 

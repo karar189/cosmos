@@ -26,6 +26,7 @@ import {
   WORKSPACE_TIER_UPDATED_EVENT,
 } from "@/lib/workspace-tier-context";
 import { POST_SIGN_OUT_PATH } from "@/lib/launch-auth";
+import { useDemoMode } from "@/components/demo/demo-mode-provider";
 
 async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedTemplate[]> {
   try {
@@ -40,12 +41,19 @@ async function fetchWorkspaceTemplates(publicKey: string | null): Promise<SavedT
   return loadSavedTemplates(publicKey);
 }
 
-function WorkspaceLayoutInner({ children }: { children: ReactNode }) {
+function WorkspaceLayoutInner({
+  children,
+  topSlot,
+}: {
+  children: ReactNode;
+  topSlot?: ReactNode;
+}) {
   const pathname = usePathname();
   const { publicKey, disconnect } = useFreighter();
   const { isPrivy, privyUser } = useAppSession();
   const { startLoginTransition } = useLoginTransition();
   const { meta: pageMeta } = useWorkspacePageMetaContext() ?? { meta: null };
+  const { isDemo } = useDemoMode();
 
   const [workspaces, setWorkspaces] = useState<WorkspaceCardModel[]>([]);
   const [workspaceName, setWorkspaceName] = useState("Workspace");
@@ -106,6 +114,10 @@ function WorkspaceLayoutInner({ children }: { children: ReactNode }) {
     (publicKey ? `${publicKey.slice(0, 6)}…${publicKey.slice(-4)}` : "");
 
   const handleSignOut = () => {
+    if (isDemo) {
+      window.location.assign("/");
+      return;
+    }
     startLoginTransition("Signing out…");
     void fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" })
       .catch(() => {})
@@ -140,17 +152,26 @@ function WorkspaceLayoutInner({ children }: { children: ReactNode }) {
           <WorkspaceHubShellBar breadcrumbs={chromeMeta.breadcrumbs} workspaces={workspaces} />
         )}
         <div className="flex-1 overflow-y-auto">
-          <div className="workspace-hub-page-content w-full px-5 pb-8 pt-4 lg:px-6">{children}</div>
+          <div className="w-full px-5 pb-8 pt-4 lg:px-6">
+            {topSlot}
+            <div className="workspace-hub-page-content w-full">{children}</div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export function WorkspaceLayout({ children }: { children: ReactNode }) {
+export function WorkspaceLayout({
+  children,
+  topSlot,
+}: {
+  children: ReactNode;
+  topSlot?: ReactNode;
+}) {
   return (
     <WorkspacePageMetaProvider>
-      <WorkspaceLayoutInner>{children}</WorkspaceLayoutInner>
+      <WorkspaceLayoutInner topSlot={topSlot}>{children}</WorkspaceLayoutInner>
     </WorkspacePageMetaProvider>
   );
 }

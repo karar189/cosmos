@@ -14,13 +14,14 @@ import {
   type PaymentTabId,
   PAYMENT_TABS,
 } from "@/components/dashboard/payments/payments-shared";
+import { useDemoMode } from "@/components/demo/demo-mode-provider";
 
 const VALID_TABS = new Set<string>(PAYMENT_TABS.map((t) => t.id));
 
-function parseTab(value: string | null): PaymentTabId {
+function parseTab(value: string | null, isDemo: boolean): PaymentTabId {
   if (value && VALID_TABS.has(value)) {
     const tab = value as PaymentTabId;
-    if (isPaymentTabEnabled(tab)) return tab;
+    if (isPaymentTabEnabled(tab, isDemo)) return tab;
   }
   return "collect";
 }
@@ -33,7 +34,9 @@ export function PaymentsCollectPage({ businessId }: PaymentsCollectPageProps) {
   const { theme } = useDashboardTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tabFromUrl = parseTab(searchParams.get("tab"));
+  const { isDemo, demoPath } = useDemoMode();
+  const paymentsBase = demoPath("/dashboard/payment-links");
+  const tabFromUrl = parseTab(searchParams.get("tab"), isDemo);
   const [activeTab, setActiveTab] = useState<PaymentTabId>(tabFromUrl);
 
   useEffect(() => {
@@ -42,18 +45,18 @@ export function PaymentsCollectPage({ businessId }: PaymentsCollectPageProps) {
 
   useEffect(() => {
     const raw = searchParams.get("tab");
-    if (!raw || isPaymentTabEnabled(raw as PaymentTabId)) return;
+    if (!raw || isPaymentTabEnabled(raw as PaymentTabId, isDemo)) return;
     const params = new URLSearchParams(searchParams.toString());
     params.delete("tab");
     const qs = params.toString();
-    router.replace(qs ? `/dashboard/payment-links?${qs}` : "/dashboard/payment-links", {
+    router.replace(qs ? `${paymentsBase}?${qs}` : paymentsBase, {
       scroll: false,
     });
-  }, [router, searchParams]);
+  }, [router, searchParams, isDemo, paymentsBase]);
 
   const handleTabChange = useCallback(
     (tab: PaymentTabId) => {
-      if (!isPaymentTabEnabled(tab)) return;
+      if (!isPaymentTabEnabled(tab, isDemo)) return;
       setActiveTab(tab);
       const params = new URLSearchParams(searchParams.toString());
       if (tab === "collect") {
@@ -62,11 +65,11 @@ export function PaymentsCollectPage({ businessId }: PaymentsCollectPageProps) {
         params.set("tab", tab);
       }
       const qs = params.toString();
-      router.replace(qs ? `/dashboard/payment-links?${qs}` : "/dashboard/payment-links", {
+      router.replace(qs ? `${paymentsBase}?${qs}` : paymentsBase, {
         scroll: false,
       });
     },
-    [router, searchParams]
+    [router, searchParams, isDemo, paymentsBase]
   );
 
   return (

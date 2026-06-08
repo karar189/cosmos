@@ -27,6 +27,40 @@ type AppSessionContextValue = {
 
 const AppSessionContext = createContext<AppSessionContextValue | null>(null);
 
+export type { AppSessionContextValue };
+
+export function DemoAppSessionProvider({ children }: { children: ReactNode }) {
+  const value = useMemo<AppSessionContextValue>(
+    () => ({
+      data: {
+        auth: "privy",
+        user: {
+          id: "demo-user",
+          privyId: "did:privy:demo",
+          email: "demo@hypertron.space",
+          name: "Hypertron Demo",
+        },
+        stellarAddress: "GDEMO6M6QY7E5R4Q4QY7E5R4Q4QY7E5R4Q4QY7E5R4Q4QY7E5R4QA",
+      },
+      loading: false,
+      refresh: async () => null,
+      isAuthenticated: true,
+      isPrivy: true,
+      isWalletSession: false,
+      privyUser: {
+        id: "demo-user",
+        privyId: "did:privy:demo",
+        email: "demo@hypertron.space",
+        name: "Hypertron Demo",
+      },
+      walletAddress: null,
+    }),
+    []
+  );
+
+  return <AppSessionContext.Provider value={value}>{children}</AppSessionContext.Provider>;
+}
+
 export function AppSessionProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);

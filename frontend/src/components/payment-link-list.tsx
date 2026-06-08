@@ -11,7 +11,8 @@ import {
   resolvePaymentLinkCopyUrl,
 } from "@/lib/payment-link-public-url";
 import { getExplorerTxUrl } from "@/lib/stellar-explorer";
-import { USE_MOCK_DASHBOARD_DATA, fallbackPaymentLinks } from "@/data/fallback";
+import { useMockDashboardData } from "@/components/demo/demo-mode-provider";
+import { fallbackPaymentLinks } from "@/data/fallback";
 
 function truncate(str: string, head = 28, tail = 10) {
   if (str.length <= head + tail + 3) return str;
@@ -39,6 +40,7 @@ interface PaymentLinkListProps {
 export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
   const { theme } = useDashboardTheme();
   const t = hubThemeClasses(theme);
+  const useMock = useMockDashboardData();
   const [links, setLinks] = useState<PaymentLinkItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
     setError(null);
     setLoading(true);
     try {
-      if (USE_MOCK_DASHBOARD_DATA) {
+      if (useMock) {
         setLinks(fallbackPaymentLinks);
         return;
       }
@@ -71,7 +73,7 @@ export function PaymentLinkList({ businessId }: PaymentLinkListProps) {
     } finally {
       setLoading(false);
     }
-  }, [businessId]);
+  }, [businessId, useMock]);
 
   useEffect(() => { fetchLinks(); }, [fetchLinks]);
 

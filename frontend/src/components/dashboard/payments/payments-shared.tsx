@@ -17,6 +17,7 @@ import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-
 import type { DashboardTheme } from "@/lib/dashboard-theme";
 import { cn } from "@/utils";
 import { syncPendingPaymentLinks } from "@/lib/poll-payment-link-status";
+import { useDemoMode } from "@/components/demo/demo-mode-provider";
 
 export const PAYMENT_TABS = [
   { id: "collect", label: "Collect" },
@@ -30,7 +31,8 @@ export type PaymentTabId = (typeof PAYMENT_TABS)[number]["id"];
 /** Tabs hidden from navigation until the feature ships. */
 export const DISABLED_PAYMENT_TABS = new Set<PaymentTabId>(["subscriptions", "customers"]);
 
-export function isPaymentTabEnabled(tab: PaymentTabId): boolean {
+export function isPaymentTabEnabled(tab: PaymentTabId, isDemo = false): boolean {
+  if (isDemo) return true;
   return !DISABLED_PAYMENT_TABS.has(tab);
 }
 
@@ -211,6 +213,7 @@ export function PaymentTabsNav({
   theme: DashboardTheme;
 }) {
   const t = hubThemeClasses(theme);
+  const { isDemo } = useDemoMode();
 
   return (
     <nav
@@ -219,7 +222,7 @@ export function PaymentTabsNav({
     >
       {PAYMENT_TABS.map((tab) => {
         const isActive = tab.id === activeTab;
-        const disabled = !isPaymentTabEnabled(tab.id);
+        const disabled = !isPaymentTabEnabled(tab.id, isDemo);
 
         if (disabled) {
           return (

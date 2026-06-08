@@ -1,4 +1,6 @@
 import type { HubBreadcrumb } from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
+import { isDemoRoute, withDemoPrefix } from "@/lib/demo-routes";
+import { normalizeAppPathname } from "@/lib/workspace-hub-shell-routes";
 
 export const HUB_NAV_PATHS = [
   "/dashboard",
@@ -12,7 +14,7 @@ export type HubNavPath = (typeof HUB_NAV_PATHS)[number];
 
 export function isHubNavRoute(pathname: string | null | undefined): boolean {
   if (!pathname) return false;
-  const base = pathname.split("?")[0] ?? pathname;
+  const base = normalizeAppPathname(pathname);
   if (base === "/dashboard") return true;
   return HUB_NAV_PATHS.some((route) => route !== "/dashboard" && base.startsWith(route));
 }
@@ -23,9 +25,10 @@ export type HubPageMeta = {
   subtitle?: string;
 };
 
-export function hubNavBreadcrumbs(page: string): HubBreadcrumb[] {
+export function hubNavBreadcrumbs(page: string, pathname?: string | null): HubBreadcrumb[] {
+  const demo = isDemoRoute(pathname);
   return [
-    { label: "Workspaces", href: "/dashboard" },
+    { label: "Workspaces", href: withDemoPrefix("/dashboard", demo) },
     { label: page, current: true },
   ];
 }
@@ -61,18 +64,34 @@ const HUB_PAGE_DEFAULTS: Record<HubNavPath, HubPageMeta> = {
 
 export function getDefaultHubPageMeta(pathname: string | null | undefined): HubPageMeta | null {
   if (!pathname) return null;
-  const base = pathname.split("?")[0] ?? pathname;
-  if (base === "/dashboard") return HUB_PAGE_DEFAULTS["/dashboard"];
+  const base = normalizeAppPathname(pathname);
+  const demo = isDemoRoute(pathname);
+  if (base === "/dashboard") {
+    const meta = HUB_PAGE_DEFAULTS["/dashboard"];
+    return {
+      ...meta,
+      breadcrumbs: meta.breadcrumbs.map((b) =>
+        b.href ? { ...b, href: withDemoPrefix(b.href, demo) } : b
+      ),
+    };
+  }
   const match = HUB_NAV_PATHS.find(
     (route) => route !== "/dashboard" && base.startsWith(route)
   );
-  return match ? HUB_PAGE_DEFAULTS[match] : null;
+  if (!match) return null;
+  const meta = HUB_PAGE_DEFAULTS[match];
+  return {
+    ...meta,
+    breadcrumbs: meta.breadcrumbs.map((b) =>
+      b.href ? { ...b, href: withDemoPrefix(b.href, demo) } : b
+    ),
+  };
 }
 
 export type HubLoadingVariant = "workspaces" | "templates" | "billing" | "settings" | "support";
 
 export function getHubLoadingVariant(pathname: string | null | undefined): HubLoadingVariant {
-  const base = pathname?.split("?")[0] ?? "";
+  const base = normalizeAppPathname(pathname);
   if (base.startsWith("/dashboard/templates")) return "templates";
   if (base.startsWith("/dashboard/billing")) return "billing";
   if (base.startsWith("/dashboard/account")) return "settings";

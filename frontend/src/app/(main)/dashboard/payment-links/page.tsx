@@ -2,16 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useFreighter } from "@/hooks/useFreighter";
+import { usePathname } from "next/navigation";
 import { PaymentsCollectPage } from "@/components/dashboard/payments/payments-collect-page";
 import {
   WorkspacePageShell,
   workspaceHubBreadcrumbs,
 } from "@/components/dashboard/workspace-hub/workspace-page-shell";
 import { WorkspacePaymentsContentSkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
-import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
+import { fallbackBusiness } from "@/data/fallback";
+import { useMockDashboardData } from "@/components/demo/demo-mode-provider";
 
 export default function PaymentLinksPage() {
+  const pathname = usePathname();
   const { publicKey } = useFreighter();
+  const useMock = useMockDashboardData();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,7 +23,7 @@ export default function PaymentLinksPage() {
   useEffect(() => {
     let cancelled = false;
 
-    if (USE_MOCK_DASHBOARD_DATA) {
+    if (useMock) {
       setBusinessId(fallbackBusiness.businessId);
       setBusinessError(null);
       setLoading(false);
@@ -61,11 +65,11 @@ export default function PaymentLinksPage() {
     return () => {
       cancelled = true;
     };
-  }, [publicKey]);
+  }, [publicKey, useMock]);
 
   return (
     <WorkspacePageShell
-      breadcrumbs={workspaceHubBreadcrumbs("Payment links")}
+      breadcrumbs={workspaceHubBreadcrumbs("Payment links", pathname)}
       connectMessage="Connect your wallet to manage payment links."
     >
       {loading ? (

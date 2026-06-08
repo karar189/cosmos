@@ -212,7 +212,7 @@ function MonoHeroInner() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mx-auto grid w-full max-w-lg grid-cols-1 gap-3 sm:grid-cols-2"
+          className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3"
         >
           <motion.div
             className="w-full"
@@ -224,9 +224,22 @@ function MonoHeroInner() {
               target="_blank"
               rel="noopener noreferrer"
               data-testid="hero-book-demo-btn"
-              className="flex h-12 w-full items-center justify-center rounded-full bg-foreground px-8 text-base font-semibold text-background"
+              className="flex h-12 w-full items-center justify-center rounded-full bg-foreground px-6 text-base font-semibold text-background"
             >
               Book a Demo
+            </Link>
+          </motion.div>
+          <motion.div
+            className="w-full"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Link
+              href="/demo/dashboard/overview"
+              data-testid="hero-try-demo-btn"
+              className="flex h-12 w-full items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/15 px-6 text-base font-semibold text-white hover:bg-violet-500/25"
+            >
+              Try Demo
             </Link>
           </motion.div>
           <motion.div
@@ -239,7 +252,7 @@ function MonoHeroInner() {
               variant="outline"
               data-testid="hero-launch-btn"
               onClick={() => setLaunchOpen(true)}
-              className="flex h-12 w-full items-center justify-center rounded-full border-white/25 bg-transparent px-8 text-base font-semibold text-white hover:bg-white/10 hover:text-white"
+              className="flex h-12 w-full items-center justify-center rounded-full border-white/25 bg-transparent px-6 text-base font-semibold text-white hover:bg-white/10 hover:text-white"
             >
               Launch
             </Button>

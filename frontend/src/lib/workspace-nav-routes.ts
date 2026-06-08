@@ -1,9 +1,11 @@
 import type { HubBreadcrumb } from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
+import { isDemoRoute, withDemoPrefix } from "@/lib/demo-routes";
+import { normalizeAppPathname } from "@/lib/workspace-hub-shell-routes";
 import { isHubNavRoute } from "@/lib/hub-nav-routes";
 
 export function isWorkspaceRoute(pathname: string | null | undefined): boolean {
   if (!pathname) return false;
-  const base = pathname.split("?")[0] ?? pathname;
+  const base = normalizeAppPathname(pathname);
   if (!base.startsWith("/dashboard")) return false;
   return !isHubNavRoute(pathname);
 }
@@ -30,7 +32,7 @@ const ROUTE_LABELS: Record<string, string> = {
 };
 
 export function getWorkspaceLoadingVariant(pathname: string | null | undefined): WorkspaceLoadingVariant {
-  const base = pathname?.split("?")[0] ?? "";
+  const base = normalizeAppPathname(pathname);
   if (base.startsWith("/dashboard/overview")) return "overview";
   if (base.startsWith("/dashboard/withdraw")) return "treasury";
   if (base.startsWith("/dashboard/payment-links") || base.startsWith("/dashboard/payments")) {
@@ -39,19 +41,20 @@ export function getWorkspaceLoadingVariant(pathname: string | null | undefined):
   return "generic";
 }
 
-export function workspaceHubBreadcrumbs(currentPage: string): HubBreadcrumb[] {
+export function workspaceHubBreadcrumbs(currentPage: string, pathname?: string | null): HubBreadcrumb[] {
+  const demo = isDemoRoute(pathname);
   return [
-    { label: "Workspaces", href: "/dashboard" },
-    { label: "Overview", href: "/dashboard/overview" },
+    { label: "Workspaces", href: withDemoPrefix("/dashboard", demo) },
+    { label: "Overview", href: withDemoPrefix("/dashboard/overview", demo) },
     { label: currentPage, current: true },
   ];
 }
 
 export function getDefaultWorkspaceBreadcrumbs(pathname: string | null | undefined): HubBreadcrumb[] {
-  const base = pathname?.split("?")[0] ?? "";
+  const base = normalizeAppPathname(pathname);
   const segment = base.split("/").filter(Boolean).pop() ?? "Workspace";
   const label =
     ROUTE_LABELS[segment] ??
     segment.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-  return workspaceHubBreadcrumbs(label);
+  return workspaceHubBreadcrumbs(label, pathname);
 }

@@ -18,6 +18,8 @@ import {
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   Cell,
   Pie,
   PieChart,
@@ -28,6 +30,15 @@ import {
 } from "recharts";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
+import { useDemoMode } from "@/components/demo/demo-mode-provider";
+import {
+  DEMO_COMPLIANCE_NEWS,
+  DEMO_EXPENSES,
+  DEMO_OPERATIONS,
+  DEMO_PAYMENT_BREAKDOWN,
+  DEMO_REGULATORY,
+  DEMO_TREASURY_SERIES,
+} from "@/lib/demo-overview-data";
 
 const HYPERTRON_CHART = {
   blue: "#60a5fa",
@@ -147,6 +158,176 @@ function ComingSoonState({ title, compact }: { title?: string; compact?: boolean
   );
 }
 
+type PaymentSlice = {
+  name: string;
+  count: number;
+  pct: number;
+  color: string;
+  volume?: number;
+};
+
+function formatPaymentVolume(amount: number): string {
+  if (amount >= 10_000) return `$${(amount / 1000).toFixed(1)}k`;
+  return `$${amount.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+}
+
+function buildPaymentSlices(
+  items: { name: string; count: number; color: string; volume?: number }[]
+): PaymentSlice[] {
+  const active = items.filter((s) => s.count > 0);
+  const total = active.reduce((sum, s) => sum + s.count, 0);
+  if (total === 0) return [];
+
+  return active.map((s) => ({
+    name: s.name,
+    count: s.count,
+    volume: s.volume,
+    color: s.color,
+    pct: Math.round((s.count / total) * 100),
+  }));
+}
+
+function PaymentsBreakdownPanel({
+  slices,
+  loading,
+  paymentsHref,
+  styles,
+}: {
+  slices: PaymentSlice[];
+  loading?: boolean;
+  paymentsHref: string;
+  styles: typeof overviewStyles;
+}) {
+  const totalCount = slices.reduce((sum, s) => sum + s.count, 0);
+  const totalVolume = slices.reduce((sum, s) => sum + (s.volume ?? 0), 0);
+  const completed = slices.find((s) => s.name === "Completed");
+  const conversionRate =
+    completed && totalCount > 0 ? Math.round((completed.count / totalCount) * 100) : null;
+
+  return (
+    <>
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <div>
+          <h2 className={cn("text-sm font-semibold", styles.title)}>Payments</h2>
+          <p className={cn("text-xs", styles.muted)}>Status breakdown</p>
+        </div>
+        <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs text-slate-500">
+          <Link href={paymentsHref}>
+            View all
+            <ArrowUpRight className="ml-0.5 h-3 w-3" />
+          </Link>
+        </Button>
+      </div>
+
+      {loading ? (
+        <div className="flex h-48 items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-slate-300" />
+        </div>
+      ) : slices.length === 0 ? (
+        <ChartEmptyState message="Not enough data" />
+      ) : (
+        <>
+          <div className="flex items-center gap-5">
+            <div className="relative mx-auto h-44 w-44 shrink-0 sm:mx-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={slices}
+                    dataKey="count"
+                    innerRadius={52}
+                    outerRadius={72}
+                    paddingAngle={2}
+                    stroke="none"
+                  >
+                    {slices.map((entry) => (
+                      <Cell key={entry.name} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: 8,
+                      border: "1px solid #e2e8f0",
+                      background: "#fff",
+                      fontSize: 12,
+                    }}
+                    formatter={(value: number, _name, item) => {
+                      const slice = item.payload as PaymentSlice;
+                      const vol = slice.volume ? ` · ${formatPaymentVolume(slice.volume)}` : "";
+                      return [`${value} (${slice.pct}%)${vol}`, slice.name];
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span className={cn("text-2xl font-semibold tabular-nums tracking-tight", styles.title)}>
+                  {totalCount}
+                </span>
+                <span className={cn("text-[10px] font-medium uppercase tracking-wide", styles.muted)}>
+                  payments
+                </span>
+                {totalVolume > 0 ? (
+                  <span className="mt-0.5 text-xs font-semibold text-blue-600">
+                    {formatPaymentVolume(totalVolume)}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <ul className="flex min-w-0 flex-1 flex-col gap-2.5">
+              {slices.map((s) => (
+                <li
+                  key={s.name}
+                  className="flex items-center justify-between gap-3 rounded-lg bg-slate-50/80 px-2.5 py-2"
+                >
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ background: s.color }}
+                    />
+                    <span className={cn("truncate text-xs font-medium", styles.title)}>{s.name}</span>
+                  </span>
+                  <div className="shrink-0 text-right">
+                    <p className={cn("text-xs font-semibold tabular-nums", styles.title)}>
+                      {s.count}
+                      <span className={cn("ml-1.5 font-normal", styles.muted)}>{s.pct}%</span>
+                    </p>
+                    {s.volume != null && s.volume > 0 ? (
+                      <p className="text-[10px] tabular-nums text-slate-400">
+                        {formatPaymentVolume(s.volume)}
+                      </p>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {conversionRate != null || totalVolume > 0 ? (
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-slate-100 pt-3 text-[11px]">
+              {conversionRate != null ? (
+                <span className={styles.muted}>
+                  Success rate{" "}
+                  <strong className={cn("font-semibold text-emerald-600", styles.title)}>
+                    {conversionRate}%
+                  </strong>
+                </span>
+              ) : null}
+              {totalVolume > 0 ? (
+                <span className={styles.muted}>
+                  Volume{" "}
+                  <strong className={cn("font-semibold", styles.title)}>
+                    {formatPaymentVolume(totalVolume)}
+                  </strong>
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </>
+      )}
+    </>
+  );
+}
+
 function KpiCard({
   label,
   value,
@@ -173,7 +354,7 @@ function KpiCard({
       {loading ? (
         <Loader2 className="h-6 w-6 animate-spin text-slate-300" />
       ) : (
-        <p className={cn("text-2xl font-semibold tracking-tight", styles.title)}>{value}</p>
+        <p className={cn("text-2xl font-semibold tabular-nums tracking-tight", styles.title)}>{value}</p>
       )}
       <p className={cn("text-xs", styles.muted)}>{sub}</p>
     </div>
@@ -187,6 +368,7 @@ export function WorkspaceOverviewDashboard({
   userInitials: _userInitials,
 }: WorkspaceOverviewDashboardProps) {
   const styles = overviewStyles;
+  const { isDemo, demoPath } = useDemoMode();
   const areaFill = HYPERTRON_CHART.blueFill;
   const areaStroke = HYPERTRON_CHART.blue;
 
@@ -249,7 +431,12 @@ export function WorkspaceOverviewDashboard({
     void loadData();
   }, [loadData]);
 
-  const treasurySeries = useMemo(() => buildTreasurySeries(events), [events]);
+  const treasurySeries = useMemo(() => {
+    const fromEvents = buildTreasurySeries(events);
+    if (fromEvents.length >= 2) return fromEvents;
+    if (isDemo) return [...DEMO_TREASURY_SERIES];
+    return fromEvents;
+  }, [events, isDemo]);
 
   const assetBreakdown = useMemo(() => {
     if (vault?.hasVault && vault.balance) {
@@ -261,42 +448,46 @@ export function WorkspaceOverviewDashboard({
     return [];
   }, [vault]);
 
-  const treasuryDisplay = useMemo(() => {
+  const treasuryKpi = useMemo(() => {
+    const fallbackSub = vault?.hasVault ? "Vault balance" : "Received via payment links";
+
     if (vault?.hasVault && vault.balance) {
       const usdc = vault.balance.usdcRaw;
       const xlm = vault.balance.xlmRaw;
       if (usdc > 0 || xlm > 0) {
-        if (usdc > 0 && xlm > 0) return `$${vault.balance.usdc} · ${vault.balance.xlm} XLM`;
-        if (usdc > 0) return `$${vault.balance.usdc}`;
-        return `${vault.balance.xlm} XLM`;
+        if (usdc > 0 && xlm > 0) {
+          return {
+            value: `$${vault.balance.usdc}`,
+            sub: `${vault.balance.xlm} XLM · Vault balance`,
+          };
+        }
+        if (usdc > 0) {
+          return { value: `$${vault.balance.usdc}`, sub: fallbackSub };
+        }
+        return { value: `${vault.balance.xlm} XLM`, sub: fallbackSub };
       }
     }
+
     const received = parseFloat(stats?.totalReceivedXlm ?? "0");
     if (Number.isFinite(received) && received > 0) {
-      return `${stats!.totalReceivedXlm} XLM`;
+      return { value: `${stats!.totalReceivedXlm} XLM`, sub: fallbackSub };
     }
-    return "$0.00";
+
+    return { value: "$0.00", sub: fallbackSub };
   }, [vault, stats]);
 
-  const paymentStatus = useMemo(() => {
+  const paymentStatus = useMemo((): PaymentSlice[] => {
+    if (isDemo) {
+      return buildPaymentSlices(DEMO_PAYMENT_BREAKDOWN);
+    }
+
     const completed = stats?.completed ?? 0;
     const pending = stats?.pending ?? 0;
-    const total = stats?.linkCount ?? 0;
-    if (total === 0) return [];
-
-    const pct = (n: number) => Math.round((n / total) * 100);
-    const slices = [
+    return buildPaymentSlices([
       { name: "Completed", count: completed, color: HYPERTRON_CHART.blue },
       { name: "Pending", count: pending, color: HYPERTRON_CHART.amber },
-    ].filter((s) => s.count > 0);
-
-    return slices.map((s) => ({
-      name: s.name,
-      value: pct(s.count),
-      count: s.count,
-      color: s.color,
-    }));
-  }, [stats]);
+    ]);
+  }, [stats, isDemo]);
 
   const recentActivity = useMemo(() => {
     return [...events]
@@ -335,8 +526,8 @@ export function WorkspaceOverviewDashboard({
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard
           label="Total Treasury"
-          value={treasuryDisplay}
-          sub={vault?.hasVault ? "Vault balance" : "Received via payment links"}
+          value={treasuryKpi.value}
+          sub={treasuryKpi.sub}
           icon={Wallet}
           loading={loading}
           styles={styles}
@@ -442,7 +633,24 @@ export function WorkspaceOverviewDashboard({
 
         <div className={cn(styles.panel, "lg:col-span-4 flex flex-col p-4")}>
           <h2 className={cn("text-sm font-semibold", styles.title)}>Operations Overview</h2>
-          <ComingSoonState compact />
+          {isDemo ? (
+            <>
+              <ul className="mt-3 flex flex-1 flex-col gap-3">
+                {DEMO_OPERATIONS.map((item) => (
+                  <li key={item.label} className="flex items-center justify-between gap-2 text-sm">
+                    <span className={styles.title}>{item.label}</span>
+                    <span className={cn("text-xs", styles.muted)}>{item.count}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 rounded-lg border border-red-200/80 bg-red-50 px-3 py-2.5">
+                <p className="text-xs font-semibold text-red-700">Tasks Overdue</p>
+                <p className="text-[11px] text-red-600/90">5 action needed</p>
+              </div>
+            </>
+          ) : (
+            <ComingSoonState compact />
+          )}
         </div>
 
         <div className={cn(styles.panel, "lg:col-span-3 flex flex-col p-4")}>
@@ -481,71 +689,111 @@ export function WorkspaceOverviewDashboard({
 
       <div className="grid gap-5 lg:grid-cols-3">
         <div className={cn(styles.panel, "p-5")}>
-          <h2 className={cn("text-sm font-semibold", styles.title)}>Payments</h2>
-          {loading ? (
-            <div className="flex h-44 items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-slate-300" />
-            </div>
-          ) : paymentStatus.length === 0 ? (
-            <div className="mt-2">
-              <ChartEmptyState message="Not enough data" />
-            </div>
-          ) : (
-            <div className="mt-2 flex items-center gap-4">
-              <div className="h-40 w-40 shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={paymentStatus}
-                      dataKey="value"
-                      innerRadius={42}
-                      outerRadius={62}
-                      paddingAngle={2}
-                    >
-                      {paymentStatus.map((entry) => (
-                        <Cell key={entry.name} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <ul className="flex flex-1 flex-col gap-2 text-xs">
-                {paymentStatus.map((s) => (
-                  <li key={s.name} className="flex items-center justify-between gap-2">
-                    <span className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full" style={{ background: s.color }} />
-                      <span className={styles.muted}>{s.name}</span>
-                    </span>
-                    <span className={cn("font-semibold", styles.title)}>
-                      {s.value}% ({s.count})
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <PaymentsBreakdownPanel
+            slices={paymentStatus}
+            loading={loading}
+            paymentsHref={demoPath("/dashboard/payment-links")}
+            styles={styles}
+          />
         </div>
 
         <div className={cn(styles.panel, "p-5")}>
           <h2 className={cn("text-sm font-semibold", styles.title)}>Top Expenses</h2>
-          <ComingSoonState />
+          {isDemo ? (
+            <div className="mt-4 h-44">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={[...DEMO_EXPENSES]} layout="vertical" margin={{ left: 4, right: 8 }}>
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    width={88}
+                    tick={{ fill: styles.tick, fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Bar dataKey="value" fill={HYPERTRON_CHART.blue} radius={[0, 4, 4, 0]} barSize={10} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <ComingSoonState />
+          )}
         </div>
 
         <div className={cn(styles.panel, "p-5")}>
           <h2 className={cn("text-sm font-semibold", styles.title)}>Compliance News</h2>
-          <ComingSoonState />
+          {isDemo ? (
+            <ul className="mt-4 flex flex-col gap-3">
+              {DEMO_COMPLIANCE_NEWS.map((n) => (
+                <li key={n.title} className="flex flex-col gap-1.5">
+                  <span
+                    className={cn(
+                      "w-fit rounded-md border px-2 py-0.5 text-[10px] font-semibold",
+                      n.color
+                    )}
+                  >
+                    {n.level}
+                  </span>
+                  <p className={cn("text-xs leading-snug", styles.title)}>{n.title}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ComingSoonState />
+          )}
         </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white px-5 py-4 shadow-sm">
-        <div className="flex flex-col gap-1">
-          <p className={cn("text-[10px] font-semibold uppercase tracking-wide", styles.muted)}>
-            Regulatory Watch & Risk Overview
-          </p>
-          <p className={cn("text-sm", styles.muted)}>Coming soon</p>
+        <div className="flex flex-wrap gap-6">
+          {isDemo ? (
+            <>
+              <div>
+                <p className={cn("text-[10px] font-semibold uppercase tracking-wide", styles.muted)}>
+                  Regulatory Watch
+                </p>
+                <div className="mt-1 flex flex-wrap gap-4 text-xs">
+                  <span className={styles.title}>
+                    New Regulations <strong className="text-blue-600">{DEMO_REGULATORY.regulations}</strong>
+                  </span>
+                  <span className={styles.title}>
+                    Updates <strong className="text-blue-600">{DEMO_REGULATORY.updates}</strong>
+                  </span>
+                  <span className={styles.title}>
+                    Deadlines <strong className="text-amber-600">{DEMO_REGULATORY.deadlines}</strong>
+                  </span>
+                </div>
+              </div>
+              <div className="hidden h-10 w-px bg-slate-200 sm:block" />
+              <div>
+                <p className={cn("text-[10px] font-semibold uppercase tracking-wide", styles.muted)}>
+                  Risk Overview
+                </p>
+                <div className="mt-1 flex flex-wrap gap-4 text-xs">
+                  <span className={styles.title}>
+                    High <strong className="text-red-500">{DEMO_REGULATORY.highRisk}</strong>
+                  </span>
+                  <span className={styles.title}>
+                    Medium <strong className="text-amber-500">{DEMO_REGULATORY.mediumRisk}</strong>
+                  </span>
+                  <span className={styles.title}>
+                    Low <strong className="text-emerald-500">{DEMO_REGULATORY.lowRisk}</strong>
+                  </span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col gap-1">
+              <p className={cn("text-[10px] font-semibold uppercase tracking-wide", styles.muted)}>
+                Regulatory Watch & Risk Overview
+              </p>
+              <p className={cn("text-sm", styles.muted)}>Coming soon</p>
+            </div>
+          )}
         </div>
         <Button asChild variant="outline" className="rounded-lg border-slate-200">
-          <Link href="/dashboard/compliance-analysis">
+          <Link href={demoPath("/dashboard/compliance-analysis")}>
             View Risk Report
             <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
           </Link>

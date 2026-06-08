@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useFreighter } from "@/hooks/useFreighter";
 import {
   WorkspacePageShell,
@@ -8,10 +9,13 @@ import {
 } from "@/components/dashboard/workspace-hub/workspace-page-shell";
 import { WorkspaceTreasuryBodySkeleton } from "@/components/dashboard/workspace-hub/hub-content-skeletons";
 import { WithdrawPage as WithdrawContent } from "@/components/dashboard/withdraw-page";
-import { USE_MOCK_DASHBOARD_DATA, fallbackBusiness } from "@/data/fallback";
+import { fallbackBusiness } from "@/data/fallback";
+import { useMockDashboardData } from "@/components/demo/demo-mode-provider";
 
 export default function WithdrawPage() {
+  const pathname = usePathname();
   const { publicKey } = useFreighter();
+  const useMock = useMockDashboardData();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [receiveAddress, setReceiveAddress] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
@@ -20,7 +24,7 @@ export default function WithdrawPage() {
   useEffect(() => {
     let cancelled = false;
 
-    if (USE_MOCK_DASHBOARD_DATA) {
+    if (useMock) {
       setBusinessId(fallbackBusiness.businessId);
       setReceiveAddress(fallbackBusiness.receiveAddress);
       setBusinessError(null);
@@ -66,11 +70,11 @@ export default function WithdrawPage() {
     return () => {
       cancelled = true;
     };
-  }, [publicKey]);
+  }, [publicKey, useMock]);
 
   return (
     <WorkspacePageShell
-      breadcrumbs={workspaceHubBreadcrumbs("Withdraw")}
+      breadcrumbs={workspaceHubBreadcrumbs("Withdraw", pathname)}
       connectMessage="Connect your wallet to withdraw funds."
     >
       <div className="flex flex-col gap-6">
