@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/dialog";
 import { isPrivyConfigured } from "@/lib/privy-config";
 import { WalletSignInButton } from "@/components/auth/wallet-sign-in-button";
+import { SandboxMobileUnsupported } from "@/components/demo/sandbox-mobile-unsupported";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   INVITE_VERIFIED_KEY,
   LAUNCH_QUERY_PARAM,
@@ -56,6 +58,8 @@ function MonoHeroInner() {
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
   const [walletAutoStart, setWalletAutoStart] = useState(false);
+  const [sandboxMobileOpen, setSandboxMobileOpen] = useState(false);
+  const isMobile = useIsMobile();
   const inviteInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -237,17 +241,34 @@ function MonoHeroInner() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
           >
-            <Link
-              href="/demo/dashboard/overview"
-              data-testid="hero-explore-sandbox-btn"
-              className="flex h-12 w-full items-center justify-center rounded-full border border-white/25 bg-transparent px-6 text-base font-semibold text-white hover:bg-white/10"
-            >
-              Explore Sandbox
-            </Link>
+            {isMobile ? (
+              <button
+                type="button"
+                data-testid="hero-explore-sandbox-btn"
+                onClick={() => setSandboxMobileOpen(true)}
+                className="flex h-12 w-full items-center justify-center rounded-full border border-white/25 bg-transparent px-6 text-base font-semibold text-white hover:bg-white/10"
+              >
+                Explore Sandbox
+              </button>
+            ) : (
+              <Link
+                href="/demo/dashboard/overview"
+                data-testid="hero-explore-sandbox-btn"
+                className="flex h-12 w-full items-center justify-center rounded-full border border-white/25 bg-transparent px-6 text-base font-semibold text-white hover:bg-white/10"
+              >
+                Explore Sandbox
+              </Link>
+            )}
           </motion.div>
         </motion.div>
 
         <HeroBuiltWithStrip />
+
+        <Dialog open={sandboxMobileOpen} onOpenChange={setSandboxMobileOpen}>
+          <DialogContent className="gap-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 text-foreground shadow-2xl shadow-black/10 ring-0 sm:max-w-[420px] [&>button]:right-5 [&>button]:top-5 [&>button]:rounded-lg [&>button]:text-slate-400 [&>button]:opacity-100 [&>button]:hover:bg-slate-100 [&>button]:hover:text-slate-700">
+            <SandboxMobileUnsupported variant="dialog" theme="light" />
+          </DialogContent>
+        </Dialog>
 
         <Dialog open={launchOpen} onOpenChange={handleLaunchOpenChange}>
           <DialogContent className="gap-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/95 p-0 text-foreground shadow-2xl shadow-black/50 ring-0 backdrop-blur-xl sm:max-w-[420px] [&>button]:right-5 [&>button]:top-5 [&>button]:rounded-lg [&>button]:text-zinc-500 [&>button]:opacity-100 [&>button]:hover:bg-white/[0.06] [&>button]:hover:text-white">

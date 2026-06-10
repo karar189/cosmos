@@ -3,6 +3,7 @@
 import { type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { DemoBanner } from "@/components/demo/demo-banner";
+import { SandboxMobileGate } from "@/components/demo/sandbox-mobile-gate";
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate";
 import { isHubNavRoute } from "@/lib/hub-nav-routes";
 import { isWorkspaceRoute } from "@/lib/workspace-nav-routes";
@@ -30,8 +31,10 @@ export default function DemoDashboardLayout({ children }: { children: ReactNode 
   }
 
   return (
-    <OnboardingGate when={false} autoRedirect={false}>
-      {content}
-    </OnboardingGate>
+    <SandboxMobileGate>
+      <OnboardingGate when={false} autoRedirect={false}>
+        {content}
+      </OnboardingGate>
+    </SandboxMobileGate>
   );
 }
