@@ -257,7 +257,7 @@ export function WorkspaceOverviewSidebar({
   const quickActionsGroup = buildWorkspaceQuickActionsGroup({ enableAllLinks: isDemo });
 
   return (
-    <aside className="workspace-hub-sidebar flex h-screen w-[220px] shrink-0 flex-col rounded-tl-[28px] border-r border-ui-border/80">
+    <aside className="workspace-hub-sidebar hidden h-screen w-[220px] shrink-0 flex-col rounded-tl-[28px] border-r border-ui-border/80 lg:flex">
       {/* Workspace switcher */}
       <div className="px-4 pb-2 pt-5">
         <DropdownMenu>
@@ -326,6 +326,132 @@ export function WorkspaceOverviewSidebar({
         </div>
       </PendingNavProvider>
     </aside>
+  );
+}
+
+export function WorkspaceOverviewMobileNav({
+  workspaceName: workspaceNameProp,
+}: {
+  workspaceName?: string;
+}) {
+  const pathname = usePathname() ?? "";
+  const [workspaceName, setWorkspaceName] = useState(workspaceNameProp?.trim() || "Workspace");
+  const { theme } = useDashboardTheme();
+  const t = hubThemeClasses(theme);
+  const { isDemo, demoPath } = useDemoMode();
+  const workspaceGroup = buildWorkspaceNavGroup({ enableAllLinks: isDemo });
+  const quickActionsGroup = buildWorkspaceQuickActionsGroup({ enableAllLinks: isDemo });
+  const navItems = [...workspaceGroup.items, ...quickActionsGroup.items].filter(
+    (item): item is NavLink => "url" in item
+  );
+
+  useEffect(() => {
+    syncWorkspaceTierFromLatestTemplate();
+    const sync = () => {
+      const state = getWorkspaceTierState();
+      const fromTier = state?.businessName?.trim();
+      if (fromTier) setWorkspaceName(fromTier);
+      else if (workspaceNameProp?.trim()) setWorkspaceName(workspaceNameProp.trim());
+    };
+    sync();
+    window.addEventListener(WORKSPACE_TIER_UPDATED_EVENT, sync);
+    return () => window.removeEventListener(WORKSPACE_TIER_UPDATED_EVENT, sync);
+  }, [workspaceNameProp]);
+
+  return (
+    <div className="lg:hidden">
+      <div
+        className={cn(
+          "mb-3 flex items-center gap-3 rounded-2xl border px-3 py-3",
+          t.dark ? "border-white/10 bg-white/10" : "border-ui-border/80 bg-white"
+        )}
+      >
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
+          <Building2 className="h-4 w-4" strokeWidth={1.75} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className={cn("truncate text-sm font-semibold tracking-tight", t.brandText)}>
+            {workspaceName}
+          </p>
+          <p className={cn("text-[11px]", t.cardMeta)}>Founder</p>
+        </div>
+        <Link
+          href={demoPath("/dashboard")}
+          className={cn(
+            "shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold",
+            t.dark
+              ? "border-white/10 text-slate-200"
+              : "border-ui-border/80 text-neutral-700"
+          )}
+        >
+          Workspaces
+        </Link>
+      </div>
+
+      <PendingNavProvider>
+        <nav className="-mx-5 mb-4 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {navItems.map((item) => (
+            <MobileNavPill
+              key={`${item.title}-${item.url}`}
+              item={item}
+              pathname={pathname}
+              demoPath={demoPath}
+              themeClasses={t}
+            />
+          ))}
+        </nav>
+      </PendingNavProvider>
+    </div>
+  );
+}
+
+function MobileNavPill({
+  item,
+  pathname,
+  demoPath,
+  themeClasses: t,
+}: {
+  item: NavLink;
+  pathname: string;
+  demoPath: (path: string) => string;
+  themeClasses: ReturnType<typeof hubThemeClasses>;
+}) {
+  const { markPending, isPending } = usePendingNav();
+  const active = !item.disabled && isPathActive(pathname, item.url);
+  const href = demoPath(item.url);
+  const pending = !item.disabled && isPending(href);
+  const Icon = item.icon;
+
+  if (item.disabled) {
+    return null;
+  }
+
+  return (
+    <Link
+      href={href}
+      prefetch
+      aria-busy={pending}
+      onClick={() => {
+        if (!active) markPending(href);
+      }}
+      className={cn(
+        "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors",
+        active
+          ? t.sidebarNavActive
+          : t.dark
+            ? "border-white/10 bg-white/[0.04] text-slate-300"
+            : "border-ui-border/80 bg-white text-neutral-600",
+        pending && "pointer-events-none opacity-80"
+      )}
+    >
+      {pending ? (
+        <Loader2 className="h-4 w-4 shrink-0 animate-spin" strokeWidth={1.75} />
+      ) : Icon ? (
+        <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+      ) : null}
+      <span>{item.title}</span>
+      {item.badge ? <NavItemBadge>{item.badge}</NavItemBadge> : null}
+    </Link>
   );
 }
 
