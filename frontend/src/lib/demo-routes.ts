@@ -1,4 +1,5 @@
 export const DEMO_ROUTE_PREFIX = "/demo";
+export const DEMO_SANDBOX_OVERVIEW_PATH = `${DEMO_ROUTE_PREFIX}/dashboard/overview`;
 
 export function isDemoRoute(pathname: string | null | undefined): boolean {
   if (!pathname) return false;

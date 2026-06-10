@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
+import { DEMO_SANDBOX_OVERVIEW_PATH } from "@/lib/demo-routes";
 
 export default function DemoIndexPage() {
-  redirect("/demo/dashboard/overview");
+  redirect(DEMO_SANDBOX_OVERVIEW_PATH);
 }
