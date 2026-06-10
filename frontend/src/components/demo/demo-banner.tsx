@@ -24,11 +24,11 @@ export function DemoBanner({ className }: { className?: string }) {
           </p>
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <Button asChild size="sm" variant="outline" className="h-8 rounded-lg border-slate-200 bg-white">
+      <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0">
+        <Button asChild size="sm" variant="outline" className="h-8 flex-1 rounded-lg border-slate-200 bg-white sm:flex-none">
           <Link href="/">Exit demo</Link>
         </Button>
-        <Button asChild size="sm" className="h-8 rounded-lg bg-violet-600 hover:bg-violet-700">
+        <Button asChild size="sm" className="h-8 flex-1 rounded-lg bg-violet-600 hover:bg-violet-700 sm:flex-none">
           <Link href="https://calendly.com" target="_blank" rel="noopener noreferrer">
             Book a demo
           </Link>

@@ -6,7 +6,10 @@ import {
   WorkspaceHubShellBar,
   WorkspaceHubTopChrome,
 } from "@/components/dashboard/workspace-hub/workspace-hub-chrome";
-import { WorkspaceOverviewSidebar } from "@/components/dashboard/workspace-hub/workspace-overview-sidebar";
+import {
+  WorkspaceOverviewMobileNav,
+  WorkspaceOverviewSidebar,
+} from "@/components/dashboard/workspace-hub/workspace-overview-sidebar";
 import {
   WorkspacePageMetaProvider,
   useWorkspacePageMetaContext,
@@ -153,6 +156,7 @@ function WorkspaceLayoutInner({
         )}
         <div className="flex-1 overflow-y-auto">
           <div className="w-full px-5 pb-8 pt-4 lg:px-6">
+            <WorkspaceOverviewMobileNav workspaceName={workspaceName} />
             {topSlot}
             <div className="workspace-hub-page-content w-full">{children}</div>
           </div>
