@@ -35,7 +35,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { PrivacyBetaBanner } from "@/components/dashboard/privacy-beta-banner";
+import { isPrivateSettlementEnabled } from "@/lib/privacy-features";
+import { useDemoPath } from "@/components/demo/demo-mode-provider";
 import { cn } from "@/utils";
 import {
   formatPaymentLinkForDisplay,
@@ -111,6 +115,9 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
   const [result, setResult] = useState<{ linkId: string; url: string; memo: string } | null>(null);
   const [vaultName, setVaultName] = useState("Treasury");
   const [vaultBalance, setVaultBalance] = useState<string | null>(null);
+  const [privateSettlement, setPrivateSettlement] = useState(false);
+  const privacyEnabled = isPrivateSettlementEnabled();
+  const secureVaultHref = useDemoPath("/dashboard/secure-vault");
 
   const refreshVaultStats = useCallback(() => {
     Promise.all([
@@ -154,14 +161,14 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
         description,
         customer,
         expiry,
-        privateSettlement: false,
+        privateSettlement: privacyEnabled && privateSettlement,
         methods: Object.entries(methods)
           .filter(([, enabled]) => enabled)
           .map(([id]) => id),
         linkId: result?.linkId,
         linkUrl: result?.url,
       }),
-    [amount, currency, description, customer, expiry, methods, result]
+    [amount, currency, description, customer, expiry, methods, result, privacyEnabled, privateSettlement]
   );
 
   async function handleGenerate(e: React.FormEvent) {
@@ -218,6 +225,12 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
 
   return (
     <div className={cardCls}>
+      {privacyEnabled ? (
+        <div className="mb-5">
+          <PrivacyBetaBanner compact showTestLinks={false} />
+        </div>
+      ) : null}
+
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className={cn("text-xl font-semibold tracking-tight sm:text-2xl", t.pageHeading)}>
@@ -417,28 +430,60 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
 
             <div
               className={cn(
-                "space-y-2 rounded-lg border px-4 py-3 opacity-90",
-                t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
+                "space-y-2 rounded-lg border px-4 py-3",
+                privacyEnabled
+                  ? t.dark
+                    ? "border-amber-500/25 bg-amber-500/5"
+                    : "border-amber-200 bg-amber-50/50"
+                  : cn("opacity-90", t.dark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white")
               )}
             >
               <div className="flex items-start justify-between gap-4">
-                <div>
+                <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className={cn("text-sm font-medium", t.pageHeading)}>Private Settlement</p>
-                    <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">
-                      Coming soon
-                    </Badge>
+                    {privacyEnabled ? (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] font-medium uppercase tracking-wide"
+                      >
+                        Beta · Testnet
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">
+                        Coming soon
+                      </Badge>
+                    )}
                   </div>
                   <p className={cn("mt-1 text-xs leading-relaxed", t.pageSubheading)}>
-                    Relayer + commitment pool privacy is not enabled yet. Payments use standard memos to your global pool.
+                    {privacyEnabled
+                      ? "Default checkout preview with hash-memo privacy + PoolManager commitments. Payers opt in at checkout."
+                      : "Relayer + commitment pool privacy is not configured. Payments use standard memos to your global pool."}
                   </p>
                 </div>
+                {privacyEnabled ? (
+                  <Switch
+                    checked={privateSettlement}
+                    onCheckedChange={setPrivateSettlement}
+                    className="shrink-0 data-[state=checked]:bg-amber-600"
+                    aria-label="Enable private settlement on payment preview"
+                  />
+                ) : null}
               </div>
               <div className={cn("flex gap-3 rounded-lg px-3 py-2.5", t.dark ? "bg-white/5" : "bg-slate-50")}>
                 <Shield className={cn("mt-0.5 h-4 w-4 shrink-0", t.cardMuted)} />
                 <p className={cn("text-xs leading-relaxed", t.pageSubheading)}>
-                  {/* TODO(production-privacy): enable toggle when relayer + PoolManager are live. */}
-                  Proof-of-payment receipts will ship with private settlement.
+                  {privacyEnabled ? (
+                    <>
+                      Test commitments in{" "}
+                      <Link href={secureVaultHref} className="font-medium underline underline-offset-2">
+                        Secure Vault
+                      </Link>
+                      . Not audited — testnet only.
+                    </>
+                  ) : (
+                    "Proof-of-payment receipts will ship with private settlement."
+                  )}
                 </p>
               </div>
             </div>

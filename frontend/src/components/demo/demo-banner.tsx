@@ -20,7 +20,11 @@ export function DemoBanner({ className }: { className?: string }) {
         <div className="min-w-0">
           <p className="text-sm font-semibold text-slate-900">Interactive demo</p>
           <p className="text-xs text-slate-500">
-            Explore the full workspace with sample data — no wallet or signup required.
+            Explore the workspace with sample data. Try{" "}
+            <Link href="/demo/dashboard/secure-vault" className="font-medium text-violet-700 underline-offset-2 hover:underline">
+              Secure Vault
+            </Link>{" "}
+            (Freighter + testnet) for live commitments.
           </p>
         </div>
       </div>

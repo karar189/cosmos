@@ -83,6 +83,12 @@ export function buildWorkspaceNavGroup(options?: { enableAllLinks?: boolean }): 
     items: [
       { title: "Overview", url: "/dashboard/overview", icon: LayoutDashboard },
       { title: "Payments", url: "/dashboard/payment-links", icon: CreditCard },
+      {
+        title: "Secure Vault",
+        url: "/dashboard/secure-vault",
+        icon: ShieldCheck,
+        badge: "Beta",
+      },
       { title: "Treasury", url: "/dashboard/withdraw", icon: Wallet },
       {
         title: "Bridge",

@@ -13,9 +13,10 @@ import {
   type PoolState,
   type StellarNetwork,
 } from "@/lib/soroban-poolmanager";
+import { getPoolExplorerContractUrl, getPoolManagerContractId } from "@/lib/privacy-features";
 
 const NETWORK = (process.env.NEXT_PUBLIC_STELLAR_NETWORK || "testnet") as StellarNetwork;
-const CONTRACT_ID = process.env.NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID || "";
+const CONTRACT_ID = getPoolManagerContractId();
 
 /** Stellar classic account (G...) required for Soroban getAccount. */
 function isValidStellarAccountId(value: string): boolean {
@@ -170,9 +171,19 @@ export function ZkCommitmentPool({ publicKey }: ZkCommitmentPoolProps) {
         {poolState === "loading" && <p className="text-muted-foreground text-sm">Loading…</p>}
         {error && <p className="text-destructive text-sm">{error}</p>}
         {poolState && poolState !== "loading" && (
-          <div className="text-sm space-y-1">
+          <div className="text-sm space-y-2">
             <p>
               <span className="text-muted-foreground">Verified entries:</span> {poolState.size}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              <a
+                href={getPoolExplorerContractUrl(NETWORK)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2"
+              >
+                View on Stellar Expert
+              </a>
             </p>
           </div>
         )}

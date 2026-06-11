@@ -22,6 +22,7 @@ const ROUTE_LABELS: Record<string, string> = {
   withdraw: "Withdraw",
   "payment-links": "Payment links",
   payments: "Payments",
+  "secure-vault": "Secure Vault",
   "compliance-agent": "Compliance",
   "compliance-analysis": "Risk Reports",
   rns: "Regulations",

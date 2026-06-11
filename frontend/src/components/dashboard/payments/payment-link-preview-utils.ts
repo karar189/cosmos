@@ -34,7 +34,7 @@ export function parsePaymentPreviewSearchParams(
     description: searchParams.get("description")?.trim() || "",
     customer: searchParams.get("customer")?.trim() || undefined,
     expiry: searchParams.get("expiry")?.trim() || "30",
-    privateSettlement: false,
+    privateSettlement: searchParams.get("private") === "1",
     methods: methodsRaw
       ? methodsRaw.split(",").map((m) => m.trim()).filter(Boolean)
       : ["wallet", "qr", "onramp"],

@@ -305,14 +305,19 @@ export function QrCheckoutPanel({
         )}
       >
         <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <p className={cn("text-sm font-medium", s.cardTitle)}>Private settlement (opt-in)</p>
+            {!privateSwitchDisabled ? (
+              <span className="rounded-full border border-amber-500/40 bg-amber-500/15 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200">
+                Beta
+              </span>
+            ) : null}
             <Info className={cn("h-3.5 w-3.5", s.footerIcon)} />
           </div>
           <p className={cn("mt-0.5 text-[11px]", s.cardMeta)}>
             {privateSwitchDisabled
-              ? "Coming soon — private on-chain settlement."
-              : "Settle this payment privately with on-chain proof."}
+              ? "Private settlement is not configured for this deployment."
+              : "Testnet beta — hash-memo payment + on-chain commitment. Not audited."}
           </p>
         </div>
         <Switch
