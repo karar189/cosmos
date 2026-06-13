@@ -15,7 +15,8 @@ export type DocBlock =
   | { type: "h2"; id: string; title: string }
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
-  | { type: "callout"; variant: "info" | "tip"; text: string };
+  | { type: "callout"; variant: "info" | "tip"; text: string }
+  | { type: "external-link"; label: string; href: string };
 
 export type DocPage = {
   slug: string;
@@ -504,15 +505,16 @@ export const DOC_PAGES: Record<string, DocPage> = {
       {
         type: "h2",
         id: "contact",
-        title: "Contact us",
+        title: "Get support",
       },
       {
-        type: "ul",
-        items: [
-          "Email: support@hypertron.io",
-          "In-app: Support page under the hub sidebar",
-          "Book a demo from the marketing site footer",
-        ],
+        type: "p",
+        text: "Support is on X only. Message us or follow @hypertron_HQ for help and product updates.",
+      },
+      {
+        type: "external-link",
+        label: "@hypertron_HQ on X",
+        href: "https://x.com/hypertron_HQ",
       },
     ],
   },

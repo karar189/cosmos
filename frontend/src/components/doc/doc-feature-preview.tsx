@@ -349,9 +349,16 @@ function SupportPreview() {
         </div>
       </Panel>
       <Panel>
-        <p className="text-xs font-semibold text-slate-900">Contact</p>
-        <p className="mt-2 text-[11px] text-slate-500">support@hypertron.io</p>
-        <PrimaryBtn className="mt-3">Book a demo</PrimaryBtn>
+        <p className="text-xs font-semibold text-slate-900">Support</p>
+        <p className="mt-2 text-[11px] text-slate-500">Reach us on X — questions, feedback, and help.</p>
+        <a
+          href="https://x.com/hypertron_HQ"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 flex h-9 items-center justify-center rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          @hypertron_HQ on X
+        </a>
       </Panel>
     </div>
   );
@@ -371,23 +378,12 @@ const PREVIEWS: Record<string, { url: string; body: ReactNode }> = {
   "secure-vault": { url: "app.hypertron.xyz/dashboard/secure-vault", body: <SecureVaultPreview /> },
   bridge: { url: "app.hypertron.xyz/dashboard/bridge", body: <BridgePreview /> },
   billing: { url: "app.hypertron.xyz/dashboard/billing", body: <BillingPreview /> },
-  support: { url: "app.hypertron.xyz/dashboard/support", body: <SupportPreview /> },
+  support: { url: "x.com/hypertron_HQ", body: <SupportPreview /> },
 };
 
 export function DocFeaturePreview({ slug }: { slug: string }) {
   const preview = PREVIEWS[slug];
   if (!preview) return null;
 
-  return (
-    <div>
-      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-white/35">
-        <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-blue-400" />
-        </span>
-        Sneak peek
-      </p>
-      <BrowserFrame url={preview.url}>{preview.body}</BrowserFrame>
-    </div>
-  );
+  return <BrowserFrame url={preview.url}>{preview.body}</BrowserFrame>;
 }

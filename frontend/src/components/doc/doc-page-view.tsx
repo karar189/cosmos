@@ -43,6 +43,18 @@ function DocBlockView({ block }: { block: DocBlock }) {
       </ol>
     );
   }
+  if (block.type === "external-link") {
+    return (
+      <Link
+        href={block.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-medium text-blue-400 transition-colors hover:border-white/20 hover:bg-white/[0.06] hover:text-blue-300"
+      >
+        {block.label} →
+      </Link>
+    );
+  }
   return (
     <div
       className={cn(
