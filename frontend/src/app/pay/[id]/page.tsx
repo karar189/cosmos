@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { getNetwork, signTransaction } from "@stellar/freighter-api";
 import { useEffect, useState } from "react";
 import { PaymentLiveCheckout } from "@/components/dashboard/payments/payment-live-checkout";
+import type { OnRampFlowStatus } from "@/components/dashboard/payments/payment-checkout-shared";
 import { HypertronLogoMark } from "@/components/global/hypertron-logo-mark";
 import { useFreighter } from "@/hooks/useFreighter";
 import { getExplorerTxUrl, STELLAR_NETWORK } from "@/lib/stellar-explorer";
@@ -131,6 +132,59 @@ export default function PayPage() {
   const [confirmationStatus, setConfirmationStatus] = useState<
     "idle" | "confirming" | "confirmed" | "timeout"
   >("idle");
+
+  const [moneygramEnabled, setMoneygramEnabled] = useState(false);
+  const [onRampStatus, setOnRampStatus] = useState<OnRampFlowStatus>("idle");
+  const [onRampError, setOnRampError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/moneygram/config")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.enabled === "boolean") setMoneygramEnabled(data.enabled);
+      })
+      .catch(() => {});
+  }, []);
+
+  async function handleStartMoneyGram() {
+    if (!kycComplete || !displayAmount || displayAmount === "—" || !linkId) return;
+    setOnRampError(null);
+    setOnRampStatus("starting");
+
+    try {
+      const res = await fetch(`/api/payment-link/${linkId}/moneygram/deposit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: String(displayAmount).replace(/\s*(XLM|USDC)$/i, "").trim(),
+          kycName: kycName.trim(),
+          kycEmail: kycEmail.trim(),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(typeof data?.error === "string" ? data.error : "On-ramp failed");
+      }
+      if (typeof data.url === "string" && data.url) {
+        window.open(data.url, "_blank", "noopener,noreferrer");
+      }
+      setOnRampStatus("awaiting_user");
+      setConfirmationStatus("confirming");
+      setOnRampStatus("confirming");
+
+      const result = await pollPaymentLinkStatus(linkId, { maxAttempts: 40, intervalMs: 3000 });
+      if (result.status === "paid") {
+        setConfirmationStatus("confirmed");
+        setOnRampStatus("success");
+        notifyPaymentReceived(linkId);
+        return;
+      }
+      setConfirmationStatus("timeout");
+    } catch (e) {
+      setOnRampError(e instanceof Error ? e.message : "On-ramp failed");
+      setOnRampStatus("error");
+    }
+  }
 
   useEffect(() => {
     if (payStatus !== "success" || !linkId || linkId.startsWith("pl_")) return;
@@ -368,6 +422,10 @@ export default function PayPage() {
             explorerUrl={explorerUrl}
             confirmationStatus={confirmationStatus}
             networkLabel={`Recommended network · ${networkLabel}`}
+            moneygramEnabled={moneygramEnabled}
+            onRampStatus={onRampStatus}
+            onRampError={onRampError}
+            onStartMoneyGram={handleStartMoneyGram}
           />
         ) : null}
 
