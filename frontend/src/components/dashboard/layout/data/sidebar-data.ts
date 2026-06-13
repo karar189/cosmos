@@ -97,23 +97,13 @@ export function buildWorkspaceNavGroup(options?: { enableAllLinks?: boolean }): 
         badge: "New",
         disabled: all ? undefined : true,
       },
-      ...(all
-        ? [
-            {
-              title: "Compliance",
-              url: "/dashboard/compliance-agent",
-              icon: ShieldCheck,
-              badge: "5",
-            },
-          ]
-        : [
-            {
-              title: "Compliance",
-              url: "/dashboard/compliance-agent",
-              icon: ShieldCheck,
-              badge: "5",
-            },
-          ]),
+      {
+        title: "Compliance",
+        url: "/dashboard/compliance-agent",
+        icon: ShieldCheck,
+        badge: "5",
+        disabled: all ? undefined : true,
+      },
       { title: "Regulations", url: "/dashboard/rns", icon: Scale, badge: "3", disabled: all ? undefined : true },
       {
         title: "Risk Reports",

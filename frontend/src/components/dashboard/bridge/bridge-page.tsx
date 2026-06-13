@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeftRight,
@@ -11,10 +11,16 @@ import {
   Globe,
   History,
   Info,
+  Loader2,
   ShieldCheck,
   XCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useAccount, useConnect, useSwitchChain } from "wagmi";
+import { avalanche, avalancheFuji, mainnet, sepolia } from "wagmi/chains";
+import type { EIP1193Provider } from "viem";
+import type { SignerWalletAdapter } from "@solana/wallet-adapter-base";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,25 +33,31 @@ import {
 } from "@/components/ui/select";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
+import { useFreighter } from "@/hooks/useFreighter";
 import {
-  BRIDGE_ASSETS,
-  BRIDGE_DEMO_BALANCES,
-  BRIDGE_KPIS,
-  BRIDGE_RECEIVE_RATE,
-  BRIDGE_RECENT,
-  BRIDGE_SOURCE_NETWORKS,
-  BRIDGE_DEST_NETWORK,
-  computeBridgeReceive,
+  BRIDGE_NETWORKS,
+  USDC_ASSET_META,
+  bridgeNetworkById,
   formatBridgeAddress,
-  networkById,
-  type BridgeAssetId,
-  type BridgeKpi,
-  type BridgeNetworkId,
-  type BridgeStatus,
-} from "@/lib/demo-bridge-data";
+} from "@/lib/bridge/bridge-networks";
+import {
+  appendBridgeHistory,
+  formatBridgeTimeAgo,
+  readBridgeHistory,
+  type StoredBridgeRecord,
+} from "@/lib/bridge/bridge-history";
+import {
+  getCctpNetworkMode,
+  isEvmBridgeChain,
+  type BridgeChainId,
+} from "@/lib/bridge/cctp-config";
+import {
+  executeUsdcBridge,
+  type BridgeProgressEvent,
+} from "@/lib/bridge/execute-usdc-bridge";
 import { cn } from "@/utils";
 
-type BridgeTab = "to-stellar" | "from-stellar";
+type BridgeStatus = StoredBridgeRecord["status"];
 
 function useBridgeStyles(theme: "light" | "dark") {
   const t = hubThemeClasses(theme);
@@ -83,14 +95,6 @@ function useBridgeStyles(theme: "light" | "dark") {
       ),
       selectContent: cn("rounded-lg border shadow-md", t.selectContent),
       selectItem: t.selectItem,
-      tabActive: cn(
-        "border-b-2 border-blue-600 pb-3 text-sm font-semibold",
-        t.dark ? "text-blue-300" : "text-blue-600"
-      ),
-      tabInactive: cn(
-        "border-b-2 border-transparent pb-3 text-sm font-medium transition-colors",
-        t.dark ? "text-white/45 hover:text-white/70" : "text-slate-500 hover:text-slate-700"
-      ),
     }),
     [t, theme]
   );
@@ -145,89 +149,14 @@ function TokenIcon({
   );
 }
 
-function NetworkIcon({
-  network,
-  size = "md",
-}: {
-  network: { short: string; color: string; icon?: string; label?: string };
-  size?: keyof typeof TOKEN_SIZES;
-}) {
-  return (
-    <TokenIcon
-      icon={network.icon}
-      short={network.short}
-      color={network.color}
-      label={network.label}
-      size={size}
-    />
-  );
-}
-
-function AssetIcon({ asset, size = "md" }: { asset: BridgeAssetId; size?: keyof typeof TOKEN_SIZES }) {
-  const meta = BRIDGE_ASSETS[asset];
-  return (
-    <TokenIcon icon={meta.icon} short={meta.label.slice(0, 1)} color={meta.color} label={meta.label} size={size} />
-  );
-}
-
-const KPI_ICONS: Record<BridgeKpi["icon"], LucideIcon> = {
-  volume: ArrowLeftRight,
-  time: Clock,
-  networks: Globe,
-  success: ShieldCheck,
-};
-
-function BridgeKpiCard({ kpi, styles }: { kpi: BridgeKpi; styles: ReturnType<typeof useBridgeStyles> }) {
-  const Icon = KPI_ICONS[kpi.icon];
-  return (
-    <div className={styles.kpiCard}>
-      <div className="flex items-center gap-2">
-        <span className={styles.iconTile}>
-          <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-        </span>
-        <span className={cn("text-[11px] font-medium", styles.t.pageSubheading)}>{kpi.label}</span>
-      </div>
-      <p className={cn("text-lg font-semibold tabular-nums tracking-tight", styles.t.pageHeading)}>{kpi.value}</p>
-      <p className={cn("text-[10px] leading-snug", styles.t.pageSubheading)}>{kpi.sub}</p>
-    </div>
-  );
-}
-
-function SectionHeader({
-  title,
-  subtitle,
-  icon: Icon,
-  action,
-  styles,
-}: {
-  title: string;
-  subtitle?: string;
-  icon?: LucideIcon;
-  action?: React.ReactNode;
-  styles: ReturnType<typeof useBridgeStyles>;
-}) {
-  return (
-    <div className="mb-3 flex items-start justify-between gap-2">
-      <div className="min-w-0">
-        <h2 className={cn("text-sm font-semibold", styles.t.pageHeading)}>{title}</h2>
-        {subtitle ? <p className={cn("mt-0.5 text-xs", styles.t.pageSubheading)}>{subtitle}</p> : null}
-      </div>
-      {action ?? (Icon ? <Icon className={cn("h-4 w-4 shrink-0", styles.muted)} strokeWidth={1.75} /> : null)}
-    </div>
-  );
+function NetworkIcon({ network, size = "md" }: { network: { short: string; color: string; icon?: string; label?: string }; size?: keyof typeof TOKEN_SIZES }) {
+  return <TokenIcon icon={network.icon} short={network.short} color={network.color} label={network.label} size={size} />;
 }
 
 function BridgeStatusBadge({ status, dark }: { status: BridgeStatus; dark: boolean }) {
   if (status === "completed") {
     return (
-      <span
-        className={cn(
-          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-          dark
-            ? "border border-emerald-500/25 bg-emerald-500/15 text-emerald-400"
-            : "border border-emerald-200 bg-emerald-50 text-emerald-700"
-        )}
-      >
+      <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium", dark ? "border border-emerald-500/25 bg-emerald-500/15 text-emerald-400" : "border border-emerald-200 bg-emerald-50 text-emerald-700")}>
         <CheckCircle2 className="h-3 w-3" />
         Completed
       </span>
@@ -235,65 +164,171 @@ function BridgeStatusBadge({ status, dark }: { status: BridgeStatus; dark: boole
   }
   if (status === "in_progress") {
     return (
-      <span
-        className={cn(
-          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-          dark
-            ? "border border-blue-500/25 bg-blue-500/15 text-blue-300"
-            : "border border-blue-200 bg-blue-50 text-blue-700"
-        )}
-      >
+      <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium", dark ? "border border-blue-500/25 bg-blue-500/15 text-blue-300" : "border border-blue-200 bg-blue-50 text-blue-700")}>
         <Clock className="h-3 w-3" />
         In Progress
       </span>
     );
   }
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-        dark
-          ? "border border-red-500/25 bg-red-500/15 text-red-400"
-          : "border border-red-200 bg-red-50 text-red-700"
-      )}
-    >
+    <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium", dark ? "border border-red-500/25 bg-red-500/15 text-red-400" : "border border-red-200 bg-red-50 text-red-700")}>
       <XCircle className="h-3 w-3" />
       Failed
     </span>
   );
 }
 
+function evmChainIdForBridge(chain: BridgeChainId, mode: ReturnType<typeof getCctpNetworkMode>): number | null {
+  if (chain === "ethereum") return mode === "mainnet" ? mainnet.id : sepolia.id;
+  if (chain === "avalanche") return mode === "mainnet" ? avalanche.id : avalancheFuji.id;
+  return null;
+}
+
 export function BridgePageContent() {
   const { theme } = useDashboardTheme();
   const s = useBridgeStyles(theme);
   const dark = theme === "dark";
+  const mode = getCctpNetworkMode();
 
-  const [activeTab, setActiveTab] = useState<BridgeTab>("to-stellar");
-  const [sourceNetwork, setSourceNetwork] = useState<BridgeNetworkId>("ethereum");
-  const [sourceAsset, setSourceAsset] = useState<BridgeAssetId>("USDC");
-  const [destAsset, setDestAsset] = useState<BridgeAssetId>("USDC");
-  const [amount, setAmount] = useState("500");
+  const { publicKey: stellarAddress, connect: connectStellar, truncatedAddress: stellarTruncated } = useFreighter();
+  const { address: evmAddress, connector, chainId, isConnected: evmConnected } = useAccount();
+  const { connect, connectors, isPending: evmConnecting } = useConnect();
+  const { switchChainAsync } = useSwitchChain();
+  const { publicKey: solanaPublicKey, wallet: solanaWalletState, connect: connectSolana, connecting: solanaConnecting } = useWallet();
+  const solanaWallet = (solanaWalletState?.adapter as SignerWalletAdapter | undefined) ?? null;
+
+  const [sourceChain, setSourceChain] = useState<BridgeChainId>("ethereum");
+  const [destChain, setDestChain] = useState<BridgeChainId>("stellar");
+  const [amount, setAmount] = useState("100");
   const [copied, setCopied] = useState(false);
-  const [walletConnected, setWalletConnected] = useState(false);
+  const [history, setHistory] = useState<StoredBridgeRecord[]>([]);
   const [historyFilter, setHistoryFilter] = useState<"all" | "completed" | "in_progress">("all");
+  const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState<BridgeProgressEvent | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setHistory(readBridgeHistory());
+  }, []);
 
   const sendAmount = parseFloat(amount.replace(/,/g, "")) || 0;
-  const { fee, receive } = computeBridgeReceive(sendAmount);
+  const receive = sendAmount;
 
   const filteredRecent = useMemo(
-    () => (historyFilter === "all" ? BRIDGE_RECENT : BRIDGE_RECENT.filter((b) => b.status === historyFilter)),
-    [historyFilter]
+    () => (historyFilter === "all" ? history : history.filter((b) => b.status === historyFilter)),
+    [history, historyFilter]
   );
 
-  function copyAddress() {
-    void navigator.clipboard.writeText(BRIDGE_DEMO_BALANCES.stellarAddress);
+  const needsStellarSource = sourceChain === "stellar";
+  const needsStellarDest = destChain === "stellar";
+  const needsEvmSource = isEvmBridgeChain(sourceChain);
+  const needsEvmDest = isEvmBridgeChain(destChain);
+  const needsSolanaSource = sourceChain === "solana";
+  const needsSolanaDest = destChain === "solana";
+
+  const copyAddress = useCallback((address: string) => {
+    void navigator.clipboard.writeText(address);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 2000);
+  }, []);
+
+  async function ensureEvmChain(chain: BridgeChainId) {
+    const targetId = evmChainIdForBridge(chain, mode);
+    if (!targetId || !switchChainAsync || chainId === targetId) return;
+    await switchChainAsync({ chainId: targetId });
   }
 
-  function handleMax() {
-    setAmount(String(BRIDGE_DEMO_BALANCES.sourceUsdc));
+  async function handleConnectEvm() {
+    const injected = connectors[0];
+    if (!injected) throw new Error("No EVM wallet found. Install MetaMask or another Web3 wallet.");
+    connect({ connector: injected });
   }
+
+  async function handleBridge() {
+    setError(null);
+    setProgress(null);
+    setRunning(true);
+
+    try {
+      if (sourceChain === destChain) throw new Error("Choose different source and destination networks.");
+      if (sendAmount <= 0) throw new Error("Enter a valid USDC amount.");
+
+      if (needsStellarSource && !stellarAddress) throw new Error("Connect your Stellar wallet (Freighter).");
+      if (needsStellarDest && !stellarAddress) throw new Error("Connect your Stellar wallet to receive USDC.");
+      if (needsEvmSource && !evmConnected) throw new Error("Connect your EVM wallet for the source network.");
+      if (needsEvmDest && !evmConnected) throw new Error("Connect your EVM wallet to receive USDC on destination.");
+      if (needsSolanaSource && !solanaPublicKey) throw new Error("Connect your Solana wallet (Phantom).");
+      if (needsSolanaDest && !solanaPublicKey) throw new Error("Connect your Solana wallet to receive USDC.");
+
+      if (needsEvmSource) await ensureEvmChain(sourceChain);
+      if (needsEvmDest) await ensureEvmChain(destChain);
+
+      let evmProvider: EIP1193Provider | null = null;
+      if ((needsEvmSource || needsEvmDest) && connector) {
+        evmProvider = (await connector.getProvider()) as EIP1193Provider;
+      }
+
+      const recordId = crypto.randomUUID();
+      const result = await executeUsdcBridge({
+        fromChain: sourceChain,
+        toChain: destChain,
+        amount,
+        stellarAddress,
+        evmAddress: evmAddress ?? null,
+        evmProvider,
+        solanaAddress: solanaPublicKey?.toBase58() ?? null,
+        solanaWallet,
+        destinationStellarAddress: stellarAddress ?? undefined,
+        destinationEvmAddress: evmAddress ?? undefined,
+        destinationSolanaAddress: solanaPublicKey?.toBase58(),
+        onProgress: (event) => setProgress(event),
+      });
+
+      const stored: StoredBridgeRecord = {
+        id: recordId,
+        amount: sendAmount.toFixed(2),
+        asset: "USDC",
+        fromChain: sourceChain,
+        toChain: destChain,
+        status: "completed",
+        createdAt: new Date().toISOString(),
+        steps: result.steps,
+      };
+      setHistory(appendBridgeHistory(stored));
+      setProgress({ step: "complete", message: "Bridge completed successfully." });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Bridge failed.";
+      setError(message);
+      setHistory(
+        appendBridgeHistory({
+          id: crypto.randomUUID(),
+          amount: sendAmount.toFixed(2),
+          asset: "USDC",
+          fromChain: sourceChain,
+          toChain: destChain,
+          status: "failed",
+          createdAt: new Date().toISOString(),
+          steps: progress ? [progress] : [],
+        })
+      );
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  const kpis = [
+    { label: "Protocol", value: "Circle CCTP", sub: mode === "mainnet" ? "Mainnet" : "Testnet", icon: "networks" as const },
+    { label: "Asset", value: "USDC", sub: "Native burn / mint", icon: "volume" as const },
+    { label: "Speed", value: "Fast", sub: "Typically 1–5 minutes", icon: "time" as const },
+    { label: "Security", value: "Attested", sub: "Circle Iris attestations", icon: "success" as const },
+  ];
+
+  const KPI_ICONS: Record<(typeof kpis)[number]["icon"], LucideIcon> = {
+    volume: ArrowLeftRight,
+    time: Clock,
+    networks: Globe,
+    success: ShieldCheck,
+  };
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-5">
@@ -301,324 +336,293 @@ export function BridgePageContent() {
         <div className="min-w-0">
           <h1 className={cn("text-xl font-semibold tracking-tight sm:text-2xl", s.t.pageHeading)}>Bridge</h1>
           <p className={cn("mt-1 max-w-2xl text-sm", s.t.pageSubheading)}>
-            Bridge assets from other blockchains to Stellar and manage cross-chain transfers.
+            Move native USDC between Stellar, Ethereum, Avalanche, and Solana using Circle CCTP ({mode === "mainnet" ? "mainnet" : "testnet"}).
           </p>
         </div>
-        <Button type="button" variant="outline" className={cn("h-9 shrink-0 gap-2 rounded-lg", s.t.outlineBtn)}>
-          <History className="h-4 w-4" strokeWidth={1.75} />
-          Bridge history
-        </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {BRIDGE_KPIS.map((kpi) => (
-          <BridgeKpiCard key={kpi.label} kpi={kpi} styles={s} />
-        ))}
-      </div>
-
-      <div className="flex gap-6 border-b border-slate-200/80 dark:border-white/10">
-        <button type="button" className={activeTab === "to-stellar" ? s.tabActive : s.tabInactive} onClick={() => setActiveTab("to-stellar")}>
-          Bridge to Stellar
-        </button>
-        <button type="button" className={activeTab === "from-stellar" ? s.tabActive : s.tabInactive} onClick={() => setActiveTab("from-stellar")}>
-          Bridge from Stellar
-        </button>
+        {kpis.map((kpi) => {
+          const Icon = KPI_ICONS[kpi.icon];
+          return (
+            <div key={kpi.label} className={s.kpiCard}>
+              <div className="flex items-center gap-2">
+                <span className={s.iconTile}>
+                  <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                </span>
+                <span className={cn("text-[11px] font-medium", s.t.pageSubheading)}>{kpi.label}</span>
+              </div>
+              <p className={cn("text-lg font-semibold tracking-tight", s.t.pageHeading)}>{kpi.value}</p>
+              <p className={cn("text-[10px] leading-snug", s.t.pageSubheading)}>{kpi.sub}</p>
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid w-full min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className={s.panel}>
-          {activeTab === "from-stellar" ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-              <ArrowLeftRight className={cn("h-8 w-8", dark ? "text-white/30" : "text-slate-300")} />
-              <p className={cn("text-sm font-medium", s.t.pageHeading)}>Bridge from Stellar</p>
-              <p className={cn("max-w-sm text-sm", s.t.pageSubheading)}>
-                Outbound bridges from Stellar to EVM networks are coming soon in the sandbox.
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-6">
-              <section className="grid gap-x-6 gap-y-4 md:grid-cols-[180px_minmax(0,1fr)]">
-                <div className="flex items-start gap-3">
-                  <span className={s.stepBadge}>1</span>
-                  <div className="min-w-0">
-                    <p className={s.sectionTitle}>From</p>
-                    <p className={cn("mt-0.5", s.muted)}>Select the network and asset to bridge from.</p>
-                  </div>
+          <div className="flex flex-col gap-6">
+            <section className="grid gap-x-6 gap-y-4 md:grid-cols-[180px_minmax(0,1fr)]">
+              <div className="flex items-start gap-3">
+                <span className={s.stepBadge}>1</span>
+                <div>
+                  <p className={s.sectionTitle}>From</p>
+                  <p className={cn("mt-0.5", s.muted)}>Source network and wallet.</p>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label className={s.label}>Network</Label>
-                    <Select value={sourceNetwork} onValueChange={(v) => setSourceNetwork(v as BridgeNetworkId)}>
-                      <SelectTrigger className={s.selectTrigger}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className={s.selectContent}>
-                        {BRIDGE_SOURCE_NETWORKS.map((network) => (
-                          <SelectItem key={network.id} value={network.id} className={cn(s.selectItem, "pl-9")}>
-                            <span className="flex items-center gap-2">
-                              <NetworkIcon network={network} size="sm" />
-                              {network.label}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className={s.label}>Asset</Label>
-                    <Select value={sourceAsset} onValueChange={(v) => setSourceAsset(v as BridgeAssetId)}>
-                      <SelectTrigger className={s.selectTrigger}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className={s.selectContent}>
-                        {(["USDC", "USDT", "ETH"] as BridgeAssetId[]).map((asset) => (
-                          <SelectItem key={asset} value={asset} className={cn(s.selectItem, "pl-9")}>
-                            <span className="flex items-center gap-2">
-                              <AssetIcon asset={asset} size="sm" />
-                              {asset}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3 sm:col-span-2 dark:border-white/10 dark:bg-white/[0.03]">
-                    {walletConnected ? (
-                      <span className="inline-flex items-center gap-2 text-sm font-medium">
-                        <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                        <span className={s.t.pageHeading}>Wallet connected</span>
-                      </span>
-                    ) : (
-                      <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" onClick={() => setWalletConnected(true)}>
-                        Connect Wallet
-                      </Button>
-                    )}
-                    <div className="text-right">
-                      <p className={s.label}>Balance</p>
-                      <p className={cn("mt-0.5 inline-flex items-center gap-1.5 text-sm font-semibold tabular-nums", s.t.pageHeading)}>
-                        {BRIDGE_DEMO_BALANCES.sourceUsdc.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                        <AssetIcon asset={sourceAsset} size="sm" />
-                        {sourceAsset}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <div className={cn("h-px", dark ? "bg-white/10" : "bg-slate-100")} />
-
-              <section className="grid gap-x-6 gap-y-4 md:grid-cols-[180px_minmax(0,1fr)]">
-                <div className="flex items-start gap-3">
-                  <span className={s.stepBadge}>2</span>
-                  <div className="min-w-0">
-                    <p className={s.sectionTitle}>To</p>
-                    <p className={cn("mt-0.5", s.muted)}>Select the destination on Stellar.</p>
-                  </div>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label className={s.label}>Network</Label>
-                    <div className={cn(s.selectTrigger, "flex items-center gap-2 px-3")}>
-                      <NetworkIcon network={BRIDGE_DEST_NETWORK} size="sm" />
-                      <span className="text-sm">Stellar</span>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className={s.label}>Asset</Label>
-                    <Select value={destAsset} onValueChange={(v) => setDestAsset(v as BridgeAssetId)}>
-                      <SelectTrigger className={s.selectTrigger}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className={s.selectContent}>
-                        <SelectItem value="USDC" className={cn(s.selectItem, "pl-9")}>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label className={s.label}>Network</Label>
+                  <Select value={sourceChain} onValueChange={(v) => setSourceChain(v as BridgeChainId)}>
+                    <SelectTrigger className={s.selectTrigger}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className={s.selectContent}>
+                      {BRIDGE_NETWORKS.map((network) => (
+                        <SelectItem key={network.id} value={network.id} className={cn(s.selectItem, "pl-9")}>
                           <span className="flex items-center gap-2">
-                            <AssetIcon asset="USDC" size="sm" />
-                            USDC
-                            <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
-                              Native
-                            </span>
+                            <NetworkIcon network={network} size="sm" />
+                            {network.label}
                           </span>
                         </SelectItem>
-                      </SelectContent>
-                    </Select>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className={s.label}>Asset</Label>
+                  <div className={cn(s.selectTrigger, "flex items-center gap-2 px-3")}>
+                    <TokenIcon icon={USDC_ASSET_META.icon} short="U" color={USDC_ASSET_META.color} label="USDC" size="sm" />
+                    <span className="text-sm">USDC</span>
                   </div>
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:col-span-2 dark:border-white/10 dark:bg-white/[0.03]">
-                    <div className="min-w-0 space-y-1">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        Connected
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-3 sm:col-span-2 dark:border-white/10 dark:bg-white/[0.03]">
+                  {needsStellarSource ? (
+                    stellarAddress ? (
+                      <span className="inline-flex items-center gap-2 text-sm font-medium">
+                        <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                        Stellar {stellarTruncated}
                       </span>
-                      <div className="flex items-center gap-2">
-                        <code className={cn("font-mono text-sm font-medium", s.t.pageHeading)}>
-                          {formatBridgeAddress(BRIDGE_DEMO_BALANCES.stellarAddress)}
-                        </code>
-                        <button type="button" onClick={copyAddress} className={cn("rounded-md p-1 transition-colors", dark ? "text-white/40 hover:bg-white/10 hover:text-white/70" : "text-slate-400 hover:bg-slate-100 hover:text-slate-600")} aria-label="Copy address">
-                          <Copy className="h-3.5 w-3.5" />
-                        </button>
-                        {copied ? <span className={cn("text-[11px] text-emerald-600", dark && "text-emerald-400")}>Copied</span> : null}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className={s.label}>Balance</p>
-                      <p className={cn("mt-0.5 inline-flex items-center gap-1.5 text-sm font-semibold tabular-nums", s.t.pageHeading)}>
-                        {BRIDGE_DEMO_BALANCES.destUsdc.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                        <AssetIcon asset={destAsset} size="sm" />
-                        {destAsset}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <div className={cn("h-px", dark ? "bg-white/10" : "bg-slate-100")} />
-
-              <section className="grid gap-x-6 gap-y-4 md:grid-cols-[180px_minmax(0,1fr)]">
-                <div className="flex items-start gap-3">
-                  <span className={s.stepBadge}>3</span>
-                  <div className="min-w-0">
-                    <p className={s.sectionTitle}>Amount</p>
-                    <p className={cn("mt-0.5", s.muted)}>Enter the amount you want to bridge.</p>
-                  </div>
-                </div>
-                <div className="relative grid items-start gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label className={s.label}>You send</Label>
-                    <div className="relative">
-                      <Input value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} className={cn(s.input, "h-12 pr-28 text-lg font-semibold tabular-nums")} inputMode="decimal" />
-                      <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1.5">
-                        <AssetIcon asset={sourceAsset} size="sm" />
-                        <span className={cn("text-xs font-semibold", s.t.pageHeading)}>{sourceAsset}</span>
-                        <Button type="button" size="sm" variant="ghost" className="h-7 px-2 text-xs font-semibold text-blue-600 hover:text-blue-700" onClick={handleMax}>
-                          Max
-                        </Button>
-                      </div>
-                    </div>
-                    <p className={s.muted}>${sendAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</p>
-                  </div>
-                  <div className={cn("absolute left-1/2 top-[2.35rem] z-10 hidden h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border shadow-sm sm:flex", dark ? "border-white/10 bg-slate-900 text-white/70" : "border-slate-200 bg-white text-slate-500")} aria-hidden>
-                    <ArrowLeftRight className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className={s.label}>You receive (estimated)</Label>
-                    <div className={cn(s.input, "flex h-12 items-center justify-between gap-2 px-3")}>
-                      <span className="text-lg font-semibold tabular-nums">{receive.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                      <span className="flex items-center gap-1.5">
-                        <AssetIcon asset={destAsset} size="sm" />
-                        <span className={cn("text-xs font-semibold", s.t.pageHeading)}>{destAsset}</span>
+                    ) : (
+                      <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" onClick={() => void connectStellar()}>
+                        Connect Freighter
+                      </Button>
+                    )
+                  ) : needsSolanaSource ? (
+                    solanaPublicKey ? (
+                      <span className="inline-flex items-center gap-2 text-sm font-medium">
+                        <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                        {formatBridgeAddress(solanaPublicKey.toBase58())}
                       </span>
-                    </div>
-                    <p className={s.muted}>${receive.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</p>
-                  </div>
-                </div>
-              </section>
-
-              <div className={cn("grid grid-cols-1 gap-3 rounded-xl px-4 py-3 sm:grid-cols-3", dark ? "bg-white/[0.04]" : "bg-slate-50")}>
-                <div className="flex items-center gap-2">
-                  <Info className={cn("h-3.5 w-3.5 shrink-0", s.muted)} />
-                  <div>
-                    <p className={s.label}>Est. Fee</p>
-                    <p className={cn("text-sm font-medium tabular-nums", s.t.pageHeading)}>{fee.toFixed(2)} {sourceAsset}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className={cn("h-3.5 w-3.5 shrink-0", s.muted)} />
-                  <div>
-                    <p className={s.label}>Time</p>
-                    <p className={cn("text-sm font-medium", s.t.pageHeading)}>~ 2–5 mins</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ArrowLeftRight className={cn("h-3.5 w-3.5 shrink-0", s.muted)} />
-                  <div>
-                    <p className={s.label}>Rate</p>
-                    <p className={cn("text-sm font-medium tabular-nums", s.t.pageHeading)}>1 {sourceAsset} = {BRIDGE_RECEIVE_RATE} {destAsset}</p>
+                    ) : (
+                      <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" disabled={solanaConnecting} onClick={() => void connectSolana()}>
+                        Connect Phantom
+                      </Button>
+                    )
+                  ) : evmConnected && evmAddress ? (
+                    <span className="inline-flex items-center gap-2 text-sm font-medium">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      {formatBridgeAddress(evmAddress)}
+                    </span>
+                  ) : (
+                    <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" disabled={evmConnecting} onClick={() => void handleConnectEvm()}>
+                      Connect EVM Wallet
+                    </Button>
+                  )}
+                  <div className="text-right">
+                    <p className={s.label}>You send</p>
+                    <p className={cn("text-sm font-semibold tabular-nums", s.t.pageHeading)}>{sendAmount.toFixed(2)} USDC</p>
                   </div>
                 </div>
               </div>
+            </section>
 
-              <Button type="button" className="h-11 w-full rounded-xl bg-blue-600 text-base font-semibold hover:bg-blue-700">
-                Review Bridge Details
-              </Button>
-            </div>
-          )}
+            <div className={cn("h-px", dark ? "bg-white/10" : "bg-slate-100")} />
+
+            <section className="grid gap-x-6 gap-y-4 md:grid-cols-[180px_minmax(0,1fr)]">
+              <div className="flex items-start gap-3">
+                <span className={s.stepBadge}>2</span>
+                <div>
+                  <p className={s.sectionTitle}>To</p>
+                  <p className={cn("mt-0.5", s.muted)}>Destination network and recipient.</p>
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label className={s.label}>Network</Label>
+                  <Select value={destChain} onValueChange={(v) => setDestChain(v as BridgeChainId)}>
+                    <SelectTrigger className={s.selectTrigger}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className={s.selectContent}>
+                      {BRIDGE_NETWORKS.filter((n) => n.id !== sourceChain).map((network) => (
+                        <SelectItem key={network.id} value={network.id} className={cn(s.selectItem, "pl-9")}>
+                          <span className="flex items-center gap-2">
+                            <NetworkIcon network={network} size="sm" />
+                            {network.label}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className={s.label}>Asset</Label>
+                  <div className={cn(s.selectTrigger, "flex items-center gap-2 px-3")}>
+                    <TokenIcon icon={USDC_ASSET_META.icon} short="U" color={USDC_ASSET_META.color} size="sm" />
+                    <span className="text-sm">USDC</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:col-span-2 dark:border-white/10 dark:bg-white/[0.03]">
+                  <div className="min-w-0 space-y-1">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      Recipient
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <code className={cn("font-mono text-sm font-medium", s.t.pageHeading)}>
+                        {needsStellarDest
+                          ? stellarTruncated ?? "Connect Stellar"
+                          : needsSolanaDest
+                            ? solanaPublicKey
+                              ? formatBridgeAddress(solanaPublicKey.toBase58())
+                              : "Connect Solana"
+                            : evmAddress
+                              ? formatBridgeAddress(evmAddress)
+                              : "Connect EVM"}
+                      </code>
+                      {(needsStellarDest && stellarAddress) || (needsSolanaDest && solanaPublicKey) || (needsEvmDest && evmAddress) ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            copyAddress(
+                              needsStellarDest
+                                ? stellarAddress!
+                                : needsSolanaDest
+                                  ? solanaPublicKey!.toBase58()
+                                  : evmAddress!
+                            )
+                          }
+                          className={cn("rounded-md p-1 transition-colors", dark ? "text-white/40 hover:bg-white/10 hover:text-white/70" : "text-slate-400 hover:bg-slate-100 hover:text-slate-600")}
+                          aria-label="Copy address"
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </button>
+                      ) : null}
+                      {copied ? <span className={cn("text-[11px] text-emerald-600", dark && "text-emerald-400")}>Copied</span> : null}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={s.label}>You receive (est.)</p>
+                    <p className={cn("text-sm font-semibold tabular-nums", s.t.pageHeading)}>{receive.toFixed(2)} USDC</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div className={cn("h-px", dark ? "bg-white/10" : "bg-slate-100")} />
+
+            <section className="grid gap-x-6 gap-y-4 md:grid-cols-[180px_minmax(0,1fr)]">
+              <div className="flex items-start gap-3">
+                <span className={s.stepBadge}>3</span>
+                <div>
+                  <p className={s.sectionTitle}>Amount</p>
+                  <p className={cn("mt-0.5", s.muted)}>Native USDC via Circle CCTP.</p>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className={s.label}>Amount</Label>
+                <Input
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))}
+                  className={cn(s.input, "h-12 text-lg font-semibold tabular-nums")}
+                  inputMode="decimal"
+                />
+              </div>
+            </section>
+
+            {(progress || error) && (
+              <div className={cn("rounded-xl border px-4 py-3 text-sm", error ? "border-red-300 bg-red-50 text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200" : "border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-100")}>
+                {error ?? progress?.message}
+              </div>
+            )}
+
+            <Button
+              type="button"
+              disabled={running}
+              className="h-11 w-full rounded-xl bg-blue-600 text-base font-semibold hover:bg-blue-700"
+              onClick={() => void handleBridge()}
+            >
+              {running ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Bridging USDC…
+                </span>
+              ) : (
+                "Bridge USDC"
+              )}
+            </Button>
+          </div>
         </div>
 
         <aside className="flex flex-col gap-4 lg:sticky lg:top-4 lg:self-start">
           <div className={s.panel}>
-            <SectionHeader title="Supported Networks" subtitle="Bridge in from any chain" icon={Globe} styles={s} />
-            <div className="space-y-4">
-              <div>
-                <p className={cn("mb-2 text-xs font-medium", s.label)}>From</p>
-                <div className="flex flex-wrap items-center gap-2">
-                  {BRIDGE_SOURCE_NETWORKS.map((network) => (
-                    <NetworkIcon key={network.id} network={network} />
-                  ))}
-                  <span className={cn("inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full px-2 text-[11px] font-semibold", dark ? "bg-white/10 text-white/70" : "bg-slate-100 text-slate-600")}>
-                    +6
-                  </span>
-                </div>
-              </div>
-              <div>
-                <p className={cn("mb-2 text-xs font-medium", s.label)}>To</p>
-                <div className="flex items-center gap-2">
-                  <NetworkIcon network={BRIDGE_DEST_NETWORK} />
-                  <span className={cn("text-sm font-medium", s.t.pageHeading)}>{BRIDGE_DEST_NETWORK.label}</span>
-                </div>
-              </div>
+            <div className="mb-3">
+              <h2 className={cn("text-sm font-semibold", s.t.pageHeading)}>Supported Networks</h2>
+              <p className={cn("mt-0.5 text-xs", s.t.pageSubheading)}>USDC via Circle CCTP v2</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {BRIDGE_NETWORKS.map((network) => (
+                <NetworkIcon key={network.id} network={network} />
+              ))}
             </div>
           </div>
 
           <div className={s.panel}>
-            <SectionHeader
-              title="Recent Bridges"
-              subtitle="Latest cross-chain transfers"
-              styles={s}
-              action={
-                <button type="button" className="text-xs font-medium text-blue-600 hover:underline">
-                  View all
-                </button>
-              }
-            />
-            <nav className={cn("mb-4 flex gap-5 border-b", dark ? "border-white/10" : "border-slate-200")} role="tablist" aria-label="Bridge history filters">
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <div>
+                <h2 className={cn("text-sm font-semibold", s.t.pageHeading)}>Recent Bridges</h2>
+                <p className={cn("mt-0.5 text-xs", s.t.pageSubheading)}>Stored locally in this browser</p>
+              </div>
+              <History className={cn("h-4 w-4 shrink-0", s.muted)} strokeWidth={1.75} />
+            </div>
+            <nav className={cn("mb-4 flex gap-5 border-b", dark ? "border-white/10" : "border-slate-200")}>
               {([
                 { id: "all", label: "All" },
                 { id: "completed", label: "Completed" },
                 { id: "in_progress", label: "In Progress" },
-              ] as const).map((tab) => {
-                const active = historyFilter === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    onClick={() => setHistoryFilter(tab.id)}
-                    className={cn(
-                      "relative pb-2.5 text-sm font-medium transition-colors",
-                      active ? (dark ? "text-blue-400" : "text-blue-600") : cn(s.t.pageSubheading, "hover:text-slate-700", dark && "hover:text-slate-200")
-                    )}
-                  >
-                    {tab.label}
-                    {active ? <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-blue-600" /> : null}
-                  </button>
-                );
-              })}
+              ] as const).map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setHistoryFilter(tab.id)}
+                  className={cn(
+                    "relative pb-2.5 text-sm font-medium transition-colors",
+                    historyFilter === tab.id ? (dark ? "text-blue-400" : "text-blue-600") : cn(s.t.pageSubheading, "hover:text-slate-700", dark && "hover:text-slate-200")
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </nav>
             {filteredRecent.length === 0 ? (
-              <p className={cn("py-6 text-center text-xs", s.t.pageSubheading)}>No bridges in this view yet.</p>
+              <p className={cn("py-6 text-center text-xs", s.t.pageSubheading)}>No bridges yet.</p>
             ) : (
               <ul className="space-y-4">
                 {filteredRecent.map((item) => {
-                  const network = networkById(item.fromNetwork)!;
+                  const from = bridgeNetworkById(item.fromChain);
+                  const to = bridgeNetworkById(item.toChain);
                   return (
                     <li key={item.id} className="flex items-start justify-between gap-3">
                       <div className="flex min-w-0 gap-3">
                         <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-full", dark ? "bg-white/10" : "bg-slate-100")}>
-                          <NetworkIcon network={network} size="md" />
+                          <NetworkIcon network={from} size="md" />
                         </div>
                         <div className="min-w-0">
-                          <p className={cn("truncate text-sm font-medium", s.t.pageHeading)}>{network.label}</p>
-                          <p className={cn("whitespace-nowrap text-[11px]", s.t.pageSubheading)}>{item.timeAgo}</p>
+                          <p className={cn("truncate text-sm font-medium", s.t.pageHeading)}>
+                            {from.label} → {to.label}
+                          </p>
+                          <p className={cn("whitespace-nowrap text-[11px]", s.t.pageSubheading)}>{formatBridgeTimeAgo(item.createdAt)}</p>
                         </div>
                       </div>
                       <div className="flex shrink-0 flex-col items-end gap-1">
@@ -636,10 +640,12 @@ export function BridgePageContent() {
 
           <div className={s.panel}>
             <h2 className={cn("mb-2 text-sm font-semibold", s.t.pageHeading)}>Need Help?</h2>
-            <p className={cn("mb-3 text-xs leading-relaxed", s.t.pageSubheading)}>Learn how cross-chain bridging works on Hypertron.</p>
+            <p className={cn("mb-3 text-xs leading-relaxed", s.t.pageSubheading)}>
+              Transfers use Circle CCTP (burn on source, mint on destination). Stellar inbound routes use the CCTP Forwarder contract.
+            </p>
             <Button asChild variant="outline" className={cn("h-9 w-full gap-2 rounded-lg", s.t.outlineBtn)}>
-              <Link href="/docs/introduction" target="_blank" rel="noopener noreferrer">
-                Visit Help Center
+              <Link href="https://developers.circle.com/cctp" target="_blank" rel="noopener noreferrer">
+                Circle CCTP Docs
                 <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </Button>

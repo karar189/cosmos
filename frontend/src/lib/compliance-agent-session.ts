@@ -1,14 +1,9 @@
-import type { RegulatorySource } from "@/lib/compliance/jurisdiction-knowledge-base";
-
 export type SourceStatus = {
-  sourceType: "website" | "document" | "notes" | "regulatory_source";
+  sourceType: "website" | "document" | "notes";
   name: string;
-  status: "Processed" | "Failed" | "Unsupported" | "available" | "used" | "skipped" | "failed";
+  status: "Processed" | "Failed" | "Unsupported";
   detail?: string;
   extractedChars: number;
-  providedBy?: "user" | "hypertron";
-  authorityType?: RegulatorySource["authorityType"];
-  description?: string;
 };
 
 export type ComplianceResult = {
@@ -42,27 +37,19 @@ export type ComplianceResult = {
 
 export type PendingComplianceRequest = {
   country: string;
-  companyName: string;
-  companyDescription: string;
   companyDetails: string;
   businessModel: string;
   notes: string;
-  companyWebsiteUrl: string;
   websites: string[];
-  regulatorySources: RegulatorySource[];
   files: File[];
 };
 
 export type ComplianceRunContext = {
   country: string;
-  companyName?: string;
-  companyDescription?: string;
   companyDetails: string;
   businessModel: string;
   notes: string;
-  companyWebsiteUrl?: string;
   websites: string[];
-  regulatorySources?: RegulatorySource[];
   sourceStatuses: SourceStatus[];
 };
 

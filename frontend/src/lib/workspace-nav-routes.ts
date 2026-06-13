@@ -24,7 +24,6 @@ const ROUTE_LABELS: Record<string, string> = {
   payments: "Payments",
   "secure-vault": "Secure Vault",
   "compliance-agent": "Compliance",
-  "compliance-agent2": "Compliance",
   "compliance-analysis": "Risk Reports",
   rns: "Regulations",
   "document-vault": "Document Vault",

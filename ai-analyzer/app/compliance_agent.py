@@ -106,25 +106,11 @@ COUNTRY_PORTAL_SEED_DATA: dict[str, list[dict[str, str]]] = {
 
 
 class SourceStatus(BaseModel):
-    source_type: Literal["website", "document", "notes", "regulatory_source"] = Field(alias="sourceType")
+    source_type: Literal["website", "document", "notes"] = Field(alias="sourceType")
     name: str
-    status: Literal["Processed", "Failed", "Unsupported", "available", "used", "skipped", "failed"]
+    status: Literal["Processed", "Failed", "Unsupported"]
     detail: str | None = None
     extracted_chars: int = Field(0, alias="extractedChars")
-    provided_by: Literal["user", "hypertron"] | None = Field(default=None, alias="providedBy")
-    authority_type: str | None = Field(default=None, alias="authorityType")
-    description: str | None = None
-
-    class Config:
-        populate_by_name = True
-
-
-class RegulatorySourceInput(BaseModel):
-    name: str
-    authority_type: str | None = Field(default=None, alias="authorityType")
-    url: str
-    description: str | None = None
-    relevance: list[str] = Field(default_factory=list)
 
     class Config:
         populate_by_name = True
@@ -192,7 +178,6 @@ class ComplianceDetailRequest(BaseModel):
     company_details: str = Field(..., alias="companyDetails", min_length=1, max_length=1200)
     notes: str | None = Field(None, max_length=3000)
     websites: list[str] = Field(default_factory=list)
-    regulatory_sources: list[RegulatorySourceInput] = Field(default_factory=list, alias="regulatorySources")
     section: Literal["licenses", "documents", "actions", "timeline", "risks"]
     item_title: str = Field(..., alias="itemTitle", min_length=2, max_length=240)
     item_summary: str | None = Field(None, alias="itemSummary", max_length=1200)
@@ -526,38 +511,6 @@ def _parse_websites(raw: str | None) -> list[str]:
         seen.add(normalized)
         urls.append(valid)
     return urls
-
-
-def _parse_regulatory_sources(raw: str | None) -> list[RegulatorySourceInput]:
-    if not raw:
-        return []
-    try:
-        values = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise HTTPException(status_code=400, detail="regulatory_sources must be a JSON array.") from exc
-    if not isinstance(values, list):
-        raise HTTPException(status_code=400, detail="regulatory_sources must be a JSON array.")
-
-    sources: list[RegulatorySourceInput] = []
-    seen: set[str] = set()
-    for item in values:
-        if not isinstance(item, dict):
-            raise HTTPException(status_code=400, detail="Each regulatory source must be an object.")
-        try:
-            source = RegulatorySourceInput(**item)
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail="Invalid regulatory source payload.") from exc
-        valid_url = _validate_website_url(source.url)
-        normalized = _normalize_url(valid_url)
-        if normalized in seen:
-            continue
-        seen.add(normalized)
-        source.url = valid_url
-        source.name = _validate_plain_text(source.name, "regulatory_source.name", 2, 160)
-        if source.description:
-            source.description = _clean_text(source.description, 500)
-        sources.append(source)
-    return sources
 
 
 def _fallback_response(
@@ -908,15 +861,11 @@ def _call_openai_detail_plan(context: str) -> dict[str, Any]:
 
 @router.post("/api/compliance-agent/analyze", response_model=ComplianceAgentResponse)
 async def analyze_compliance_agent(
-    company_name: str | None = Form(None),
-    company_description: str | None = Form(None),
-    company_website_url: str | None = Form(None),
     company_details: str = Form(...),
     country: str = Form(...),
     business_model: str = Form(...),
     notes: str | None = Form(None),
     websites: str | None = Form(None),
-    regulatory_sources: str | None = Form(None),
     files: list[UploadFile] = File(default_factory=list),
 ) -> ComplianceAgentResponse:
     # Input guard rails (required text fields)
@@ -928,7 +877,6 @@ async def analyze_compliance_agent(
         notes_text = _validate_plain_text(notes, "notes", 1, 3000)
 
     website_urls = _parse_websites(websites)
-    regulatory_source_items = _parse_regulatory_sources(regulatory_sources)
     if len(files) > MAX_FILES:
         raise HTTPException(status_code=400, detail=f"A maximum of {MAX_FILES} files is allowed.")
 
@@ -958,36 +906,6 @@ async def analyze_compliance_agent(
                         status="Failed",
                         detail=str(exc),
                         extractedChars=0,
-                    )
-                )
-
-        for source in regulatory_source_items:
-            try:
-                text, content_type = await _fetch_website_text(client, source.url)
-                extracted_sources.append((f"Hypertron regulatory source: {source.name}", text))
-                source_statuses.append(
-                    SourceStatus(
-                        sourceType="regulatory_source",
-                        name=source.url,
-                        status="used",
-                        detail=source.name,
-                        extractedChars=len(text),
-                        providedBy="hypertron",
-                        authorityType=source.authority_type,
-                        description=source.description,
-                    )
-                )
-            except Exception as exc:
-                source_statuses.append(
-                    SourceStatus(
-                        sourceType="regulatory_source",
-                        name=source.url,
-                        status="failed",
-                        detail=f"{source.name}: {exc!s}",
-                        extractedChars=0,
-                        providedBy="hypertron",
-                        authorityType=source.authority_type,
-                        description=source.description,
                     )
                 )
 
