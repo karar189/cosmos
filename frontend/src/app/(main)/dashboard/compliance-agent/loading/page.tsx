@@ -14,12 +14,22 @@ import {
   normalizeComplianceResult,
   setLatestComplianceContext,
   setLatestComplianceResult,
+  type ComplianceResult,
+  type SourceStatus,
 } from "@/lib/compliance-agent-session";
+import type { RegulatorySource } from "@/lib/compliance/jurisdiction-knowledge-base";
 import { useFreighter } from "@/hooks/useFreighter";
 
 type LiveWebsiteState = {
   url: string;
   state: "queued" | "fetching" | "processed" | "failed";
+};
+
+type LiveRegulatorySourceState = {
+  key: string;
+  name: string;
+  url: string;
+  state: "available" | "used" | "skipped" | "failed";
 };
 
 function hostOf(url: string): string {
@@ -28,6 +38,34 @@ function hostOf(url: string): string {
   } catch {
     return url;
   }
+}
+
+function mergeHypertronSourceStatuses(
+  existingStatuses: SourceStatus[],
+  regulatorySources: RegulatorySource[]
+): SourceStatus[] {
+  const merged = [...existingStatuses];
+  const existingKeys = new Set(
+    existingStatuses.map((status) => `${status.sourceType}:${status.name.toLowerCase()}`)
+  );
+
+  for (const source of regulatorySources) {
+    const urlKey = `regulatory_source:${source.url.toLowerCase()}`;
+    if (existingKeys.has(urlKey)) continue;
+    merged.push({
+      sourceType: "regulatory_source",
+      name: source.url,
+      status: "used",
+      detail: source.name,
+      extractedChars: 0,
+      providedBy: "hypertron",
+      authorityType: source.authorityType,
+      description: source.description,
+    });
+    existingKeys.add(urlKey);
+  }
+
+  return merged;
 }
 
 export default function ComplianceAgentLoadingPage() {
@@ -39,13 +77,23 @@ export default function ComplianceAgentLoadingPage() {
   const [error, setError] = useState<string | null>(null);
   const [phase, setPhase] = useState("Booting compliance engine");
   const [liveWebsites, setLiveWebsites] = useState<LiveWebsiteState[]>(
-    () => (pending?.websites || []).map((url) => ({ url, state: "queued" }))
+    () => (pending?.companyWebsiteUrl ? [pending.companyWebsiteUrl] : pending?.websites || []).map((url) => ({ url, state: "queued" }))
+  );
+  const [liveRegulatorySources, setLiveRegulatorySources] = useState<LiveRegulatorySourceState[]>(
+    () =>
+      (pending?.regulatorySources || []).map((source) => ({
+        key: `${source.name}-${source.url}`,
+        name: source.name,
+        url: source.url,
+        state: "available",
+      }))
   );
 
   const stepItems = useMemo(
     () => [
       { icon: ShieldCheck, label: "Validating profile and guard rails" },
-      { icon: Webhook, label: "Fetching website context and policy pages" },
+      { icon: Webhook, label: "Resolving Hypertron jurisdiction sources" },
+      { icon: ScanSearch, label: "Fetching company website context" },
       { icon: ScanSearch, label: "Reading documents and extracting obligations" },
       { icon: BrainCircuit, label: "Generating structured compliance roadmap" },
     ],
@@ -64,7 +112,8 @@ export default function ComplianceAgentLoadingPage() {
 
     const phaseTimer = window.setInterval(() => {
       setPhase((prev) => {
-        if (prev.includes("Booting")) return "Fetching website context";
+        if (prev.includes("Booting")) return "Resolving Hypertron jurisdiction sources";
+        if (prev.includes("jurisdiction")) return "Fetching company website context";
         if (prev.includes("website")) return "Processing uploaded documents";
         if (prev.includes("documents")) return "Building compliance strategy";
         return "Finalizing analysis";
@@ -87,12 +136,24 @@ export default function ComplianceAgentLoadingPage() {
       });
     }, 1400);
 
+    const regulatoryTimer = window.setInterval(() => {
+      setLiveRegulatorySources((prev) => {
+        const nextAvailable = prev.findIndex((source) => source.state === "available");
+        if (nextAvailable < 0) return prev;
+        return prev.map((source, index) => (index === nextAvailable ? { ...source, state: "used" } : source));
+      });
+    }, 900);
+
     const run = async () => {
       const formData = new FormData();
       formData.append("country", pending.country);
+      formData.append("companyName", pending.companyName);
+      formData.append("companyDescription", pending.companyDescription);
       formData.append("companyDetails", pending.companyDetails);
       formData.append("businessModel", pending.businessModel);
       if (pending.notes) formData.append("notes", pending.notes);
+      if (pending.companyWebsiteUrl) formData.append("companyWebsiteUrl", pending.companyWebsiteUrl);
+      formData.append("regulatorySources", JSON.stringify(pending.regulatorySources));
       formData.append("websites", JSON.stringify(pending.websites));
       for (const file of pending.files) {
         formData.append("files", file, file.name);
@@ -110,17 +171,25 @@ export default function ComplianceAgentLoadingPage() {
         }
 
         const normalized = normalizeComplianceResult(payload);
-        setLatestComplianceResult(normalized);
+        const resultWithSources: ComplianceResult = {
+          ...normalized,
+          sourceStatuses: mergeHypertronSourceStatuses(normalized.sourceStatuses, pending.regulatorySources),
+        };
+        setLatestComplianceResult(resultWithSources);
         setLatestComplianceContext({
           country: pending.country,
+          companyName: pending.companyName,
+          companyDescription: pending.companyDescription,
           companyDetails: pending.companyDetails,
           businessModel: pending.businessModel,
           notes: pending.notes,
+          companyWebsiteUrl: pending.companyWebsiteUrl,
           websites: pending.websites,
-          sourceStatuses: normalized.sourceStatuses,
+          regulatorySources: pending.regulatorySources,
+          sourceStatuses: resultWithSources.sourceStatuses,
         });
 
-        const websiteStatuses = normalized.sourceStatuses.filter((s) => s.sourceType === "website");
+        const websiteStatuses = resultWithSources.sourceStatuses.filter((s) => s.sourceType === "website");
         if (websiteStatuses.length > 0) {
           setLiveWebsites((prev) =>
             prev.map((w) => {
@@ -130,6 +199,17 @@ export default function ComplianceAgentLoadingPage() {
             })
           );
         }
+        setLiveRegulatorySources((prev) =>
+          prev.map((source) => {
+            const match = resultWithSources.sourceStatuses.find(
+              (status) => status.sourceType === "regulatory_source" && (status.name === source.url || status.description === source.name)
+            );
+            if (!match) return { ...source, state: "used" };
+            if (match.status === "failed" || match.status === "Failed") return { ...source, state: "failed" };
+            if (match.status === "skipped" || match.status === "Unsupported") return { ...source, state: "skipped" };
+            return { ...source, state: "used" };
+          })
+        );
 
         clearPendingComplianceRequest();
         setProgress(100);
@@ -149,6 +229,7 @@ export default function ComplianceAgentLoadingPage() {
       window.clearInterval(progressTimer);
       window.clearInterval(phaseTimer);
       window.clearInterval(websiteTimer);
+      window.clearInterval(regulatoryTimer);
     };
   }, [pending, router]);
 
@@ -234,12 +315,12 @@ export default function ComplianceAgentLoadingPage() {
 
             <Card className="border-white/[0.08] bg-white/[0.02]">
               <CardHeader>
-                <CardTitle className="text-base">Live website fetch</CardTitle>
+                <CardTitle className="text-base">Source collection</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {liveWebsites.length === 0 ? (
                   <p className="rounded-lg border border-white/[0.07] bg-white/[0.02] p-3 text-sm text-white/50">
-                    No websites added. Agent is using docs and notes context.
+                    No company website added. Agent is using docs, notes, and Hypertron jurisdiction sources.
                   </p>
                 ) : (
                   liveWebsites.map((website) => (
@@ -263,6 +344,38 @@ export default function ComplianceAgentLoadingPage() {
                       </span>
                     </div>
                   ))
+                )}
+
+                {liveRegulatorySources.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    <p className="text-xs font-medium uppercase tracking-[0.16em] text-white/40">
+                      Hypertron-provided regulatory sources
+                    </p>
+                    {liveRegulatorySources.map((source) => (
+                      <div
+                        key={source.key}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.07] bg-white/[0.02] px-3 py-2"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm text-white/90">{source.name}</p>
+                          <p className="truncate text-xs text-white/45">{hostOf(source.url)}</p>
+                        </div>
+                        <span
+                          className={`shrink-0 rounded-full px-2 py-1 text-[11px] ${
+                            source.state === "used"
+                              ? "bg-emerald-500/15 text-emerald-300"
+                              : source.state === "failed"
+                                ? "bg-red-500/15 text-red-300"
+                                : source.state === "skipped"
+                                  ? "bg-amber-500/15 text-amber-300"
+                                  : "bg-white/10 text-white/50"
+                          }`}
+                        >
+                          {source.state}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 )}
 
                 <div className="rounded-lg border border-white/[0.07] bg-white/[0.02] p-3 text-xs text-white/50">
