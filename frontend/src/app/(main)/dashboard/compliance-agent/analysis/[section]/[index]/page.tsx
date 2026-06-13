@@ -24,11 +24,67 @@ import {
   type ComplianceDetailPlan,
   type DetailLink,
 } from "@/lib/compliance-agent-session";
-import { getRegulatorySourcesForJurisdiction } from "@/lib/compliance/jurisdiction-knowledge-base";
 
 type SectionKey = "licenses" | "documents" | "actions" | "timeline" | "risks";
 
 const SEARCH_ENGINE_HOSTS = ["google.com", "bing.com", "search.yahoo.com", "duckduckgo.com", "yandex.com", "baidu.com"];
+
+const COUNTRY_PORTAL_DEFAULTS: Record<string, DetailLink[]> = {
+  india: [
+    {
+      title: "RBI (Reserve Bank of India)",
+      url: "https://www.rbi.org.in/",
+      purpose: "Official portal for payment system and forex regulatory guidance",
+      authority: "RBI",
+    },
+    {
+      title: "FIU-IND",
+      url: "https://fiuindia.gov.in/",
+      purpose: "Official AML/CFT reporting and compliance guidance portal",
+      authority: "FIU-IND",
+    },
+    {
+      title: "MCA (Ministry of Corporate Affairs)",
+      url: "https://www.mca.gov.in/",
+      purpose: "Corporate filing and governance compliance portal",
+      authority: "MCA",
+    },
+    {
+      title: "SEBI",
+      url: "https://www.sebi.gov.in/",
+      purpose: "Securities and market compliance references",
+      authority: "SEBI",
+    },
+  ],
+  "united states": [
+    {
+      title: "FinCEN",
+      url: "https://www.fincen.gov/",
+      purpose: "Official AML/BSA guidance and filing references",
+      authority: "FinCEN",
+    },
+    {
+      title: "SEC",
+      url: "https://www.sec.gov/",
+      purpose: "Official securities compliance and registration references",
+      authority: "SEC",
+    },
+  ],
+  "united kingdom": [
+    {
+      title: "FCA",
+      url: "https://www.fca.org.uk/",
+      purpose: "Official financial licensing and supervisory guidance",
+      authority: "FCA",
+    },
+    {
+      title: "HMRC",
+      url: "https://www.gov.uk/government/organisations/hm-revenue-customs",
+      purpose: "Official tax and reporting compliance references",
+      authority: "HMRC",
+    },
+  ],
+};
 
 function toSection(value: string): SectionKey | null {
   if (value === "licenses" || value === "documents" || value === "actions" || value === "timeline" || value === "risks") {
@@ -43,6 +99,15 @@ function sectionLabel(section: SectionKey): string {
   if (section === "actions") return "Action Items";
   if (section === "timeline") return "Timeline";
   return "Risks and Mitigation";
+}
+
+function normalizeCountryKey(country: string): string {
+  const key = country.trim().toLowerCase();
+  if (!key) return "india";
+  if (key === "in" || key === "ind" || key.includes("india")) return "india";
+  if (key === "us" || key === "usa" || key.includes("united states")) return "united states";
+  if (key === "uk" || key === "gb" || key === "gbr" || key.includes("united kingdom")) return "united kingdom";
+  return key;
 }
 
 function isSearchEngineHost(host: string): boolean {
@@ -171,12 +236,8 @@ export default function ComplianceDetailPage() {
   }, [context?.country, result]);
 
   const defaultLinks = useMemo(() => {
-    return getRegulatorySourcesForJurisdiction(inferredCountry).map((source) => ({
-      title: source.name,
-      url: source.url,
-      purpose: source.description,
-      authority: source.authorityType,
-    }));
+    const key = normalizeCountryKey(inferredCountry);
+    return COUNTRY_PORTAL_DEFAULTS[key] || [];
   }, [inferredCountry]);
 
   const resolvedSubmissionLinks = useMemo(() => {
@@ -201,15 +262,9 @@ export default function ComplianceDetailPage() {
       return;
     }
 
-    const contextWebsites = context?.websites?.length ? context.websites : [];
-    const statusWebsites = result.sourceStatuses
-      .filter(
-        (s) =>
-          (s.sourceType === "website" || s.sourceType === "regulatory_source") &&
-          !["Failed", "failed", "Unsupported", "skipped"].includes(s.status)
-      )
-      .map((s) => s.name);
-    const websites = Array.from(new Set([...contextWebsites, ...statusWebsites]));
+    const websites = context?.websites?.length
+      ? context.websites
+      : result.sourceStatuses.filter((s) => s.sourceType === "website" && s.status === "Processed").map((s) => s.name);
 
     const fallbackCountry = inferredCountry;
     const fallbackBusinessModel =
@@ -226,7 +281,6 @@ export default function ComplianceDetailPage() {
       companyDetails: fallbackCompanyDetails,
       notes: context?.notes || "",
       websites,
-      regulatorySources: context?.regulatorySources || getRegulatorySourcesForJurisdiction(fallbackCountry),
       section,
       itemTitle: selected.title,
       itemSummary: selected.summary,
@@ -429,7 +483,7 @@ export default function ComplianceDetailPage() {
                       </a>
                     ))}
                     {resolvedSubmissionLinks.length === 0 && (
-                      <p className="text-sm text-white/60">Hypertron could not resolve a direct official link for this item yet.</p>
+                      <p className="text-sm text-white/60">No direct official links available yet. Add official regulator websites in context for better resolution.</p>
                     )}
                   </CardContent>
                 </Card>

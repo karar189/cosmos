@@ -1,1 +1,1 @@
-export { default } from "@/app/(main)/dashboard/compliance-agent2/page";
+export { default } from "@/app/(main)/dashboard/compliance-agent/page";

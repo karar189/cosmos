@@ -1,4 +1,4 @@
-import { Providers } from "@/components";
+import Providers from "@/components/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import { DASHBOARD_THEME_BOOTSTRAP_SCRIPT } from "@/lib/dashboard-theme";

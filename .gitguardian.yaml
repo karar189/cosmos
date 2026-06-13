@@ -1,0 +1,8 @@
+# Circle CCTP / Stellar Soroban contract IDs in .env.example are public on-chain
+# addresses (see https://developers.circle.com/cctp), not credentials.
+version: 2
+
+secret:
+  ignored_paths:
+    - "frontend/.env.example"
+    - "frontend/CONTRACTS.md"

@@ -14,6 +14,8 @@ const nextConfig = {
         __dirname,
         "src/lib/stubs/farcaster-mini-app-solana.ts"
       ),
+      // npm hoists cross-fetch; WalletConnect still resolves a nested path in dev.
+      "cross-fetch": path.resolve(__dirname, "node_modules/cross-fetch"),
     };
     return config;
   },
