@@ -16,6 +16,11 @@ import {
 import { HypertronArchitectureDiagram } from "./doc-architecture-diagram";
 import { githubBlob, githubTree } from "@/lib/doc/doc-github";
 import { technicalHref } from "@/lib/doc/doc-technical-pages";
+import {
+  getExplorerAddressUrl,
+  isValidExplorerAddress,
+} from "@/lib/stellar-explorer";
+import { TESTNET_CONTRACTS } from "@/lib/doc/testnet-contracts";
 
 const githubLinkClass =
   "text-blue-400/90 underline decoration-blue-400/30 underline-offset-2 transition-colors hover:text-blue-300 hover:decoration-blue-300/50";
@@ -36,6 +41,34 @@ function GhFile({ path, children }: { path: string; children: ReactNode }) {
   );
 }
 
+function ExplorerMono({
+  address,
+  network = "testnet",
+}: {
+  address: string;
+  network?: "testnet" | "public";
+}) {
+  if (!isValidExplorerAddress(address)) {
+    return (
+      <span title="Invalid Stellar address (checksum failed). Fix the ID in env or redeploy.">
+        <Mono>{address}</Mono>
+      </span>
+    );
+  }
+
+  return (
+    <a
+      href={getExplorerAddressUrl(address, network)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={githubLinkClass}
+      title={`View on StellarExpert (${network})`}
+    >
+      <Mono>{address}</Mono>
+    </a>
+  );
+}
+
 function ModuleHeading({ id, title, githubPath }: { id: string; title: string; githubPath: string }) {
   return (
     <div className="flex scroll-mt-20 flex-wrap items-center gap-x-3 gap-y-1 pt-3">
@@ -49,9 +82,7 @@ function ModuleHeading({ id, title, githubPath }: { id: string; title: string; g
   );
 }
 
-const POOLMANAGER_ID = "CAN2RE5SDLJ67G5RSGUDB4BYNUZ3QMPGJOLPUWRVOTMLAWVA3U04PBV2";
-const POOL_ACCOUNT = "GATXUXOFATDQXLKJCIU7G22V5NNUE7J5OP3KJKMJNBAPRM5VYQ3K7DKN";
-const ESCROW_LEGACY = "CDBYDNW3MLBFYALZ2WBJ5KWJLCPFW556XKHLV7BVT5YNBU7WPN2JDXDS";
+const POOL_ACCOUNT = TESTNET_CONTRACTS.paymentPool;
 
 function OverviewContent() {
   return (
@@ -445,6 +476,8 @@ function FlowsContent() {
 }
 
 function ContractsContent() {
+  const { poolManager, cctp } = TESTNET_CONTRACTS;
+
   return (
     <div className="space-y-4">
       <DocP>
@@ -464,19 +497,54 @@ function ContractsContent() {
           [<><Mono>get_state / is_nullifier_spent</Mono></>, "view", "Pool root, size, config and nullifier status"],
         ]}
       />
-      <DocP>Deployed addresses (Stellar testnet; may differ per deployment):</DocP>
+      <DocP>
+        Live Stellar testnet addresses. Click any address to open it on{" "}
+        <a
+          href="https://stellar.expert/explorer/testnet"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={githubLinkClass}
+        >
+          StellarExpert (testnet)
+        </a>
+        :
+      </DocP>
       <DocTable
-        head={["Contract / account", "Network", "Address", "Status"]}
+        head={["Contract / account", "Role", "Address", "Status"]}
         rows={[
-          ["PoolManager", "Testnet", <Mono>{POOLMANAGER_ID}</Mono>, "Live, ZK stub"],
-          ["Payment pool account", "Testnet", <Mono>{POOL_ACCOUNT}</Mono>, "Live"],
-          ["EscrowEngine", "Testnet", <Mono>{ESCROW_LEGACY}</Mono>, "Not wired"],
+          ["PoolManager", "ZK commitment pool", <ExplorerMono key="pm" address={poolManager} />, "Live"],
+          ["Payment pool account", "Receives link payments", <ExplorerMono key="pool" address={POOL_ACCOUNT} />, "Live"],
+          [
+            "CCTP Token Messenger",
+            "Burn / mint USDC",
+            <ExplorerMono key="tm" address={cctp.tokenMessengerMinter} />,
+            "Circle testnet",
+          ],
+          [
+            "CCTP Message Transmitter",
+            "Cross chain messages",
+            <ExplorerMono key="mt" address={cctp.messageTransmitter} />,
+            "Circle testnet",
+          ],
+          [
+            "CCTP Forwarder",
+            "Inbound Stellar mints",
+            <ExplorerMono key="fw" address={cctp.cctpForwarder} />,
+            "Circle testnet",
+          ],
+          [
+            "USDC (Soroban)",
+            "Bridged USDC on Stellar",
+            <ExplorerMono key="usdc" address={cctp.usdc} />,
+            "Circle testnet",
+          ],
         ]}
       />
       <DocNote variant="info">
-        Build with <Mono>cargo build --target wasm32v1-none --release</Mono> and deploy via{" "}
-        <Mono>contracts/deploy-testnet.sh</Mono>. Set{" "}
-        <Mono>NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID</Mono> in the frontend env after deploying.
+        PoolManager holds live testnet commitments. Only redeploy via{" "}
+        <Mono>contracts/deploy-testnet.sh</Mono> when WASM changes; then update{" "}
+        <Mono>NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID</Mono> and{" "}
+        <Mono>src/lib/doc/testnet-contracts.ts</Mono>. Redeploying creates a new empty pool.
       </DocNote>
     </div>
   );
