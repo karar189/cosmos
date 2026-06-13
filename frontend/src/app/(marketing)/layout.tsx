@@ -8,9 +8,9 @@ interface Props {
 const MarketingLayout = ({ children }: Props) => {
   return (
     <MarketingSplash>
-      <div className="marketing-mono min-h-screen bg-background font-default text-foreground antialiased">
+      <div className="marketing-mono flex min-h-screen flex-col bg-background font-default text-foreground antialiased">
         <LandingNavbar />
-        <main className="relative z-10 w-full pt-0 [&:not(:has(#home))]:pt-24">
+        <main className="relative z-10 w-full shrink-0 pt-0 [&:not(:has(#home))]:pt-24">
           {children}
         </main>
         <LandingFooter />

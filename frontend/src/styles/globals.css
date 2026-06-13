@@ -630,6 +630,15 @@ html, body {
   z-index: 1;
 }
 
+/* Docs: page height follows content, and the marketing footer is hidden */
+.marketing-mono:has(.doc-shell) {
+  min-height: 0;
+}
+
+.marketing-mono:has(.doc-shell) > footer {
+  display: none;
+}
+
 .workspace-hub-root .workspace-hub-sidebar {
   background: rgba(255, 255, 255, 0.42);
   backdrop-filter: blur(24px) saturate(160%);

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { cn } from "@/utils";
 
 const DEMO_HREF = "https://calendly.com/kararsweta/30min";
 const TWITTER_HREF = "https://x.com/hypertron_hq";
@@ -57,9 +58,9 @@ function Column({
   );
 }
 
-export function LandingFooter() {
+export function LandingFooter({ className }: { className?: string }) {
   return (
-    <footer className="relative border-t border-border/30 bg-black px-6 pb-10 pt-16 md:px-28 md:pt-24">
+    <footer className={cn("relative border-t border-border/30 bg-black px-6 pb-10 pt-16 md:px-28 md:pt-24", className)}>
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-12 md:grid-cols-[1.4fr_repeat(3,1fr)] md:gap-8">
           <div className="max-w-sm">
