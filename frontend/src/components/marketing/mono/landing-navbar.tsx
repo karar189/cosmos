@@ -9,7 +9,7 @@ import { homeLaunchPath } from "@/lib/launch-auth";
 
 const BOOK_DEMO = "https://calendly.com/kararsweta/30min";
 const CONTACT_HREF = "https://x.com/hypertron_hq";
-const DOCS_HREF = "https://www.hypertron.space/docs/introduction";
+const DOCS_HREF = "/doc";
 const SIGN_IN_HREF = homeLaunchPath("/dashboard");
 
 export function LandingNavbar() {
@@ -64,8 +64,6 @@ export function LandingNavbar() {
           </Link>
           <Link
             href={DOCS_HREF}
-            target="_blank"
-            rel="noopener noreferrer"
             className="rounded-full px-3.5 py-1.5 text-sm font-medium text-white/65 transition-colors hover:bg-white/[0.06] hover:text-white"
           >
             Docs
@@ -131,8 +129,6 @@ export function LandingNavbar() {
           </Link>
           <Link
             href={DOCS_HREF}
-            target="_blank"
-            rel="noopener noreferrer"
             className="rounded-md px-3 py-2.5 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white"
             onClick={() => setOpen(false)}
           >

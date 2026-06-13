@@ -7,6 +7,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
   // Prebundled UMD build; transpiling avoids occasional dev chunk / resolution issues with Turbopack/webpack.
   transpilePackages: ["@stellar/freighter-api"],
+  async redirects() {
+    return [
+      { source: "/docs", destination: "/doc", permanent: true },
+      { source: "/docs/:path*", destination: "/doc/:path*", permanent: true },
+    ];
+  },
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,

@@ -8,7 +8,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
 const DEMO_HREF = "https://calendly.com/kararsweta/30min";
-const DOCS_HREF = "https://www.hypertron.space/docs/introduction";
+const DOCS_HREF = "/doc";
 
 export function CtaHlsSection() {
   return (
@@ -78,8 +78,6 @@ export function CtaHlsSection() {
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
             <Link
               href={DOCS_HREF}
-              target="_blank"
-              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-transparent px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/5"
             >
               Read the docs

@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const DEMO_HREF = "https://calendly.com/kararsweta/30min";
 const TWITTER_HREF = "https://x.com/hypertron_hq";
-const DOCS_HREF = "https://www.hypertron.space/docs/introduction";
+const DOCS_HREF = "/doc";
 
 const PRODUCT = [
   { label: "Solution", href: "/#solution" },
@@ -13,7 +13,7 @@ const PRODUCT = [
 ];
 
 const RESOURCES = [
-  { label: "Docs", href: DOCS_HREF, external: true },
+  { label: "Docs", href: DOCS_HREF },
   { label: "Blog", href: "/resources/blog" },
   { label: "Changelog", href: "/changelog" },
   { label: "Help center", href: "/resources/help" },
