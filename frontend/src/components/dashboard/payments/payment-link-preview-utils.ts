@@ -1,3 +1,5 @@
+import { normalizePaymentAssetCode } from "@/lib/stellar-assets";
+
 export type PaymentLinkPreviewData = {
   amount: string;
   currency?: string;
@@ -30,7 +32,7 @@ export function parsePaymentPreviewSearchParams(
   const methodsRaw = searchParams.get("methods");
   return {
     amount: searchParams.get("amount")?.trim() || "",
-    currency: searchParams.get("currency")?.trim() || "USDC",
+    currency: normalizePaymentAssetCode(searchParams.get("currency")),
     description: searchParams.get("description")?.trim() || "",
     customer: searchParams.get("customer")?.trim() || undefined,
     expiry: searchParams.get("expiry")?.trim() || "30",

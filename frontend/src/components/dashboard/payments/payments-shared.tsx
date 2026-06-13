@@ -16,6 +16,7 @@ import { HubAvatar } from "@/components/global/hub-avatar";
 import { hubThemeClasses } from "@/components/dashboard/workspace-hub/workspace-hub-theme-classes";
 import type { DashboardTheme } from "@/lib/dashboard-theme";
 import { cn } from "@/utils";
+import { normalizePaymentAssetCode } from "@/lib/stellar-assets";
 import { syncPendingPaymentLinks } from "@/lib/poll-payment-link-status";
 import { useDemoMode } from "@/components/demo/demo-mode-provider";
 
@@ -376,7 +377,7 @@ function mapOutgoingToTransactionRow(s: SendApiRow): TransactionRow {
     name: label.slice(0, 24),
     date: formatEventDate(when),
     amount: `-${amt}`,
-    currency: s.currency === "XLM" ? "XLM" : "USDC",
+    currency: normalizePaymentAssetCode(s.currency),
     status,
   };
 }
@@ -423,7 +424,7 @@ function formatAmountLabel(amount: string | null | undefined, paid: boolean): st
 
 function liveEventToTransaction(e: LiveEvent, origin: string): PaymentLinkTransaction {
   const paid = !!e.paidAt;
-  const currency = e.currency === "XLM" ? "XLM" : "USDC";
+  const currency = normalizePaymentAssetCode(e.currency);
   const payUrl = e.url || `${origin}/pay/${e.linkId}`;
   return {
     id: e.linkId,
@@ -677,7 +678,7 @@ export function PaymentsSidebar({
           name: (e.clientName || e.purpose || "Payment").slice(0, 24),
           date: formatEventDate(e.paidAt!),
           amount: `+${parseFloat(e.amount || "0").toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-          currency: e.currency === "XLM" ? "XLM" : "USDC",
+          currency: normalizePaymentAssetCode(e.currency),
           status: "Succeeded" as const,
         }))
       );

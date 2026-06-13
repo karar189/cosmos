@@ -17,7 +17,7 @@ import {
   type PayCheckoutTabId,
 } from "@/components/dashboard/payments/payment-checkout-shared";
 import { isPrivateSettlementEnabled } from "@/lib/privacy-features";
-import { STELLAR_LOGO_URL, USDC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
+import { normalizePaymentAssetCode, STELLAR_LOGO_URL, USDC_LOGO_URL, EURC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
 import { cn } from "@/utils";
 
 const TAB_META = [
@@ -84,6 +84,15 @@ function StellarRailIcon({ currency, className }: { currency: PaymentAssetCode; 
           height={16}
           className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full object-cover ring-2 ring-white"
         />
+      ) : currency === "EURC" ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={EURC_LOGO_URL}
+          alt="EURC"
+          width={16}
+          height={16}
+          className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full object-cover ring-2 ring-white"
+        />
       ) : null}
     </div>
   );
@@ -92,7 +101,7 @@ function StellarRailIcon({ currency, className }: { currency: PaymentAssetCode; 
 function AmountHeader({
   amount,
   currency,
-  usdApprox,
+  fiatApproxLabel,
   isAnyAmount,
   customAmount,
   onCustomAmountChange,
@@ -100,7 +109,7 @@ function AmountHeader({
 }: {
   amount: string;
   currency: PaymentAssetCode;
-  usdApprox: string | null;
+  fiatApproxLabel: string | null;
   isAnyAmount: boolean;
   customAmount: string;
   onCustomAmountChange: (v: string) => void;
@@ -134,9 +143,9 @@ function AmountHeader({
           <p className={cn("mt-0.5 text-2xl font-semibold leading-tight tracking-tight", s.heading)}>
             {amount} <span className={cn("text-lg font-medium", s.muted)}>{currency}</span>
           </p>
-          {usdApprox ? (
+          {fiatApproxLabel ? (
             <span className={cn("mt-1.5 inline-flex rounded-full border px-2.5 py-0.5 text-xs", s.usdBadge)}>
-              ≈ ${usdApprox} USD
+              {fiatApproxLabel}
             </span>
           ) : null}
         </>
@@ -221,9 +230,17 @@ export function PaymentLiveCheckout(props: PaymentLiveCheckoutProps) {
 
   const expiresAt = link.expiresAt ? new Date(link.expiresAt) : null;
   const description = link.purpose?.trim() || "Payment";
-  const usdApprox =
-    link.currency === "USDC" && displayAmount && Number.isFinite(Number(displayAmount))
-      ? Number(displayAmount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fiatApproxLabel =
+    displayAmount && Number.isFinite(Number(displayAmount))
+      ? (() => {
+          const formatted = Number(displayAmount).toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+          if (link.currency === "USDC") return `≈ $${formatted} USD`;
+          if (link.currency === "EURC") return `≈ €${formatted} EUR`;
+          return null;
+        })()
       : null;
 
   const isProcessing =
@@ -260,7 +277,7 @@ export function PaymentLiveCheckout(props: PaymentLiveCheckoutProps) {
           <AmountHeader
             amount={displayAmount}
             currency={link.currency}
-            usdApprox={usdApprox}
+            fiatApproxLabel={fiatApproxLabel}
             isAnyAmount={isAnyAmount}
             customAmount={customAmount}
             onCustomAmountChange={onCustomAmountChange}

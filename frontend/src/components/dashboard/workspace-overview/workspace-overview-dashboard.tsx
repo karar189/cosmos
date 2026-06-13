@@ -39,7 +39,7 @@ import {
   DEMO_REGULATORY,
   DEMO_TREASURY_SERIES,
 } from "@/lib/demo-overview-data";
-import { STELLAR_LOGO_URL, USDC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
+import { normalizePaymentAssetCode, STELLAR_LOGO_URL, USDC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
 
 const HYPERTRON_CHART = {
   blue: "#60a5fa",
@@ -563,7 +563,7 @@ export function WorkspaceOverviewDashboard({
         const paid = Boolean(e.paidAt);
         const label = (e.clientName || e.purpose || "Payment link").trim();
         const amt = e.amount ? parseFloat(String(e.amount)) : NaN;
-        const currency: PaymentAssetCode = e.currency === "XLM" ? "XLM" : "USDC";
+        const currency: PaymentAssetCode = normalizePaymentAssetCode(e.currency);
         const amountStr = Number.isFinite(amt)
           ? amt.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : null;

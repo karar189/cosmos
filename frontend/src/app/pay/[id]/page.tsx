@@ -9,7 +9,7 @@ import { HypertronLogoMark } from "@/components/global/hypertron-logo-mark";
 import { useFreighter } from "@/hooks/useFreighter";
 import { getExplorerTxUrl, STELLAR_NETWORK } from "@/lib/stellar-explorer";
 import { isPrivateSettlementEnabled } from "@/lib/privacy-features";
-import { STELLAR_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
+import { normalizePaymentAssetCode, STELLAR_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
 import {
   buildPaymentXdr,
   getHorizonUrl,
@@ -100,7 +100,7 @@ export default function PayPage() {
             amount: data.amount != null ? String(data.amount) : "",
             memo: data.memo || "",
             destinationAddress: data.destinationAddress,
-            currency: data.currency === "XLM" ? "XLM" : "USDC",
+            currency: normalizePaymentAssetCode(data.currency),
             purpose: typeof data.purpose === "string" ? data.purpose : null,
             paymentMethods: methods.length ? methods : ["wallet", "qr"],
             expiresAt: typeof data.expiresAt === "string" ? data.expiresAt : null,
@@ -191,7 +191,7 @@ export default function PayPage() {
 
     if (isPrivateSettlementEnabled()) {
       try {
-        const amountPayload = String(displayAmount).replace(/\s*(XLM|USDC)$/i, "").trim();
+        const amountPayload = String(displayAmount).replace(/\s*(XLM|USDC|EURC)$/i, "").trim();
         const prepRes = await fetch(`/api/payment-link/${linkId}/prepare-pay`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

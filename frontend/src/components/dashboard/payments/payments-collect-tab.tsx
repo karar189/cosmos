@@ -18,7 +18,14 @@ import {
 } from "lucide-react";
 import { useDashboardTheme } from "@/components/dashboard/dashboard-theme-provider";
 import { buildPaymentPreviewHref } from "@/components/dashboard/payments/payment-link-preview-utils";
-import { STELLAR_LOGO_URL, USDC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
+import {
+  EURC_LOGO_URL,
+  normalizePaymentAssetCode,
+  paymentAssetLogo,
+  STELLAR_LOGO_URL,
+  USDC_LOGO_URL,
+  type PaymentAssetCode,
+} from "@/lib/stellar-assets";
 import {
   MethodCard,
   SectionInfo,
@@ -62,11 +69,12 @@ const PAYMENT_METHODS = [
 
 const CURRENCY_OPTIONS: { value: PaymentAssetCode; label: string; logo: string }[] = [
   { value: "USDC", label: "USDC", logo: USDC_LOGO_URL },
+  { value: "EURC", label: "EURC", logo: EURC_LOGO_URL },
   { value: "XLM", label: "XLM", logo: STELLAR_LOGO_URL },
 ];
 
 function PaymentAssetLogo({ code, className }: { code: PaymentAssetCode; className?: string }) {
-  const logo = CURRENCY_OPTIONS.find((c) => c.value === code)?.logo ?? USDC_LOGO_URL;
+  const logo = paymentAssetLogo(code);
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -237,7 +245,7 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
             Create a Payment Link
           </h1>
           <p className={cn("mt-1 text-sm", t.pageSubheading)}>
-            Collect payments in USDC or XLM on Stellar. Funds settle to your global pool with memo attribution.
+            Collect payments in USDC, EURC, or XLM on Stellar. Funds settle to your global pool with memo attribution.
           </p>
         </div>
         <Button type="button" variant="outline" className={cn("shrink-0 gap-2 text-sm", t.outlineBtn)} asChild>
@@ -301,11 +309,11 @@ export function PaymentsCollectTab({ businessId }: PaymentsCollectTabProps) {
                 />
                 <Select
                   value={currency}
-                  onValueChange={(v) => setCurrency(v === "XLM" ? "XLM" : "USDC")}
+                  onValueChange={(v) => setCurrency(normalizePaymentAssetCode(v))}
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-11 w-[132px] shrink-0 gap-1.5 rounded-none border-0 border-l px-2.5 shadow-none focus:ring-0",
+                      "h-11 w-[140px] shrink-0 gap-1.5 rounded-none border-0 border-l px-2.5 shadow-none focus:ring-0",
                       t.dark ? "border-white/10 bg-white/5 text-slate-200" : "border-slate-200 bg-slate-50 text-slate-700"
                     )}
                   >

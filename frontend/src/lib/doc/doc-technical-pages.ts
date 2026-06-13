@@ -63,6 +63,23 @@ export const TECHNICAL_PAGES: TechnicalPage[] = [
     ],
   },
   {
+    slug: "privacy-payments",
+    eyebrow: "Privacy",
+    title: "Privacy payments",
+    subtitle:
+      "Operational vs cryptographic privacy, current PoolManager stack, Nethermind reference, and migration plan for opt-in ZK settlement.",
+    onThisPage: [
+      { id: "privacy-overview", title: "Overview" },
+      { id: "real-vs-operational", title: "Real vs operational privacy" },
+      { id: "reference-nethermind", title: "Nethermind reference" },
+      { id: "current-architecture", title: "Current architecture (Phase 1)" },
+      { id: "current-status", title: "Where we are today" },
+      { id: "target-architecture", title: "Target architecture (Phase 2)" },
+      { id: "migration-plan", title: "Migration plan" },
+      { id: "dual-mode-checkout", title: "Opt-in dual-mode checkout" },
+    ],
+  },
+  {
     slug: "contracts",
     eyebrow: "On chain",
     title: "Smart contracts & deployments",

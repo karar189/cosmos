@@ -21,8 +21,8 @@ export async function POST(
     }
 
     // Normalize amount: DB may store number or string; accept "2", "2.5", "2.0000000"
-    const fromBody = (amount || "").trim().replace(/\s*XLM$/i, "");
-    const fromLink = link.amount != null ? String(link.amount).trim().replace(/\s*XLM$/i, "") : "";
+    const fromBody = (amount || "").trim().replace(/\s*(XLM|USDC|EURC)$/i, "");
+    const fromLink = link.amount != null ? String(link.amount).trim().replace(/\s*(XLM|USDC|EURC)$/i, "") : "";
     const rawAmt = fromBody || fromLink;
     const normalized = rawAmt.replace(/,/g, ".");
     const match = normalized.match(/^\d+(\.\d+)?$/);

@@ -3,7 +3,7 @@
  * Uses /accounts/{id}/payments to find incoming payments, then matches by transaction memo.
  */
 
-import { getUsdcIssuer, type PaymentAssetCode } from "@/lib/stellar-assets";
+import { getClassicAssetIssuer, type PaymentAssetCode } from "@/lib/stellar-assets";
 import { getHorizonUrl, type StellarNetwork } from "./stellar-payment";
 
 export interface HorizonTransaction {
@@ -38,10 +38,10 @@ function paymentMatchesAsset(
   if (currency === "XLM") {
     return payment.asset_type === "native" || !payment.asset_code;
   }
-  const issuer = getUsdcIssuer(network);
+  const issuer = getClassicAssetIssuer(currency, network);
   return (
     payment.asset_type === "credit_alphanum4" &&
-    payment.asset_code === "USDC" &&
+    payment.asset_code === currency &&
     payment.asset_issuer === issuer
   );
 }

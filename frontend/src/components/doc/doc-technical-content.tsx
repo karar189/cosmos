@@ -142,9 +142,14 @@ function OverviewContent() {
         ]}
       />
       <DocNote variant="warn">
-        Most flows currently target <strong>Stellar testnet</strong>. The privacy pool ships
-        with a stubbed ZK verifier and is <strong>not audited</strong>; do not use with
-        real funds yet.
+        Most flows currently target <strong>Stellar testnet</strong>. Private settlement is{" "}
+        <strong>operational privacy</strong> (Phase&nbsp;1) with a stubbed ZK verifier — not
+        full cryptographic privacy yet. See{" "}
+        <Link className="text-blue-400 hover:text-blue-300" href={technicalHref("privacy-payments")}>
+          Privacy payments
+        </Link>{" "}
+        for the Nethermind migration plan. <strong>Not audited</strong>; do not use with real
+        funds yet.
       </DocNote>
     </div>
   );
@@ -437,7 +442,11 @@ function FlowsContent() {
       <DocNote variant="warn">
         The on chain ZK proof is currently a <strong>stub</strong> (rejects empty proofs only).
         ASP approval + the nullifier registry are the active security controls until the
-        Groth16 / BN254 verifier lands.
+        Groth16 / BN254 verifier lands. See{" "}
+        <Link className="text-blue-400 hover:text-blue-300" href={technicalHref("privacy-payments")}>
+          Privacy payments
+        </Link>{" "}
+        for the full privacy model, Nethermind reference, and migration plan.
       </DocNote>
 
       <h3 id="flow-bridge" className="scroll-mt-20 pt-3 text-base font-semibold text-white">
@@ -484,7 +493,12 @@ function ContractsContent() {
         <strong>PoolManager</strong> locks tokens on <Mono>commit</Mono> and pays out on{" "}
         <Mono>withdraw</Mono>. The leaf is <Mono>Poseidon(secret, nullifier, amount)</Mono>;
         a rolling Poseidon accumulator tracks the root. An ASP compliance layer
-        (approve/block) gates deposits, with admin pause and protocol fees.
+        (approve/block) gates deposits, with admin pause and protocol fees. This is a{" "}
+        <strong>Phase&nbsp;1 PoC</strong>; real ZK settlement will use{" "}
+        <Link className="text-blue-400 hover:text-blue-300" href={technicalHref("privacy-payments")}>
+          Nethermind&rsquo;s pool integration
+        </Link>
+        .
       </DocP>
       <DocTable
         head={["Function", "Type", "Description"]}
@@ -554,25 +568,476 @@ function RoadmapContent() {
   return (
     <div className="space-y-4">
       <DocP>
-        The payments, attribution, virtual balance, and bridge flows are shipped. The privacy
-        guarantees are still maturing toward a fully verified ZK withdrawal.
+        The payments, attribution, virtual balance, and bridge flows are shipped. Privacy
+        today is <strong>operational</strong> (relayer + hash memos + server bookkeeping);
+        cryptographic ZK settlement is planned via integration with{" "}
+        <a
+          href="https://github.com/NethermindEth/stellar-private-payments"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={githubLinkClass}
+        >
+          Nethermind&rsquo;s Stellar privacy pool
+        </a>
+        . See{" "}
+        <Link className="text-blue-400 hover:text-blue-300" href={technicalHref("privacy-payments")}>
+          Privacy payments
+        </Link>{" "}
+        for the full migration plan.
       </DocP>
       <StatusList
         items={[
           { label: "Payment link attribution + dark pool memo hashing", status: "done" },
           { label: "Fee sponsorship (CAP 40 fee bump)", status: "done" },
-          { label: "Commitment + nullifier registry (PoolManager)", status: "done" },
-          { label: "Virtual balance engine + ephemeral withdrawals", status: "done" },
+          { label: "Relayer path (hide payer from merchant)", status: "done" },
+          { label: "Commitment + nullifier registry (PoolManager PoC)", status: "done" },
+          { label: "Virtual balance engine + treasury withdrawals", status: "done" },
           { label: "Cross chain USDC bridge (Circle CCTP)", status: "done" },
           { label: "AI compliance agent + RegIntel + RNS", status: "done" },
-          { label: "Real Groth16 / BN254 on chain proof verifier", status: "wip", note: "Replaces verify_proof_stub once X Ray matures on mainnet" },
-          { label: "Sparse Merkle tree (replace rolling accumulator)", status: "wip" },
+          {
+            label: "Nethermind pool + Groth16 verifier integration (opt-in ZK path)",
+            status: "planned",
+            note: "Replaces stub PoolManager for real privacy",
+          },
+          { label: "Browser WASM prover on private checkout", status: "planned" },
+          { label: "ASP Merkle trees + in-circuit membership proofs", status: "planned" },
           { label: "Batch withdrawal + multi pool routing", status: "planned" },
           { label: "EscrowEngine wiring into payment links", status: "planned" },
           { label: "MoneyGram on ramp payment method", status: "planned" },
           { label: "Security audit + mainnet launch", status: "planned", note: "Required before real funds use" },
         ]}
       />
+    </div>
+  );
+}
+
+function PrivacyPaymentsContent() {
+  return (
+    <div className="space-y-4">
+      <h3 id="privacy-overview" className="scroll-mt-20 pt-1 text-base font-semibold text-white">
+        Overview
+      </h3>
+      <DocP>
+        Hypertron ships an <strong>opt-in private settlement</strong> path for B2B payment links.
+        Merchants can offer checkout where the payer&rsquo;s wallet is hidden from the business,
+        and funds are tracked via commitments and nullifiers on a Soroban{" "}
+        <strong>PoolManager</strong> contract. This page explains what that gives you today,
+        what <strong>real</strong> cryptographic privacy looks like on Stellar, and how we plan
+        to migrate from our Phase&nbsp;1 stack to a full zero-knowledge pool.
+      </DocP>
+      <DocNote variant="info">
+        Private settlement is enabled when{" "}
+        <Mono>NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID</Mono> is set (or{" "}
+        <Mono>NEXT_PUBLIC_ENABLE_PRIVATE_SETTLEMENT=true</Mono>). It targets{" "}
+        <strong>Stellar testnet only</strong> and is <strong>not audited</strong>.
+      </DocNote>
+
+      <h3 id="real-vs-operational" className="scroll-mt-20 pt-3 text-base font-semibold text-white">
+        Real vs operational privacy
+      </h3>
+      <DocP>
+        Not all &ldquo;private payments&rdquo; are equal. Hypertron Phase&nbsp;1 and a full ZK
+        privacy pool solve different problems.
+      </DocP>
+      <DocTable
+        head={["Guarantee", "Phase 1 (Hypertron today)", "ZK pool (Nethermind target)"]}
+        rows={[
+          [
+            "Hide payer from merchant",
+            "Yes — relayer + hash memo + UI",
+            "Yes — shielded UTXO inside pool",
+          ],
+          [
+            "Hide payer from chain analyst",
+            "No — payer → relayer → pool is traceable",
+            "Yes — ZK proofs break on-chain links",
+          ],
+          ["Hide amount", "No — visible on Horizon payment", "Yes — inside pool"],
+          [
+            "Unlinkable withdrawal",
+            "No — direct pool → recipient payout",
+            "Yes — nullifier spend via ZK proof",
+          ],
+          [
+            "Server cannot spend user funds",
+            "No — server derives secrets, signs commits",
+            "Yes — client holds note keys",
+          ],
+          [
+            "Trust model",
+            "Trust Hypertron backend + pool operator",
+            "Trustless on-chain verification",
+          ],
+        ]}
+      />
+      <DocNote variant="warn">
+        <p className="mb-2">
+          <strong>Operational privacy</strong> (Phase&nbsp;1) is appropriate for &ldquo;the
+          merchant shouldn&rsquo;t see who paid.&rdquo; <strong>Cryptographic privacy</strong>{" "}
+          (Phase&nbsp;2) is required for unlinkable, trustless settlement — the standard set by
+          Nethermind&rsquo;s reference implementation.
+        </p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            <strong>Phase&nbsp;1</strong> solves a real merchant problem.
+          </li>
+          <li>
+            <strong>Phase&nbsp;2</strong> adds cryptographic privacy via Nethermind&rsquo;s stack.
+          </li>
+        </ul>
+      </DocNote>
+
+      <h3 id="reference-nethermind" className="scroll-mt-20 pt-3 text-base font-semibold text-white">
+        Nethermind reference implementation
+      </h3>
+      <DocP>
+        The Stellar Privacy Engineering team at Nethermind maintains the canonical open-source
+        privacy pool for Soroban. It is the intended upgrade path for Hypertron&rsquo;s ZK layer
+        and is explicitly referenced in our PoolManager source.
+      </DocP>
+      <DocBullets
+        items={[
+          <>
+            <strong>Repository:</strong>{" "}
+            <a
+              href="https://github.com/NethermindEth/stellar-private-payments"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={githubLinkClass}
+            >
+              github.com/NethermindEth/stellar-private-payments ↗
+            </a>
+          </>,
+          <>
+            <strong>Live demo:</strong>{" "}
+            <a
+              href="https://nethermindeth.github.io/stellar-private-payments/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={githubLinkClass}
+            >
+              nethermindeth.github.io/stellar-private-payments ↗
+            </a>
+          </>,
+          <>
+            <strong>Stack:</strong> Circom circuits, Groth16 proofs (browser WASM), Pool +
+            CircomGroth16Verifier + ASP Membership + ASP Non-Membership Soroban contracts
+          </>,
+          <>
+            <strong>Model:</strong> 2-in / 2-out UTXO transactions — deposit, private transfer,
+            and withdraw inside the pool with balance conservation proved in zero knowledge
+          </>,
+          <>
+            <strong>Compliance:</strong> Association Set Provider (ASP) membership and
+            non-membership Merkle proofs enforced inside the circuit
+          </>,
+          <>
+            <strong>Status:</strong> Work in progress, not audited — same caution as Hypertron
+            testnet beta
+          </>,
+        ]}
+      />
+      <DocNote variant="warn">
+        We do <strong>not</strong> fork or reimplement Nethermind&rsquo;s circuits from scratch.
+        Phase&nbsp;2 embeds their pool, verifier, and prover as the settlement layer while
+        Hypertron remains the B2B orchestration layer (payment links, vaults, dashboard, KYB).
+      </DocNote>
+
+      <h3 id="current-architecture" className="scroll-mt-20 pt-3 text-base font-semibold text-white">
+        Current architecture (Phase 1)
+      </h3>
+      <DocP>
+        Phase&nbsp;1 splits settlement across <strong>classic Horizon payments</strong> (fund
+        custody) and a <strong>Soroban commitment registry</strong> (double-spend bookkeeping).
+        Privacy is achieved at the application layer, not inside a shielded pool.
+      </DocP>
+      <FlowChart
+        title="Phase 1: operational private checkout"
+        nodes={[
+          { kind: "start", label: "Customer opts in to private settlement" },
+          { kind: "process", label: "POST prepare-pay → SHA-256 memo hash", sub: "PendingPaymentMemo in DB" },
+          { kind: "decision", label: "Relayer configured?" },
+          {
+            kind: "branch",
+            left: {
+              label: "Yes",
+              nodes: [
+                { kind: "onchain", label: "Payer → relayer (hash memo)" },
+                { kind: "onchain", label: "Relayer → pool G-address (same memo)" },
+              ],
+            },
+            right: {
+              label: "No",
+              nodes: [{ kind: "onchain", label: "Payer → pool / vault (hash memo)" }],
+            },
+          },
+          { kind: "process", label: "Horizon match + attribution", sub: "status poll / relayer inbox" },
+          {
+            kind: "process",
+            label: "Server derives secret + nullifier",
+            sub: "hashToScalar(payer, businessId, amount)",
+          },
+          { kind: "onchain", label: "PoolManager.commit (Soroban)", sub: "Poseidon leaf + nullifier reg" },
+          { kind: "process", label: "Virtual balance updated (Prisma)" },
+          { kind: "end", label: "Merchant sees Paid ✓ (no payer address)" },
+        ]}
+      />
+      <DocP>Key components in the repo:</DocP>
+      <DocTable
+        head={["Layer", "Files / contracts", "Role"]}
+        rows={[
+          [
+            "Checkout UX",
+            <>
+              <GhFile path="frontend/src/app/pay/[id]/page.tsx">pay/[id]</GhFile>,{" "}
+              <GhFile path="frontend/src/lib/privacy-features.ts">privacy-features.ts</GhFile>
+            </>,
+            "Opt-in toggle, prepare-pay, Freighter signing",
+          ],
+          [
+            "Hash memo",
+            <GhFile key="prepare" path="frontend/src/app/api/payment-link/[id]/prepare-pay/route.ts">
+              prepare-pay
+            </GhFile>,
+            "One-time opaque memo; no link id on chain",
+          ],
+          [
+            "Relayer",
+            <GhFile key="relayer" path="frontend/src/lib/relayer.ts">
+              relayer.ts
+            </GhFile>,
+            "Hide payer from pool observer; forward to pool",
+          ],
+          [
+            "Attribution",
+            <GhFile key="status" path="frontend/src/app/api/payment-link/[id]/status/route.ts">
+              status/route.ts
+            </GhFile>,
+            "Horizon match → commit → update PaymentLink",
+          ],
+          [
+            "Soroban client",
+            <>
+              <GhFile path="frontend/src/lib/soroban-commit-server.ts">soroban-commit-server.ts</GhFile>,{" "}
+              <GhFile path="frontend/src/lib/soroban-poolmanager.ts">soroban-poolmanager.ts</GhFile>
+            </>,
+            "Server-side commit / withdraw invocations",
+          ],
+          [
+            "PoolManager (PoC)",
+            <GhTree key="pm" path="contracts/poolmanager">
+              contracts/poolmanager
+            </GhTree>,
+            "Poseidon leaf, nullifier registry, ASP approve/block, stub ZK verifier",
+          ],
+          [
+            "Virtual balance",
+            <GhFile key="vb" path="frontend/src/lib/virtual-balance.ts">
+              virtual-balance.ts
+            </GhFile>,
+            "Off-chain ledger of unspent nullifiers per business",
+          ],
+          [
+            "Withdrawal",
+            <>
+              <GhFile path="frontend/src/app/api/withdraw/route.ts">/api/withdraw</GhFile>,{" "}
+              <GhFile path="frontend/src/lib/payout-server.ts">payout-server.ts</GhFile>
+            </>,
+            "Mark nullifiers on Soroban + Horizon payout from pool account",
+          ],
+        ]}
+      />
+      <DocNote variant="warn">
+        PoolManager stores <Mono>depositor</Mono> and <Mono>amount</Mono> on chain, uses a
+        rolling Poseidon accumulator (not a Merkle tree), and{" "}
+        <Mono>verify_proof_stub</Mono> accepts any non-empty proof. These are intentional PoC
+        shortcuts — not production privacy guarantees.
+      </DocNote>
+
+      <h3 id="current-status" className="scroll-mt-20 pt-3 text-base font-semibold text-white">
+        Where we are today
+      </h3>
+      <StatusList
+        items={[
+          {
+            label: "Opt-in private settlement on payment links (testnet beta)",
+            status: "done",
+          },
+          { label: "Hash-memo dark pool (prepare-pay + PendingPaymentMemo)", status: "done" },
+          { label: "Relayer: payer hidden from merchant / pool memo match", status: "done" },
+          { label: "Fee sponsorship (CAP-40) on private checkout", status: "done" },
+          {
+            label: "PoolManager commit + nullifier registry on Soroban testnet",
+            status: "done",
+            note: "PoC contract; SDK call shape may lag contract ABI",
+          },
+          { label: "Virtual balance + /api/withdraw treasury flow", status: "done" },
+          { label: "Groth16 on-chain proof verification", status: "planned" },
+          { label: "Client-side WASM prover (Circom)", status: "planned" },
+          { label: "Merkle commitment tree + membership proofs", status: "planned" },
+          { label: "Single shielded pool custody (no split Horizon + Soroban)", status: "planned" },
+          { label: "Privacy relay (multi-hop ephemeral wallets)", status: "planned", note: "Described in README; not implemented — superseded by ZK path for real unlinkability" },
+          { label: "Security audit before mainnet", status: "planned" },
+        ]}
+      />
+
+      <h3 id="target-architecture" className="scroll-mt-20 pt-3 text-base font-semibold text-white">
+        Target architecture (Phase 2)
+      </h3>
+      <DocP>
+        Phase&nbsp;2 keeps Hypertron as the product layer and swaps the settlement engine for
+        Nethermind&rsquo;s shielded pool when the customer opts in. Standard checkout (direct
+        vault payment) stays unchanged.
+      </DocP>
+      <FlowChart
+        title="Phase 2: opt-in ZK private checkout"
+        nodes={[
+          { kind: "start", label: "Customer selects Private (ZK) checkout" },
+          { kind: "process", label: "Browser loads WASM prover", sub: "Nethermind circuit artifacts" },
+          { kind: "process", label: "Client generates deposit proof + note", sub: "User holds secrets" },
+          { kind: "onchain", label: "Pool.transact(proof, ext_data)", sub: "Tokens locked in pool contract" },
+          { kind: "process", label: "Hypertron indexes pool events", sub: "Update merchant virtual balance" },
+          { kind: "end", label: "Merchant sees Paid ✓ (cryptographically private)" },
+        ]}
+      />
+      <DocP>Nethermind contracts to deploy alongside (or instead of) stub PoolManager:</DocP>
+      <DocTable
+        head={["Contract", "Purpose"]}
+        rows={[
+          ["Pool", "Merkle UTXO pool — transact (deposit / transfer / withdraw)"],
+          ["CircomGroth16Verifier", "On-chain Groth16 proof verification (BN254)"],
+          ["ASPMembership", "Merkle tree of approved note public keys"],
+          ["ASPNonMembership", "Sparse Merkle exclusion list"],
+        ]}
+      />
+      <DocP>What Hypertron keeps vs replaces:</DocP>
+      <DocTable
+        head={["Keep (Hypertron)", "Replace / embed (Nethermind)"]}
+        rows={[
+          ["Payment links, /pay checkout, fee sponsorship", "PoolManager stub → Pool + Verifier"],
+          ["Business vaults, treasury UX, virtual balance display", "Server hashToScalar secrets → client UTXO notes"],
+          ["Relayer (optional pre-pool obfuscation)", "Horizon-only custody → in-contract token lock"],
+          ["KYB / compliance dashboard", "Inline approve/block maps → ASP Merkle + circuit proofs"],
+          ["Prisma attribution (link id ↔ payment)", "Event sync from pool NewCommitment / NewNullifier events"],
+        ]}
+      />
+
+      <h3 id="migration-plan" className="scroll-mt-20 pt-3 text-base font-semibold text-white">
+        Migration plan
+      </h3>
+      <DocP>
+        Migration is phased so merchants can ship confidential checkout now while ZK settlement
+        is integrated without breaking standard payments.
+      </DocP>
+
+      <h4 className="pt-2 text-sm font-semibold text-white/90">Phase 1 — Shipped (operational privacy)</h4>
+      <DocBullets
+        items={[
+          "Hash-memo + relayer + PoolManager PoC commits",
+          "Market honestly as “payer hidden from merchant” — not ZK-shielded",
+          "Fix contract ↔ SDK ABI alignment if continuing PoC commits on testnet",
+        ]}
+      />
+
+      <h4 className="pt-2 text-sm font-semibold text-white/90">Phase 2 — Nethermind integration (real privacy)</h4>
+      <DocBullets
+        items={[
+          <>
+            Deploy Nethermind contracts to testnet using their{" "}
+            <Mono>deployments/scripts/deploy.sh</Mono> (pool levels, ASP levels, verification key)
+          </>,
+          "Bundle Circom WASM prover + circuit keys in the private checkout path only",
+          "Replace executeCommit with client-side Pool.transact() deposit flow",
+          "Replace sendPayout + stub withdraw with ZK withdraw transact from pool",
+          "Sync virtual balances from pool contract events (replace server-derived nullifier tracking where possible)",
+          "Wire KYB-approved businesses into ASP membership tree (admin UI or CLI)",
+        ]}
+      />
+
+      <h4 className="pt-2 text-sm font-semibold text-white/90">Phase 3 — Production hardening</h4>
+      <DocBullets
+        items={[
+          "Joint or independent security audit (Hypertron BFF + Nethermind pool path)",
+          "Trusted setup / verification key governance documented for deployers",
+          "Mainnet deploy only after Protocol 25 X-Ray verifier is stable on public network",
+          "Deprecate stub PoolManager; migrate open nullifiers or sunset testnet pool",
+        ]}
+      />
+
+      <SequenceDiagram
+        title="Migration: dual settlement backends"
+        actors={["Pay page", "Hypertron API", "Phase 1 path", "Nethermind Pool", "Merchant"]}
+        steps={[
+          { from: "Pay page", to: "Pay page", label: "User chooses Standard vs Private (ZK)", kind: "self" },
+          {
+            from: "Pay page",
+            to: "Phase 1 path",
+            label: "Standard → Horizon payment to vault/pool G-address",
+          },
+          {
+            from: "Pay page",
+            to: "Nethermind Pool",
+            label: "Private (ZK) → WASM proof + transact deposit",
+          },
+          { from: "Phase 1 path", to: "Hypertron API", label: "Memo match + optional commit", kind: "return" },
+          { from: "Nethermind Pool", to: "Hypertron API", label: "Pool events → virtual balance", kind: "return" },
+          { from: "Hypertron API", to: "Merchant", label: "Dashboard: Paid ✓" },
+        ]}
+      />
+
+      <h3 id="dual-mode-checkout" className="scroll-mt-20 pt-3 text-base font-semibold text-white">
+        Opt-in dual-mode checkout
+      </h3>
+      <DocP>
+        The product goal is a single payment link with two modes — defaulting to standard
+        (simple, auditable) and offering private settlement as an explicit opt-in:
+      </DocP>
+      <DocTable
+        head={["Mode", "User experience", "Privacy level", "Backend"]}
+        rows={[
+          [
+            "Standard",
+            "Pay vault / pool directly; text or fixed memo",
+            "Public on-chain payment",
+            "Current Hypertron Horizon flow",
+          ],
+          [
+            "Confidential (Phase 1)",
+            "Hash memo; optional relayer; payer hidden from merchant",
+            "Operational",
+            "relayer.ts + PoolManager PoC + virtual balance",
+          ],
+          [
+            "Private / ZK (Phase 2)",
+            "Freighter signs ZK deposit; note stored client-side",
+            "Cryptographic",
+            "Nethermind Pool + WASM prover + ASP",
+          ],
+        ]}
+      />
+      <DocP>
+        Environment flags today:{" "}
+        <Mono>NEXT_PUBLIC_ENABLE_PRIVATE_SETTLEMENT</Mono>,{" "}
+        <Mono>NEXT_PUBLIC_POOLMANAGER_CONTRACT_ID</Mono>,{" "}
+        <Mono>NEXT_PUBLIC_RELAYER_PUBLIC_KEY</Mono> / <Mono>RELAYER_SECRET_KEY</Mono>,{" "}
+        <Mono>SOROBAN_COMMIT_SOURCE_SECRET</Mono>. Phase&nbsp;2 adds Nethermind contract IDs,
+        circuit key paths, and prover bundle config (TBD).
+      </DocP>
+      <DocNote variant="info">
+        Related docs:{" "}
+        <Link className="text-blue-400 hover:text-blue-300" href={technicalHref("flows")}>
+          End to end flows
+        </Link>
+        ,{" "}
+        <Link className="text-blue-400 hover:text-blue-300" href={technicalHref("contracts")}>
+          Smart contracts &amp; deployments
+        </Link>
+        ,{" "}
+        <Link className="text-blue-400 hover:text-blue-300" href={technicalHref("roadmap")}>
+          Work in progress
+        </Link>
+        .
+      </DocNote>
     </div>
   );
 }
@@ -584,6 +1049,7 @@ const CONTENT: Record<string, () => JSX.Element> = {
   protocols: ProtocolsContent,
   "data-model": DataModelContent,
   flows: FlowsContent,
+  "privacy-payments": PrivacyPaymentsContent,
   contracts: ContractsContent,
   roadmap: RoadmapContent,
 };

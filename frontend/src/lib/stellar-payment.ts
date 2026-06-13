@@ -4,7 +4,7 @@
  */
 
 import {
-  getUsdcIssuer,
+  getClassicAssetIssuer,
   normalizePaymentAmount,
   type PaymentAssetCode,
 } from "@/lib/stellar-assets";
@@ -103,7 +103,7 @@ export async function buildPaymentXdr(
     const paymentAsset =
       assetCode === "XLM"
         ? Asset.native()
-        : new Asset("USDC", getUsdcIssuer(network));
+        : new Asset(assetCode, getClassicAssetIssuer(assetCode, network));
 
     let destinationExists: boolean;
     try {
@@ -117,7 +117,7 @@ export async function buildPaymentXdr(
       return {
         success: false,
         error:
-          "Recipient account is not activated on this network. The pool must be funded with XLM before it can receive USDC.",
+          "Recipient account is not activated on this network. The pool must be funded with XLM before it can receive USDC or EURC.",
       };
     }
 
