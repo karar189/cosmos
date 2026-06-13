@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import { useLoginTransition, loginRedirectDelay } from "@/components/auth/login-transition-provider";
 import { isPrivyConfigured } from "@/lib/privy-config";
@@ -9,13 +9,28 @@ import {
   consumePostLoginRedirect,
   POST_LOGIN_REDIRECT_KEY,
 } from "@/lib/privy-login-redirect";
-import { clearLaunchSession, isInviteVerifiedInSession } from "@/lib/launch-auth";
+import { clearLaunchSession } from "@/lib/launch-auth";
+import { isProtectedAppPath } from "@/lib/protected-routes";
+
+async function fetchPrivyAccessToken(
+  getAccessToken: () => Promise<string | null>
+): Promise<string | null> {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const token = await getAccessToken();
+    if (token) return token;
+    await new Promise((resolve) => window.setTimeout(resolve, 300));
+  }
+  return null;
+}
+
+function resolvePostLoginTarget(): string {
+  return consumePostLoginRedirect() ?? "/dashboard";
+}
 
 /**
  * After Privy login, exchanges access token for ht_privy cookie, then redirects to dashboard.
  */
 export function PrivyAuthSync() {
-  const router = useRouter();
   const pathname = usePathname();
   const { ready, authenticated, user, getAccessToken, logout } = usePrivy();
   const { startLoginTransition, endLoginTransition } = useLoginTransition();
@@ -26,10 +41,10 @@ export function PrivyAuthSync() {
     async (target: string) => {
       startLoginTransition("Taking you to your dashboard…");
       await loginRedirectDelay();
-      router.replace(target);
-      endLoginTransition();
+      // Hard navigation so middleware sees the new ht_privy cookie after OAuth.
+      window.location.assign(target);
     },
-    [router, startLoginTransition, endLoginTransition]
+    [startLoginTransition]
   );
 
   useEffect(() => {
@@ -41,8 +56,12 @@ export function PrivyAuthSync() {
       return;
     }
 
-    // Already synced for this user — dismiss overlay if still showing.
+    // Already synced — redirect if OAuth reload left us on a public page.
     if (syncedPrivyIdRef.current === user.id) {
+      if (!isProtectedAppPath(pathname)) {
+        void redirectAfterLogin(resolvePostLoginTarget());
+        return;
+      }
       endLoginTransition();
       return;
     }
@@ -53,7 +72,7 @@ export function PrivyAuthSync() {
       startLoginTransition("Signing you in…");
 
       try {
-        const token = await getAccessToken();
+        const token = await fetchPrivyAccessToken(getAccessToken);
         if (!token) {
           endLoginTransition();
           return;
@@ -74,15 +93,8 @@ export function PrivyAuthSync() {
         syncedPrivyIdRef.current = user.id;
         window.dispatchEvent(new Event("hypertron-session-synced"));
 
-        const pending = consumePostLoginRedirect();
-        if (pending) {
-          await redirectAfterLogin(pending);
-          return;
-        }
-
-        const onHome = pathname === "/" || pathname === "";
-        if (onHome && isInviteVerifiedInSession()) {
-          await redirectAfterLogin("/dashboard");
+        if (!isProtectedAppPath(pathname)) {
+          await redirectAfterLogin(resolvePostLoginTarget());
           return;
         }
 
@@ -100,7 +112,6 @@ export function PrivyAuthSync() {
     getAccessToken,
     logout,
     pathname,
-    router,
     startLoginTransition,
     endLoginTransition,
     redirectAfterLogin,

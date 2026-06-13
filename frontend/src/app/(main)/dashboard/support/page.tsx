@@ -39,9 +39,9 @@ const CHANNELS = [
   {
     icon: BookOpen,
     title: "Documentation",
-    description: "Browse guides, API references, and tutorials.",
+    description: "Browse guides and step-by-step help for Hypertron.",
     action: "Open docs",
-    href: "/docs",
+    href: "/doc",
   },
 ];
 
