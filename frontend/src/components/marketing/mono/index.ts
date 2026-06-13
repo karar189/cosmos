@@ -1,4 +1,5 @@
 export { DarkVeil } from "./dark-veil";
+export { LandingPageBackground } from "./landing-page-background";
 export { LandingLoadingScreen } from "./landing-loading-screen";
 export { CtaHlsSection } from "./cta-hls-section";
 export { fadeUp } from "./fade-up";

@@ -639,6 +639,11 @@ html, body {
   display: none;
 }
 
+/* Home page renders its own footer inside the scroll stack */
+.marketing-mono:has(#home) > footer {
+  display: none;
+}
+
 .workspace-hub-root .workspace-hub-sidebar {
   background: rgba(255, 255, 255, 0.42);
   backdrop-filter: blur(24px) saturate(160%);

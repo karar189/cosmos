@@ -5,6 +5,7 @@ import { FEATURES } from "@/utils/constants/misc";
 import { Card, CardContent } from "@/components/ui/card";
 import { fadeUp } from "./fade-up";
 import { SectionHeader } from "./section-header";
+import { glassCard } from "./glass-card";
 import { cn } from "@/utils";
 
 export function SolutionSection() {
@@ -30,23 +31,18 @@ export function SolutionSection() {
             const Icon = f.icon;
             return (
               <motion.div key={f.title} {...fadeUp(0.04 * i)}>
-                <Card
-                  className={cn(
-                    "group h-full border-white/[0.07] bg-[#0a0a0c] transition-all duration-300",
-                    "hover:border-white/20 hover:bg-[#0d0d10]",
-                  )}
-                >
+                <Card className={cn("group h-full", glassCard)}>
                   <CardContent className="flex h-full flex-col gap-4 p-6">
                     <div
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/80 transition-colors group-hover:border-blue-400/30 group-hover:text-blue-300"
+                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-white/80 backdrop-blur-md transition-colors group-hover:border-blue-400/30 group-hover:text-blue-300"
                     >
                       <Icon className="h-5 w-5" strokeWidth={1.5} />
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold leading-tight tracking-tight text-foreground">
+                      <h3 className="text-base font-semibold leading-tight tracking-tight text-white">
                         {f.title}
                       </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      <p className="mt-2 text-sm leading-relaxed text-white/60">
                         {f.description}
                       </p>
                     </div>

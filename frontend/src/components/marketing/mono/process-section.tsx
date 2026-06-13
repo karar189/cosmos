@@ -5,6 +5,7 @@ import { PROCESS } from "@/utils/constants/misc";
 import { Card, CardContent } from "@/components/ui/card";
 import { fadeUp } from "./fade-up";
 import { SectionHeader } from "./section-header";
+import { glassCard } from "./glass-card";
 import { cn } from "@/utils";
 
 const STEP_LABELS = ["01", "02", "03"];
@@ -41,26 +42,21 @@ export function ProcessSection() {
             const Icon = step.icon;
             return (
               <motion.div key={step.title} {...fadeUp(0.06 * i)} className="relative z-10">
-                <Card
-                  className={cn(
-                    "group h-full border-white/[0.07] bg-[#0a0a0c] transition-all duration-300",
-                    "hover:border-white/20",
-                  )}
-                >
+                <Card className={cn("group h-full", glassCard)}>
                   <CardContent className="flex h-full flex-col gap-5 p-6 md:p-7">
                     <div className="flex items-center justify-between">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] transition-colors group-hover:border-blue-400/30">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] backdrop-blur-md transition-colors group-hover:border-blue-400/30">
                         <Icon className="h-5 w-5 text-white/80 transition-colors group-hover:text-blue-300" strokeWidth={1.5} />
                       </div>
-                      <span className="font-mono text-xs tracking-[0.18em] text-white/30">
+                      <span className="font-mono text-xs tracking-[0.18em] text-white/50">
                         {STEP_LABELS[i]}
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold leading-tight tracking-tight text-foreground">
+                      <h3 className="text-lg font-semibold leading-tight tracking-tight text-white">
                         {step.title}
                       </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      <p className="mt-2 text-sm leading-relaxed text-white/60">
                         {step.description}
                       </p>
                     </div>

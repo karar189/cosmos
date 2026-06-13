@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Ticket, Wallet } from "lucide-react";
 import { LaunchEmailSignInButton } from "./launch-email-sign-in-button";
-import { DarkVeil } from "./dark-veil";
 import { HeroDashboardPreview } from "./hero-dashboard-preview";
 import { HeroBuiltWithStrip } from "./hero-built-with-strip";
 import { ShinyText } from "@/components/ui/shiny-text";
@@ -147,23 +146,8 @@ function MonoHeroInner() {
   return (
     <section
       id="home"
-      className="relative flex w-full flex-col items-center overflow-hidden bg-black px-6 pb-16 pt-28 text-center md:px-8 md:pt-40"
+      className="relative flex w-full flex-col items-center overflow-hidden bg-transparent px-6 pb-16 pt-28 text-center md:px-8 md:pt-40"
     >
-      <div className="pointer-events-none absolute inset-0 z-0" style={{ position: "absolute", inset: 0 }} aria-hidden>
-        <DarkVeil resolutionScale={0.6} />
-      </div>
-
-      <div
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-slate-950/70 via-blue-950/20 to-slate-950/85"
-        aria-hidden
-      />
-
-      {/* Subtle grid overlay */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[1] opacity-[0.18] [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,black,transparent)]"
-        aria-hidden
-      />
-
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -463,11 +447,6 @@ function MonoHeroInner() {
           </div>
         </motion.div>
       </div>
-
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-32 bg-gradient-to-t from-background to-transparent"
-        aria-hidden
-      />
     </section>
   );
 }

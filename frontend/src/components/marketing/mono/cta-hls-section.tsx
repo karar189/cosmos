@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { fadeUp } from "./fade-up";
-import { DarkVeil } from "./dark-veil";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
@@ -13,24 +12,6 @@ const DOCS_HREF = "/doc";
 export function CtaHlsSection() {
   return (
     <section className="relative overflow-hidden border-t border-border/30 py-24 md:py-32">
-      <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{ position: "absolute", inset: 0 }}
-        aria-hidden
-      >
-        <DarkVeil resolutionScale={0.6} />
-      </div>
-      <div
-        className="absolute inset-0 z-[1] bg-gradient-to-b from-slate-950/65 via-blue-950/25 to-slate-950/80"
-        aria-hidden
-      />
-
-      {/* Subtle grid */}
-      <div
-        className="pointer-events-none absolute inset-0 z-[1] opacity-[0.18] [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,black,transparent)]"
-        aria-hidden
-      />
-
       <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center md:px-8">
         <motion.div {...fadeUp(0)} className="mb-8">
           <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md">

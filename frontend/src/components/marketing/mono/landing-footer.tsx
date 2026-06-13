@@ -3,7 +3,7 @@ import Image from "next/image";
 import { cn } from "@/utils";
 
 const DEMO_HREF = "https://calendly.com/kararsweta/30min";
-const TWITTER_HREF = "https://x.com/hypertron_hq";
+const TWITTER_HREF = "https://x.com/hypertron_HQ";
 const DOCS_HREF = "/doc";
 
 const PRODUCT = [
@@ -60,7 +60,12 @@ function Column({
 
 export function LandingFooter({ className }: { className?: string }) {
   return (
-    <footer className={cn("relative border-t border-border/30 bg-black px-6 pb-10 pt-16 md:px-28 md:pt-24", className)}>
+    <footer
+      className={cn(
+        "relative border-t border-white/10 bg-black px-6 pb-10 pt-16 backdrop-blur-xl md:px-28 md:pt-24",
+        className,
+      )}
+    >
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-12 md:grid-cols-[1.4fr_repeat(3,1fr)] md:gap-8">
           <div className="max-w-sm">
@@ -74,7 +79,7 @@ export function LandingFooter({ className }: { className?: string }) {
               />
               <span className="text-lg font-bold tracking-tight text-foreground">Hypertron</span>
             </Link>
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-4 text-sm leading-relaxed text-white/55">
               Unified B2B onboarding and private settlement. One programmable rail on Stellar — onboarding, compliance, and capital flow.
             </p>
             <Link
@@ -95,17 +100,17 @@ export function LandingFooter({ className }: { className?: string }) {
         <div className="relative mt-16 select-none overflow-hidden">
           <p
             aria-hidden
-            className="bg-gradient-to-b from-white/[0.07] to-transparent bg-clip-text text-center text-[18vw] font-bold leading-none tracking-tighter text-transparent md:text-[14vw]"
+            className="bg-gradient-to-b from-white/[0.12] to-white/[0.03] bg-clip-text text-center text-[18vw] font-bold leading-none tracking-tighter text-transparent md:text-[14vw]"
           >
             HYPERTRON
           </p>
         </div>
 
         <div className="mt-8 flex flex-col items-start justify-between gap-4 border-t border-white/[0.07] pt-6 sm:flex-row sm:items-center">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-white/45">
             © {new Date().getFullYear()} Hypertron Labs. Built on Stellar.
           </p>
-          <div className="flex items-center gap-5 text-xs text-muted-foreground">
+          <div className="flex items-center gap-5 text-xs text-white/45">
             <Link
               href={TWITTER_HREF}
               target="_blank"

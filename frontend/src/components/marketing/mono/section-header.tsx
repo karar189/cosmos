@@ -31,7 +31,7 @@ export function SectionHeader({
     >
       <motion.p
         {...fadeUp(0)}
-        className="text-xs font-medium uppercase tracking-[3px] text-muted-foreground"
+        className="text-xs font-medium uppercase tracking-[3px] text-white/50"
       >
         {eyebrow}
       </motion.p>
@@ -48,7 +48,7 @@ export function SectionHeader({
         <motion.p
           {...fadeUp(0.12)}
           className={cn(
-            "text-base leading-relaxed text-muted-foreground md:text-[15px]",
+            "text-base leading-relaxed text-white/60 md:text-[15px]",
             align === "center" ? "max-w-xl" : "max-w-lg",
           )}
         >

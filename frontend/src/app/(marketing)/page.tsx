@@ -1,5 +1,7 @@
 import {
   CtaHlsSection,
+  LandingFooter,
+  LandingPageBackground,
   MissionSection,
   MonoHero,
   NeuralTestimonial,
@@ -10,7 +12,8 @@ import {
 
 const HomePage = () => {
   return (
-    <div className="overflow-x-hidden">
+    <div className="relative z-10 overflow-x-hidden">
+      <LandingPageBackground />
       <MonoHero />
       <NeuralTestimonial />
       <SolutionSection />
@@ -18,6 +21,7 @@ const HomePage = () => {
       <MissionSection />
       <TestimonialsSection />
       <CtaHlsSection />
+      <LandingFooter />
     </div>
   );
 };

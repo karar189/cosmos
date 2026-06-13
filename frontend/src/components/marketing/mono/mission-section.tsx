@@ -49,10 +49,10 @@ function RevealWord({
 }) {
   const start = (index / Math.max(total, 1)) * 0.72 + 0.06;
   const end = Math.min(start + 0.14, 0.98);
-  const opacity = useTransform(progress, [start, end], [0.15, 1]);
+  const opacity = useTransform(progress, [start, end], [0.5, 1]);
   return (
     <motion.span style={{ opacity }} className="inline">
-      <span className={emphasize ? "text-foreground" : "text-heroSubtitle"}>{text}</span>{" "}
+      <span className={emphasize ? "text-white" : "text-white/75"}>{text}</span>{" "}
     </motion.span>
   );
 }
@@ -77,11 +77,11 @@ export function MissionSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6 }}
-            className="mb-6 text-xs font-medium uppercase tracking-[3px] text-muted-foreground"
+            className="mb-6 text-xs font-medium uppercase tracking-[3px] text-white/50"
           >
             Our mission
           </motion.p>
-          <div className="relative aspect-square w-full max-w-[420px] overflow-hidden rounded-2xl border border-white/10 bg-black">
+          <div className="relative aspect-square w-full max-w-[420px] overflow-hidden rounded-2xl border border-white/15 bg-white/[0.03] shadow-lg shadow-black/20 backdrop-blur-sm">
             <video
               className="h-full w-full object-cover"
               autoPlay
