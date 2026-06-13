@@ -347,15 +347,15 @@ function DataModelContent() {
       <DocTable
         head={["Model", "Purpose"]}
         rows={[
-          [<><Mono>AppUser</Mono> / <Mono>Membership</Mono></>, "Privy users and their RBAC role on a business"],
-          [<><Mono>Business</Mono></>, "Workspace: profile, tier, widgets, vault config"],
-          [<><Mono>LinkedWallet</Mono></>, "Stellar wallets bound to a business"],
-          [<><Mono>AuthChallenge</Mono></>, "One time SEP 53 sign in challenges (10 min TTL)"],
-          [<><Mono>PaymentLink</Mono></>, "Collect links + attribution memo + ZK nullifier"],
-          [<><Mono>PendingPaymentMemo</Mono></>, "Dark pool one time memo hash for attribution"],
-          [<><Mono>OutgoingPayment</Mono> / <Mono>Withdrawal</Mono></>, "Pool payouts and spent nullifiers"],
-          [<><Mono>BusinessEmployee(Payment)</Mono></>, "Team roster and payroll history"],
-          [<><Mono>DocumentVaultItem</Mono></>, "Saved compliance checklists / documents"],
+          [<span key="app-user"><Mono>AppUser</Mono> / <Mono>Membership</Mono></span>, "Privy users and their RBAC role on a business"],
+          [<Mono key="business">Business</Mono>, "Workspace: profile, tier, widgets, vault config"],
+          [<Mono key="linked-wallet">LinkedWallet</Mono>, "Stellar wallets bound to a business"],
+          [<Mono key="auth-challenge">AuthChallenge</Mono>, "One time SEP 53 sign in challenges (10 min TTL)"],
+          [<Mono key="payment-link">PaymentLink</Mono>, "Collect links + attribution memo + ZK nullifier"],
+          [<Mono key="pending-memo">PendingPaymentMemo</Mono>, "Dark pool one time memo hash for attribution"],
+          [<span key="outgoing"><Mono>OutgoingPayment</Mono> / <Mono>Withdrawal</Mono></span>, "Pool payouts and spent nullifiers"],
+          [<Mono key="employee">BusinessEmployee(Payment)</Mono>, "Team roster and payroll history"],
+          [<Mono key="vault-item">DocumentVaultItem</Mono>, "Saved compliance checklists / documents"],
         ]}
       />
     </div>
@@ -489,12 +489,12 @@ function ContractsContent() {
       <DocTable
         head={["Function", "Type", "Description"]}
         rows={[
-          [<><Mono>initialize</Mono></>, "admin", "Set admin, fee recipient, fee bps (one time)"],
-          [<><Mono>commit</Mono></>, "core", "Deposit tokens, store Poseidon leaf + nullifier"],
-          [<><Mono>withdraw</Mono></>, "core", "Reveal nullifiers + proof, pay recipient (batch)"],
-          [<><Mono>set_asp / approve / block</Mono></>, "admin", "KYB whitelist + sanctions blocklist"],
-          [<><Mono>pause / unpause / set_fee</Mono></>, "admin", "Emergency stop and fee control"],
-          [<><Mono>get_state / is_nullifier_spent</Mono></>, "view", "Pool root, size, config and nullifier status"],
+          [<Mono key="initialize">initialize</Mono>, "admin", "Set admin, fee recipient, fee bps (one time)"],
+          [<Mono key="commit">commit</Mono>, "core", "Deposit tokens, store Poseidon leaf + nullifier"],
+          [<Mono key="withdraw">withdraw</Mono>, "core", "Reveal nullifiers + proof, pay recipient (batch)"],
+          [<Mono key="set-asp">set_asp / approve / block</Mono>, "admin", "KYB whitelist + sanctions blocklist"],
+          [<Mono key="pause">pause / unpause / set_fee</Mono>, "admin", "Emergency stop and fee control"],
+          [<Mono key="get-state">get_state / is_nullifier_spent</Mono>, "view", "Pool root, size, config and nullifier status"],
         ]}
       />
       <DocP>
