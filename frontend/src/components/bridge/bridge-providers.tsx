@@ -6,7 +6,7 @@ import { WagmiProvider, createConfig, http } from "wagmi";
 import { avalanche, avalancheFuji, mainnet, sepolia } from "wagmi/chains";
 import { injected } from "@wagmi/core";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { getCctpNetworkMode } from "@/lib/bridge/cctp-config";
 import { getSolanaConnection } from "@/lib/bridge/cctp-bridge-kit";
 
