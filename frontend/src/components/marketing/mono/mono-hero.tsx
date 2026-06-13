@@ -31,6 +31,7 @@ import {
   isInviteVerifiedInSession,
   safeReturnUrl,
 } from "@/lib/launch-auth";
+import { setPostLoginRedirect } from "@/lib/privy-login-redirect";
 
 const BOOK_DEMO = "https://calendly.com/kararsweta/30min";
 /** Static invite gate for Launch (replace with server validation when ready). */
@@ -76,6 +77,7 @@ function MonoHeroInner() {
     setLaunchOpen(true);
     if (isInviteVerifiedInSession() || walletRequested) {
       setLaunchStep("sign-in");
+      setPostLoginRedirect(returnUrl);
     }
     if (walletRequested) {
       setWalletAutoStart(true);
@@ -127,6 +129,7 @@ function MonoHeroInner() {
     }
     setInviteError(null);
     markInviteVerified();
+    setPostLoginRedirect(returnUrl);
     setLaunchStep("sign-in");
   };
 

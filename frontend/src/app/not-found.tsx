@@ -24,8 +24,8 @@ export default function NotFound() {
           </h1>
           <p className="mt-5 text-pretty text-base leading-relaxed text-heroSubtitle/85 md:text-lg">
             The link may be mistyped, or this page moved. If you were looking for product docs, try{" "}
-            <Link href="/docs" className="font-medium text-foreground underline decoration-white/30 underline-offset-4 hover:decoration-white/60">
-              /docs
+            <Link href="/doc" className="font-medium text-foreground underline decoration-white/30 underline-offset-4 hover:decoration-white/60">
+              /doc
             </Link>
             .
           </p>

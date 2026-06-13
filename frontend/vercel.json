@@ -1,14 +1,16 @@
 {
   "installCommand": "npm install",
   "buildCommand": "npm run build",
-  "rewrites": [
+  "redirects": [
     {
       "source": "/docs",
-      "destination": "https://swetakararenterprises.mintlify.dev/docs"
+      "destination": "/doc",
+      "permanent": true
     },
     {
-      "source": "/docs/:match*",
-      "destination": "https://swetakararenterprises.mintlify.dev/docs/:match*"
+      "source": "/docs/:path*",
+      "destination": "/doc/:path*",
+      "permanent": true
     }
   ]
 }
