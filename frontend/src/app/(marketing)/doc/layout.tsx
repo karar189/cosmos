@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 import { DocBackground } from "@/components/doc/doc-background";
-import { DocMobileNav } from "@/components/doc/doc-page-view";
+import { DocRouteNav } from "@/components/doc/doc-route-nav";
 
 export default function DocLayout({ children }: { children: ReactNode }) {
   return (
     <div className="doc-shell relative" data-doc-shell>
       <DocBackground />
-      <div className="relative z-10">
-        <DocMobileNav />
-        {children}
+      <div className="doc-shell-content">
+        <DocRouteNav />
+        <div className="doc-shell-page">{children}</div>
       </div>
     </div>
   );

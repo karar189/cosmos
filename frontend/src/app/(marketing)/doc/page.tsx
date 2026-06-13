@@ -3,7 +3,7 @@ import { DocPageView } from "@/components/doc/doc-page-view";
 import { DOC_PAGES } from "@/lib/doc/doc-pages";
 
 export const metadata: Metadata = {
-  title: "Introduction · Hypertron Docs",
+  title: "Introduction | Hypertron Docs",
   description: DOC_PAGES.introduction.subtitle,
 };
 

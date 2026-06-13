@@ -13,6 +13,7 @@ import {
 } from "@/lib/doc/doc-pages";
 import { homeLaunchPath } from "@/lib/launch-auth";
 import { DocFeaturePreview } from "./doc-feature-preview";
+import { DocShellLayout, onDocSectionClick } from "./doc-shell-layout";
 
 function DocBlockView({ block }: { block: DocBlock }) {
   if (block.type === "p") {
@@ -73,46 +74,44 @@ function DocSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:block">
-      <nav className="sticky top-24 max-h-[calc(100dvh-7rem)] space-y-8 overflow-y-auto overscroll-contain pr-4">
-        {DOC_NAV.map((group) => (
-          <div key={group.label}>
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
-              {group.label}
-            </p>
-            <ul className="space-y-0.5">
-              {group.items.map((item) => {
-                const href = item.slug === "introduction" ? "/doc" : `/doc/${item.slug}`;
-                const active = pathname === href;
-                return (
-                  <li key={item.slug}>
-                    <Link
-                      href={href}
-                      className={cn(
-                        "block rounded-md px-2.5 py-1.5 text-sm transition-colors",
-                        active
-                          ? "bg-white/[0.08] font-medium text-white"
-                          : "text-white/55 hover:bg-white/[0.04] hover:text-white/85"
-                      )}
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
-        <div className="border-t border-white/[0.06] pt-6">
-          <Link
-            href={homeLaunchPath("/dashboard")}
-            className="text-sm font-medium text-blue-400 transition-colors hover:text-blue-300"
-          >
-            Launch app →
-          </Link>
+    <nav className="space-y-8">
+      {DOC_NAV.map((group) => (
+        <div key={group.label}>
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
+            {group.label}
+          </p>
+          <ul className="space-y-0.5">
+            {group.items.map((item) => {
+              const href = item.slug === "introduction" ? "/doc" : `/doc/${item.slug}`;
+              const active = pathname === href;
+              return (
+                <li key={item.slug}>
+                  <Link
+                    href={href}
+                    className={cn(
+                      "block rounded-md px-2.5 py-1.5 text-sm transition-colors",
+                      active
+                        ? "bg-white/[0.08] font-medium text-white"
+                        : "text-white/55 hover:bg-white/[0.04] hover:text-white/85"
+                    )}
+                  >
+                    {item.title}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </div>
-      </nav>
-    </aside>
+      ))}
+      <div className="border-t border-white/[0.06] pt-6">
+        <Link
+          href={homeLaunchPath("/dashboard")}
+          className="text-sm font-medium text-blue-400 transition-colors hover:text-blue-300"
+        >
+          Launch app →
+        </Link>
+      </div>
+    </nav>
   );
 }
 
@@ -121,102 +120,94 @@ function DocOnThisPage({ page }: { page: DocPage }) {
   if (headings.length === 0) return null;
 
   return (
-    <aside className="hidden xl:block">
-      <div className="sticky top-24 max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-contain">
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
-          On this page
-        </p>
-        <ul className="space-y-2 border-l border-white/[0.08] pl-3">
-          {headings.map((h) => (
-            <li key={h.id}>
-              <a
-                href={`#${h.id}`}
-                className="block text-xs leading-snug text-white/45 transition-colors hover:text-white/80"
-              >
-                {h.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </aside>
+    <div>
+      <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
+        On this page
+      </p>
+      <ul className="space-y-2 border-l border-white/[0.08] pl-3">
+        {headings.map((h) => (
+          <li key={h.id}>
+            <a
+              href={`#${h.id}`}
+              onClick={onDocSectionClick(h.id)}
+              className="block text-xs leading-snug text-white/45 transition-colors hover:text-white/80"
+            >
+              {h.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
 export function DocPageView({ page }: { page: DocPage }) {
   const { prev, next } = getAdjacentDocs(page.slug);
+  const headings = getDocHeadings(page);
 
   return (
-    <div className="w-full px-6 pb-10 pt-14 md:px-10">
-      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 items-start gap-10 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,672px)_180px]">
-        <DocSidebar />
+    <DocShellLayout left={<DocSidebar />} right={headings.length > 0 ? <DocOnThisPage page={page} /> : undefined}>
+      <p className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-white/50">
+        Documentation
+      </p>
 
-        <article className="min-w-0">
-          <p className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-white/50">
-            Documentation
-          </p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">
+        {page.category}
+      </p>
+      <h1 className="mt-3 font-heading text-3xl font-bold uppercase tracking-tight text-white md:text-4xl">
+        {page.title}
+      </h1>
+      <p className="mt-4 text-base leading-relaxed text-white/55">{page.subtitle}</p>
 
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">
-            {page.category}
-          </p>
-          <h1 className="mt-3 font-heading text-3xl font-bold uppercase tracking-tight text-white md:text-4xl">
-            {page.title}
-          </h1>
-          <p className="mt-4 text-base leading-relaxed text-white/55">{page.subtitle}</p>
+      {page.quickLinks && page.quickLinks.length > 0 ? (
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          {page.quickLinks.map((link) => (
+            <Link
+              key={link.title}
+              href={link.href}
+              {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="group rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 transition-colors hover:border-white/[0.14] hover:bg-white/[0.04]"
+            >
+              <p className="text-sm font-semibold text-white group-hover:text-blue-300">
+                {link.title} →
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-white/45">{link.description}</p>
+            </Link>
+          ))}
+        </div>
+      ) : null}
 
-          {page.quickLinks && page.quickLinks.length > 0 ? (
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {page.quickLinks.map((link) => (
-                <Link
-                  key={link.title}
-                  href={link.href}
-                  {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="group rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 transition-colors hover:border-white/[0.14] hover:bg-white/[0.04]"
-                >
-                  <p className="text-sm font-semibold text-white group-hover:text-blue-300">
-                    {link.title} →
-                  </p>
-                  <p className="mt-1 text-xs leading-relaxed text-white/45">{link.description}</p>
-                </Link>
-              ))}
-            </div>
-          ) : null}
+      {page.slug !== "introduction" ? <DocFeaturePreview slug={page.slug} /> : null}
 
-          {page.slug !== "introduction" ? <DocFeaturePreview slug={page.slug} /> : null}
-
-          <div className="mt-10 space-y-4">
-            {page.blocks.map((block, i) => (
-              <DocBlockView key={`${block.type}-${i}`} block={block} />
-            ))}
-          </div>
-
-          <div className="mt-10 flex items-center justify-between gap-4 border-t border-white/[0.08] pt-6">
-            {prev ? (
-              <Link
-                href={prev.slug === "introduction" ? "/doc" : `/doc/${prev.slug}`}
-                className="group inline-flex items-center gap-2 text-sm text-white/55 hover:text-white"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                {prev.title}
-              </Link>
-            ) : (
-              <span />
-            )}
-            {next ? (
-              <Link
-                href={`/doc/${next.slug}`}
-                className="group inline-flex items-center gap-2 text-sm text-white/55 hover:text-white"
-              >
-                {next.title}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            ) : null}
-          </div>
-        </article>
-
-        <DocOnThisPage page={page} />
+      <div className="mt-10 space-y-4">
+        {page.blocks.map((block, i) => (
+          <DocBlockView key={`${block.type}-${i}`} block={block} />
+        ))}
       </div>
-    </div>
+
+      <div className="mt-10 flex items-center justify-between gap-4 border-t border-white/[0.08] pt-6">
+        {prev ? (
+          <Link
+            href={prev.slug === "introduction" ? "/doc" : `/doc/${prev.slug}`}
+            className="group inline-flex items-center gap-2 text-sm text-white/55 hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {prev.title}
+          </Link>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <Link
+            href={`/doc/${next.slug}`}
+            className="group inline-flex items-center gap-2 text-sm text-white/55 hover:text-white"
+          >
+            {next.title}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        ) : null}
+      </div>
+    </DocShellLayout>
   );
 }
 

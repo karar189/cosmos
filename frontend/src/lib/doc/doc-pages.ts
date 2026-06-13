@@ -71,7 +71,7 @@ export const DOC_PAGES: Record<string, DocPage> = {
     category: "Get started",
     title: "Hypertron user guide",
     subtitle:
-      "Collect and send payments on Stellar, manage workspaces, and optionally use privacy tools and cross-chain USDC bridging.",
+      "Collect and send payments on Stellar, manage workspaces, and optionally use privacy tools and cross chain USDC bridging.",
     quickLinks: [
       {
         title: "Launch app",
@@ -92,6 +92,11 @@ export const DOC_PAGES: Record<string, DocPage> = {
         title: "Support",
         description: "FAQs and how to reach us.",
         href: "/doc/support",
+      },
+      {
+        title: "Technical architecture",
+        description: "System design, modules, flows, and contracts.",
+        href: "/doc/technical/overview",
       },
     ],
     blocks: [
@@ -150,7 +155,7 @@ export const DOC_PAGES: Record<string, DocPage> = {
         type: "ol",
         items: [
           "Open the app and choose Sign in from the home page.",
-          "Complete sign-in with email or social login (Privy).",
+          "Complete sign in with email or social login (Privy).",
           "Connect Freighter when prompted so Hypertron can read your Stellar address and request signatures.",
         ],
       },
@@ -183,7 +188,7 @@ export const DOC_PAGES: Record<string, DocPage> = {
       {
         type: "callout",
         variant: "tip",
-        text: "Try the read-only demo at /demo/dashboard if you want to explore the UI before connecting a wallet.",
+        text: "Try the read only demo at /demo/dashboard if you want to explore the UI before connecting a wallet.",
       },
     ],
   },
@@ -200,7 +205,7 @@ export const DOC_PAGES: Record<string, DocPage> = {
       },
       {
         type: "p",
-        text: "The hub lists every workspace you own. From here you can create a new workspace, open an existing one, or manage account-level pages like Billing and Support.",
+        text: "The hub lists every workspace you own. From here you can create a new workspace, open an existing one, or manage account level pages like Billing and Support.",
       },
       {
         type: "h2",
@@ -291,7 +296,7 @@ export const DOC_PAGES: Record<string, DocPage> = {
       {
         type: "callout",
         variant: "info",
-        text: "Double-check the recipient address and network. On-chain payments cannot be reversed once confirmed.",
+        text: "Double check the recipient address and network. On chain payments cannot be reversed once confirmed.",
       },
     ],
   },
@@ -365,7 +370,7 @@ export const DOC_PAGES: Record<string, DocPage> = {
     slug: "secure-vault",
     category: "Privacy",
     title: "Secure Vault",
-    subtitle: "Optional privacy layer using on-chain commitments (beta, testnet).",
+    subtitle: "Optional privacy layer using on chain commitments (beta, testnet).",
     blocks: [
       {
         type: "h2",

@@ -222,11 +222,11 @@ function CheckoutPreview() {
       <Panel className="text-center">
         <p className="text-[11px] font-medium text-slate-400">Secured by Hypertron</p>
         <p className="mt-2 text-2xl font-bold text-slate-900">250.00 USDC</p>
-        <p className="mt-1 text-[11px] text-slate-500">Invoice #1042 · Atlas Labs</p>
+        <p className="mt-1 text-[11px] text-slate-500">Invoice #1042, Atlas Labs</p>
         <PrimaryBtn className="mt-4 w-full">Pay with Freighter</PrimaryBtn>
         <div className="mt-3 flex items-center justify-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-          <span className="text-[10px] text-slate-400">Stellar network · testnet</span>
+          <span className="text-[10px] text-slate-400">Stellar network, testnet</span>
         </div>
       </Panel>
     </div>
@@ -238,7 +238,7 @@ function TreasuryPreview() {
     <div className="space-y-3">
       <div className="grid grid-cols-3 gap-3">
         <StatCard label="Total treasury" value="$8,450.00" sub="1,240.50 XLM" />
-        <StatCard label="Received" value="15,890 XLM" sub="All-time" />
+        <StatCard label="Received" value="15,890 XLM" sub="All time" />
         <StatCard label="Pending" value="5" sub="Awaiting payment" />
       </div>
       <Panel>
@@ -350,7 +350,7 @@ function SupportPreview() {
       </Panel>
       <Panel>
         <p className="text-xs font-semibold text-slate-900">Support</p>
-        <p className="mt-2 text-[11px] text-slate-500">Reach us on X — questions, feedback, and help.</p>
+        <p className="mt-2 text-[11px] text-slate-500">Reach us on X: questions, feedback, and help.</p>
         <a
           href="https://x.com/hypertron_HQ"
           target="_blank"

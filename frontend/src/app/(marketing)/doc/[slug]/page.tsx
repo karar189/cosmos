@@ -15,7 +15,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const page = DOC_PAGES[params.slug];
   if (!page) return { title: "Documentation" };
   return {
-    title: `${page.title} · Hypertron Docs`,
+    title: `${page.title} | Hypertron Docs`,
     description: page.subtitle,
   };
 }
