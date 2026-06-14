@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, FileBarChart2, ShieldCheck, Upload, X } from "lucide-react";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
@@ -82,8 +82,9 @@ function dedupeFiles(files: File[]): File[] {
 
 export default function ComplianceAgentPage() {
   const router = useRouter();
-  const { demoPath } = useDemoMode();
+  const { isDemo, demoPath } = useDemoMode();
   const { publicKey } = useFreighter();
+  const canUseAgent = isDemo || !!publicKey;
 
   const [country, setCountry] = useState<string>("");
   const [companyName, setCompanyName] = useState("");
@@ -99,6 +100,22 @@ export default function ComplianceAgentPage() {
     () => getRelevantSourcesForBusiness(country, businessModel, companyDescription),
     [businessModel, companyDescription, country]
   );
+
+  useEffect(() => {
+    if (!isDemo) return;
+    setCountry((value) => value || "India");
+    setCompanyName((value) => value || "Hypertron Demo");
+    setCompanyDescription(
+      (value) =>
+        value ||
+        "Hypertron provides cross-border B2B payment infrastructure for startups and SMEs operating across India and Southeast Asia."
+    );
+    setBusinessModel(
+      (value) =>
+        value ||
+        "SaaS platform offering payment links, treasury management, and stablecoin settlement for business customers with KYC onboarding."
+    );
+  }, [isDemo]);
 
   const onFileInput = (nextFiles: FileList | null) => {
     if (!nextFiles) return;
@@ -174,7 +191,7 @@ export default function ComplianceAgentPage() {
   return (
     <WorkspacePageShell
       breadcrumbs={workspaceHubBreadcrumbs("Compliance")}
-      connectMessage="Connect your wallet to use Compliance Agent."
+      connectMessage={isDemo ? undefined : "Connect your wallet to use Compliance Agent."}
     >
       <div className="flex flex-col gap-6">
         <DashboardPageHeader
@@ -186,7 +203,11 @@ export default function ComplianceAgentPage() {
               Compliance Agent
             </span>
           }
-          description="Configure your context and launch AI analysis. You will be redirected to a live analysis screen."
+          description={
+            isDemo
+              ? "Try the full compliance flow with sample data. Analysis runs against the live Compliance Agent backend."
+              : "Configure your context and launch AI analysis. You will be redirected to a live analysis screen."
+          }
           end={
             hasLastAnalysis ? (
               <Button
@@ -201,7 +222,7 @@ export default function ComplianceAgentPage() {
           }
         />
 
-        {!publicKey ? null : (
+        {!canUseAgent ? null : (
           <Card>
             <CardHeader>
               <CardTitle>Inputs</CardTitle>

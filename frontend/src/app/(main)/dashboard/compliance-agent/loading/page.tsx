@@ -18,6 +18,7 @@ import {
   type SourceStatus,
 } from "@/lib/compliance-agent-session";
 import type { RegulatorySource } from "@/lib/compliance/jurisdiction-knowledge-base";
+import { demoComplianceHeaders } from "@/lib/demo-compliance-api";
 import { useDemoMode } from "@/components/demo/demo-mode-provider";
 import { useFreighter } from "@/hooks/useFreighter";
 
@@ -71,7 +72,7 @@ function mergeHypertronSourceStatuses(
 
 export default function ComplianceAgentLoadingPage() {
   const router = useRouter();
-  const { demoPath } = useDemoMode();
+  const { demoPath, isDemo } = useDemoMode();
   const { disconnect, isConnecting } = useFreighter();
   const pending = getPendingComplianceRequest();
 
@@ -165,6 +166,7 @@ export default function ComplianceAgentLoadingPage() {
         const response = await fetch("/api/compliance-agent/analyze", {
           method: "POST",
           credentials: "same-origin",
+          headers: demoComplianceHeaders(isDemo),
           body: formData,
         });
         const payload = await response.json();
@@ -233,7 +235,7 @@ export default function ComplianceAgentLoadingPage() {
       window.clearInterval(websiteTimer);
       window.clearInterval(regulatoryTimer);
     };
-  }, [demoPath, pending, router]);
+  }, [demoPath, isDemo, pending, router]);
 
   if (!pending) return null;
 

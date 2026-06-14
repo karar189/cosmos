@@ -26,6 +26,7 @@ import {
   type DetailLink,
 } from "@/lib/compliance-agent-session";
 import { getRegulatorySourcesForJurisdiction } from "@/lib/compliance/jurisdiction-knowledge-base";
+import { demoComplianceHeaders } from "@/lib/demo-compliance-api";
 
 type SectionKey = "licenses" | "documents" | "actions" | "timeline" | "risks";
 
@@ -91,7 +92,7 @@ function mergeOfficialLinks(groups: DetailLink[][]): DetailLink[] {
 export default function ComplianceDetailPage() {
   const router = useRouter();
   const params = useParams<{ section: string; index: string }>();
-  const { demoPath } = useDemoMode();
+  const { demoPath, isDemo } = useDemoMode();
   const { disconnect, isConnecting } = useFreighter();
 
   const section = toSection(String(params?.section || ""));
@@ -240,7 +241,10 @@ export default function ComplianceDetailPage() {
 
     fetch("/api/compliance-agent/detail-plan", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...demoComplianceHeaders(isDemo),
+      },
       body: JSON.stringify(payload),
     })
       .then(async (res) => {

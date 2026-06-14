@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isDemoComplianceApiRequest } from "@/lib/demo-compliance-api";
 import { requireSessionWallet } from "@/lib/require-session-wallet";
 
 const DEFAULT_BASE = "http://localhost:8001";
@@ -24,8 +25,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const session = await requireSessionWallet(req);
-    if (session instanceof NextResponse) return session;
+    if (!isDemoComplianceApiRequest(req)) {
+      const session = await requireSessionWallet(req);
+      if (session instanceof NextResponse) return session;
+    }
 
     const incoming = await req.formData();
     const outbound = new FormData();
