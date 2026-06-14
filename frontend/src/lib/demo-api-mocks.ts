@@ -189,6 +189,10 @@ export function mockDemoApiFetch(input: RequestInfo | URL, init?: RequestInit): 
     return jsonResponse({ employees: [] });
   }
 
+  if (url.includes("/api/compliance-agent/")) {
+    return null;
+  }
+
   if (url.includes("/api/compliance") || url.includes("/api/vault") || url.includes("/api/regintel")) {
     return jsonResponse({});
   }

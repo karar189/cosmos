@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isDemoComplianceApiRequest } from "@/lib/demo-compliance-api";
 import { requireSessionWallet } from "@/lib/require-session-wallet";
 
 const DEFAULT_BASE = "http://localhost:8001";
@@ -24,23 +25,33 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const session = await requireSessionWallet(req);
-    if (session instanceof NextResponse) return session;
+    if (!isDemoComplianceApiRequest(req)) {
+      const session = await requireSessionWallet(req);
+      if (session instanceof NextResponse) return session;
+    }
 
     const incoming = await req.formData();
     const outbound = new FormData();
 
+    const companyName = String(incoming.get("companyName") || "").trim();
+    const companyDescription = String(incoming.get("companyDescription") || "").trim();
     const companyDetails = String(incoming.get("companyDetails") || "").trim();
     const country = String(incoming.get("country") || "").trim();
     const businessModel = String(incoming.get("businessModel") || "").trim();
     const notes = String(incoming.get("notes") || "").trim();
+    const companyWebsiteUrl = String(incoming.get("companyWebsiteUrl") || "").trim();
     const websites = String(incoming.get("websites") || "").trim();
+    const regulatorySources = String(incoming.get("regulatorySources") || "").trim();
 
+    if (companyName) outbound.append("company_name", companyName);
+    if (companyDescription) outbound.append("company_description", companyDescription);
     outbound.append("company_details", companyDetails);
     outbound.append("country", country);
     outbound.append("business_model", businessModel);
     if (notes) outbound.append("notes", notes);
+    if (companyWebsiteUrl) outbound.append("company_website_url", companyWebsiteUrl);
     if (websites) outbound.append("websites", websites);
+    if (regulatorySources) outbound.append("regulatory_sources", regulatorySources);
 
     const fileEntries = incoming.getAll("files");
     for (const file of fileEntries) {

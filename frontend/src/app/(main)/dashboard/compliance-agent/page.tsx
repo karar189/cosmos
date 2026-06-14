@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, FileBarChart2, Plus, ShieldCheck, Upload, X } from "lucide-react";
+import { AlertTriangle, FileBarChart2, ShieldCheck, Upload, X } from "lucide-react";
 import { DashboardPageHeader } from "@/components/dashboard/layout/dashboard-page-header";
 import {
   WorkspacePageShell,
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useDemoMode } from "@/components/demo/demo-mode-provider";
 import { useFreighter } from "@/hooks/useFreighter";
 import {
   clearLatestComplianceContext,
@@ -27,22 +28,23 @@ import {
   getLatestComplianceResult,
   setPendingComplianceRequest,
 } from "@/lib/compliance-agent-session";
+import { getRelevantSourcesForBusiness } from "@/lib/compliance/jurisdiction-knowledge-base";
 
-const MAX_WEBSITES = 5;
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 const SUPPORTED_EXTENSIONS = [".pdf", ".docx", ".txt"] as const;
 
 const COUNTRY_OPTIONS = [
-  "United States",
-  "United Kingdom",
-  "European Union",
   "India",
   "Singapore",
+  "United States",
+  "European Union",
   "United Arab Emirates",
-  "Philippines",
-  "Nigeria",
-  "Brazil",
+  "Middle East",
+  "Japan",
+  "China",
+  "Russia",
+  "Australia",
   "Other",
 ] as const;
 
@@ -80,46 +82,40 @@ function dedupeFiles(files: File[]): File[] {
 
 export default function ComplianceAgentPage() {
   const router = useRouter();
+  const { isDemo, demoPath } = useDemoMode();
   const { publicKey } = useFreighter();
+  const canUseAgent = isDemo || !!publicKey;
 
   const [country, setCountry] = useState<string>("");
-  const [companyDetails, setCompanyDetails] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companyDescription, setCompanyDescription] = useState("");
   const [businessModel, setBusinessModel] = useState("");
   const [notes, setNotes] = useState("");
-  const [websiteInput, setWebsiteInput] = useState("");
-  const [websites, setWebsites] = useState<string[]>([]);
+  const [companyWebsiteUrl, setCompanyWebsiteUrl] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const hasLastAnalysis = useMemo(() => !!getLatestComplianceResult(), []);
+  const regulatorySources = useMemo(
+    () => getRelevantSourcesForBusiness(country, businessModel, companyDescription),
+    [businessModel, companyDescription, country]
+  );
 
-  const addWebsite = () => {
-    const candidate = websiteInput.trim();
-    if (!candidate) {
-      setError("Website URL cannot be empty.");
-      return;
-    }
-    if (!isValidWebsiteUrl(candidate)) {
-      setError("Invalid website URL. Only http/https public URLs are allowed.");
-      return;
-    }
-    if (websites.length >= MAX_WEBSITES) {
-      setError(`You can add up to ${MAX_WEBSITES} websites.`);
-      return;
-    }
-    const duplicate = websites.some((w) => w.toLowerCase() === candidate.toLowerCase());
-    if (duplicate) {
-      setError("Duplicate website URL detected.");
-      return;
-    }
-    setWebsites((prev) => [...prev, candidate]);
-    setWebsiteInput("");
-    setError(null);
-  };
-
-  const removeWebsite = (url: string) => {
-    setWebsites((prev) => prev.filter((w) => w !== url));
-  };
+  useEffect(() => {
+    if (!isDemo) return;
+    setCountry((value) => value || "India");
+    setCompanyName((value) => value || "Hypertron Demo");
+    setCompanyDescription(
+      (value) =>
+        value ||
+        "Hypertron provides cross-border B2B payment infrastructure for startups and SMEs operating across India and Southeast Asia."
+    );
+    setBusinessModel(
+      (value) =>
+        value ||
+        "SaaS platform offering payment links, treasury management, and stablecoin settlement for business customers with KYC onboarding."
+    );
+  }, [isDemo]);
 
   const onFileInput = (nextFiles: FileList | null) => {
     if (!nextFiles) return;
@@ -149,11 +145,16 @@ export default function ComplianceAgentPage() {
   };
 
   const validateRequiredFields = (): string | null => {
-    const company = companyDetails.trim();
+    const name = companyName.trim();
+    const description = companyDescription.trim();
     const model = businessModel.trim();
     if (!country) return "Country/Region is required.";
-    if (company.length < 10 || company.length > 500) return "Company details must be between 10 and 500 characters.";
+    if (name.length < 2 || name.length > 120) return "Company name must be between 2 and 120 characters.";
+    if (description.length < 10 || description.length > 500) return "Company description must be between 10 and 500 characters.";
     if (model.length < 20 || model.length > 1000) return "Business model must be between 20 and 1000 characters.";
+    if (companyWebsiteUrl.trim() && !isValidWebsiteUrl(companyWebsiteUrl.trim())) {
+      return "Invalid company website URL. Only public http/https URLs are allowed.";
+    }
     if (notes.trim().length > 3000) return "Notes can be up to 3000 characters.";
     return null;
   };
@@ -167,21 +168,30 @@ export default function ComplianceAgentPage() {
 
     clearLatestComplianceResult();
     clearLatestComplianceContext();
+    const companyDetails = [
+      `Company name: ${companyName.trim()}`,
+      `Company description: ${companyDescription.trim()}`,
+    ].join("\n");
+    const website = companyWebsiteUrl.trim();
     setPendingComplianceRequest({
       country,
-      companyDetails: companyDetails.trim(),
+      companyName: companyName.trim(),
+      companyDescription: companyDescription.trim(),
+      companyDetails,
       businessModel: businessModel.trim(),
       notes: notes.trim(),
-      websites,
+      companyWebsiteUrl: website,
+      websites: website ? [website] : [],
+      regulatorySources,
       files,
     });
-    router.push("/dashboard/compliance-agent/loading");
+    router.push(demoPath("/dashboard/compliance-agent/loading"));
   };
 
   return (
     <WorkspacePageShell
       breadcrumbs={workspaceHubBreadcrumbs("Compliance")}
-      connectMessage="Connect your wallet to use Compliance Agent."
+      connectMessage={isDemo ? undefined : "Connect your wallet to use Compliance Agent."}
     >
       <div className="flex flex-col gap-6">
         <DashboardPageHeader
@@ -193,13 +203,17 @@ export default function ComplianceAgentPage() {
               Compliance Agent
             </span>
           }
-          description="Configure your context and launch AI analysis. You will be redirected to a live analysis screen."
+          description={
+            isDemo
+              ? "Try the full compliance flow with sample data. Analysis runs against the live Compliance Agent backend."
+              : "Configure your context and launch AI analysis. You will be redirected to a live analysis screen."
+          }
           end={
             hasLastAnalysis ? (
               <Button
                 variant="outline"
                 className="rounded-xl border-ui-border/80 bg-white hover:bg-neutral-50"
-                onClick={() => router.push("/dashboard/compliance-agent/analysis")}
+                onClick={() => router.push(demoPath("/dashboard/compliance-agent/analysis"))}
               >
                 <FileBarChart2 className="mr-2 h-4 w-4" />
                 View Last Analysis
@@ -208,13 +222,13 @@ export default function ComplianceAgentPage() {
           }
         />
 
-        {!publicKey ? null : (
+        {!canUseAgent ? null : (
           <Card>
             <CardHeader>
               <CardTitle>Inputs</CardTitle>
               <CardDescription>
-                Guard rails: company details 10-500 chars, business model 20-1000 chars, up to 5 websites, and up to
-                5 files (PDF/DOCX/TXT, 10MB each).
+                Guard rails: company description 10-500 chars, business model 20-1000 chars, optional company website,
+                and up to 5 files (PDF/DOCX/TXT, 10MB each). Hypertron resolves official regulatory sources internally.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -231,6 +245,9 @@ export default function ComplianceAgentPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    We will automatically use trusted regulatory sources for this jurisdiction.
+                  </p>
                 </div>
                 <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
                   <p className="text-xs font-medium text-amber-900">Safety note</p>
@@ -242,10 +259,19 @@ export default function ComplianceAgentPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Company details</Label>
+                <Label>Company name</Label>
+                <Input
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Hypertron Labs"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Company description</Label>
                 <Textarea
-                  value={companyDetails}
-                  onChange={(e) => setCompanyDetails(e.target.value)}
+                  value={companyDescription}
+                  onChange={(e) => setCompanyDescription(e.target.value)}
                   placeholder="What does your company do, who are your users, and where are you operating?"
                   className="min-h-[100px]"
                 />
@@ -262,34 +288,32 @@ export default function ComplianceAgentPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Websites</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={websiteInput}
-                    onChange={(e) => setWebsiteInput(e.target.value)}
-                    placeholder="https://example.com/regulations"
-                  />
-                  <Button type="button" variant="outline" onClick={addWebsite}>
-                    <Plus className="mr-1 h-4 w-4" />
-                    Add
-                  </Button>
-                </div>
-                {websites.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {websites.map((url) => (
-                      <span
-                        key={url}
-                        className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs"
-                      >
-                        {url}
-                        <button type="button" onClick={() => removeWebsite(url)} aria-label={`remove ${url}`}>
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </span>
+                <Label>Company website URL (optional)</Label>
+                <Input
+                  value={companyWebsiteUrl}
+                  onChange={(e) => setCompanyWebsiteUrl(e.target.value)}
+                  placeholder="https://yourcompany.com"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Add only your company website. Regulatory sources are provided by Hypertron from the selected jurisdiction.
+                </p>
+              </div>
+
+              {country && (
+                <details className="rounded-lg border border-blue-100 bg-blue-50/70 p-3 text-sm">
+                  <summary className="cursor-pointer font-medium text-blue-950">
+                    Sources Hypertron will check ({regulatorySources.length})
+                  </summary>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {regulatorySources.map((source) => (
+                      <div key={`${source.name}-${source.url}`} className="rounded-md border border-blue-100 bg-white/70 p-2">
+                        <p className="font-medium text-blue-950">{source.name}</p>
+                        <p className="mt-1 text-xs capitalize text-blue-800/70">{source.authorityType.replace("_", " ")}</p>
+                      </div>
                     ))}
                   </div>
-                )}
-              </div>
+                </details>
+              )}
 
               <div className="space-y-2">
                 <Label>Documents (PDF, DOCX, TXT)</Label>
