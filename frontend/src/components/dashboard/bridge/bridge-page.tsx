@@ -56,6 +56,9 @@ import {
   type BridgeProgressEvent,
 } from "@/lib/bridge/execute-usdc-bridge";
 import { cn } from "@/utils";
+import { isValidStellarAddress } from "@/lib/stellar-address";
+
+type StellarRecipientMode = "wallet" | "custom";
 
 type BridgeStatus = StoredBridgeRecord["status"];
 
@@ -190,7 +193,7 @@ export function BridgePageContent() {
   const dark = theme === "dark";
   const mode = getCctpNetworkMode();
 
-  const { publicKey: stellarAddress, connect: connectStellar, truncatedAddress: stellarTruncated } = useFreighter();
+  const { publicKey: stellarAddress, connect: connectStellar, truncatedAddress: stellarTruncated, isConnecting: stellarConnecting, isAvailable: freighterAvailable } = useFreighter();
   const { address: evmAddress, connector, chainId, isConnected: evmConnected } = useAccount();
   const { connect, connectors, isPending: evmConnecting } = useConnect();
   const { switchChainAsync } = useSwitchChain();
@@ -206,10 +209,19 @@ export function BridgePageContent() {
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<BridgeProgressEvent | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [stellarRecipientMode, setStellarRecipientMode] = useState<StellarRecipientMode>("wallet");
+  const [customStellarAddress, setCustomStellarAddress] = useState("");
 
   useEffect(() => {
     setHistory(readBridgeHistory());
   }, []);
+
+  useEffect(() => {
+    if (destChain !== "stellar") {
+      setStellarRecipientMode("wallet");
+      setCustomStellarAddress("");
+    }
+  }, [destChain]);
 
   const sendAmount = parseFloat(amount.replace(/,/g, "")) || 0;
   const receive = sendAmount;
@@ -226,6 +238,13 @@ export function BridgePageContent() {
   const needsSolanaSource = sourceChain === "solana";
   const needsSolanaDest = destChain === "solana";
 
+  const stellarDestAddress = useMemo(() => {
+    if (!needsStellarDest) return null;
+    if (stellarRecipientMode === "wallet") return stellarAddress;
+    const trimmed = customStellarAddress.trim();
+    return trimmed || null;
+  }, [needsStellarDest, stellarRecipientMode, stellarAddress, customStellarAddress]);
+
   const copyAddress = useCallback((address: string) => {
     void navigator.clipboard.writeText(address);
     setCopied(true);
@@ -236,6 +255,22 @@ export function BridgePageContent() {
     const targetId = evmChainIdForBridge(chain, mode);
     if (!targetId || !switchChainAsync || chainId === targetId) return;
     await switchChainAsync({ chainId: targetId });
+  }
+
+  async function handleConnectStellar() {
+    setError(null);
+    try {
+      const address = await connectStellar();
+      if (!address) {
+        setError(
+          freighterAvailable
+            ? "Freighter connection was cancelled or denied. Open Freighter and allow access for this site."
+            : "Freighter extension not detected. Install Freighter, enable it in your browser, then refresh this page."
+        );
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not connect Freighter.");
+    }
   }
 
   async function handleConnectEvm() {
@@ -254,7 +289,18 @@ export function BridgePageContent() {
       if (sendAmount <= 0) throw new Error("Enter a valid USDC amount.");
 
       if (needsStellarSource && !stellarAddress) throw new Error("Connect your Stellar wallet (Freighter).");
-      if (needsStellarDest && !stellarAddress) throw new Error("Connect your Stellar wallet to receive USDC.");
+      if (needsStellarDest) {
+        if (stellarRecipientMode === "wallet" && !stellarAddress) {
+          throw new Error("Connect Freighter or switch to a custom Stellar address.");
+        }
+        if (stellarRecipientMode === "custom" && !isValidStellarAddress(customStellarAddress.trim())) {
+          throw new Error("Enter a valid Stellar address (starts with G, 56 characters).");
+        }
+        if (!stellarDestAddress) throw new Error("Enter a Stellar recipient address.");
+        if ((needsEvmSource || needsSolanaSource) && !stellarAddress) {
+          throw new Error("Connect Freighter to sign the Stellar receive transaction.");
+        }
+      }
       if (needsEvmSource && !evmConnected) throw new Error("Connect your EVM wallet for the source network.");
       if (needsEvmDest && !evmConnected) throw new Error("Connect your EVM wallet to receive USDC on destination.");
       if (needsSolanaSource && !solanaPublicKey) throw new Error("Connect your Solana wallet (Phantom).");
@@ -278,7 +324,7 @@ export function BridgePageContent() {
         evmProvider,
         solanaAddress: solanaPublicKey?.toBase58() ?? null,
         solanaWallet,
-        destinationStellarAddress: stellarAddress ?? undefined,
+        destinationStellarAddress: stellarDestAddress ?? undefined,
         destinationEvmAddress: evmAddress ?? undefined,
         destinationSolanaAddress: solanaPublicKey?.toBase58(),
         onProgress: (event) => setProgress(event),
@@ -404,7 +450,7 @@ export function BridgePageContent() {
                         Stellar {stellarTruncated}
                       </span>
                     ) : (
-                      <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" onClick={() => void connectStellar()}>
+                      <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" disabled={stellarConnecting} onClick={() => void handleConnectStellar()}>
                         Connect Freighter
                       </Button>
                     )
@@ -473,49 +519,154 @@ export function BridgePageContent() {
                     <span className="text-sm">USDC</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:col-span-2 dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:col-span-2 dark:border-white/10 dark:bg-white/[0.03]">
+                  {needsStellarDest ? (
+                    <>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setStellarRecipientMode("wallet")}
+                          className={cn(
+                            "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                            stellarRecipientMode === "wallet"
+                              ? "border-blue-600 bg-blue-600 text-white"
+                              : dark
+                                ? "border-white/10 bg-white/5 text-white/70 hover:bg-white/10"
+                                : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                          )}
+                        >
+                          Use connected wallet
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setStellarRecipientMode("custom")}
+                          className={cn(
+                            "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                            stellarRecipientMode === "custom"
+                              ? "border-blue-600 bg-blue-600 text-white"
+                              : dark
+                                ? "border-white/10 bg-white/5 text-white/70 hover:bg-white/10"
+                                : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                          )}
+                        >
+                          Enter address
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="min-w-0 space-y-1">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            Recipient
+                          </span>
+                          {stellarRecipientMode === "wallet" ? (
+                            <div className="flex items-center gap-2">
+                              {stellarAddress ? (
+                                <>
+                                  <code className={cn("font-mono text-sm font-medium", s.t.pageHeading)}>{stellarTruncated}</code>
+                                  <button
+                                    type="button"
+                                    onClick={() => copyAddress(stellarAddress)}
+                                    className={cn("rounded-md p-1 transition-colors", dark ? "text-white/40 hover:bg-white/10 hover:text-white/70" : "text-slate-400 hover:bg-slate-100 hover:text-slate-600")}
+                                    aria-label="Copy address"
+                                  >
+                                    <Copy className="h-3.5 w-3.5" />
+                                  </button>
+                                  {copied ? <span className={cn("text-[11px] text-emerald-600", dark && "text-emerald-400")}>Copied</span> : null}
+                                </>
+                              ) : (
+                                <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" disabled={stellarConnecting} onClick={() => void handleConnectStellar()}>
+                                  Connect Freighter
+                                </Button>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="space-y-1.5">
+                              <Input
+                                value={customStellarAddress}
+                                onChange={(e) => setCustomStellarAddress(e.target.value.trim().toUpperCase())}
+                                placeholder="G… (56-character Stellar address)"
+                                className={cn(s.input, "font-mono")}
+                                spellCheck={false}
+                              />
+                              {customStellarAddress && !isValidStellarAddress(customStellarAddress) ? (
+                                <p className="text-[11px] text-red-600 dark:text-red-400">Enter a valid Stellar address (G + 55 characters).</p>
+                              ) : null}
+                            </div>
+                          )}
+                          {(needsEvmSource || needsSolanaSource) && stellarRecipientMode === "custom" ? (
+                            <div className="space-y-1.5">
+                              <p className={cn("text-[11px]", s.muted)}>Freighter is still required to sign the receive transaction on Stellar.</p>
+                              {!stellarAddress ? (
+                                <Button type="button" size="sm" variant="outline" className="h-8 rounded-lg" disabled={stellarConnecting} onClick={() => void handleConnectStellar()}>
+                                  Connect Freighter to sign
+                                </Button>
+                              ) : (
+                                <p className={cn("text-[11px] font-medium", dark ? "text-emerald-400" : "text-emerald-700")}>
+                                  Signing wallet: {stellarTruncated}
+                                </p>
+                              )}
+                            </div>
+                          ) : null}
+                        </div>
+                        <div className="text-right">
+                          <p className={s.label}>You receive (est.)</p>
+                          <p className={cn("text-sm font-semibold tabular-nums", s.t.pageHeading)}>{receive.toFixed(2)} USDC</p>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0 space-y-1">
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                       Recipient
                     </span>
                     <div className="flex items-center gap-2">
-                      <code className={cn("font-mono text-sm font-medium", s.t.pageHeading)}>
-                        {needsStellarDest
-                          ? stellarTruncated ?? "Connect Stellar"
-                          : needsSolanaDest
-                            ? solanaPublicKey
-                              ? formatBridgeAddress(solanaPublicKey.toBase58())
-                              : "Connect Solana"
-                            : evmAddress
-                              ? formatBridgeAddress(evmAddress)
-                              : "Connect EVM"}
-                      </code>
-                      {(needsStellarDest && stellarAddress) || (needsSolanaDest && solanaPublicKey) || (needsEvmDest && evmAddress) ? (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            copyAddress(
-                              needsStellarDest
-                                ? stellarAddress!
-                                : needsSolanaDest
-                                  ? solanaPublicKey!.toBase58()
-                                  : evmAddress!
-                            )
-                          }
-                          className={cn("rounded-md p-1 transition-colors", dark ? "text-white/40 hover:bg-white/10 hover:text-white/70" : "text-slate-400 hover:bg-slate-100 hover:text-slate-600")}
-                          aria-label="Copy address"
-                        >
-                          <Copy className="h-3.5 w-3.5" />
-                        </button>
-                      ) : null}
-                      {copied ? <span className={cn("text-[11px] text-emerald-600", dark && "text-emerald-400")}>Copied</span> : null}
+                      {needsSolanaDest ? (
+                        solanaPublicKey ? (
+                          <>
+                            <code className={cn("font-mono text-sm font-medium", s.t.pageHeading)}>{formatBridgeAddress(solanaPublicKey.toBase58())}</code>
+                            <button
+                              type="button"
+                              onClick={() => copyAddress(solanaPublicKey.toBase58())}
+                              className={cn("rounded-md p-1 transition-colors", dark ? "text-white/40 hover:bg-white/10 hover:text-white/70" : "text-slate-400 hover:bg-slate-100 hover:text-slate-600")}
+                              aria-label="Copy address"
+                            >
+                              <Copy className="h-3.5 w-3.5" />
+                            </button>
+                            {copied ? <span className={cn("text-[11px] text-emerald-600", dark && "text-emerald-400")}>Copied</span> : null}
+                          </>
+                        ) : (
+                          <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" disabled={solanaConnecting} onClick={() => void connectSolana()}>
+                            Connect Phantom
+                          </Button>
+                        )
+                      ) : evmAddress ? (
+                        <>
+                          <code className={cn("font-mono text-sm font-medium", s.t.pageHeading)}>{formatBridgeAddress(evmAddress)}</code>
+                          <button
+                            type="button"
+                            onClick={() => copyAddress(evmAddress)}
+                            className={cn("rounded-md p-1 transition-colors", dark ? "text-white/40 hover:bg-white/10 hover:text-white/70" : "text-slate-400 hover:bg-slate-100 hover:text-slate-600")}
+                            aria-label="Copy address"
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                          </button>
+                          {copied ? <span className={cn("text-[11px] text-emerald-600", dark && "text-emerald-400")}>Copied</span> : null}
+                        </>
+                      ) : (
+                        <Button type="button" size="sm" className="h-9 rounded-lg bg-blue-600 hover:bg-blue-700" disabled={evmConnecting} onClick={() => void handleConnectEvm()}>
+                          Connect EVM Wallet
+                        </Button>
+                      )}
                     </div>
                   </div>
                   <div className="text-right">
                     <p className={s.label}>You receive (est.)</p>
                     <p className={cn("text-sm font-semibold tabular-nums", s.t.pageHeading)}>{receive.toFixed(2)} USDC</p>
                   </div>
+                  </div>
+                  )}
                 </div>
               </div>
             </section>

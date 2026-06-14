@@ -8,6 +8,7 @@ import { useState, useCallback, useEffect } from "react";
 import { getAddress, isConnected, requestAccess } from "@stellar/freighter-api";
 import { useAppSession } from "@/hooks/useAppSession";
 import { usePrivyStellarWallet } from "@/hooks/usePrivyStellarWallet";
+import { useDemoMode } from "@/components/demo/demo-mode-provider";
 import {
   FREIGHTER_DISCONNECTED_STORAGE_KEY,
   FREIGHTER_PUBLIC_KEY_STORAGE_KEY,
@@ -165,14 +166,16 @@ const idleWalletState: UseFreighterResult = {
 
 export function useFreighter(): UseFreighterResult {
   const { isPrivy, loading: sessionLoading } = useAppSession();
-  const privyWallet = usePrivyStellarWallet({ enabled: isPrivy });
-  const freighter = useFreighterExtension(!isPrivy && !sessionLoading);
+  const { isDemo } = useDemoMode();
+  const useExtension = isDemo || !isPrivy;
+  const privyWallet = usePrivyStellarWallet({ enabled: isPrivy && !isDemo });
+  const freighter = useFreighterExtension(useExtension && !sessionLoading);
 
   if (sessionLoading) {
     return idleWalletState;
   }
 
-  if (isPrivy) {
+  if (isPrivy && !isDemo) {
     const address = privyWallet.address;
     return {
       publicKey: address,

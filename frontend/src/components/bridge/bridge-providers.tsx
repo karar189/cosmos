@@ -7,7 +7,7 @@ import { avalanche, avalancheFuji, mainnet, sepolia } from "wagmi/chains";
 import { injected } from "@wagmi/core";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
-import { getCctpNetworkMode } from "@/lib/bridge/cctp-config";
+import { getCctpNetworkMode, getEvmRpcUrl } from "@/lib/bridge/cctp-config";
 import { getSolanaConnection } from "@/lib/bridge/cctp-bridge-kit";
 
 export function BridgeProviders({ children }: { children: ReactNode }) {
@@ -21,10 +21,10 @@ export function BridgeProviders({ children }: { children: ReactNode }) {
         chains: mode === "mainnet" ? [mainnet, avalanche] : [sepolia, avalancheFuji],
         connectors: [injected({ shimDisconnect: true })],
         transports: {
-          [mainnet.id]: http(),
-          [avalanche.id]: http(),
-          [sepolia.id]: http(),
-          [avalancheFuji.id]: http(),
+          [mainnet.id]: http(getEvmRpcUrl("ethereum", "mainnet")),
+          [avalanche.id]: http(getEvmRpcUrl("avalanche", "mainnet")),
+          [sepolia.id]: http(getEvmRpcUrl("ethereum", "testnet")),
+          [avalancheFuji.id]: http(getEvmRpcUrl("avalanche", "testnet")),
         },
       }),
     [mode]

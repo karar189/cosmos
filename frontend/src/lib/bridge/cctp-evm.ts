@@ -4,6 +4,7 @@ import {
   custom,
   encodeFunctionData,
   http,
+  publicActions,
   type EIP1193Provider,
   type WalletClient,
 } from "viem";
@@ -12,6 +13,7 @@ import {
   CCTP_DOMAIN,
   getCctpContracts,
   getCctpNetworkMode,
+  getEvmRpcUrl,
   type BridgeChainId,
 } from "@/lib/bridge/cctp-config";
 import { buildCctpForwarderHookData, evmAddressToBytes32, solanaAddressToBytes32, type CctpAttestationMessage } from "@/lib/bridge/cctp-utils";
@@ -95,11 +97,26 @@ export function createEvmWalletClient(chain: BridgeChainId, provider: EIP1193Pro
   });
 }
 
-export function createEvmPublicClient(chain: BridgeChainId) {
+export function createEvmPublicClient(chain: BridgeChainId, provider?: EIP1193Provider) {
   return createPublicClient({
     chain: getEvmChain(chain),
-    transport: http(),
+    // Prefer the connected wallet's provider (CORS-safe, already synced).
+    // Otherwise use an explicit CORS-friendly RPC URL — never viem's
+    // anonymous default (eth.merkle.io), which CORS-blocks and 429s.
+    transport: provider ? custom(provider) : http(getEvmRpcUrl(chain)),
   });
+}
+
+/**
+ * Wait for a transaction receipt using the wallet's own provider transport so
+ * polling stays on the wallet's RPC (no CORS/429 from anonymous fallbacks).
+ */
+async function waitForEvmReceipt(
+  walletClient: WalletClient,
+  hash: `0x${string}`
+): Promise<void> {
+  const client = walletClient.extend(publicActions);
+  await client.waitForTransactionReceipt({ hash, pollingInterval: 4_000 });
 }
 
 export async function approveEvmUsdc(params: {
@@ -117,8 +134,7 @@ export async function approveEvmUsdc(params: {
     functionName: "approve",
     args: [contracts.evm.tokenMessenger, params.amountSubunits],
   });
-  const publicClient = createEvmPublicClient(params.chain);
-  await publicClient.waitForTransactionReceipt({ hash });
+  await waitForEvmReceipt(params.walletClient, hash);
   return hash;
 }
 
@@ -155,8 +171,7 @@ export async function burnEvmUsdcToDestination(params: {
         hookData,
       ],
     });
-    const publicClient = createEvmPublicClient(params.chain);
-    await publicClient.waitForTransactionReceipt({ hash });
+    await waitForEvmReceipt(params.walletClient, hash);
     return hash;
   }
 
@@ -181,8 +196,7 @@ export async function burnEvmUsdcToDestination(params: {
       1000,
     ],
   });
-  const publicClient = createEvmPublicClient(params.chain);
-  await publicClient.waitForTransactionReceipt({ hash });
+  await waitForEvmReceipt(params.walletClient, hash);
   return hash;
 }
 
@@ -201,8 +215,7 @@ export async function receiveMessageOnEvm(params: {
     functionName: "receiveMessage",
     args: [params.attestation.message as `0x${string}`, params.attestation.attestation as `0x${string}`],
   });
-  const publicClient = createEvmPublicClient(params.chain);
-  await publicClient.waitForTransactionReceipt({ hash });
+  await waitForEvmReceipt(params.walletClient, hash);
   return hash;
 }
 

@@ -17,14 +17,18 @@ import {
 } from "@stellar/stellar-sdk";
 
 const SOROBAN_RPC_TESTNET = "https://soroban-testnet.stellar.org";
-const SOROBAN_RPC_MAINNET = "https://soroban-mainnet.stellar.org";
+// SDF has no public mainnet Soroban RPC; default to a real provider, env-overridable.
+const SOROBAN_RPC_MAINNET = "https://mainnet.sorobanrpc.com";
 const NETWORK_PASSPHRASE_TESTNET = "Test SDF Network ; September 2015";
 const NETWORK_PASSPHRASE_MAINNET = "Public Global Stellar Network ; September 2015";
 
 export type StellarNetwork = "testnet" | "public";
 
 export function getSorobanRpcUrl(network: StellarNetwork): string {
-  return network === "testnet" ? SOROBAN_RPC_TESTNET : SOROBAN_RPC_MAINNET;
+  if (network === "testnet") {
+    return process.env.NEXT_PUBLIC_SOROBAN_TESTNET_RPC_URL?.trim() || SOROBAN_RPC_TESTNET;
+  }
+  return process.env.NEXT_PUBLIC_SOROBAN_MAINNET_RPC_URL?.trim() || SOROBAN_RPC_MAINNET;
 }
 
 export function getNetworkPassphrase(network: StellarNetwork): string {
