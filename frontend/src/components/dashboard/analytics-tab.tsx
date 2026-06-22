@@ -94,7 +94,7 @@ export function AnalyticsTab() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">42 XLM</div>
-            <p className="text-xs text-muted-foreground">+8% vs last week</p>
+            <p className="text-xs text-muted-foreground">+18% vs last week</p>
           </CardContent>
         </Card>
       </div>
