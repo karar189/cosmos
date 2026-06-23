@@ -6,6 +6,7 @@ import {
   fallbackPaymentLinks,
   fallbackWithdrawals,
 } from "@/data/fallback";
+import { DEMO_TREASURY_SNAPSHOT, DEMO_MARKETS, demoAssetDetail } from "@/lib/financial-advisor/demo-data";
 
 const DEMO_TEMPLATES = {
   templates: [
@@ -187,6 +188,22 @@ export function mockDemoApiFetch(input: RequestInfo | URL, init?: RequestInit): 
 
   if (url.includes("/api/employees")) {
     return jsonResponse({ employees: [] });
+  }
+
+  if (url.includes("/api/financial-advisor/treasury")) {
+    return jsonResponse(DEMO_TREASURY_SNAPSHOT);
+  }
+
+  if (url.includes("/api/financial-advisor/markets/")) {
+    const match = url.match(/\/api\/financial-advisor\/markets\/([^/?]+)/);
+    const symbol = match?.[1] ? decodeURIComponent(match[1]) : "XLM";
+    const detail = demoAssetDetail(symbol);
+    if (!detail) return jsonResponse({ error: "Not found" }, 404);
+    return jsonResponse(detail);
+  }
+
+  if (url.includes("/api/financial-advisor/markets")) {
+    return jsonResponse(DEMO_MARKETS);
   }
 
   if (url.includes("/api/compliance") || url.includes("/api/vault") || url.includes("/api/regintel")) {

@@ -15,6 +15,7 @@ import {
   Scale,
   AlertTriangle,
   ArrowLeftRight,
+  Sparkles,
 } from "lucide-react";
 import type { NavGroup, NavLink, SidebarData } from "@/components/dashboard/layout/types";
 import type { WorkspaceTierId } from "@/lib/workspace-tier-context";
@@ -82,6 +83,7 @@ export function buildWorkspaceNavGroup(options?: { enableAllLinks?: boolean }): 
     title: "Workspace",
     items: [
       { title: "Overview", url: "/dashboard/overview", icon: LayoutDashboard },
+      { title: "Financial Advisor", url: "/dashboard/financial-advisor", icon: Sparkles, badge: "New" },
       { title: "Payments", url: "/dashboard/payment-links", icon: CreditCard },
       {
         title: "Secure Vault",

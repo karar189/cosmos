@@ -18,6 +18,7 @@ export type WorkspaceLoadingVariant =
 
 const ROUTE_LABELS: Record<string, string> = {
   overview: "Overview",
+  "financial-advisor": "Financial Advisor",
   bridge: "Bridge",
   withdraw: "Withdraw",
   "payment-links": "Payment links",
@@ -36,7 +37,7 @@ const ROUTE_LABELS: Record<string, string> = {
 export function getWorkspaceLoadingVariant(pathname: string | null | undefined): WorkspaceLoadingVariant {
   const base = normalizeAppPathname(pathname);
   if (base.startsWith("/dashboard/overview")) return "overview";
-  if (base.startsWith("/dashboard/withdraw")) return "treasury";
+  if (base.startsWith("/dashboard/financial-advisor") || base.startsWith("/dashboard/withdraw")) return "treasury";
   if (base.startsWith("/dashboard/payment-links") || base.startsWith("/dashboard/payments")) {
     return "payments";
   }

@@ -34,12 +34,15 @@ import { useDemoMode } from "@/components/demo/demo-mode-provider";
 import {
   DEMO_COMPLIANCE_NEWS,
   DEMO_EXPENSES,
-  DEMO_OPERATIONS,
   DEMO_PAYMENT_BREAKDOWN,
   DEMO_REGULATORY,
   DEMO_TREASURY_SERIES,
 } from "@/lib/demo-overview-data";
 import { normalizePaymentAssetCode, STELLAR_LOGO_URL, USDC_LOGO_URL, type PaymentAssetCode } from "@/lib/stellar-assets";
+import { FinancialAdvisorOverviewTeaser } from "@/components/dashboard/financial-advisor/financial-advisor-overview-teaser";
+import { fetchTreasurySnapshot } from "@/lib/financial-advisor/client";
+import { DEMO_TREASURY_SNAPSHOT } from "@/lib/financial-advisor/demo-data";
+import type { FaTreasurySnapshot } from "@/lib/financial-advisor/types";
 
 const HYPERTRON_CHART = {
   blue: "#60a5fa",
@@ -417,14 +420,29 @@ export function WorkspaceOverviewDashboard({
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [vault, setVault] = useState<VaultInfo | null>(null);
   const [events, setEvents] = useState<LiveEvent[]>([]);
+  const [faSnapshot, setFaSnapshot] = useState<FaTreasurySnapshot | null>(null);
+  const [faLoading, setFaLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     if (!businessId) {
       setStats(null);
       setVault(null);
       setEvents([]);
+      setFaSnapshot(null);
       setLoading(false);
+      setFaLoading(false);
       return;
+    }
+
+    if (isDemo) {
+      setFaSnapshot(DEMO_TREASURY_SNAPSHOT);
+      setFaLoading(false);
+    } else {
+      setFaLoading(true);
+      fetchTreasurySnapshot(businessId, "30d")
+        .then(setFaSnapshot)
+        .catch(() => setFaSnapshot(null))
+        .finally(() => setFaLoading(false));
     }
 
     setLoading(true);
@@ -466,7 +484,7 @@ export function WorkspaceOverviewDashboard({
     } finally {
       setLoading(false);
     }
-  }, [businessId]);
+  }, [businessId, isDemo]);
 
   useEffect(() => {
     void loadData();
@@ -633,7 +651,7 @@ export function WorkspaceOverviewDashboard({
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-12">
+      <div className="grid items-start gap-4 lg:grid-cols-12">
         <div className={cn(styles.panel, "lg:col-span-5 p-4")}>
           <div className="mb-3 flex items-center justify-between">
             <div>
@@ -649,7 +667,7 @@ export function WorkspaceOverviewDashboard({
               </div>
             ) : treasurySeries.length >= 2 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={treasurySeries}>
+                <AreaChart data={treasurySeries} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="treasuryFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor={areaFill} stopOpacity={1} />
@@ -699,26 +717,12 @@ export function WorkspaceOverviewDashboard({
           ) : null}
         </div>
 
-        <div className={cn(styles.panel, "lg:col-span-4 flex flex-col p-4")}>
-          <h2 className={cn("text-sm font-semibold", styles.title)}>Operations Overview</h2>
-          {isDemo ? (
-            <>
-              <ul className="mt-3 flex flex-1 flex-col gap-3">
-                {DEMO_OPERATIONS.map((item) => (
-                  <li key={item.label} className="flex items-center justify-between gap-2 text-sm">
-                    <span className={styles.title}>{item.label}</span>
-                    <span className={cn("text-xs", styles.muted)}>{item.count}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-4 rounded-lg border border-red-200/80 bg-red-50 px-3 py-2.5">
-                <p className="text-xs font-semibold text-red-700">Tasks Overdue</p>
-                <p className="text-[11px] text-red-600/90">5 action needed</p>
-              </div>
-            </>
-          ) : (
-            <ComingSoonState compact />
-          )}
+        <div className="lg:col-span-4">
+          <FinancialAdvisorOverviewTeaser
+            data={faSnapshot}
+            loading={faLoading}
+            href={demoPath("/dashboard/financial-advisor")}
+          />
         </div>
 
         <div className={cn(styles.panel, "lg:col-span-3 flex flex-col p-4")}>
