@@ -865,7 +865,7 @@ export function WorkspaceOverviewDashboard({
           )}
         </div>
         <Button asChild variant="outline" className="rounded-lg border-slate-200">
-          <Link href={demoPath("/dashboard/compliance-analysis")}>
+          <Link href={demoPath("/dashboard/risk-agent")}>
             View Risk Report
             <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
           </Link>

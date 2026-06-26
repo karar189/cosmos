@@ -105,11 +105,10 @@ export function buildWorkspaceNavGroup(options?: { enableAllLinks?: boolean }): 
       },
       { title: "Regulations", url: "/dashboard/rns", icon: Scale, badge: "3", disabled: all ? undefined : true },
       {
-        title: "Risk Reports",
-        url: "/dashboard/compliance-analysis",
+        title: "Risk Report",
+        url: "/dashboard/risk-agent",
         icon: AlertTriangle,
         badge: "4",
-        disabled: all ? undefined : true,
       },
       { title: "Document Vault", url: "/dashboard/document-vault", icon: FolderArchive, disabled: all ? undefined : true },
       { title: "Settings", url: "/dashboard/settings", icon: Settings },
