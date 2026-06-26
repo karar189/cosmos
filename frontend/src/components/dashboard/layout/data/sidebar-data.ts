@@ -103,7 +103,7 @@ export function buildWorkspaceNavGroup(options?: { enableAllLinks?: boolean }): 
         icon: ShieldCheck,
         badge: "5",
       },
-      { title: "Regulations", url: "/dashboard/rns", icon: Scale, badge: "3", disabled: all ? undefined : true },
+      { title: "Regulations", url: "/dashboard/regulations-agent", icon: Scale, badge: "3" },
       {
         title: "Risk Report",
         url: "/dashboard/risk-agent",

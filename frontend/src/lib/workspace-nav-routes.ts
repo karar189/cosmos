@@ -28,6 +28,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "compliance-analysis": "Risk Reports",
   "risk-agent": "Risk Report",
   rns: "Regulations",
+  "regulations-agent": "Regulations",
   "document-vault": "Document Vault",
   settings: "Settings",
   onboarding: "Onboarding",
