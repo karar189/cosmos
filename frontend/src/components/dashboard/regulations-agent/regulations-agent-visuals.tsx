@@ -64,7 +64,7 @@ export function RegulatoryScoreRing({ score = 87, max = 100 }: { score?: number;
       <div
         className="grid h-20 w-20 shrink-0 place-items-center rounded-full p-1.5"
         style={{
-          background: `conic-gradient(#7c3aed 0 ${pct * 3.6}deg, #ede9fe ${pct * 3.6}deg 360deg)`,
+          background: `conic-gradient(#2563eb 0 ${pct * 3.6}deg, #dbeafe ${pct * 3.6}deg 360deg)`,
         }}
       >
         <div className="grid h-full w-full place-items-center rounded-full bg-white text-center">

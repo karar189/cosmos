@@ -104,7 +104,7 @@ function SummaryMetrics() {
           {metric.type === "score" ? (
             <>
               <RegulatoryScoreRing score={87} max={100} />
-              <button className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-violet-700">
+              <button className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
                 {metric.link} <ArrowRight className="h-4 w-4" />
               </button>
             </>
@@ -114,7 +114,7 @@ function SummaryMetrics() {
                 {metric.value}
               </p>
               <p className="mt-1 text-sm text-slate-500">{metric.detail}</p>
-              <button className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-violet-700">
+              <button className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
                 {metric.link} <ArrowRight className="h-4 w-4" />
               </button>
             </>
@@ -183,7 +183,7 @@ function RecentRegulatoryUpdates() {
         </table>
       </div>
       <div className="border-t border-slate-100 px-5 py-4">
-        <button className="inline-flex items-center gap-1 text-sm font-semibold text-violet-700">
+        <button className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
           View all regulatory updates <ArrowRight className="h-4 w-4" />
         </button>
       </div>
@@ -243,7 +243,7 @@ function RegulatoryImpactSummary() {
         </table>
       </div>
       <div className="border-t border-slate-100 px-5 py-4">
-        <button className="inline-flex items-center gap-1 text-sm font-semibold text-violet-700">
+        <button className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
           View all jurisdictions <ArrowRight className="h-4 w-4" />
         </button>
       </div>
@@ -277,12 +277,12 @@ function RegulatoryWatchlist() {
             </div>
             <div className="flex shrink-0 flex-col items-end gap-2">
               {item.subscribed ? (
-                <BellRing className="h-4 w-4 text-violet-600" />
+                <BellRing className="h-4 w-4 text-blue-600" />
               ) : (
                 <Bell className="h-4 w-4 text-slate-300" />
               )}
               {item.subscribed ? (
-                <span className="text-[11px] font-medium text-violet-600">Subscribed</span>
+                <span className="text-[11px] font-medium text-blue-600">Subscribed</span>
               ) : (
                 <Button variant="outline" size="sm" className="h-7 rounded-lg px-2.5 text-xs">
                   Subscribe
@@ -303,7 +303,7 @@ function UpcomingDeadlines() {
       <div className="divide-y divide-slate-100">
         {UPCOMING_DEADLINES.map((deadline) => (
           <div key={deadline.id} className="flex items-start gap-3 px-5 py-4">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-700">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600">
               <CalendarDays className="h-4 w-4" />
             </span>
             <div className="min-w-0 flex-1">
@@ -338,7 +338,7 @@ function ResourcesSection() {
               type="button"
               className="flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-slate-50/70"
             >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-700">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600">
                 <Icon className="h-4 w-4" />
               </span>
               <span className="flex-1 text-sm font-medium text-slate-800">{resource.title}</span>
@@ -348,7 +348,7 @@ function ResourcesSection() {
         })}
       </div>
       <div className="border-t border-slate-100 px-5 py-4">
-        <button className="inline-flex items-center gap-1 text-sm font-semibold text-violet-700">
+        <button className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
           Visit Resource Center <ArrowRight className="h-4 w-4" />
         </button>
       </div>
@@ -360,12 +360,12 @@ function SecondaryTabView({ activeTab }: { activeTab: RegulationsTab }) {
   return (
     <Card className="p-8">
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-violet-50 text-violet-700">
+        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-600">
           <Scale className="h-7 w-7" />
         </span>
         <h2 className="mt-5 text-2xl font-semibold tracking-tight text-slate-950">{activeTab}</h2>
         <p className="mt-2 text-sm leading-6 text-slate-500">{TAB_SUMMARIES[activeTab]}</p>
-        <p className="mt-4 text-xs font-medium uppercase tracking-wide text-violet-600">
+        <p className="mt-4 text-xs font-medium uppercase tracking-wide text-blue-600">
           API integration coming soon
         </p>
       </div>
@@ -398,7 +398,7 @@ export function RegulationsAgentDashboard() {
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Button>
-            <Button className="h-10 min-w-0 rounded-xl bg-violet-700 px-5 text-sm text-white shadow-lg shadow-violet-200 hover:bg-violet-800">
+            <Button className="h-10 min-w-0 rounded-xl bg-blue-600 px-5 text-sm text-white shadow-lg shadow-blue-200 hover:bg-blue-700">
               <Plus className="mr-2 h-4 w-4" />
               New Verification
             </Button>
@@ -414,12 +414,12 @@ export function RegulationsAgentDashboard() {
               onClick={() => setActiveTab(tab)}
               className={cn(
                 "relative shrink-0 px-1 pb-3 text-sm font-semibold transition",
-                activeTab === tab ? "text-violet-700" : "text-slate-500 hover:text-slate-900"
+                activeTab === tab ? "text-blue-600" : "text-slate-500 hover:text-slate-900"
               )}
             >
               {tab}
               {activeTab === tab ? (
-                <span className="absolute inset-x-0 bottom-[-1px] h-0.5 rounded-full bg-violet-700" />
+                <span className="absolute inset-x-0 bottom-[-1px] h-0.5 rounded-full bg-blue-600" />
               ) : null}
             </button>
           ))}

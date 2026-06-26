@@ -77,7 +77,7 @@ export const SUMMARY_METRICS = [
     value: "18",
     detail: "across 7 jurisdictions",
     icon: FileText,
-    iconTone: "violet",
+    iconTone: "blue",
     link: "View all",
   },
   {
@@ -335,8 +335,8 @@ export function deadlineToneClass(tone: UpcomingDeadline["tone"]) {
 
 export function metricIconTone(tone: string) {
   switch (tone) {
-    case "violet":
-      return "bg-violet-50 text-violet-700";
+    case "blue":
+      return "bg-blue-50 text-blue-700";
     case "amber":
       return "bg-orange-50 text-orange-600";
     case "emerald":

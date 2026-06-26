@@ -132,7 +132,7 @@ export const MONITORED_TOPICS: MonitoredTopic[] = [
 export const MORE_TOPICS_COUNT = 35;
 
 export const SOURCE_SEGMENTS: SourceSegment[] = [
-  { label: "Regulatory Bodies", count: 412, percent: 33, color: "#7c3aed" },
+  { label: "Regulatory Bodies", count: 412, percent: 33, color: "#2563eb" },
   { label: "Government Sites", count: 286, percent: 23, color: "#3b82f6" },
   { label: "Legal News", count: 228, percent: 18, color: "#f97316" },
   { label: "Industry Publications", count: 176, percent: 14, color: "#ef4444" },
@@ -224,7 +224,7 @@ export function levelPillClass(level: RiskLevel) {
 
 export function topicToneClasses(tone: MonitoredTopic["tone"]) {
   const map = {
-    violet: "text-violet-600",
+    violet: "text-blue-600",
     emerald: "text-emerald-600",
     blue: "text-blue-600",
     rose: "text-rose-600",

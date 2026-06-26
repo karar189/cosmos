@@ -105,7 +105,7 @@ function RecentAlerts() {
       <CardHead
         title="Recent Alerts"
         action={
-          <button className="inline-flex items-center gap-1 text-sm font-semibold text-violet-700">
+          <button className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
             View all alerts <ArrowRight className="h-4 w-4" />
           </button>
         }
@@ -117,7 +117,7 @@ function RecentAlerts() {
           return (
             <article
               key={alert.id}
-              className="rounded-xl border border-slate-100 p-4 transition hover:border-violet-100 hover:bg-violet-50/20"
+              className="rounded-xl border border-slate-100 p-4 transition hover:border-blue-100 hover:bg-blue-50/20"
             >
               <div className="flex items-start gap-3">
                 <span
@@ -156,12 +156,12 @@ function RecentAlerts() {
                     </span>
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3">
-                    <button className="text-xs font-semibold text-violet-700 hover:text-violet-800">
+                    <button className="text-xs font-semibold text-blue-600 hover:text-blue-700">
                       View Details
                     </button>
                     <button
                       type="button"
-                      className="grid h-7 w-7 place-items-center rounded-lg text-slate-300 transition hover:bg-slate-50 hover:text-violet-700"
+                      className="grid h-7 w-7 place-items-center rounded-lg text-slate-300 transition hover:bg-slate-50 hover:text-blue-600"
                       aria-label="Bookmark alert"
                     >
                       <Bookmark className="h-4 w-4" />
@@ -201,7 +201,7 @@ function TopicsMonitored() {
             + {MORE_TOPICS_COUNT} more topics
           </div>
         </div>
-        <button className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-violet-700">
+        <button className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
           Manage topics <ArrowRight className="h-4 w-4" />
         </button>
       </div>
@@ -231,7 +231,7 @@ function RiskHeatmap() {
         <div className="mt-6">
           <div className="mb-4 flex items-center justify-between gap-3">
             <h3 className="text-sm font-semibold text-slate-900">Top Risk Jurisdictions</h3>
-            <button className="text-sm font-semibold text-violet-700">View all</button>
+            <button className="text-sm font-semibold text-blue-600">View all</button>
           </div>
           <div className="space-y-3.5">
             {TOP_JURISDICTIONS.map((jurisdiction) => (
@@ -292,7 +292,7 @@ function AgentSummary() {
                   <button
                     type="button"
                     aria-label="Edit business context"
-                    className="text-slate-300 transition hover:text-violet-600"
+                    className="text-slate-300 transition hover:text-blue-600"
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -317,13 +317,13 @@ function UpcomingReport() {
     <Card>
       <div className="flex items-center gap-2 px-5 pt-5">
         <h2 className="text-base font-semibold text-slate-950">Upcoming Report</h2>
-        <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-violet-700">
+        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-blue-600">
           AI
         </span>
       </div>
       <div className="p-5">
         <div className="flex items-start gap-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-700">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600">
             <CalendarDays className="h-5 w-5" />
           </span>
           <div>
@@ -342,7 +342,7 @@ function UpcomingReport() {
             </li>
           ))}
         </ul>
-        <Button className="mt-5 h-10 w-full rounded-xl bg-violet-700 text-sm font-semibold text-white hover:bg-violet-800">
+        <Button className="mt-5 h-10 w-full rounded-xl bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700">
           Preview Last Report
         </Button>
       </div>
@@ -366,7 +366,7 @@ function QuickAsk() {
           <button
             type="button"
             aria-label="Ask"
-            className="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-lg bg-violet-700 text-white transition hover:bg-violet-800"
+            className="absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-lg bg-blue-600 text-white transition hover:bg-blue-700"
           >
             <ArrowUpRight className="h-4 w-4" />
           </button>
@@ -381,7 +381,7 @@ function QuickAsk() {
               key={suggestion}
               type="button"
               onClick={() => setValue(suggestion)}
-              className="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100"
+              className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-600 transition hover:bg-blue-100"
             >
               {suggestion}
             </button>
@@ -409,7 +409,7 @@ function SourceCoverage() {
       <CardHead title="Source Coverage" />
       <div className="p-5">
         <SourceCoverageDonut />
-        <button className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-violet-700">
+        <button className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
           View all sources <ArrowRight className="h-4 w-4" />
         </button>
       </div>
@@ -423,12 +423,12 @@ function SecondaryTabView({ activeTab }: { activeTab: RiskAgentTab }) {
   return (
     <Card className="p-8">
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-violet-50 text-violet-700">
+        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-600">
           <Sparkles className="h-7 w-7" />
         </span>
         <h2 className="mt-5 text-2xl font-semibold tracking-tight text-slate-950">{activeTab}</h2>
         <p className="mt-2 text-sm leading-6 text-slate-500">{TAB_SUMMARIES[activeTab]}</p>
-        <p className="mt-4 text-xs font-medium uppercase tracking-wide text-violet-600">
+        <p className="mt-4 text-xs font-medium uppercase tracking-wide text-blue-600">
           API integration coming soon
         </p>
       </div>
@@ -449,7 +449,7 @@ export function RiskAgentDashboard() {
               <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-[28px]">
                 Regulation News Sniper (RNS)
               </h1>
-              <span className="rounded-md bg-violet-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-violet-700">
+              <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-blue-600">
                 AI
               </span>
             </div>
@@ -466,7 +466,7 @@ export function RiskAgentDashboard() {
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Button>
-            <Button className="h-10 min-w-0 rounded-xl bg-violet-700 px-5 text-sm text-white shadow-lg shadow-violet-200 hover:bg-violet-800">
+            <Button className="h-10 min-w-0 rounded-xl bg-blue-600 px-5 text-sm text-white shadow-lg shadow-blue-200 hover:bg-blue-700">
               <Plus className="mr-2 h-4 w-4" />
               New Report
             </Button>
@@ -483,12 +483,12 @@ export function RiskAgentDashboard() {
                 onClick={() => setActiveTab(tab)}
                 className={cn(
                   "relative shrink-0 px-1 pb-3 text-sm font-semibold transition",
-                  activeTab === tab ? "text-violet-700" : "text-slate-500 hover:text-slate-900"
+                  activeTab === tab ? "text-blue-600" : "text-slate-500 hover:text-slate-900"
                 )}
               >
                 {tab}
                 {activeTab === tab ? (
-                  <span className="absolute inset-x-0 bottom-[-1px] h-0.5 rounded-full bg-violet-700" />
+                  <span className="absolute inset-x-0 bottom-[-1px] h-0.5 rounded-full bg-blue-600" />
                 ) : null}
               </button>
             ))}
@@ -499,7 +499,7 @@ export function RiskAgentDashboard() {
               RNS Agent: <span className="text-emerald-600">Active</span>
               <ChevronDown className="h-3.5 w-3.5 text-emerald-500" />
             </span>
-            <button className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-700 hover:text-violet-700">
+            <button className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-700 hover:text-blue-600">
               <Settings className="h-4 w-4" />
               Configure Agent
             </button>

@@ -232,8 +232,8 @@ export function SentimentTrendChart({ className }: { className?: string }) {
     <svg viewBox="0 0 390 116" className={cn("h-auto w-full", className)} aria-hidden>
       <defs>
         <linearGradient id="sentimentFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
+          <stop offset="0%" stopColor="#2563eb" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#2563eb" stopOpacity="0" />
         </linearGradient>
       </defs>
       {[20, 44, 68, 92].map((y) => (
@@ -248,7 +248,7 @@ export function SentimentTrendChart({ className }: { className?: string }) {
       <polyline
         points={line}
         fill="none"
-        stroke="#7C3AED"
+        stroke="#2563eb"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
