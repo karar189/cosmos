@@ -1,0 +1,372 @@
+Hypertron Tech Stack Planning
+
+Purpose
+This document describes the technical changes needed in the current Hypertron repo to support Payments API v1. The goal is to build a Stripe-style developer platform on top of the existing checkout and Stellar settlement rails.
+
+Important Framing
+This should be treated as:
+Build Hypertron Payments API v1 on top of existing Stellar rails.
+
+This should not be treated as:
+Just extend payment links slightly.
+
+Current Repo Reality
+- Main product app lives in frontend/
+- Main backend logic already lives in frontend/src/app/api/
+- Shared domain and utility code lives in frontend/src/lib/
+- Soroban smart contracts live in contracts/
+- backend/src/index.js is an old lightweight stub and should not become the main payments platform backend
+
+Target Platform Capabilities
+The new platform needs:
+- merchant onboarding
+- API key management
+- payments API
+- hosted checkout
+- payment lifecycle engine
+- background reconciliation
+- webhook delivery and logs
+- lightweight customer records
+- developer quickstart and docs
+
+--------------------------------------------------
+1. Frontend Planning
+--------------------------------------------------
+
+Primary areas
+- frontend/src/app/(main)/dashboard
+- frontend/src/components/dashboard
+- frontend/src/app/pay/[id]
+- frontend/src/app/(marketing) or dedicated developer docs surfaces
+
+Frontend changes required
+
+1. Merchant dashboard navigation
+Add or formalize merchant-facing sections:
+- Overview
+- Payments
+- API Keys
+- Webhooks
+- Developers
+- Settings
+
+2. Payments page
+Current payments surface is built around payment links and internal collection UX.
+We need to introduce a first-class Payments page backed by Payment records instead of only PaymentLink rows.
+
+Payments page should show:
+- payment id
+- customer
+- amount
+- currency
+- status
+- transaction hash
+- created at
+- completed at
+- metadata
+
+3. API Keys page
+Build UI to:
+- create test keys
+- create live keys
+- reveal secret key once
+- revoke keys
+- rotate keys
+- show last used time
+
+4. Webhooks page
+Build UI to:
+- add endpoint
+- remove endpoint
+- show webhook secret
+- show event subscriptions
+- show delivery status
+- show retry count
+- inspect failed deliveries
+
+5. Developers page
+Build a lightweight developer setup page that contains:
+- quickstart code sample
+- create payment sample
+- webhook verification sample
+- test vs live environment explanation
+- example request and response payloads
+
+6. Settings page updates
+Extend merchant settings to include:
+- business name
+- logo
+- default currency
+- success URL
+- failure or cancel URL
+- default webhook URL
+
+7. Hosted checkout improvements
+Current checkout can be reused, but it needs to become Payment or CheckoutSession driven.
+Changes needed:
+- resolve payment session instead of only raw payment link
+- show merchant branding
+- show cleaner lifecycle states
+- redirect on success
+- redirect on failure or cancel
+
+Frontend reuse opportunities
+- existing pay page flow
+- existing payments UI primitives
+- current dashboard auth and business profile plumbing
+- current live checkout components
+
+--------------------------------------------------
+2. Backend Planning
+--------------------------------------------------
+
+Primary areas
+- frontend/src/app/api
+- frontend/src/lib
+- frontend/prisma/schema.prisma
+
+This is the main engineering workstream.
+
+2A. Data model changes
+Add new first-class models:
+- ApiKey
+- Payment
+- PaymentEvent
+- CheckoutSession or session fields on Payment
+- Customer
+- WebhookEndpoint
+- WebhookDelivery
+
+Recommended choice:
+- Keep Business as the merchant entity for now.
+- Do not rename Business to Merchant yet.
+
+Business model additions
+Add merchant configuration fields such as:
+- logoUrl
+- successUrl
+- failureUrl
+- defaultCurrency
+- webhook default config if needed
+
+PaymentLink model changes
+Keep PaymentLink as an internal settlement rail and add a relation like:
+- paymentId
+
+2B. Session-authenticated merchant APIs
+Add dashboard APIs for merchant control plane actions:
+- POST /api/apikeys
+- GET /api/apikeys
+- DELETE or revoke /api/apikeys/:id
+- POST /api/webhooks
+- GET /api/webhooks
+- DELETE /api/webhooks/:id
+
+These routes should use existing app session and business ownership checks.
+
+2C. Bearer-authenticated public developer APIs
+Add:
+- POST /api/payments
+- GET /api/payments
+- GET /api/payments/:id
+- POST /api/payments/:id/cancel
+
+These routes should use:
+- Authorization: Bearer sk_...
+- test/live environment separation
+- request validation
+- idempotency protection
+
+POST /api/payments should:
+1. authenticate API key
+2. validate request body
+3. create Payment
+4. create CheckoutSession or mapped PaymentLink
+5. return payment_id, checkout_url, status
+
+2D. API key system
+Build shared backend utilities for:
+- secure key generation
+- hashing secret keys at rest
+- partial key display
+- key prefixing like pk_test, sk_test, pk_live, sk_live
+- key revocation
+- key rotation
+- last_used tracking
+
+2E. Payment lifecycle engine
+Current repo relies too much on request-time status checks and frontend polling.
+We need a reusable lifecycle service with canonical statuses:
+- created
+- pending
+- confirmed
+- completed
+- failed
+- cancelled
+- expired if needed
+
+The lifecycle engine should:
+- inspect on-chain settlement facts
+- update Payment state
+- create immutable PaymentEvent rows
+- trigger webhooks on state changes
+
+2F. Background reconciliation
+Add a backend reconciliation path that can run from:
+- cron
+- internal worker route
+- periodic job trigger
+
+This should replace frontend polling as the source of truth.
+
+2G. Webhook system
+Build:
+- endpoint creation and storage
+- webhook secret generation
+- signature generation
+- delivery attempts
+- retries with backoff
+- delivery logs
+- event payload persistence if needed
+
+Initial event set:
+- payment.created
+- payment.pending
+- payment.completed
+- payment.failed
+
+2H. Customer model
+Create lightweight customers derived from payment requests and completed payments.
+Initial customer fields:
+- merchant or business id
+- email
+- name if present
+- payment count
+- lifetime value
+- last payment at
+
+2I. Shared backend libraries
+Add new domain utilities under frontend/src/lib, for example:
+- api-keys
+- require-api-key
+- payments/create-payment
+- payments/reconcile-payment
+- payments/payment-events
+- webhooks/sign-webhook
+- webhooks/deliver-webhook
+- webhooks/retry-policy
+
+Backend reuse opportunities
+- business session resolution
+- payment link creation flow
+- current Stellar payment detection
+- relayer process route
+- current Horizon and Soroban helpers
+
+--------------------------------------------------
+3. Smart Contract Planning
+--------------------------------------------------
+
+Primary area
+- contracts/poolmanager
+
+Key recommendation
+Do not make the Payments API MVP depend on major smart contract changes.
+
+Reason
+The merchant payments MVP is mainly an application-layer product:
+- merchant control plane
+- API authentication
+- payment object model
+- hosted checkout
+- reconciliation
+- webhooks
+
+That can be shipped mostly on top of the current off-chain settlement verification and existing payment rail architecture.
+
+What stays the same for MVP
+- existing payment verification can continue to happen off-chain
+- existing PoolManager privacy and nullifier flows can remain optional or internal
+- merchant API and webhook semantics should not be blocked by contract redesign
+
+Recommended contract work for MVP
+Minimal or none.
+
+Optional small improvements
+- improve contract event emission for better observability
+- align SDK or wrapper expectations with current PoolManager ABI
+- tighten read helpers if backend observability needs them
+
+What not to do in MVP
+- do not redesign PoolManager around merchant payment sessions
+- do not block launch on production privacy completion
+- do not require direct ZK-native deposits for all checkout flows
+
+Future smart contract work after MVP
+Later phases can extend smart contract architecture for:
+- privacy-native checkout sessions
+- direct pool deposits
+- true proof-verified unlinkable withdrawals
+- richer compliance-aware settlement logic
+- deeper Nethermind pool integration
+
+--------------------------------------------------
+4. Suggested Build Sequence
+--------------------------------------------------
+
+Phase 1
+- Update Prisma schema
+- add ApiKey, Payment, PaymentEvent, Customer, WebhookEndpoint, WebhookDelivery
+- extend Business config fields
+
+Phase 2
+- build backend shared libraries for API keys, payments, lifecycle, and webhooks
+- add bearer-key auth middleware
+
+Phase 3
+- add merchant dashboard APIs for API keys and webhook endpoints
+- add public payments API routes
+
+Phase 4
+- map Payment objects to current PaymentLink or checkout rail internally
+- return payment_id and checkout_url from the new API
+
+Phase 5
+- build reconciliation and payment lifecycle transitions
+- create immutable PaymentEvent rows
+
+Phase 6
+- build webhook signing, retries, and logs
+
+Phase 7
+- ship merchant dashboard pages for Payments, API Keys, Webhooks, Developers
+
+Phase 8
+- upgrade hosted checkout with branding and redirect support
+
+Phase 9
+- optional smart contract cleanup and observability improvements
+
+--------------------------------------------------
+5. Final Architecture Direction
+--------------------------------------------------
+
+Target system flow
+Merchant App
+-> Hypertron Payments API
+-> Payment object created
+-> Checkout session created
+-> Hypertron hosted checkout
+-> Stellar payment submitted
+-> Hypertron reconciliation engine
+-> Payment lifecycle update
+-> Webhook delivery
+-> Merchant App order update
+
+Practical architecture summary
+- Frontend work: dashboard, checkout UX, developer docs, merchant configuration surfaces
+- Backend work: schema, APIs, lifecycle engine, webhooks, API key auth, customer model
+- Smart contract work: minimal for MVP, optional observability cleanup only
+
+Bottom line
+The current repo is a strong base for this build, but the main lift is at the application platform layer, not in the Soroban contracts.
