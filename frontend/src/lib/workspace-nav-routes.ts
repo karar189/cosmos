@@ -18,6 +18,7 @@ export type WorkspaceLoadingVariant =
 
 const ROUTE_LABELS: Record<string, string> = {
   overview: "Overview",
+  developers: "Developers",
   bridge: "Bridge",
   withdraw: "Withdraw",
   "payment-links": "Payment links",
