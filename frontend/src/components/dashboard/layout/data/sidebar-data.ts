@@ -15,6 +15,7 @@ import {
   Scale,
   AlertTriangle,
   ArrowLeftRight,
+  Code2,
 } from "lucide-react";
 import type { NavGroup, NavLink, SidebarData } from "@/components/dashboard/layout/types";
 import type { WorkspaceTierId } from "@/lib/workspace-tier-context";
@@ -82,13 +83,8 @@ export function buildWorkspaceNavGroup(options?: { enableAllLinks?: boolean }): 
     title: "Workspace",
     items: [
       { title: "Overview", url: "/dashboard/overview", icon: LayoutDashboard },
+      { title: "Developers", url: "/dashboard/developers", icon: Code2 },
       { title: "Payments", url: "/dashboard/payment-links", icon: CreditCard },
-      {
-        title: "Secure Vault",
-        url: "/dashboard/secure-vault",
-        icon: ShieldCheck,
-        badge: "Beta",
-      },
       { title: "Treasury", url: "/dashboard/withdraw", icon: Wallet },
       {
         title: "Bridge",
