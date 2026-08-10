@@ -10,6 +10,7 @@ import {
   Clock,
   Copy,
   Info,
+  Loader2,
   Lock,
   Share2,
   Shield,
@@ -454,20 +455,48 @@ export function QrCheckoutPanel({
   );
 }
 
+export type OnRampFlowStatus =
+  | "idle"
+  | "starting"
+  | "awaiting_user"
+  | "confirming"
+  | "success"
+  | "error";
+
 export function OnRampCheckoutPanel({
   vaultName,
   styles: s,
   currency = "USDC",
+  displayAmount,
+  moneygramEnabled = false,
+  kycComplete = false,
+  onRampStatus = "idle",
+  onRampError = null,
+  confirmationStatus = "idle",
+  onStartMoneyGram,
 }: {
   vaultName: string;
   styles: PayCheckoutStyles;
   currency?: PaymentAssetCode;
+  displayAmount?: string;
+  moneygramEnabled?: boolean;
+  kycComplete?: boolean;
+  onRampStatus?: OnRampFlowStatus;
+  onRampError?: string | null;
+  confirmationStatus?: "idle" | "confirming" | "confirmed" | "timeout";
+  onStartMoneyGram?: () => void;
 }) {
   const steps = [
     "Choose on-ramp partner",
     "Complete fiat payment",
     `${currency} delivered to ${vaultName}`,
   ] as const;
+
+  const hasValidAmount =
+    Boolean(displayAmount) && displayAmount !== "—" && Number.isFinite(Number(displayAmount));
+  const moneygramReady =
+    moneygramEnabled && currency === "USDC" && kycComplete && hasValidAmount;
+  const isProcessing = onRampStatus === "starting" || onRampStatus === "confirming";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -477,42 +506,122 @@ export function OnRampCheckoutPanel({
           Pay via a partner — {currency} is delivered to{" "}
           <span className={cn("font-medium", s.vaultName)}>{vaultName}</span>.
         </p>
+        {moneygramEnabled ? (
+          <p className={cn("mt-1 text-[10px]", s.footerText)}>MoneyGram sandbox · Stellar testnet</p>
+        ) : null}
       </div>
 
-      <ul className="mt-2.5 min-h-0 flex-1 space-y-2 overflow-y-auto pr-0.5">
-        {ON_RAMP_PARTNERS.map((partner) => (
-          <li
-            key={partner.id}
-            className={cn("flex items-center gap-2.5 rounded-lg border px-3 py-2.5", s.cardFlat)}
+      {onRampStatus === "success" || onRampStatus === "awaiting_user" || onRampStatus === "confirming" ? (
+        <div className="mt-3 rounded-xl border border-violet-200 bg-violet-50 p-4 text-center">
+          <CheckCircle2 className="mx-auto h-7 w-7 text-violet-600" />
+          <p className="mt-1.5 text-sm font-semibold text-violet-900">
+            {onRampStatus === "success" ? "Payment recorded" : "Complete payment in MoneyGram"}
+          </p>
+          {onRampStatus === "awaiting_user" ? (
+            <p className="mt-1.5 text-xs text-violet-800">
+              Finish cash-in in the MoneyGram window. USDC will be sent to the merchant vault with
+              your payment memo.
+            </p>
+          ) : null}
+          {confirmationStatus === "confirming" ? (
+            <p className="mt-1.5 inline-flex items-center justify-center gap-1.5 text-xs text-violet-800">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Waiting for USDC delivery on Stellar…
+            </p>
+          ) : confirmationStatus === "confirmed" ? (
+            <p className="mt-1.5 text-xs font-medium text-violet-800">
+              Payment recorded — the merchant has been notified.
+            </p>
+          ) : confirmationStatus === "timeout" ? (
+            <p className="mt-1.5 text-xs text-violet-800/90">
+              Still processing. Sandbox deposits can take a few minutes after MoneyGram confirms.
+            </p>
+          ) : null}
+        </div>
+      ) : (
+        <ul className="mt-2.5 min-h-0 flex-1 space-y-2 overflow-y-auto pr-0.5">
+          {ON_RAMP_PARTNERS.map((partner) => {
+            const isMoneyGram = partner.id === "moneygram";
+            const partnerEnabled = isMoneyGram && moneygramReady && !isProcessing;
+            const showSoon = !isMoneyGram || !moneygramEnabled;
+
+            return (
+              <li
+                key={partner.id}
+                className={cn("flex items-center gap-2.5 rounded-lg border px-3 py-2.5", s.cardFlat)}
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-200/90 bg-white p-1">
+                  <img
+                    src={partner.logo}
+                    alt=""
+                    className="h-full w-full object-contain"
+                    aria-hidden
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                    <p className={cn("text-xs font-semibold", s.cardTitle)}>{partner.name}</p>
+                    <Badge className={cn("px-1.5 py-0 text-[9px]", s.emeraldBadge)}>
+                      {partner.badge}
+                    </Badge>
+                  </div>
+                  <p className={cn("truncate text-[10px]", s.cardMeta)}>{partner.desc}</p>
+                  <p className={cn("text-[10px]", s.footerText)}>{partner.time}</p>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={!partnerEnabled}
+                  onClick={isMoneyGram ? onStartMoneyGram : undefined}
+                  title={
+                    isMoneyGram
+                      ? moneygramEnabled
+                        ? "Start MoneyGram sandbox deposit"
+                        : "Set MONEYGRAM_AUTH_SECRET (testnet) to enable"
+                      : "Coming soon"
+                  }
+                  className={cn(
+                    "h-8 shrink-0 px-3 text-xs text-white",
+                    partnerEnabled
+                      ? "bg-violet-600 hover:bg-violet-500"
+                      : "bg-violet-600/60"
+                  )}
+                >
+                  {isProcessing && isMoneyGram ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : showSoon ? (
+                    "Soon"
+                  ) : (
+                    "Start"
+                  )}
+                </Button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {onRampStatus === "error" && onRampError ? (
+        <p className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+          {onRampError}
+        </p>
+      ) : null}
+
+      {!moneygramEnabled && currency === "USDC" ? (
+        <p className={cn("mt-2 text-[10px]", s.footerText)}>
+          Sandbox wiring ready — add <code className="text-[10px]">MONEYGRAM_AUTH_SECRET</code>{" "}
+          (testnet key registered at{" "}
+          <a
+            href="https://developer.moneygram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-violet-600 hover:underline"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-200/90 bg-white p-1">
-              <img
-                src={partner.logo}
-                alt=""
-                className="h-full w-full object-contain"
-                aria-hidden
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                <p className={cn("text-xs font-semibold", s.cardTitle)}>{partner.name}</p>
-                <Badge className={cn("px-1.5 py-0 text-[9px]", s.emeraldBadge)}>{partner.badge}</Badge>
-              </div>
-              <p className={cn("truncate text-[10px]", s.cardMeta)}>{partner.desc}</p>
-              <p className={cn("text-[10px]", s.footerText)}>{partner.time}</p>
-            </div>
-            <Button
-              type="button"
-              size="sm"
-              disabled
-              title="TODO(moneygram): wire MoneyGram / Stellar on-ramp API"
-              className="h-8 shrink-0 bg-violet-600/60 px-3 text-xs text-white"
-            >
-              Soon
-            </Button>
-          </li>
-        ))}
-      </ul>
+            developer.moneygram.com
+          </a>
+          ) and keep <code className="text-[10px]">NEXT_PUBLIC_STELLAR_NETWORK=testnet</code>.
+        </p>
+      ) : null}
 
       <div className={cn("mt-2 shrink-0 border-t pt-2.5", s.footerBorder)}>
         <p className={cn("text-[11px] font-semibold", s.cardTitle)}>How it works</p>

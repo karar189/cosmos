@@ -13,6 +13,7 @@ import {
   OnRampCheckoutPanel,
   payCheckoutStyles,
   QrCheckoutPanel,
+  type OnRampFlowStatus,
   type PayCheckoutStyles,
   type PayCheckoutTabId,
 } from "@/components/dashboard/payments/payment-checkout-shared";
@@ -62,6 +63,10 @@ export type PaymentLiveCheckoutProps = {
   explorerUrl: string | null;
   confirmationStatus?: "idle" | "confirming" | "confirmed" | "timeout";
   networkLabel: string;
+  moneygramEnabled?: boolean;
+  onRampStatus?: OnRampFlowStatus;
+  onRampError?: string | null;
+  onStartMoneyGram?: () => void;
 };
 
 function StellarRailIcon({ currency, className }: { currency: PaymentAssetCode; className?: string }) {
@@ -220,6 +225,10 @@ export function PaymentLiveCheckout(props: PaymentLiveCheckoutProps) {
     explorerUrl,
     confirmationStatus = "idle",
     networkLabel,
+    moneygramEnabled = false,
+    onRampStatus = "idle",
+    onRampError = null,
+    onStartMoneyGram,
   } = props;
 
   const enabledIds = link.paymentMethods.length ? link.paymentMethods : ["wallet", "qr"];
@@ -397,7 +406,18 @@ export function PaymentLiveCheckout(props: PaymentLiveCheckoutProps) {
                 detailsComplete={kycComplete}
               />
             ) : (
-              <OnRampCheckoutPanel vaultName={vaultName} styles={s} currency={link.currency} />
+              <OnRampCheckoutPanel
+                vaultName={vaultName}
+                styles={s}
+                currency={link.currency}
+                displayAmount={displayAmount}
+                moneygramEnabled={moneygramEnabled}
+                kycComplete={kycComplete}
+                onRampStatus={onRampStatus}
+                onRampError={onRampError}
+                confirmationStatus={confirmationStatus}
+                onStartMoneyGram={onStartMoneyGram}
+              />
             )}
           </div>
         </div>
